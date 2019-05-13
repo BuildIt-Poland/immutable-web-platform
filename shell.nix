@@ -6,11 +6,10 @@ mkShell {
   inputsFrom = [
   ];
 
-  nativeBuildInputs = [
-  ];
-
   buildInputs = [
-    pkgs.yarn2nix
+    nodejs
+    pkgs.yarn2nix.yarn
+    pkgs.functions.express-app.package
   ];
 
   shellHook= ''

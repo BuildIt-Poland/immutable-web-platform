@@ -7,6 +7,6 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.16.4"
+    "assert": "^2.0.0"
   }
 }

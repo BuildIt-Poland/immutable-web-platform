@@ -1,12 +1,11 @@
 { pkgs, env-config }:
+let
+  express-app = pkgs.callPackage ./package.nix { };
+in
 pkgs.dockerTools.buildLayeredImage {
   name = "express-knative-example-app";
 
-  contents = [ pkgs.nodejs ];
-
-  runAsRoot = ''
-    npm install --only=production
-  '';
+  contents = [ pkgs.nodejs express-app ];
 
   # https://github.com/moby/moby/blob/master/image/spec/v1.2.md#image-json-field-descriptions
   config = {
