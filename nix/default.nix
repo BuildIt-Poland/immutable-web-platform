@@ -4,8 +4,9 @@ let
     kubenix = super.callPackage sources.kubenix {};
   };
   config = self: super: {
-    config = {
+    env-config = {
       env = "dev";
+      docker-registry = "docker.io/gatehub";
     };
   };
 in

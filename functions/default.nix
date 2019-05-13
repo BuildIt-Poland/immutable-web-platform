@@ -1,4 +1,4 @@
 { callPackage }:
 {
-  express = callPackage ./express-app { };
+  express-app = callPackage ./express-app/nix { };
 }
