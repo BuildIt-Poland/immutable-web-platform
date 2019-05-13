@@ -10,6 +10,7 @@ mkShell {
   ];
 
   buildInputs = [
+    pkgs.yarn2nix
   ];
 
   shellHook= ''

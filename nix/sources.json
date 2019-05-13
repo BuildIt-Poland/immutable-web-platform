@@ -21,6 +21,17 @@
         "description": "Kubernetes resource builder using nix",
         "rev": "ed22d9c04785b029ddb6fcfd0e5bb946e39cf416"
     },
+    "yarn2nix": {
+        "url": "https://github.com/moretea/yarn2nix/archive/3cc020e384ce2a439813adb7a0cc772a034d90bb.tar.gz",
+        "owner": "moretea",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "yarn2nix",
+        "type": "tarball",
+        "sha256": "0h2kzdfiw43rbiiffpqq9lkhvdv8mgzz2w29pzrxgv8d39x67vr9",
+        "description": "Generate nix expressions from a yarn.lock file",
+        "rev": "3cc020e384ce2a439813adb7a0cc772a034d90bb"
+    },
     "niv": {
         "homepage": "https://github.com/nmattia/niv",
         "url": "https://github.com/nmattia/niv/archive/5d9e3a5f7d51765f0369a4682770ec57d863f19f.tar.gz",
