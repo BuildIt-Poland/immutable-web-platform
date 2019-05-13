@@ -2,6 +2,7 @@
 let
   tools = self: super: {
     kubenix = super.callPackage sources.kubenix {};
+    yarn2nix = super.callPackage sources.yarn2nix {};
   };
   config = self: super: {
     env-config = {
