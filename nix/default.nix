@@ -1,5 +1,13 @@
-{ sources ? import ./sources.nix }:
+{ 
+  sources ? import ./sources.nix,
+  use-docker ? false
+}:
 let
+  pkgsOpts = 
+    if use-docker
+      then { system = "x86_64-linux"; }
+      else {};
+
   tools = self: super: {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
@@ -17,4 +25,4 @@ import sources.nixpkgs {
     config
     (import ./deployment.nix)
   ];
-}
+} // pkgsOpts
