@@ -11,6 +11,7 @@ let
   tools = self: super: {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
+    find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) ../.;
   };
   config = self: super: {
     env-config = {
