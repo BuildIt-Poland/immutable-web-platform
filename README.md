@@ -7,6 +7,7 @@
 ### Building images from derivation
 * `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
 * `docker load < result`
+* and then `docker run -it <container_id> /bin/sh`
 
 ### Building docker with nix on `mac`
 * setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
