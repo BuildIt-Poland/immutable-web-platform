@@ -7,6 +7,11 @@ pkgs.dockerTools.buildLayeredImage {
 
   contents = [ pkgs.nodejs express-app pkgs.bash];
 
+  extraCommands = ''
+    mkdir etc
+    chmod u+w etc
+  '';
+
   # https://github.com/moby/moby/blob/master/image/spec/v1.2.md#image-json-field-descriptions
   config = {
     Cmd = ["npm" "start"];

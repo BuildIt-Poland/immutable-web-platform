@@ -13,10 +13,17 @@ let
     yarn2nix = super.callPackage sources.yarn2nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) ../.;
   };
+
   config = self: super: {
     env-config = {
       env = "dev";
-      docker-registry = "docker.io/gatehub";
+      helm = {
+        namespace = "local-infra";
+      };
+      docker = {
+        registry = "docker.io/gatehub";
+        destination = "docker://damianbaar"; # skopeo path transport://repo
+      };
     };
   };
 in
