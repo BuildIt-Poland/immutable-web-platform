@@ -9,7 +9,7 @@ mkShell {
   buildInputs = [
     nodejs
     pkgs.yarn2nix.yarn
-    pkgs.functions.express-app.package
+    pkgs.functions.scripts.build-and-push
   ];
 
   shellHook= ''

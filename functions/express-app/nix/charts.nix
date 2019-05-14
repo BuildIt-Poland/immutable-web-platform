@@ -12,7 +12,7 @@ rec {
   mongodb-json = chart2json {
     name = "mongodb";
     chart = mongodb-chart;
-    namespace = ""; # env-config
+    namespace = env-config.helm.namespace;
     values = {
       # https://github.com/helm/charts/blob/master/stable/mongodb/values.yaml
       usePassword = false;
