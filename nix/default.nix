@@ -11,6 +11,8 @@ let
   tools = self: super: {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
+    # arion = super.callPackage ((import sources.arion {}).arion) {};
+    arion = (sources.arion.arion {});
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) ../.;
   };
 
@@ -26,11 +28,12 @@ let
       };
     };
   };
-in
-import sources.nixpkgs {
+
   overlays = [
     tools
     config
     (import ./deployment.nix)
   ];
-} // pkgsOpts
+  args = { } // pkgsOpts // { inherit overlays; };
+in
+  import sources.nixpkgs args

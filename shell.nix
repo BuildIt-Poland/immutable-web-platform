@@ -1,5 +1,5 @@
 let
-  pkgs = import ./nix {};
+  pkgs = (import ./nix {}).pkgs;
 in
 with pkgs;
 mkShell {

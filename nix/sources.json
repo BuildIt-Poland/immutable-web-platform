@@ -21,6 +21,18 @@
         "description": "Kubernetes resource builder using nix",
         "rev": "ed22d9c04785b029ddb6fcfd0e5bb946e39cf416"
     },
+    "arion": {
+        "homepage": "",
+        "url": "https://github.com/hercules-ci/arion/tarball/master",
+        "owner": "hercules-ci",
+        "branch": "master",
+        "url_template": "https://github.com/hercules-ci/arion/tarball/master",
+        "repo": "arion",
+        "type": "tarball",
+        "sha256": "0i02bwbyy0m382avvvkj49rhq1i2vqjgxcnvzrj345pbwqvh3xq3",
+        "description": "Run docker-compose with help from Nix/NixOS",
+        "rev": "221bccd7f149a25fefce8943179ef62cb73d4313"
+    },
     "yarn2nix": {
         "url": "https://github.com/moretea/yarn2nix/archive/3cc020e384ce2a439813adb7a0cc772a034d90bb.tar.gz",
         "owner": "moretea",
