@@ -1,11 +1,6 @@
 let
   host-name = "example.org";
   local-nixpkgs = (import ../../nix { use-docker = true; });
-  # arion = local-nixpkgs.pkgs.callPackage ./arion.nix {};
-  # arion = local-nixpkgs.pkgs.callPackage ./arion.nix {};
-
-  # arionSrc = (builtins.fetchGit "https://github.com/hercules-ci/arion");
-  # arionFn =  import (arionSrc.outPath + "/arion.nix");
 in
 {
   concourse = 
@@ -15,15 +10,18 @@ in
         setSendmail = true;
       };
 
+      nixpkgs.overlays = [
+        (self: super:
+          {
+            arion-compose = super.callPackage ./arion-compose.nix { pkgs = local-nixpkgs; };
+          })
+      ];
+      
       environment.systemPackages = [ 
         local-nixpkgs.pkgs.hello
         local-nixpkgs.arion
+        local-nixpkgs.sourceFolder
       ];
-      # [ 
-      #   pkgs.bash
-      #   pkgs.docker_compose 
-      #   nixpkgs_.pkgs.hello
-      # ];
 
       # security.acme.certs."${host-name}" = {
       #   # webroot = "/var/www/challenges";
@@ -48,7 +46,6 @@ in
       # };
 
       # security.acme.preliminarySelfsigned = true;
-       nix.useSandbox = true;
 
       nix.gc = {
         automatic = true;

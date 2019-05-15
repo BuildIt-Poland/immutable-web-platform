@@ -64,3 +64,7 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 * [kubenix](https://github.com/xtruder/kubenix/tree/kubenix-2.0) - k8s
 * [arion](https://github.com/hercules-ci/arion) - nix docker compose
 * [nixops](https://nixos.org/nixops/) - provisioning tool
+
+#### TODO
+* docker - https://github.com/NixOS/nixpkgs/pull/55179/files
+* gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore

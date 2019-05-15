@@ -14,11 +14,23 @@ let
   # is is super important when building on darwin, linux images
   arionPath = "${sources.arion.outPath}/arion.nix";
 
-  tools = self: super: {
+  tools = self: super: rec {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
     arion = super.callPackage (import arionPath) {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
+
+    # TODO this would be copied to nixos during provisioning 
+    sourceFolder =  super.callPackage ({stdenv}: stdenv.mkDerivation {
+        name = "my-files";
+        src = ./.;
+        buildInputs = [arion];
+        phases = ["installPhase"];
+        installPhase = ''
+          mkdir -p $out
+          cp -r $src $out
+        '';
+      }) {};
   };
 
   config = self: super: {
