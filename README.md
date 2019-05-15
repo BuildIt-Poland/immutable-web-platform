@@ -16,12 +16,39 @@ As I'm super passionate about `nix` I would like share this awesomeness on some 
 * https://www.tweag.io/posts/2019-03-07-configuring-and-testing-kubernetes-clusters.html
 * https://memo.barrucadu.co.uk/concourseci-nixos.html
 
+### Required
+* `nix` - `nix`
+* `nixops` - `nix-env -i nixops`
+* `virtualbox` - for local development
+
+### Infrastructure provisioning
+#### Why
+Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
+
+#### Creating deployment
+* `nixops create ./infra/ci/nixos.nix ./infra/ci/machine.nix -d concourse-ci`
+* `nixops deploy -d concourse-ci`
+
+#### Loggin into the `nixos` `virtualbox`
+* `nixops ssh -d <deployment_name>`
+* changing password (if you want to play in non headless mode) `passwd`
+
 ### Building docker with nix on `mac`
 * setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
 > This script going to download docker worker as well as setup some keys and export env var related to builder (`NIX_REMOTE_SYSTEMS`), however if you will go with new shell over and over again, you can re-run the script or, build with `--builders`, like so `nix-build <your-build.nix> --builders 'ssh://nix-docker-build-slave x86_64-linux'`
 
+### Docker compose substitution
+* `nix-env -iA arion -f https://github.com/hercules-ci/arion/tarball/master`
+
 ### Important
 * when pushing to docker registry, provide your [credentials](https://github.com/containers/skopeo#private-registries-with-authentication) - on `os x` auth via `keychain` does not work - simple workaround is to delete `credStore` do the login and should be all good.
+
+### Helpful - when you need someting
+* https://nixos.org/nixos/options.html#
+
+#### What is so super awesome
+* `nixops` is provisioning based upon `declarative` nix file
+* I can share all `nix` code across everything and don't worry about copying any `bash` scripts
 
 ### TODO
 * setup `nix-channel`
@@ -35,3 +62,5 @@ As I'm super passionate about `nix` I would like share this awesomeness on some 
 ### Development tools / Libraries
 * [niv](https://github.com/nmattia/niv) - nix setup
 * [kubenix](https://github.com/xtruder/kubenix/tree/kubenix-2.0) - k8s
+* [arion](https://github.com/hercules-ci/arion) - nix docker compose
+* [nixops](https://nixos.org/nixops/) - provisioning tool
