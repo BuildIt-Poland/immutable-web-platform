@@ -23,10 +23,10 @@
     },
     "arion": {
         "homepage": "",
-        "url": "https://github.com/hercules-ci/arion/tarball/master",
+        "url": "https://github.com/hercules-ci/arion/archive/221bccd7f149a25fefce8943179ef62cb73d4313.tar.gz",
         "owner": "hercules-ci",
         "branch": "master",
-        "url_template": "https://github.com/hercules-ci/arion/tarball/master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "arion",
         "type": "tarball",
         "sha256": "0i02bwbyy0m382avvvkj49rhq1i2vqjgxcnvzrj345pbwqvh3xq3",

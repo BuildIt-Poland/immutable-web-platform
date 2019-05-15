@@ -8,16 +8,23 @@ let
       then { system = "x86_64-linux"; }
       else {};
 
+  rootFolder = ../.;
+
+  # workaround - need to create issue against it
+  # is is super important when building on darwin, linux images
+  arionPath = "${sources.arion.outPath}/arion.nix";
+
   tools = self: super: {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
-    # arion = super.callPackage ((import sources.arion {}).arion) {};
-    arion = (sources.arion.arion {});
-    find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) ../.;
+    arion = super.callPackage (import arionPath) {};
+    find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
   };
 
   config = self: super: {
     env-config = {
+      inherit rootFolder;
+
       env = "dev";
       helm = {
         namespace = "local-infra";

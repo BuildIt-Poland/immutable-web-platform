@@ -2,10 +2,10 @@ let
   host-name = "example.org";
   local-nixpkgs = (import ../../nix { use-docker = true; });
   # arion = local-nixpkgs.pkgs.callPackage ./arion.nix {};
-  arion = local-nixpkgs.pkgs.callPackage ./arion.nix {};
+  # arion = local-nixpkgs.pkgs.callPackage ./arion.nix {};
 
-  arionSrc = (builtins.fetchGit "https://github.com/hercules-ci/arion");
-  arionFn =  import (arionSrc.outPath + "/arion.nix");
+  # arionSrc = (builtins.fetchGit "https://github.com/hercules-ci/arion");
+  # arionFn =  import (arionSrc.outPath + "/arion.nix");
 in
 {
   concourse = 
@@ -17,10 +17,7 @@ in
 
       environment.systemPackages = [ 
         local-nixpkgs.pkgs.hello
-        local-nixpkgs.pkgs.coreutils
-        (pkgs.callPackage arionFn {})
-        # arion
-        # local-nixpkgs.pkgs.arion
+        local-nixpkgs.arion
       ];
       # [ 
       #   pkgs.bash
