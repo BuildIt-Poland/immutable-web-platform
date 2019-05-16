@@ -17,19 +17,10 @@ let
   tools = self: super: rec {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
+
     arion = super.callPackage (import arionPath) {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
-
-    arion-compose =  super.callPackage ({stdenv}: stdenv.mkDerivation {
-        name = "my-files";
-        src = ./ci;
-        buildInputs = [arion];
-        phases = ["installPhase"];
-        installPhase = ''
-          mkdir -p $out
-          cp -r $src/* $out
-        '';
-      }) {};
+    concourse-ci =  super.callPackage (import ./ci) {};
   };
 
   config = self: super: {
