@@ -68,13 +68,27 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### TODO
 * docker - https://github.com/NixOS/nixpkgs/pull/55179/files
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
+* provision to `ec2`
 
 #### Debugging
 * `systemctl cat container@database.service`
 * `systemctl status container@database.service`
 * `systemctl status test-service`
 
-#### Some lessions during hacking
+#### When you are new - some user stories & articles
+* https://iohk.io/blog/how-we-use-nix-at-iohk/
+
+#### Some important docs - how to
+* [`docker-containers`](https://github.com/NixOS/nixpkgs/pull/55179)
+
+#### Some inspirations
+* [`nix & concourse`](https://memo.barrucadu.co.uk/concourseci-nixos.html) - more less ok, but I don't like this `yaml` files, besides newest `concourse` is not working with docker compose as worker is dying ...
+* [`nix & kubernetes`](https://rzetterberg.github.io/kubernetes-nixos.html)
+
+#### Changing direction
+* `arion` and `docker-compose` is ok, however having troubles to setup it locally and on `vm`, so I expect that with `ec2` will be the same story. As `nixos` handle kuberntes and I've got already kubernetes resources, there is no point to use `docker-compose` in any variation. If I will setup kubernetes on `ec2` then most likely I can skip `eks` - however not sure if it is super easy.
+
+#### Some lessons during hacking
 > copying to `target` machine can be done via `environment.etc.local-folder.source = ./local-folder;`
   (related [discussion](https://groups.google.com/forum/#!topic/nix-devel/0AS_sEH7n-M))
   however as we can create derivation which I believe is more nix way as it provides artifact rather than mutation.

@@ -2,14 +2,7 @@ let
   host-name = "example.org";
   local-nixpkgs = (import ../../nix { use-docker = true; });
   containers = import ./concourse-container.nix;
-  start-arion = local-nixpkgs.writeScript "start-arion" ''
-    #!${local-nixpkgs.bash}/bin/bash
-    source /etc/bashrc
-    ${local-nixpkgs.arion}/bin/arion \
-      --file ${local-nixpkgs.arion-compose}/arion-compose.nix \
-      --pkgs ${local-nixpkgs.arion-compose}/arion-pkgs.nix \
-      up
-  '';
+  helpers = import ./helpers.nix { nixpkgs = local-nixpkgs; };
 in
 {
   concourse = 
@@ -20,43 +13,33 @@ in
       };
 
       environment.systemPackages = [ 
-        local-nixpkgs.pkgs.hello
         local-nixpkgs.arion
-        local-nixpkgs.run-arion
       ];
 
-      systemd.services."test-service" = {
-        description = "arion-compose";
-        after = [ "docker.service" "docker.socket"];
-        requires = [ "docker.service" "docker.socket"  ];
-        wantedBy = [ "multi-user.target" ];
-        # path = ["dupa/szatana"];
-        serviceConfig = {
-          ExecStart =  "${start-arion}";
-          ExecStop = ''
-            ${local-nixpkgs.arion}/bin/arion \
-              --file ${local-nixpkgs.arion-compose}/arion-compose.nix \
-              --pkgs ${local-nixpkgs.arion-compose}/arion-pkgs.nix \
-              rm
-          '';
-          TimeoutStartSec = 1000;
-          TimeoutStopSec = 1200;
-        };
-      };
-      systemd.services.test-service.enable = true;
+      # systemd.services."concourse-ci" = {
+      #   enable = true;
+      #   description = "Concourse CI";
+      #   after = [ "docker.service" "docker.socket"];
+      #   requires = [ "docker.service" "docker.socket"  ];
+      #   wantedBy = [ "multi-user.target" ];
+      #   serviceConfig = {
+      #     ExecStart =  "${helpers.start-arion}";
+      #     ExecStop = "${helpers.stop-arion}";
+      #     TimeoutStartSec = 0;
+      #     TimeoutStopSec = 100;
+      #   };
+      # };
 
-      docker-containers.concourse = {
+      services.kubernetes = {
+        roles = ["master" "node"];
+      };
+
+      docker-containers.hello-world = {
         image = "karthequian/helloworld";
         ports = ["8181:80"];
       };
 
       containers = containers {nixpkgs = local-nixpkgs;};
-      #  {config, ...}: {
-      #     autoStart=true; 
-      #     config = {...}: {
-      #     };
-      #  };
-    # };
 
       # security.acme.certs."${host-name}" = {
       #   # webroot = "/var/www/challenges";
