@@ -72,3 +72,10 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### Debugging
 * `systemctl cat container@database.service`
 * `systemctl status container@database.service`
+* `systemctl status test-service`
+
+#### Some lessions during hacking
+> copying to `target` machine can be done via `environment.etc.local-folder.source = ./local-folder;`
+  (related [discussion](https://groups.google.com/forum/#!topic/nix-devel/0AS_sEH7n-M))
+  however as we can create derivation which I believe is more nix way as it provides artifact rather than mutation.
+> when attaching service via `systemd` and if it using `nix-build` as it is with `arion` then sourcing bashrc from `/etc/bashrc` is necessary - need to raise an issue agains that

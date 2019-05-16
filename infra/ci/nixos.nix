@@ -2,6 +2,14 @@ let
   host-name = "example.org";
   local-nixpkgs = (import ../../nix { use-docker = true; });
   containers = import ./concourse-container.nix;
+  start-arion = local-nixpkgs.writeScript "start-arion" ''
+    #!${local-nixpkgs.bash}/bin/bash
+    source /etc/bashrc
+    ${local-nixpkgs.arion}/bin/arion \
+      --file ${local-nixpkgs.arion-compose}/arion-compose.nix \
+      --pkgs ${local-nixpkgs.arion-compose}/arion-pkgs.nix \
+      up
+  '';
 in
 {
   concourse = 
@@ -17,16 +25,32 @@ in
         local-nixpkgs.run-arion
       ];
 
-      # copying source to etc - cool!
-      # https://groups.google.com/forum/#!topic/nix-devel/0AS_sEH7n-M
-      environment.etc.my-source.source = ./.;
+      systemd.services."test-service" = {
+        description = "arion-compose";
+        after = [ "docker.service" "docker.socket"];
+        requires = [ "docker.service" "docker.socket"  ];
+        wantedBy = [ "multi-user.target" ];
+        # path = ["dupa/szatana"];
+        serviceConfig = {
+          ExecStart =  "${start-arion}";
+          ExecStop = ''
+            ${local-nixpkgs.arion}/bin/arion \
+              --file ${local-nixpkgs.arion-compose}/arion-compose.nix \
+              --pkgs ${local-nixpkgs.arion-compose}/arion-pkgs.nix \
+              rm
+          '';
+          TimeoutStartSec = 1000;
+          TimeoutStopSec = 1200;
+        };
+      };
+      systemd.services.test-service.enable = true;
 
-      docker-containers.test-concourse = {
+      docker-containers.concourse = {
         image = "karthequian/helloworld";
         ports = ["8181:80"];
       };
 
-      containers = containers;
+      containers = containers {nixpkgs = local-nixpkgs;};
       #  {config, ...}: {
       #     autoStart=true; 
       #     config = {...}: {
@@ -52,6 +76,9 @@ in
           # enableACME = true;
           locations."/" ={
             proxyPass = "http://localhost:8181";
+          };
+          locations."/arion" ={
+            proxyPass = "http://localhost:8000";
           };
         };
       };
