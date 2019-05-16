@@ -31,6 +31,10 @@ let
           cp -r $src $out
         '';
       }) {};
+
+    run-arion = super.writeScriptBin "run-arion" ''
+      ${arion}/bin/arion run --project-directory ${sourceFolder}/ci/arion-compose.nix
+    '';
   };
 
   config = self: super: {

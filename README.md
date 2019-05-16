@@ -68,3 +68,7 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### TODO
 * docker - https://github.com/NixOS/nixpkgs/pull/55179/files
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
+
+#### Debugging
+* `systemctl cat container@database.service`
+* `systemctl status container@database.service`
