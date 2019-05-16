@@ -20,21 +20,16 @@ let
     arion = super.callPackage (import arionPath) {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
 
-    # TODO this would be copied to nixos during provisioning 
-    sourceFolder =  super.callPackage ({stdenv}: stdenv.mkDerivation {
+    arion-compose =  super.callPackage ({stdenv}: stdenv.mkDerivation {
         name = "my-files";
-        src = ./.;
+        src = ./ci;
         buildInputs = [arion];
         phases = ["installPhase"];
         installPhase = ''
           mkdir -p $out
-          cp -r $src $out
+          cp -r $src/* $out
         '';
       }) {};
-
-    run-arion = super.writeScriptBin "run-arion" ''
-      ${arion}/bin/arion run --project-directory ${sourceFolder}/ci/arion-compose.nix
-    '';
   };
 
   config = self: super: {
