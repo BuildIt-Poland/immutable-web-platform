@@ -1,15 +1,17 @@
 let
   host-name = "example.org";
-  local-nixpkgs = (import ../../nix { use-docker = true; });
-  containers = import ../container/example.nix;
+  local-nixpkgs = (import ../nix { use-docker = true; });
+  containers = import ./container/example.nix;
   helpers = import ./helpers.nix { nixpkgs = local-nixpkgs; };
 in
 {
-  concourse = 
-    { config, pkgs, ...}: 
+  buildit-ops = 
+    { config, pkgs, nodes, ...}: 
     {
       imports = [
-        ../services/concourse-ci.nix
+        ./services/concourse-ci.nix
+        ./services/kubernetes.nix
+        ./services/nginx.nix
       ];
 
       services.postfix = {
