@@ -43,7 +43,7 @@ in
         enableCompletion = true;
       };
 
-      # neccessary to allow container call outside world
+      # neccessary to allow containers call outside world
       networking.nat.enable = true;
       networking.nat.internalInterfaces = ["ve-+"];
 

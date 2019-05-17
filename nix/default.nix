@@ -10,19 +10,12 @@ let
 
   rootFolder = ../.;
 
-  # workaround - need to create issue against it
-  # is is super important when building on darwin, linux images
-  arionPath = "${sources.arion.outPath}/arion.nix";
-
   tools = self: super: rec {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
-
-    arion = super.callPackage (import arionPath) {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
-    concourse-ci =  super.callPackage (import ./ci) {};
   };
-
+  
   config = self: super: {
     env-config = {
       inherit rootFolder;
@@ -41,7 +34,7 @@ let
   overlays = [
     tools
     config
-    (import ./deployment.nix)
+    (import ./functions.nix)
   ];
   args = { } // pkgsOpts // { inherit overlays; };
 in
