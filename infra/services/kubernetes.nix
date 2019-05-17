@@ -1,4 +1,17 @@
+{ config, lib, pkgs, ...}:
+with lib;
+let
+in
+{
+  options.services.concourseci = {
+    port = mkOption { type = types.int; default = 3001; };
+    virtualhost = mkOption { type = types.str; };
+  };  
 
+  config = {
+
+  };
+}
 # kub = config.services.kubernetes;
 # devCert = kub.lib.mkCert {
 #   name = "gui";

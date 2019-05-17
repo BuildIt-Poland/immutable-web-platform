@@ -14,7 +14,7 @@ in
     registryIP = mkOption { type = types.str; default = "172.21.0.254"; };
   };  
 
-  # config = {
+  config = {
   #   networking.hosts."${cfg.registryIP}" = [ "ci-registry" ];
   #   virtualisation.docker.extraOptions = "--insecure-registry=ci-registry:5000";
 
@@ -58,5 +58,5 @@ in
   #     openssh.authorizedKeys.keys = cfg.sshPublicKeys;
   #     shell = pkgs.bashInteractive;
   #   };
-  # };
+  };
 }

@@ -1,4 +1,17 @@
+{ config, lib, pkgs, ...}:
+with lib;
+let
+in
+{
+  options.services.concourseci = {
+    port = mkOption { type = types.int; default = 3001; };
+    virtualhost = mkOption { type = types.str; };
+  };  
 
+  config = {
+
+  };
+}
 # security.acme.certs."${host-name}" = {
 #   # webroot = "/var/www/challenges";
 #   email = "foo@example.com";
