@@ -1,7 +1,7 @@
 let
   host-name = "example.org";
   local-nixpkgs = (import ../../nix { use-docker = true; });
-  containers = import ../container/example.nix;# { nixpkgs = local-nixpkgs; };
+  containers = import ../container/example.nix;
   helpers = import ./helpers.nix { nixpkgs = local-nixpkgs; };
 in
 {
@@ -33,6 +33,8 @@ in
         sshPublicKeys = [];
       };
 
+      containers = containers;
+
       programs.zsh = {
         interactiveShellInit = ''
           echo "Hey hey hey"
@@ -48,8 +50,6 @@ in
       users.extraUsers.root = {
         shell = local-nixpkgs.zsh;
       };
-
-      containers = containers;
 
       nix.gc = {
         automatic = true;
