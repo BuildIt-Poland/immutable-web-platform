@@ -69,6 +69,7 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 * docker - https://github.com/NixOS/nixpkgs/pull/55179/files
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
 * provision to `ec2`
+* [formatting](https://github.com/serokell/nixfmt)
 
 #### Debugging
 * `systemctl cat container@database.service`
@@ -80,6 +81,7 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 
 #### Some important docs - how to
 * [`docker-containers`](https://github.com/NixOS/nixpkgs/pull/55179)
+* [`nixos container`](https://nixos.org/nixos/manual/#ch-containers)
 
 #### Some inspirations
 * [`nix & concourse`](https://memo.barrucadu.co.uk/concourseci-nixos.html) - more less ok, but I don't like this `yaml` files, besides newest `concourse` is not working with docker compose as worker is dying ...
@@ -93,3 +95,5 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
   (related [discussion](https://groups.google.com/forum/#!topic/nix-devel/0AS_sEH7n-M))
   however as we can create derivation which I believe is more nix way as it provides artifact rather than mutation.
 > when attaching service via `systemd` and if it using `nix-build` as it is with `arion` then sourcing bashrc from `/etc/bashrc` is necessary - need to raise an issue agains that
+> running `docker-container` within `container` - [no chance](https://github.com/NixOS/nixpkgs/issues/28659) - trying with `rkt` - getting loop ...
+> when using containers - if container does not work, it tell us that this container has to be restarted (ping to check is enough) - checking how to do autorestart without `--force-reboot` flag

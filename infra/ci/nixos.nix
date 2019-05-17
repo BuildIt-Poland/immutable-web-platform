@@ -1,72 +1,55 @@
 let
   host-name = "example.org";
   local-nixpkgs = (import ../../nix { use-docker = true; });
-  containers = import ./concourse-container.nix;
+  containers = import ../container/example.nix;# { nixpkgs = local-nixpkgs; };
   helpers = import ./helpers.nix { nixpkgs = local-nixpkgs; };
 in
 {
   concourse = 
-    { config, pkgs, ...}: {
+    { config, pkgs, ...}: 
+    {
+      imports = [
+        ../services/concourse-ci.nix
+      ];
+
       services.postfix = {
         enable = true;
         setSendmail = true;
       };
 
-      environment.systemPackages = [ 
-        local-nixpkgs.arion
+      environment.systemPackages = with local-nixpkgs; [ 
+        neovim
+        zsh
+        htop
       ];
 
-      # systemd.services."concourse-ci" = {
-      #   enable = true;
-      #   description = "Concourse CI";
-      #   after = [ "docker.service" "docker.socket"];
-      #   requires = [ "docker.service" "docker.socket"  ];
-      #   wantedBy = [ "multi-user.target" ];
-      #   serviceConfig = {
-      #     ExecStart =  "${helpers.start-arion}";
-      #     ExecStop = "${helpers.stop-arion}";
-      #     TimeoutStartSec = 0;
-      #     TimeoutStopSec = 100;
-      #   };
-      # };
+      system.autoUpgrade.enable = true;
+      system.autoUpgrade.channel = https://nixos.org/channels/nixos-unstable;
 
-      services.kubernetes = {
-        roles = ["master" "node"];
+      services.concourseci = {
+        githubClientId = "";
+        githubClientSecret = "";
+        virtualhost = "buildit.com";
+        sshPublicKeys = [];
       };
 
-      docker-containers.hello-world = {
-        image = "karthequian/helloworld";
-        ports = ["8181:80"];
-      };
-
-      containers = containers {nixpkgs = local-nixpkgs;};
-
-      # security.acme.certs."${host-name}" = {
-      #   # webroot = "/var/www/challenges";
-      #   email = "foo@example.com";
-      # };
-
-      services.nginx = {
+      programs.zsh = {
+        interactiveShellInit = ''
+          echo "Hey hey hey"
+        '';
         enable = true;
-        recommendedProxySettings = true;
-        recommendedGzipSettings = true;
-        recommendedOptimisation = true;
-        recommendedTlsSettings = true;
-
-        # TODO expose concourse 
-        virtualHosts."${host-name}" = {
-          # forceSSL = true;
-          # enableACME = true;
-          locations."/" ={
-            proxyPass = "http://localhost:8181";
-          };
-          locations."/arion" ={
-            proxyPass = "http://localhost:8000";
-          };
-        };
+        enableCompletion = true;
       };
 
-      # security.acme.preliminarySelfsigned = true;
+      # neccessary to allow container call outside world
+      networking.nat.enable = true;
+      networking.nat.internalInterfaces = ["ve-+"];
+
+      users.extraUsers.root = {
+        shell = local-nixpkgs.zsh;
+      };
+
+      containers = containers;
 
       nix.gc = {
         automatic = true;
@@ -88,3 +71,6 @@ in
       ];
     };
 }
+# not necessary
+# ifconfig -a - need to check how to
+# networking.nat.externalInterface = "enp0s3"; # enp0s8
