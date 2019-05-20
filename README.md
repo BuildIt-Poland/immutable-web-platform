@@ -3,6 +3,9 @@ As I'm super passionate about `nix` I would like share this awesomeness on some 
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/`
+* spin up `distributed build cache`
+* spin up `brigade.js` to not using any `CI` solution
+* spin up `k8s cluster` on `ec2` not `eks` :)
 
 ### Building images from derivation
 * `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
@@ -75,6 +78,7 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 * `systemctl cat container@database.service`
 * `systemctl status container@database.service`
 * `systemctl status test-service`
+* just to have wrapping `systemctl status --no-pager --full`
 
 #### When you are new - some user stories & articles
 * https://iohk.io/blog/how-we-use-nix-at-iohk/

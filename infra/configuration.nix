@@ -21,12 +21,13 @@ in
 
       environment.systemPackages = with local-nixpkgs; [ 
         neovim
+        kubectl
         zsh
         htop
       ];
 
       system.autoUpgrade.enable = true;
-      system.autoUpgrade.channel = https://nixos.org/channels/nixos-unstable;
+      system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre180188.2439b3049b1;
 
       services.concourseci = {
         githubClientId = "";
