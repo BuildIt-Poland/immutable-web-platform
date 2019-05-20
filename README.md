@@ -59,10 +59,21 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 ### Issues so far
 * https://github.com/NixOS/nixpkgs/issues/60313 - bumping nix channel and using `master` - works!
 
-### Development tools / Libraries
+### Tools
+
+#### Libraries
 * [niv](https://github.com/nmattia/niv) - nix setup
 * [kubenix](https://github.com/xtruder/kubenix/tree/kubenix-2.0) - k8s
-* [nixops](https://nixos.org/nixops/) - provisioning tool
+
+#### Provisioning
+* [nixops](https://nixos.org/nixops/)
+* [helm](https://helm.sh/)
+
+#### OS
+* [nixos](https://nixos.org/nixos/about.html)
+
+#### Local infrastructure
+* [kind](https://github.com/kubernetes-sigs/kind)
 
 #### TODO
 * setup `nix-channel`

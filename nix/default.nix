@@ -13,6 +13,7 @@ let
   tools = self: super: rec {
     kubenix = super.callPackage sources.kubenix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
+    k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
   };
   
@@ -21,9 +22,12 @@ let
       inherit rootFolder;
 
       env = "dev";
+      projectName = "future-is-comming";
+
       helm = {
         namespace = "local-infra";
       };
+
       docker = {
         registry = "docker.io/gatehub";
         destination = "docker://damianbaar"; # skopeo path transport://repo
