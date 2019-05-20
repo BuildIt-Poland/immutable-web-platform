@@ -3,6 +3,9 @@ As I'm super passionate about `nix` I would like share this awesomeness on some 
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/`
+* spin up `distributed build cache`
+* spin up `brigade.js` to not using any `CI` solution
+* spin up `k8s cluster` on `ec2` not `eks` :)
 
 ### Building images from derivation
 * `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
@@ -68,14 +71,33 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### TODO
 * docker - https://github.com/NixOS/nixpkgs/pull/55179/files
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
+* provision to `ec2`
+* [formatting](https://github.com/serokell/nixfmt)
 
 #### Debugging
 * `systemctl cat container@database.service`
 * `systemctl status container@database.service`
 * `systemctl status test-service`
+* just to have wrapping `systemctl status --no-pager --full`
 
-#### Some lessions during hacking
+#### When you are new - some user stories & articles
+* https://iohk.io/blog/how-we-use-nix-at-iohk/
+
+#### Some important docs - how to
+* [`docker-containers`](https://github.com/NixOS/nixpkgs/pull/55179)
+* [`nixos container`](https://nixos.org/nixos/manual/#ch-containers)
+
+#### Some inspirations
+* [`nix & concourse`](https://memo.barrucadu.co.uk/concourseci-nixos.html) - more less ok, but I don't like this `yaml` files, besides newest `concourse` is not working with docker compose as worker is dying ...
+* [`nix & kubernetes`](https://rzetterberg.github.io/kubernetes-nixos.html)
+
+#### Changing direction
+* `arion` and `docker-compose` is ok, however having troubles to setup it locally and on `vm`, so I expect that with `ec2` will be the same story. As `nixos` handle kuberntes and I've got already kubernetes resources, there is no point to use `docker-compose` in any variation. If I will setup kubernetes on `ec2` then most likely I can skip `eks` - however not sure if it is super easy.
+
+#### Some lessons during hacking
 > copying to `target` machine can be done via `environment.etc.local-folder.source = ./local-folder;`
   (related [discussion](https://groups.google.com/forum/#!topic/nix-devel/0AS_sEH7n-M))
   however as we can create derivation which I believe is more nix way as it provides artifact rather than mutation.
 > when attaching service via `systemd` and if it using `nix-build` as it is with `arion` then sourcing bashrc from `/etc/bashrc` is necessary - need to raise an issue agains that
+> running `docker-container` within `container` - [no chance](https://github.com/NixOS/nixpkgs/issues/28659) - trying with `rkt` - getting loop ...
+> when using containers - if container does not work, it tell us that this container has to be restarted (ping to check is enough) - checking how to do autorestart without `--force-reboot` flag
