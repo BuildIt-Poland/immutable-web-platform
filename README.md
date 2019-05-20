@@ -11,6 +11,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * spin up `distributed build cache` - to make building and provisioning super fast
 * spin up `brigade.js` to not using any `CI` solution - architecture should be event driven
 * spin up `k8s cluster` on `ec2` not `eks` - just to try alternative solution which has less assumptions from vendor
+* make infrastructure testable, ...[more](https://nixos.org/nixos/manual/index.html#sec-nixos-tests)
 
 ## How to
 ### Building images from derivation
