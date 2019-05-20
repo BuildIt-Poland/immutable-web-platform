@@ -11,16 +11,19 @@ mkShell {
     nodejs
     pkgs.yarn2nix.yarn
     pkgs.functions.scripts.build-and-push
-    pkgs.k8s-local.create-local-cluster-if-not-exists
     pkgs.kind
+
+    pkgs.k8s-local.create-local-cluster-if-not-exists
+    pkgs.k8s-local.export-kubeconfig
   ];
+
+  PROJECT_NAME = pkgs.env-config.projectName;
 
   shellHook= ''
     echo "Hey sailor!"
 
     create-local-cluster-if-not-exists
 
-    export PROJECT_NAME="${pkgs.env-config.projectName}"
-    export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=$PROJECT_NAME)
+    source export-kubeconfig
   '';
 }

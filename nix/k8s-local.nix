@@ -10,6 +10,10 @@ rec {
     ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
   '';
 
+  export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
+    export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
+  '';
+
   deploy-to-kind = {config, image}: 
     pkgs.writeScriptBin "deploy-to-kind" ''
       echo "Loading the ${pkgs.docker}/bin/docker image inside the kind docker container ..."
