@@ -22,7 +22,7 @@ ssh-local:
 		$(NIXOPS) create configuration.nix ec2.nix -d $(DEPLOYMENT_NAME)-ec2
 
 deploy-ec2: .create-ec2
-	$(NIXOPS) deploy -d $(DEPLOYMENT_NAME)-ec2 --kill-obsolete --allow-reboot
+	$(NIXOPS) deploy -d $(DEPLOYMENT_NAME)-ec2 --kill-obsolete --allow-reboot --allow-recreate
 
 destroy-ec2:
 	$(NIXOPS) destroy -d $(DEPLOYMENT_NAME)-ec2
