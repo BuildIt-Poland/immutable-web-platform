@@ -1,5 +1,5 @@
 ### Purpose
-As I'm super passionate about `nix` and it`s ecosystem so I would like share this awesomeness on some common `ops` tasks in examples to increase adoption!
+As I'm super passionate about `nix` and it's ecosystem, I'd like share this awesomeness on some common `ops` tasks in examples to increase `nix` adoption within `buildit`.
 
 ### Inspiration part
 * [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)
@@ -86,9 +86,10 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### Some important docs - how to
 * [`docker-containers`](https://github.com/NixOS/nixpkgs/pull/55179)
 * [`nixos container`](https://nixos.org/nixos/manual/#ch-containers)
+* [`distributed builds`](https://nixos.wiki/wiki/Distributed_build)
 
-#### Some inspirations
-* [`nix & concourse`](https://memo.barrucadu.co.uk/concourseci-nixos.html) - more less ok, but I don't like this `yaml` files, besides newest `concourse` is not working with docker compose as worker is dying ...
+#### Some articles which were helpful down the road
+* [`nix & concourse`](https://memo.barrucadu.co.uk/concourseci-nixos.html)
 * [`nix & kubernetes`](https://rzetterberg.github.io/kubernetes-nixos.html)
 
 #### Changing direction
