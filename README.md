@@ -1,12 +1,18 @@
 ### Purpose
-As I'm super passionate about `nix` I would like share this awesomeness on some common `ops` tasks to everyone and adopt this everywhere!
+As I'm super passionate about `nix` and it`s ecosystem so I would like share this awesomeness on some common `ops` tasks in examples to increase adoption!
+
+### Inspiration part
+* [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)
+* [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
+* [some why`s around nix](https://www.youtube.com/watch?v=YbUPdv03ciI)
 
 ### Goal
-* deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/`
-* spin up `distributed build cache`
-* spin up `brigade.js` to not using any `CI` solution
-* spin up `k8s cluster` on `ec2` not `eks` :)
+* deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
+* spin up `distributed build cache` - to make building and provisioning super fast
+* spin up `brigade.js` to not using any `CI` solution - architecture should be event driven
+* spin up `k8s cluster` on `ec2` not `eks` - just to try alternative solution which has less assumptions from vendor
 
+## How to
 ### Building images from derivation
 * `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
 * `docker load < result`
@@ -15,10 +21,7 @@ As I'm super passionate about `nix` I would like share this awesomeness on some 
 ### Pushing `docker-image`
 * `nix-build nix -A functions.express-app.pushDockerImages --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
 
-### Insipration
-* https://www.tweag.io/posts/2019-03-07-configuring-and-testing-kubernetes-clusters.html
-* https://memo.barrucadu.co.uk/concourseci-nixos.html
-
+### Start
 ### Required
 * `nix` - `nix`
 * `nixops` - `nix-env -i nixops`
@@ -53,28 +56,25 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 * `nixops` is provisioning based upon `declarative` nix file
 * I can share all `nix` code across everything and don't worry about copying any `bash` scripts
 
-### TODO
-* setup `nix-channel`
-* setup `ci` - scratching my head ... `concourse-ci` or `hydra`
-* setup distributed cache - `s3`
-* setup `nixops`
-
 ### Issues so far
 * https://github.com/NixOS/nixpkgs/issues/60313 - bumping nix channel and using `master` - works!
 
 ### Development tools / Libraries
 * [niv](https://github.com/nmattia/niv) - nix setup
 * [kubenix](https://github.com/xtruder/kubenix/tree/kubenix-2.0) - k8s
-* [arion](https://github.com/hercules-ci/arion) - nix docker compose
 * [nixops](https://nixos.org/nixops/) - provisioning tool
 
 #### TODO
+* setup `nix-channel`
+* setup `ci` - scratching my head ... `concourse-ci` or `hydra` -> `brigade.js` and remote workers!
+* setup distributed cache - `s3`
+* sharing state for `nixops`
 * docker - https://github.com/NixOS/nixpkgs/pull/55179/files
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
 * provision to `ec2`
 * [formatting](https://github.com/serokell/nixfmt)
 
-#### Debugging
+#### Debugging - within `nixos`
 * `systemctl cat container@database.service`
 * `systemctl status container@database.service`
 * `systemctl status test-service`
