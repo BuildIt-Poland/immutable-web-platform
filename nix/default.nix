@@ -1,6 +1,7 @@
 { 
   sources ? import ./sources.nix,
-  use-docker ? false
+  use-docker ? false,
+  env ? "dev"
 }:
 let
   pkgsOpts = 
@@ -15,14 +16,19 @@ let
     yarn2nix = super.callPackage sources.yarn2nix {};
     k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
+    helm-scripts = super.callPackage ./helm {};
   };
   
-  config = self: super: {
-    env-config = {
-      inherit rootFolder;
+  config = self: super: rec {
+    env-config = rec {
+      inherit rootFolder env;
 
-      env = "dev";
       projectName = "future-is-comming";
+
+      kubeconfigPath = 
+        if env == "dev" 
+          then "$KUBECONFIG" 
+          else "kind-config-$KUBECONFIG";
 
       helm = {
         namespace = "local-infra";
