@@ -113,8 +113,8 @@ in
       vpcId = resources.vpc."${vpcName}";
       rules = [
         { toPort = 22; fromPort = 22; sourceIp = "0.0.0.0/0"; } # SSH
-        # { toPort = 80; fromPort = 80; sourceIp = "0.0.0.0/0"; } # HTTP
-        # { toPort = 443; fromPort = 443; sourceIp = "0.0.0.0/0"; } # HTTPS
+        { toPort = 80; fromPort = 80; sourceIp = "0.0.0.0/0"; } # HTTP
+        { toPort = 443; fromPort = 443; sourceIp = "0.0.0.0/0"; } # HTTPS
       ];
     };
 
