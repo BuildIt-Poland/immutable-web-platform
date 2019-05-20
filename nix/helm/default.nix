@@ -1,5 +1,11 @@
-{pkgs, env-config}:
 {
+  pkgs, 
+  env-config, 
+  callPackage
+}:
+{
+  repository = callPackage ./repository.nix {};
+
   init = pkgs.writeScriptBin "helm-init" ''
     echo "helm - taking kubeconfig from: ${env-config.kubeconfigPath}"
 
@@ -9,4 +15,8 @@
       --home $(pwd)/.helm \
       --wait
   '';
+
+  add-repositories = pkgs.writeScriptBin "helm-repository-add" ''
+  '';
+
 }

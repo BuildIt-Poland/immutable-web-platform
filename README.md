@@ -43,7 +43,7 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 * changing password (if you want to play in non headless mode) `passwd`
 
 #### Starting local env
-* `lorri watch`
+* `lorri shell`
 
 ### Building docker with nix on `mac`
 * setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
