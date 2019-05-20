@@ -26,6 +26,9 @@ in
         htop
       ];
 
+      virtualisation.docker.enable = true;
+      virtualisation.rkt.enable = true;
+
       system.autoUpgrade.enable = true;
       system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre180188.2439b3049b1;
 
