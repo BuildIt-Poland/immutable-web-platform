@@ -23,9 +23,11 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 
 ### Start
 ### Required
-* `nix` - `nix`
-* `nixops` - `nix-env -i nixops`
-* `virtualbox` - for local development
+* [`nixpkgs`](https://nixos.org/nix/download.html)
+* [`nixops`](https://nixos.org/nixops/manual/#chap-installation) - `nix-env -i nixops`
+* [`docker`](https://www.docker.com/get-started) - for local development
+* run `nix-env -if ./nix/external/direnv.nix` - more about [`direnv`](https://direnv.net/)
+* run `nix-env -if nix/external/lorri`
 
 ### Infrastructure provisioning
 #### Why
@@ -38,6 +40,9 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### Loggin into the `nixos` `virtualbox`
 * `nixops ssh -d <deployment_name>`
 * changing password (if you want to play in non headless mode) `passwd`
+
+#### Starting local env
+* `lorri watch`
 
 ### Building docker with nix on `mac`
 * setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
@@ -72,8 +77,9 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### OS
 * [nixos](https://nixos.org/nixos/about.html)
 
-#### Local infrastructure
+#### Local
 * [kind](https://github.com/kubernetes-sigs/kind)
+* [lorri](https://github.com/target/lorri)
 
 #### TODO
 * setup `nix-channel`
