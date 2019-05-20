@@ -2,12 +2,30 @@ SHELL   := /usr/bin/env bash
 NIXOPS  := $(shell which nixops)
 DEPLOYMENT_NAME := buildit-ops
 
-.create:
-	$(NIXOPS) list | grep "$(DEPLOYMENT_NAME)" || \
-		$(NIXOPS) create configuration.nix hardware.nix -d $(DEPLOYMENT_NAME)
+# local env
+.create-local:
+	$(NIXOPS) list | grep "$(DEPLOYMENT_NAME)-local" || \
+		$(NIXOPS) create configuration.nix hardware.nix -d $(DEPLOYMENT_NAME)-local
 
-deploy: .create
-	$(NIXOPS) deploy -d $(DEPLOYMENT_NAME) --kill-obsolete --allow-reboot
+deploy-local: .create-local
+	$(NIXOPS) deploy -d $(DEPLOYMENT_NAME)-local --kill-obsolete --allow-reboot
 
-ssh:
-	$(NIXOPS) ssh -d $(DEPLOYMENT_NAME) $(DEPLOYMENT_NAME)
+destroy-local:
+	$(NIXOPS) destroy -d $(DEPLOYMENT_NAME)-local
+
+ssh-local:
+	$(NIXOPS) ssh -d $(DEPLOYMENT_NAME)-local $(DEPLOYMENT_NAME)
+
+# ec2
+.create-ec2:
+	$(NIXOPS) list | grep "$(DEPLOYMENT_NAME)-ec2" || \
+		$(NIXOPS) create configuration.nix ec2.nix -d $(DEPLOYMENT_NAME)-ec2
+
+deploy-ec2: .create-ec2
+	$(NIXOPS) deploy -d $(DEPLOYMENT_NAME)-ec2 --kill-obsolete --allow-reboot
+
+destroy-ec2:
+	$(NIXOPS) destroy -d $(DEPLOYMENT_NAME)-ec2
+
+ssh-ec2:
+	$(NIXOPS) ssh -d $(DEPLOYMENT_NAME)-ec2 $(DEPLOYMENT_NAME)
