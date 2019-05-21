@@ -19,10 +19,19 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs` and `nixOS`
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
 * `nix` in charge of building and pushing docker images to `docker repository`
-* `gitops` via `brigade.js` - work in progress
-* full determinism of results ([more here](https://discourse.nixos.org/t/is-there-much-difference-between-using-nix-shell-and-docker-for-local-development/807))
-* distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
 * full composability of components and configs
+* full determinism of results
+#### Work in progress
+* `gitops` via `brigade.js`
+* distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
+
+### People are doing it already ...
+* [step towards future configuration infrastructure management nix](https://container-solutions.com/step-towards-future-configuration-infrastructure-management-nix/)
+* [how we use nix at iohk](https://iohk.io/blog/how-we-use-nix-at-iohk/)
+
+#### Tools comparison
+* [ansible vs nix](https://github.com/WeAreWizards/blog/blob/master/content/articles/ansible-and-nix.md)
+* [docker vs nix](https://discourse.nixos.org/t/is-there-much-difference-between-using-nix-shell-and-docker-for-local-development/807)
 
 ## How to
 ### Building images from derivation
