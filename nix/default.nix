@@ -30,6 +30,8 @@ let
           then "$KUBECONFIG" 
           else "kind-config-$KUBECONFIG";
 
+      helmHome = "${builtins.toPath env-config.rootFolder}/.helm";
+
       helm = {
         namespace = "local-infra";
       };

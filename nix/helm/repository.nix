@@ -1,15 +1,29 @@
-{kubenix}:
+{
+  kubenix,
+  writeText
+}:
 with kubenix.lib.helm;
 rec {
-  brigade-chart = fetch {
-    chart = "brigade";
-    chartUrl = "https://github.com/brigadecore/charts";
-    version = "3ac3d9cd4293848d10cfdbea048cff242b14e709";
-    sha256 = "114p685i04jmmb5gs0zj15nf4nhn5zkiblk1xdqzvpj05s62vqqw";
-  };
+  brigade = rec {
+    chart = fetch {
+      chart = "brigade";
+      repo = "https://brigadecore.github.io/charts";
+      version = "1.0.0";
+      sha256 = "0i5i3h346dz4a771zkgjpbx4hbyf7r6zfhvqhvfjv234dha4fj50";
+    };
 
-  brigade-json = chart2json {
-    name = "brigade";
-    chart = brigade-chart;
+    # https://github.com/xtruder/kubenix/blob/kubenix-2.0/lib/helm/chart2json.nix
+    json = chart2json {
+      inherit chart;
+      name = "brigade";
+      values = {};
+    };
+    # lib.importJSON
+
+    # https://github.com/brigadecore/charts/blob/master/charts/brigade/values.yaml
+    config = { };
+
+    values = writeText "brigade-config.json" 
+      (builtins.toJSON  config);
   };
 }

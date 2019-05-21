@@ -1,7 +1,12 @@
 { pkgs, env-config }:
 rec {
+  delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
+    echo "Deleting cluster"
+    ${pkgs.kind}/bin/kind delete cluster --name ${env-config.projectName} || true
+  '';
+
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
-    ${pkgs.kind}/bin/kind delete cluster || true
+    echo "Creating cluster"
     ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName}
   '';
 

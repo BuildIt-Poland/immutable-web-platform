@@ -5,6 +5,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)
 * [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
 * [some why`s around nix](https://www.youtube.com/watch?v=YbUPdv03ciI)
+* [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
@@ -81,6 +82,9 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 #### Local
 * [kind](https://github.com/kubernetes-sigs/kind)
 * [lorri](https://github.com/target/lorri)
+
+#### Tips and Tricks
+* [kubeclt wait](https://hackernoon.com/kubectl-tip-of-the-day-wait-like-a-boss-40a818c423ac)
 
 #### TODO
 * setup `nix-channel`
