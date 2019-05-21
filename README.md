@@ -14,6 +14,16 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * spin up `k8s cluster` on `ec2` not `eks` - just to try alternative solution which has less assumptions from vendor
 * make infrastructure testable, ...[more](https://nixos.org/nixos/manual/index.html#sec-nixos-tests)
 
+### What is super hot!
+* `helm charts` without `helm` and `tiller`
+* fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs` and `nixOS`
+* pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
+* `nix` in charge of building and pushing docker images to `docker repository`
+* `gitops` via `brigade.js` - work in progress
+* full determinism of results ([more here](https://discourse.nixos.org/t/is-there-much-difference-between-using-nix-shell-and-docker-for-local-development/807))
+* distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
+* full composability of components and configs
+
 ## How to
 ### Building images from derivation
 * `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
@@ -28,6 +38,10 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [`nixpkgs`](https://nixos.org/nix/download.html)
 * [`nixops`](https://nixos.org/nixops/manual/#chap-installation) - `nix-env -i nixops`
 * [`docker`](https://www.docker.com/get-started) - for local development
+
+#### When developing
+* run `nix-shell`
+#### or ... for pleasant development with watch
 * run `nix-env -if ./nix/external/direnv.nix` - more about [`direnv`](https://direnv.net/)
 * run `nix-env -if nix/external/lorri`
 
@@ -44,7 +58,10 @@ Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 * changing password (if you want to play in non headless mode) `passwd`
 
 #### Starting local env
-* `lorri shell`
+* you can start `nix-shell`
+
+or super fancy `lorri` with watch capability (check required section)
+* `lorri shell` ()
 
 ### Building docker with nix on `mac`
 * setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
