@@ -16,7 +16,7 @@ let
     yarn2nix = super.callPackage sources.yarn2nix {};
     k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
-    helm-scripts = super.callPackage ./helm {};
+    cluster-stack = super.callPackage ./cluster-stack {};
   };
   
   config = self: super: rec {
@@ -24,6 +24,7 @@ let
       inherit rootFolder env;
 
       projectName = "future-is-comming";
+      version = "0.0.1";
 
       kubeconfigPath = 
         if env == "dev" 

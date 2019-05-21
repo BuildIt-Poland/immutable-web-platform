@@ -2,10 +2,12 @@
 
 {config, env-config, pkgs, kubenix, callPackage, ...}: 
 let
-  express-app = pkgs.callPackage ./image.nix { };
+  express-app = callPackage ./image.nix {};
+  charts = callPackage ./charts.nix {};
+  namespace = env-config.helm.namespace;
 in
 {
-  imports = with kubenix.modules; [ k8s docker ];
+  imports = with kubenix.modules; [ k8s docker helm ];
   docker.images.express-app.image = express-app;
 
   kubernetes.api.service.express-app = {
@@ -22,5 +24,12 @@ in
         };
       };
     };
+  };
+
+  kubernetes.api.namespaces."${namespace}" = {};
+
+  kubernetes.helm.instances.brigade = {
+    namespace = "${namespace}";
+    chart = charts.mongodb-chart;
   };
 }
