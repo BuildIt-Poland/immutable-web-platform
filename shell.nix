@@ -1,4 +1,4 @@
-{fresh ? true}:
+{fresh ? false}:
 let
   pkgs = (import ./nix {}).pkgs;
 in
@@ -23,10 +23,7 @@ mkShell {
     pkgs.k8s-local.export-kubeconfig
 
     # helm
-    # pkgs.kubernetes-helm
-    pkgs.helm-scripts.init
-    pkgs.helm-scripts.helm-local
-    pkgs.helm-scripts.add-repositories
+    pkgs.cluster-stack.init
   ];
 
   PROJECT_NAME = pkgs.env-config.projectName;
@@ -38,7 +35,6 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
-    helm-init
-    add-helm-repositories
+    apply-cluster-stack
   '';
 }
