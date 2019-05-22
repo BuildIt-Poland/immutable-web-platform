@@ -4,6 +4,7 @@ let
 in
 pkgs.dockerTools.buildLayeredImage {
   name = "express-knative-example-app";
+  tag = "latest"; # this should be env sensitive
 
   contents = [ pkgs.nodejs express-app pkgs.bash];
 

@@ -1,6 +1,6 @@
-{fresh ? false}:
+{fresh ? false, use-docker ? true}@args:
 let
-  pkgs = (import ./nix {}).pkgs;
+  pkgs = (import ./nix ({} // args)).pkgs;
 in
 with pkgs;
 mkShell {
@@ -14,9 +14,10 @@ mkShell {
 
     # docker
     pkgs.functions.scripts.build-and-push
+    pkgs.functions.scripts.build-and-push-local
 
     # kind
-    pkgs.kind
+    kind
     pkgs.docker
     pkgs.k8s-local.delete-local-cluster
     pkgs.k8s-local.create-local-cluster-if-not-exists

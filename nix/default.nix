@@ -18,6 +18,10 @@ let
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
     cluster-stack = super.callPackage ./cluster-stack {};
   };
+
+  external = self: super: rec {
+    kind = super.callPackage ./tools/kind.nix {};
+  };
   
   config = self: super: rec {
     env-config = rec {
@@ -47,6 +51,7 @@ let
   overlays = [
     tools
     config
+    external
     (import ./functions.nix)
   ];
   args = { } // pkgsOpts // { inherit overlays; };
