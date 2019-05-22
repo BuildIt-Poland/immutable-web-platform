@@ -35,6 +35,11 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [docker vs nix](https://discourse.nixos.org/t/is-there-much-difference-between-using-nix-shell-and-docker-for-local-development/807)
 
 ## How to
+### Running clean cluster
+* `nix-shell --arg fresh true`
+
+> These ... below are already integrated with nix-shell! in case of local environment cluster is provisioned automatically, you can rerun using `push-docker-images-to-local-cluster`
+
 ### Building images from derivation
 * `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
 * `docker load < result`
@@ -76,9 +81,6 @@ or super fancy `lorri` with watch capability (check required section)
 ### Building docker with nix on `mac`
 * setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
 > This script going to download docker worker as well as setup some keys and export env var related to builder (`NIX_REMOTE_SYSTEMS`), however if you will go with new shell over and over again, you can re-run the script or, build with `--builders`, like so `nix-build <your-build.nix> --builders 'ssh://nix-docker-build-slave x86_64-linux'`
-
-### Docker compose substitution
-* `nix-env -iA arion -f https://github.com/hercules-ci/arion/tarball/master`
 
 ### Important
 * when pushing to docker registry, provide your [credentials](https://github.com/containers/skopeo#private-registries-with-authentication) - on `os x` auth via `keychain` does not work - simple workaround is to delete `credStore` do the login and should be all good.
@@ -153,5 +155,7 @@ or super fancy `lorri` with watch capability (check required section)
 > when using containers - if container does not work, it tell us that this container has to be restarted (ping to check is enough) - checking how to do autorestart without `--force-reboot` flag
 
 #### Hard things
-* multicompilation in one step - docker requires linux but I'm working on darwin - in two steps it is easy
+* multicompilation in one step - docker requires linux but I'm working on darwin - in two steps it is easy - got the solution! overriding `pkgs` in overlay did the job - this is absolutely magic
+> All functions are deployed to docker image, so it is required to keep only logic related to function and kubernetes resources or any function which would be run in container in case of developing on `os x` - in short, there cannot be any scripts which is allowed to run in `nix-shell` (TODO rephrase it ...)
+
 * local environment - if we spawnin local cluster, and we are creating images locally we need to push docker to cluster without a need to push to docker registry - newest `kind` handle `kind load image-archive`

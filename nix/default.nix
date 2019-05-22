@@ -20,10 +20,16 @@ let
     cluster-stack = super.callPackage ./cluster-stack {};
   };
 
-  external = self: super: rec {
-    kind = super.callPackage ./tools/kind.nix {};
+  # this part is soooo insane! don't know if it is valid ... but works o.O
+  # building on darwin in linux in one run
+  application = self: super: rec {
+    application = super.callPackage ./functions.nix {
+      pkgs = import sources.nixpkgs ({
+        system = "x86_64-linux";
+      } // { inherit overlays; });
+    };
   };
-  
+
   config = self: super: rec {
     env-config = rec {
       inherit rootFolder env;
@@ -52,8 +58,7 @@ let
   overlays = [
     tools
     config
-    external
-    (import ./functions.nix)
+    application
   ];
   args = { } // pkgsOpts // { inherit overlays; };
 in

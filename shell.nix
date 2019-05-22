@@ -1,6 +1,6 @@
-{fresh ? false, use-docker ? true}@args:
+{fresh ? false}@args:
 let
-  pkgs = (import ./nix ({} // args)).pkgs;
+  pkgs = (import ./nix {}).pkgs;
 in
 with pkgs;
 mkShell {
@@ -12,19 +12,16 @@ mkShell {
     nodejs
     pkgs.yarn2nix.yarn
 
-    # docker
-    pkgs.functions.scripts.build-and-push
-    pkgs.functions.scripts.push-to-local-registry
-
     # kind
-    kind
+    pkgs.kind
     pkgs.docker
     pkgs.k8s-local.delete-local-cluster
     pkgs.k8s-local.create-local-cluster-if-not-exists
     pkgs.k8s-local.export-kubeconfig
 
     # helm
-    pkgs.cluster-stack.init
+    pkgs.cluster-stack.apply-cluster-stack
+    pkgs.cluster-stack.push-docker-images-to-local-registry
   ];
 
   PROJECT_NAME = pkgs.env-config.projectName;
@@ -36,6 +33,7 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
+    push-docker-images-to-local-cluster
     apply-cluster-stack
   '';
 }
