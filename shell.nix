@@ -1,3 +1,4 @@
+{fresh ? false}@args:
 let
   pkgs = (import ./nix {}).pkgs;
 in
@@ -7,11 +8,32 @@ mkShell {
   ];
 
   buildInputs = [
+    # js
     nodejs
     pkgs.yarn2nix.yarn
-    pkgs.functions.scripts.build-and-push
+
+    # kind
+    pkgs.kind
+    pkgs.docker
+    pkgs.k8s-local.delete-local-cluster
+    pkgs.k8s-local.create-local-cluster-if-not-exists
+    pkgs.k8s-local.export-kubeconfig
+
+    # helm
+    pkgs.cluster-stack.apply-cluster-stack
+    pkgs.cluster-stack.push-docker-images-to-local-cluster
   ];
 
+  PROJECT_NAME = pkgs.env-config.projectName;
+
   shellHook= ''
+    echo "Hey sailor!"
+
+    ${if fresh then "delete-local-cluster" else ""}
+    create-local-cluster-if-not-exists
+    source export-kubeconfig
+
+    push-docker-images-to-local-cluster
+    apply-cluster-stack
   '';
 }

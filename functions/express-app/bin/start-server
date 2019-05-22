@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+console.log('ooo yeah!')
+const server = require('../src/index.js')
