@@ -18,7 +18,7 @@ let
       [];
 
   scripts = { 
-    build-and-push = writeScriptBin "build-and-push" 
+    build-and-push = writeScriptBin "build-and-push"
       (lib.concatMapStrings 
         (docker-images: ''
           ${kubenix.lib.docker.copyDockerImages { 
@@ -26,9 +26,17 @@ let
             dest = env-config.docker.destination;
           }}/bin/copy-docker-images
         '') function-images);
+
+    build-and-push-local = writeScriptBin "build-and-push-local"
+      (lib.concatMapStrings 
+        (docker-image: ''
+          echo "Pushing docker image to local cluster"
+          ${kind}/bin/kind load image-archive --name ${env-config.projectName} ${docker-image}
+        '') (lib.flatten function-images));
   };
 in
 rec {
+  inherit function-images;
   functions = 
     functionsMap 
     // { inherit scripts; }

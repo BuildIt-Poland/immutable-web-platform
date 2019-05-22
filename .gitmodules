@@ -1,4 +1,0 @@
-[submodule "nix/external/lorri"]
-	path = nix/external/lorri
-	url = https://github.com/target/lorri.git
-	branch = rolling-release

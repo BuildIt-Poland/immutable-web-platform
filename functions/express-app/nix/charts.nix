@@ -7,6 +7,6 @@ rec {
   mongodb-chart = fetch {
     chart = "stable/mongodb";
     version = "5.17.0";
-    sha256 = "095kjm629rpnzpa8118nl8523pyvk433mj0icxysvpq6667pbphv";
+    sha256 = "1jjbckk4xxma1fjgfng26p278jwip9p629ym8048cil4mpvcm4ry";
   };
 }
