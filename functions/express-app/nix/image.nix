@@ -15,7 +15,7 @@ pkgs.dockerTools.buildLayeredImage {
 
   # https://github.com/moby/moby/blob/master/image/spec/v1.2.md#image-json-field-descriptions
   config = {
-    Cmd = ["npm" "start"];
+    Cmd = ["start-server"];
     ExposedPorts = {
       "80/tcp" = {};
     };
