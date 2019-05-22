@@ -14,7 +14,7 @@ mkShell {
 
     # docker
     pkgs.functions.scripts.build-and-push
-    pkgs.functions.scripts.build-and-push-local
+    pkgs.functions.scripts.push-to-local-registry
 
     # kind
     kind

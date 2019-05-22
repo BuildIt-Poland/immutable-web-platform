@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "license": "MIT",
+  "bin": {
+    "start-server": "bin/start-server"
+  },
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "assert": "^2.0.0"
+    "assert": "^2.0.0",
+    "express": "^4.17.0"
   }
 }

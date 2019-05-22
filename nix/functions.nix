@@ -18,6 +18,7 @@ let
       [];
 
   scripts = { 
+    # should be called push-to-docker-registry
     build-and-push = writeScriptBin "build-and-push"
       (lib.concatMapStrings 
         (docker-images: ''
@@ -27,7 +28,7 @@ let
           }}/bin/copy-docker-images
         '') function-images);
 
-    build-and-push-local = writeScriptBin "build-and-push-local"
+    push-to-local-registry = writeScriptBin "push-to-local-registry"
       (lib.concatMapStrings 
         (docker-image: ''
           echo "Pushing docker image to local cluster"
