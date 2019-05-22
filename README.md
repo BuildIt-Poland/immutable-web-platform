@@ -25,6 +25,8 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * `gitops` via `brigade.js`
 * distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
 * ability to define test for infrastructure and cluster, [more here](https://nixos.org/~eelco/talks/issre-nov-2010.pdf)
+* incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
+* diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
 
 ### People are doing it already ...
 * [step towards future configuration infrastructure management nix](https://container-solutions.com/step-towards-future-configuration-infrastructure-management-nix/)

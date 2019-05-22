@@ -21,7 +21,7 @@ mkShell {
 
     # helm
     pkgs.cluster-stack.apply-cluster-stack
-    pkgs.cluster-stack.push-docker-images-to-local-registry
+    pkgs.cluster-stack.push-docker-images-to-local-cluster
   ];
 
   PROJECT_NAME = pkgs.env-config.projectName;
