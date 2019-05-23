@@ -1,7 +1,6 @@
 { 
   sources ? import ./sources.nix,
   use-docker ? false,
-  fresh ? false,
   env ? "dev"
 }:
 let
@@ -37,10 +36,11 @@ let
       projectName = "future-is-comming";
       version = "0.0.1";
 
-      kubeconfigPath = 
-        if env == "dev" 
-          then "$KUBECONFIG" 
-          else "kind-config-$KUBECONFIG";
+      kubernetes = {
+        version = "1.13";
+      };
+
+      is-dev = env == "dev";
 
       helmHome = "${builtins.toPath env-config.rootFolder}/.helm";
 

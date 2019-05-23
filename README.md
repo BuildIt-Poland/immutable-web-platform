@@ -140,6 +140,7 @@ or super fancy `lorri` with watch capability (check required section)
 * [`docker-containers`](https://github.com/NixOS/nixpkgs/pull/55179)
 * [`nixos container`](https://nixos.org/nixos/manual/#ch-containers)
 * [`distributed builds`](https://nixos.wiki/wiki/Distributed_build)
+* [`nix & docker`](https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/docker/examples.nix)
 
 #### Some articles which were helpful down the road
 * [`nix & concourse`](https://memo.barrucadu.co.uk/concourseci-nixos.html)
