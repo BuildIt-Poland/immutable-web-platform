@@ -4,13 +4,16 @@ let
   fn-config = callPackage ./config.nix {};
 
   # as we are pusing to kind local cluster we don't want to create new image each time
+  is-local = env-config.is-dev;
   local-development = 
-    if env-config.is-dev 
+    if is-local
       then { tag = "latest"; } 
       else {};
 in
 pkgs.dockerTools.buildLayeredImage ({
-  name = fn-config.label;
+  name = if is-local 
+    then "dev.local/${fn-config.label}"
+    else fn-config.label;
 
   contents = [ 
     pkgs.nodejs 

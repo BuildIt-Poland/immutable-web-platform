@@ -167,3 +167,5 @@ or super fancy `lorri` with watch capability (check required section)
 * local environment - if we spawnin local cluster, and we are creating images locally we need to push docker to cluster without a need to push to docker registry - newest `kind` handle `kind load image-archive`
 
 * running integration test from `nix` - [issue](https://stackoverflow.com/questions/54251855/virtualbox-enable-nested-vtx-amd-v-greyed-out) is that ... on `intel` processors there is no way to enable `kvm` virtualization - no idea for now ...
+
+* knative ... https://github.com/knative/docs/issues/1234

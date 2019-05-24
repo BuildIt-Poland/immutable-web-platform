@@ -48,18 +48,19 @@ let
         "selector" = mkOption {
           description = "";
           type = (types.nullOr (types.attrsOf types.str));
+          default = "dsadas";
         };
 
         "servers" = mkOption {
           description = "";
-          # type = (types.nullOr (types.listOf (submoduleOf "istio_networking_v1alpha3_Server_2")));
+          type = (types.nullOr (types.listOf (submoduleOf "istio_networking_v1alpha3_Server_2")));
         };
       };
 
       config = {
-        # "selector" = mkOverride 1002 null;
+        "selector" = mkOverride 1002 null;
 
-        # "servers" = mkOverride 1002 null;
+        "servers" = mkOverride 1002 null;
       };
     };
 
@@ -68,6 +69,7 @@ let
         "hosts" = mkOption {
           description = "";
           type = (types.nullOr (types.listOf types.str));
+          default = [];
         };
 
         # "port" = mkOption {
@@ -84,9 +86,9 @@ let
       config = {
         "hosts" = mkOverride 1002 null;
 
-        # "port" = mkOverride 1002 null;
+        "port" = mkOverride 1002 null;
 
-        # "tls" = mkOverride 1002 null;
+        "tls" = mkOverride 1002 null;
       };
     };
   };
