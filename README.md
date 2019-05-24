@@ -57,6 +57,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [`docker`](https://www.docker.com/get-started) - for local development
 
 #### When developing
+* if you are on `os x` enable `remote-worker`, more in [Building docker with nix on `mac`](#Building-docker-with-nix-on-mac)
 * run `nix-shell`
 #### or ... for pleasant development with watch
 * run `nix-env -if ./nix/external/direnv.nix` - more about [`direnv`](https://direnv.net/)
@@ -84,7 +85,7 @@ or super fancy `lorri` with watch capability (check required section)
 * `lorri shell` ()
 
 ### Building docker with nix on `mac`
-* setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
+* setup a `builder` - by running command within your shell (before you run nix-shell) `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
 > This script going to download docker worker as well as setup some keys and export env var related to builder (`NIX_REMOTE_SYSTEMS`), however if you will go with new shell over and over again, you can re-run the script or, build with `--builders`, like so `nix-build <your-build.nix> --builders 'ssh://nix-docker-build-slave x86_64-linux'`
 
 ### Important
@@ -168,4 +169,4 @@ or super fancy `lorri` with watch capability (check required section)
 
 * running integration test from `nix` - [issue](https://stackoverflow.com/questions/54251855/virtualbox-enable-nested-vtx-amd-v-greyed-out) is that ... on `intel` processors there is no way to enable `kvm` virtualization - no idea for now ...
 
-* knative ... https://github.com/knative/docs/issues/1234
+* knative ... https://github.com/knative/docs/issues/1234 - it was hard since in case of local docker, there has to be some tricks applied to make a name of local docker image prefixed by `dev.io/<docker_image>`

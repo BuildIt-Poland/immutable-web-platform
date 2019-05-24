@@ -1,7 +1,7 @@
 {config, env-config, pkgs, kubenix, callPackage, ...}: 
 let
   charts = callPackage ./charts.nix {};
-  namespace = env-config.helm.namespace;
+  namespace = env-config.kubernetes.namespace.infra;
 in
 {
   imports = with kubenix.modules; [ helm k8s ];
@@ -15,99 +15,4 @@ in
     # values = {
     # };
   };
-
-  # kubernetes.api."networking.istio.io"."v1alpha3" = {
-  #   Gateway."bookinfo-gateway" = {
-  #     spec = {
-  #       selector.istio = "ingressgateway";
-  #       servers = [{
-  #         port = {
-  #           number = 80;
-  #           name = "http";
-  #           protocol = "HTTP";
-  #         };
-  #         hosts = ["*"];
-  #       }];
-  #     };
-  #   };
-  # };
-
-  # kubernetes.customResources = [
-  #   {
-  #   group = "serving.knative.dev";
-  #   version = "v1alpha1";
-  #   kind = "Service";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  # ];
-  #   {
-  #   group = "caching.internal.knative.dev";
-  #   version = "v1alpha1";
-  #   kind = "Image";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  #   {
-  #   group = "networking.istio.io";
-  #   version = "v1alpha2";
-  #   kind = "kubernetes";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  #   {
-  #   group = "config.istio.io";
-  #   version = "v1alpha2";
-  #   kind = "kubernetes";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  #   {
-  #   group = "config.istio.io";
-  #   version = "v1alpha2";
-  #   kind = "rule";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  #   {
-  #   group = "config.istio.io";
-  #   version = "v1alpha2";
-  #   kind = "handler";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  #   {
-  #   group = "authentication.istio.io";
-  #   version = "v1alpha1";
-  #   kind = "MeshPolicy";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  #   {
-  #   group = "config.istio.io";
-  #   version = "v1alpha2";
-  #   kind = "attributemanifest";
-  #   description = "";
-  #   module = {};# definitions."";
-  # }
-  # ];
-
-  # Overridings
-  # kubernetes.api."caching.internal.knative.dev"."v1alpha1" = {
-  # };
-
-  # kubernetes.helm.instances.istio = {
-  #   namespace = "istio-system";
-  #   chart = charts.istio-chart;
-  # };
-
-  # kubernetes.helm.instances.istio-init = {
-  #   namespace = "istio-system";
-  #   chart = charts.istio-init;
-  # };
-
-  # kubernetes.helm.instances.knative = {
-  #   namespace = "${namespace}";
-  #   chart = charts.knative-chart;
-  # };
 }
