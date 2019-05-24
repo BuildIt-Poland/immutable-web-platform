@@ -37,41 +37,4 @@ rec {
     chart = istio-init-chart;
     namespace = "istio-system";
   };
-
-  # copyPathToStore
-  descriptors = stdenv.mkDerivation {
-    name = "descriptors";
-    src = ./external;
-    phases = ["installPhase"];
-    installPhase = ''
-      mkdir -p $out
-      cp -r $src/* $out
-    '';
-  };
 }
-# master - does not work
-# istio-chart = pkgs.fetchgit {
-#   url = "https://github.com/istio/istio";
-#   rev = "4d341b96cbfb51418a9264ff61fc04d08f0cac73";
-#   sha256 = "06014mnimxskg40zz8iz5bgmcmnwj77a9564x586xj0df9xf4bs0";
-# };
-
-# istio = chart2json {
-#   name = "istio";
-#   chart = "${istio-chart}/install/kubernetes/helm/istio";
-#   namespace = "istio-system";
-# };
-
-# there is no official charts yet ...
-# knative-chart = fetch {
-#   chart = "knative";
-#   repo = "https://storage.googleapis.com/triggermesh-charts";
-#   version = "0.5.0";
-#   sha256 = "0v6nqzcc9m1r68b9yw1rgz2bdgx6g597zhwvsw3w27h7ywlvml4z";
-# };
-# knative = chart2json {
-#   name = "knative";
-#   chart = knative-chart;
-#   values = {
-#   };
-# };

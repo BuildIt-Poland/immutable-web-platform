@@ -19,12 +19,6 @@ let
     cluster-stack = super.callPackage ./cluster-stack {};
   };
 
-  kubenix-modules = self: super: rec {
-    modules = {
-      knative-serve = ./modules/knative-serve.nix;
-    };
-  };
-
   # this part is soooo insane! don't know if it is valid ... but works o.O
   # building on darwin in linux in one run
   application = self: super: rec {
@@ -33,6 +27,12 @@ let
         system = "x86_64-linux";
       } // { inherit overlays; });
     };
+  };
+
+  kubenix-modules = self: super: rec {
+    kubenix-modules = [
+      ./modules/knative-serve.nix
+    ];
   };
 
   config = self: super: rec {
@@ -45,15 +45,16 @@ let
 
       kubernetes = {
         version = "1.13";
-        function-namespace = {}; # TODO required for istio sidecar
+        namespace = {
+          functions = "default";
+          infra = "local-infra";
+        };
       };
 
       is-dev = env == "dev";
 
-      helmHome = "${builtins.toPath env-config.rootFolder}/.helm";
-
       helm = {
-        namespace = "local-infra";
+        home = "${builtins.toPath env-config.rootFolder}/.helm";
       };
 
       docker = {

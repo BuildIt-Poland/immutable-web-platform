@@ -17,6 +17,10 @@ rec {
 
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
+
+    export CLUSTER_NODE_PORT=$(kubectl get svc $INGRESSGATEWAY --namespace istio-system  --output 'jsonpath={.spec.ports[?(@.port==80)].nodePort}')
+    export CLUSTER_HOST=$(kubectl get node --output 'jsonpath={.items[0].status.addresses[0].address}')
+    export CLUSTER_IP_ADDRESS=$CLUSTER_HOST:$CLUSTER_NODE_PORT
   '';
 
   deploy-to-kind = {config, image}: 

@@ -20,14 +20,13 @@ mkShell {
     pkgs.k8s-local.export-kubeconfig
 
     # helm
-    pkgs.qemu
-    pkgs.libvirt
     pkgs.cluster-stack.apply-cluster-stack
     pkgs.cluster-stack.apply-functions-to-cluster
     pkgs.cluster-stack.push-docker-images-to-local-cluster
   ];
 
   PROJECT_NAME = pkgs.env-config.projectName;
+  INGRESSGATEWAY = "istio-ingressgateway";
 
   shellHook= ''
     echo "Hey sailor!"
