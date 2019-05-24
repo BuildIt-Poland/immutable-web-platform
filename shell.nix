@@ -23,6 +23,7 @@ mkShell {
     pkgs.qemu
     pkgs.libvirt
     pkgs.cluster-stack.apply-cluster-stack
+    pkgs.cluster-stack.apply-functions-to-cluster
     pkgs.cluster-stack.push-docker-images-to-local-cluster
   ];
 
@@ -37,5 +38,6 @@ mkShell {
 
     push-docker-images-to-local-cluster
     apply-cluster-stack
+    apply-functions-to-cluster
   '';
 }

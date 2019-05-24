@@ -21,7 +21,7 @@ let
 
   kubenix-modules = self: super: rec {
     modules = {
-      knative-serve = import ./modules/knative-serve.nix;
+      knative-serve = ./modules/knative-serve.nix;
     };
   };
 
@@ -45,6 +45,7 @@ let
 
       kubernetes = {
         version = "1.13";
+        function-namespace = {}; # TODO required for istio sidecar
       };
 
       is-dev = env == "dev";

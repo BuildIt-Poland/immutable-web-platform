@@ -3,7 +3,7 @@
     modules = [
       ./module.nix 
     ];
-    # check = false;
+    # check = true;
     args = {
       inherit env-config;
       inherit callPackage;
