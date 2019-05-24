@@ -67,8 +67,11 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 
 #### Creating deployment
-* `nixops create ./infra/ci/nixos.nix ./infra/ci/machine.nix -d concourse-ci`
-* `nixops deploy -d concourse-ci`
+* `cd infra`
+* check `Makefile`
+
+#### Running integration tests
+* `nix-build release.nix -A integrationTest` - only on `nixos`, however not worries, already got that, you can run it from infra/Makefile
 
 #### Loggin into the `nixos` `virtualbox`
 * `nixops ssh -d <deployment_name>`
@@ -162,3 +165,5 @@ or super fancy `lorri` with watch capability (check required section)
 > All functions are deployed to docker image, so it is required to keep only logic related to function and kubernetes resources or any function which would be run in container in case of developing on `os x` - in short, there cannot be any scripts which is allowed to run in `nix-shell` (TODO rephrase it ...)
 
 * local environment - if we spawnin local cluster, and we are creating images locally we need to push docker to cluster without a need to push to docker registry - newest `kind` handle `kind load image-archive`
+
+* running integration test from `nix` - [issue](https://stackoverflow.com/questions/54251855/virtualbox-enable-nested-vtx-amd-v-greyed-out) is that ... on `intel` processors there is no way to enable `kvm` virtualization - no idea for now ...

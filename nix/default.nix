@@ -19,6 +19,12 @@ let
     cluster-stack = super.callPackage ./cluster-stack {};
   };
 
+  kubenix-modules = self: super: rec {
+    modules = {
+      knative-serve = import ./modules/knative-serve.nix;
+    };
+  };
+
   # this part is soooo insane! don't know if it is valid ... but works o.O
   # building on darwin in linux in one run
   application = self: super: rec {
@@ -33,6 +39,7 @@ let
     env-config = rec {
       inherit rootFolder env;
 
+      knative-serve = import ./modules/knative-serve.nix;
       projectName = "future-is-comming";
       version = "0.0.1";
 
@@ -58,6 +65,7 @@ let
   overlays = [
     tools
     config
+    kubenix-modules
     application
   ];
   args = { } // pkgsOpts // { inherit overlays; };

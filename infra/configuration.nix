@@ -41,6 +41,8 @@ in
 
       containers = containers;
 
+      environment.etc.local-source-folder.source = ../.;
+      
       programs.zsh = {
         interactiveShellInit = ''
           echo "Hey hey hey"
@@ -70,9 +72,7 @@ in
           hostName = "localhost";
           systems = [ "x86_64-linux" ];
           maxJobs = 6;
-          # for building VirtualBox VMs as build artifacts, you might need other 
-          # features depending on what you are doing
-          supportedFeatures = [ ];
+          supportedFeatures = ["kvm" "nixos-test" "big-parallel" "benchmark"];
         }
       ];
     };

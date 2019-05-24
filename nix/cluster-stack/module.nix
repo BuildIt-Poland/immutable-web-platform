@@ -8,7 +8,6 @@ in
 
   kubernetes.api.namespaces."${namespace}"= {};
   kubernetes.api.namespaces."istio-system"= {};
-  kubernetes.api.namespaces."dupa-szatana"= {};
 
   kubernetes.helm.instances.brigade = {
     namespace = "${namespace}";
@@ -34,6 +33,14 @@ in
   # };
 
   # kubernetes.customResources = [
+  #   {
+  #   group = "serving.knative.dev";
+  #   version = "v1alpha1";
+  #   kind = "Service";
+  #   description = "";
+  #   module = {};# definitions."";
+  # }
+  # ];
   #   {
   #   group = "caching.internal.knative.dev";
   #   version = "v1alpha1";

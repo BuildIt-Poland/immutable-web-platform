@@ -5,7 +5,7 @@ DEPLOYMENT_NAME := buildit-ops
 # local env
 .create-local:
 	$(NIXOPS) list | grep "$(DEPLOYMENT_NAME)-local" || \
-		$(NIXOPS) create configuration.nix hardware.nix -d $(DEPLOYMENT_NAME)-local
+		$(NIXOPS) create configuration.nix virtualbox.nix -d $(DEPLOYMENT_NAME)-local
 
 deploy-local: .create-local
 	$(NIXOPS) deploy -d $(DEPLOYMENT_NAME)-local --kill-obsolete --allow-reboot
