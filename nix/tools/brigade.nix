@@ -1,9 +1,9 @@
 { pkgs, writeShellScript }:
 with pkgs.stdenv;
 let
-  version = "0.3.0";
+  version = "1.0.0";
   getSource = {version, os}: pkgs.fetchurl {
-    url = "https://github.com/cppforlife/knctl/releases/download/v${version}/knctl-${os}-amd64";
+    url = "https://github.com/brigadecore/brigade/releases/download/v${version}/brig-darwin-amd64";
     sha256 = "1fchz6c58mzrh6ly2c5lncpcmsyk9j9ljc9qsqrwpwyvixg0fbrq";
   };
   curl-with-hosts = writeShellScript "curl" ''
@@ -20,11 +20,13 @@ mkDerivation rec {
       then getSource {inherit version; os = "darwin";}
       else getSource {inherit version; os = "linux";};
 
-  buildInputs = [ pkgs.k8s-local.curl-with-resolve ];
+  buildInputs = [ ];
   phases = ["installPhase"];
+    # cp ${curl-with-hosts} $out/bin/${curl-with-hosts.name}
   installPhase = ''
     mkdir -p $out/bin
     cp $src $out/bin/knctl
+    ls $out/bin
     chmod +x $out/bin/knctl
   '';
 }

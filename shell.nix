@@ -20,6 +20,10 @@ mkShell {
     pkgs.k8s-local.create-local-cluster-if-not-exists
     pkgs.k8s-local.export-kubeconfig
     pkgs.k8s-local.expose-istio-ingress
+    pkgs.k8s-local.add-knative-label-to-istio
+    pkgs.k8s-local.export-ports
+    pkgs.k8s-local.expose-istio-ingress
+    pkgs.k8s-local.wait-for-istio-ingress
     # overridings
     pkgs.k8s-local.curl-with-resolve
 
@@ -43,5 +47,11 @@ mkShell {
     push-docker-images-to-local-cluster
     apply-cluster-stack
     apply-functions-to-cluster
+
+    wait-for-istio-ingress
+    add-knative-label-to-istio
+
+    source export-ports
+    expose-istio-ingress
   '';
 }
