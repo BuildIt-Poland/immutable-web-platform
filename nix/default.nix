@@ -19,6 +19,8 @@ let
     k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
     cluster-stack = super.callPackage ./cluster-stack {};
+    node-development-tools = super.callPackage ../development-tools {};
+    chart-from-git = super.callPackage ./helm {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O

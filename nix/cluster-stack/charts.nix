@@ -1,8 +1,10 @@
 {
   kubenix,
   pkgs,
-  stdenv
+  chart-from-git
 }:
+let 
+in
 with kubenix.lib.helm;
 rec {
   brigade = fetch {
@@ -12,6 +14,14 @@ rec {
     sha256 = "0i5i3h346dz4a771zkgjpbx4hbyf7r6zfhvqhvfjv234dha4fj50";
   };
 
+  brigade-bitbucket = chart-from-git {
+    url = https://github.com/lukepatrick/brigade-bitbucket-gateway;
+    sha256 = "0hmww7gzpa2arhjhmsbc8shmprfgfdy89rmz93xl6hqviy9rl0yg";
+    path = "charts/brigade-bitbucket-gateway";
+  };
+
+  # INFO these below are not used yet
+  # TODO they should work with helper from GIT so do it!
   istio-chart = fetch {
     chart = "istio";
     version = "1.1.0";
@@ -19,22 +29,10 @@ rec {
     sha256 = "0ippv2914hwpsb3kkhk8d839dii5whgrhxjwhpb9vdwgji5s7yfl";
   };
 
-  istio = chart2json {
-    name = "istio";
-    chart = istio-chart;
-    namespace = "istio-system";
-  };
-
   istio-init-chart = fetch {
     chart = "istio-init";
     version = "1.1.0";
     repo = "https://storage.googleapis.com/istio-release/releases/1.1.0-rc.0/charts";
     sha256 = "1p86xkzqycpbgysdlzjbd6xspz1bmd4sb2667diln80qxwyv10fx";
-  };
-
-  istio-init = chart2json {
-    name = "istio-init";
-    chart = istio-init-chart;
-    namespace = "istio-system";
   };
 }
