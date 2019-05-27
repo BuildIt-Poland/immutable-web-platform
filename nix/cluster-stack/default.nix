@@ -10,32 +10,41 @@
   lib
 }:
 with kubenix.lib;
+let
+  configuration = callPackage ./configurations.nix {};
+in
 rec {
   charts = callPackage ./charts.nix {};
   config = callPackage ./config.nix {};
   result = k8s.mkHashedList { 
     items = 
       config.kubernetes.objects
-
       # TODO take all functions
       ++ application.functions.express-app.config.kubernetes.objects;
+
+      # INFO having issue with knative compatibility - wip
       # ++ (lib.importJSON charts.istio-init)
       # ++ (lib.importJSON charts.istio);
   };
   yaml = toYAML result;
+  inject-sidecar-to = namespace: writeScript "inside-sidecar-to" ''
+    ${pkgs.kubectl}/bin/kubectl label namespace ${namespace} istio-injection=enabled
+  '';
 
-  # This has to dissapear
   apply-knative-with-istio = writeScript "apply-knative-with-istio" ''
-    ${pkgs.kubectl}/bin/kubectl apply -f https://github.com/knative/serving/releases/download/v0.5.2/istio-crds.yaml
-    ${pkgs.kubectl}/bin/kubectl apply -f https://github.com/knative/serving/releases/download/v0.5.2/istio.yaml
+    ${pkgs.kubectl}/bin/kubectl apply -f ${configuration.istio-crds}/istio-crds.yaml
+    ${pkgs.kubectl}/bin/kubectl apply -f ${configuration.istio}/istio-node-port.yaml
+    ${inject-sidecar-to env-config.kubernetes.namespace.functions}
 
-    ${pkgs.kubectl}/bin/kubectl label namespace default istio-injection=enabled
-    ${pkgs.kubectl}/bin/kubectl apply --filename https://github.com/knative/serving/releases/download/v0.5.2/serving.yaml
+    ${pkgs.kubectl}/bin/kubectl apply -f ${configuration.knative-serving}/knative-serving.yaml
+  '';
+
+  apply-functions-to-cluster = writeScriptBin "apply-functions-to-cluster" ''
+    cat ${yaml} | ${pkgs.kubectl}/bin/kubectl apply -f -
   '';
 
   apply-cluster-stack = writeScriptBin "apply-cluster-stack" ''
     echo "Applying helm charts"
-    cat ${yaml} | ${pkgs.kubectl}/bin/kubectl apply -f -
     ${apply-knative-with-istio}
   '';
 

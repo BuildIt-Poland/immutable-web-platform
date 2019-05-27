@@ -1,7 +1,6 @@
 { 
   sources ? import ./sources.nix,
   use-docker ? false,
-  fresh ? false,
   env ? "dev"
 }:
 let
@@ -14,10 +13,14 @@ let
 
   tools = self: super: rec {
     kubenix = super.callPackage sources.kubenix {};
+    knctl = super.callPackage ./tools/knctl.nix {};
+    brigade = super.callPackage ./tools/brigade.nix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
     k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
     cluster-stack = super.callPackage ./cluster-stack {};
+    node-development-tools = super.callPackage ../development-tools {};
+    chart-from-git = super.callPackage ./helm {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
@@ -30,22 +33,35 @@ let
     };
   };
 
+  kubenix-modules = self: super: rec {
+    kubenix-modules = [
+      ./modules/knative-serve.nix
+    ];
+  };
+
   config = self: super: rec {
     env-config = rec {
       inherit rootFolder env;
 
+      knative-serve = import ./modules/knative-serve.nix;
       projectName = "future-is-comming";
       version = "0.0.1";
+      ports = {
+        istio-ingress = "32632";
+      };
 
-      kubeconfigPath = 
-        if env == "dev" 
-          then "$KUBECONFIG" 
-          else "kind-config-$KUBECONFIG";
+      kubernetes = {
+        version = "1.13";
+        namespace = {
+          functions = "default";
+          infra = "local-infra";
+        };
+      };
 
-      helmHome = "${builtins.toPath env-config.rootFolder}/.helm";
+      is-dev = env == "dev";
 
       helm = {
-        namespace = "local-infra";
+        home = "${builtins.toPath env-config.rootFolder}/.helm";
       };
 
       docker = {
@@ -58,6 +74,7 @@ let
   overlays = [
     tools
     config
+    kubenix-modules
     application
   ];
   args = { } // pkgsOpts // { inherit overlays; };

@@ -6,6 +6,10 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
 * [some why`s around nix](https://www.youtube.com/watch?v=YbUPdv03ciI)
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
+* [brigade & virtual-kubelet](https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/)
+
+### Some handy tools
+* [exposing docker ports for existing containers](https://sosedoff.com/2018/04/25/expose-docker-ports.html)
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
@@ -16,17 +20,19 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 
 ### What is super hot!
 * `helm charts` without `helm` and `tiller`
+* scale to `0` with `knative & istio`
+* lo
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs` and `nixOS`
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
 * `nix` in charge of building and pushing docker images to `docker repository`
 * full composability of components and configs
 * full determinism of results
+* incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
+* diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
 #### Work in progress
 * `gitops` via `brigade.js`
 * distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
 * ability to define test for infrastructure and cluster, [more here](https://nixos.org/~eelco/talks/issre-nov-2010.pdf)
-* incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
-* diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
 
 ### People are doing it already ...
 * [step towards future configuration infrastructure management nix](https://container-solutions.com/step-towards-future-configuration-infrastructure-management-nix/)
@@ -57,6 +63,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [`docker`](https://www.docker.com/get-started) - for local development
 
 #### When developing
+* if you are on `os x` enable `remote-worker`, more in [Building docker with nix on `mac`](#Building-docker-with-nix-on-mac)
 * run `nix-shell`
 #### or ... for pleasant development with watch
 * run `nix-env -if ./nix/external/direnv.nix` - more about [`direnv`](https://direnv.net/)
@@ -67,8 +74,11 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 Test localy on `virtualbox`, deploy to `aws` or `azure` latter on.
 
 #### Creating deployment
-* `nixops create ./infra/ci/nixos.nix ./infra/ci/machine.nix -d concourse-ci`
-* `nixops deploy -d concourse-ci`
+* `cd infra`
+* check `Makefile`
+
+#### Running integration tests
+* `nix-build release.nix -A integrationTest` - only on `nixos`, however not worries, already got that, you can run it from infra/Makefile
 
 #### Loggin into the `nixos` `virtualbox`
 * `nixops ssh -d <deployment_name>`
@@ -81,7 +91,7 @@ or super fancy `lorri` with watch capability (check required section)
 * `lorri shell` ()
 
 ### Building docker with nix on `mac`
-* setup a `builder` - `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
+* setup a `builder` - by running command within your shell (before you run nix-shell) `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
 > This script going to download docker worker as well as setup some keys and export env var related to builder (`NIX_REMOTE_SYSTEMS`), however if you will go with new shell over and over again, you can re-run the script or, build with `--builders`, like so `nix-build <your-build.nix> --builders 'ssh://nix-docker-build-slave x86_64-linux'`
 
 ### Important
@@ -134,12 +144,14 @@ or super fancy `lorri` with watch capability (check required section)
 * just to have wrapping `systemctl status --no-pager --full`
 
 #### When you are new - some user stories & articles
-* https://iohk.io/blog/how-we-use-nix-at-iohk/
+
 
 #### Some important docs - how to
+* [`knative with knctl`](https://developer.ibm.com/blogs/knctl-a-simpler-way-to-work-with-knative/)
 * [`docker-containers`](https://github.com/NixOS/nixpkgs/pull/55179)
 * [`nixos container`](https://nixos.org/nixos/manual/#ch-containers)
 * [`distributed builds`](https://nixos.wiki/wiki/Distributed_build)
+* [`nix & docker`](https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/docker/examples.nix)
 
 #### Some articles which were helpful down the road
 * [`nix & concourse`](https://memo.barrucadu.co.uk/concourseci-nixos.html)
@@ -161,3 +173,9 @@ or super fancy `lorri` with watch capability (check required section)
 > All functions are deployed to docker image, so it is required to keep only logic related to function and kubernetes resources or any function which would be run in container in case of developing on `os x` - in short, there cannot be any scripts which is allowed to run in `nix-shell` (TODO rephrase it ...)
 
 * local environment - if we spawnin local cluster, and we are creating images locally we need to push docker to cluster without a need to push to docker registry - newest `kind` handle `kind load image-archive`
+
+* running integration test from `nix` - [issue](https://stackoverflow.com/questions/54251855/virtualbox-enable-nested-vtx-amd-v-greyed-out) is that ... on `intel` processors there is no way to enable `kvm` virtualization - no idea for now ...
+
+* knative ... https://github.com/knative/docs/issues/1234 - it was hard since in case of local docker, there has to be some tricks applied to make a name of local docker image prefixed by `dev.io/<docker_image>`
+
+* `kubenix` for `helm` module is doing `chart2json` so in chart `json` file cannot be specified - there is a extra helper for it.

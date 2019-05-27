@@ -1,4 +1,4 @@
-{ pkgs, env-config, kubenix, callPackage, writeScriptBin, lib, docker }:
+{ pkgs, env-config, kubenix, kubenix-modules, callPackage, writeScriptBin, lib, docker }:
 with kubenix.lib;
 rec {
   package = callPackage ./package.nix {};
@@ -7,8 +7,11 @@ rec {
     modules = [
       ./module.nix
       # https://github.com/xtruder/kubenix/blob/kubenix-2.0/modules/docker.nix#L37
-      { docker.registry.url = env-config.docker.registry; }
-    ];
+      { 
+        docker.registry.url = env-config.docker.registry; 
+      }
+    ] ++ kubenix-modules;
+
     args = {
       inherit env-config;
       inherit callPackage;
