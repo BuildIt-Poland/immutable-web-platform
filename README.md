@@ -144,9 +144,10 @@ or super fancy `lorri` with watch capability (check required section)
 * just to have wrapping `systemctl status --no-pager --full`
 
 #### When you are new - some user stories & articles
-* https://iohk.io/blog/how-we-use-nix-at-iohk/
+
 
 #### Some important docs - how to
+* [`knative with knctl`](https://developer.ibm.com/blogs/knctl-a-simpler-way-to-work-with-knative/)
 * [`docker-containers`](https://github.com/NixOS/nixpkgs/pull/55179)
 * [`nixos container`](https://nixos.org/nixos/manual/#ch-containers)
 * [`distributed builds`](https://nixos.wiki/wiki/Distributed_build)
