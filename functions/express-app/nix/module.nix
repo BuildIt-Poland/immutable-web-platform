@@ -34,11 +34,18 @@ in
 
               imagePullPolicy = fn-config.imagePolicy;
               env = fn-config.env;
-              # resources = {
-              #   requests = {
-              #     cpu = fn-config.cpu;
-              #   };
-              # };
+              livenessProbe = {
+                httpGet = {
+                  path = "/healthz";
+                };
+                initialDelaySeconds = 3;
+                periodSeconds = 3;
+              };
+              resources = {
+                requests = {
+                  cpu = fn-config.cpu;
+                };
+              };
             }];
           };
         };

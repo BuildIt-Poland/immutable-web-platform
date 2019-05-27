@@ -15,9 +15,11 @@ mkShell {
     # kind
     pkgs.kind
     pkgs.docker
+    pkgs.knctl
     pkgs.k8s-local.delete-local-cluster
     pkgs.k8s-local.create-local-cluster-if-not-exists
     pkgs.k8s-local.export-kubeconfig
+    pkgs.k8s-local.expose-istio-ingress
 
     # helm
     pkgs.cluster-stack.apply-cluster-stack

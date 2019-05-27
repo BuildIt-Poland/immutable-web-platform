@@ -13,6 +13,7 @@ let
 
   tools = self: super: rec {
     kubenix = super.callPackage sources.kubenix {};
+    knctl = super.callPackage ./tools/knctl.nix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
     k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
@@ -42,6 +43,9 @@ let
       knative-serve = import ./modules/knative-serve.nix;
       projectName = "future-is-comming";
       version = "0.0.1";
+      ports = {
+        istio-ingress = "32632";
+      };
 
       kubernetes = {
         version = "1.13";
