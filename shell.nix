@@ -17,6 +17,7 @@ mkShell {
     pkgs.docker
     pkgs.knctl
     pkgs.brigade
+    pkgs.node-development-tools
 
     # cluster scripts
     pkgs.k8s-local.delete-local-cluster

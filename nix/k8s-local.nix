@@ -58,6 +58,7 @@ rec {
 
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
+    export BRIGADE_NAMESPACE=${env-config.kubernetes.namespace.infra}
   '';
 
   wait-for-istio-ingress = pkgs.writeScriptBin "wait-for-istio-ingress" ''

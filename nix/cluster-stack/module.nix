@@ -15,4 +15,12 @@ in
     # values = {
     # };
   };
+
+  # INFO json cannot be applied here as it is handled via helm module
+  kubernetes.helm.instances.brigade-bitbucket-gateway = {
+    namespace = "${namespace}";
+    chart = charts.brigade-bitbucket;
+    values = {
+    };
+  };
 }
