@@ -21,6 +21,11 @@ in
     namespace = "${namespace}";
     chart = charts.brigade-bitbucket;
     values = {
+      bitbucket = {
+        service = {
+          type = "NodePort";
+        };
+      };
     };
   };
 }
