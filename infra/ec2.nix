@@ -42,6 +42,9 @@ let
       deployment.ec2.securityGroupIds = [ resources.ec2SecurityGroups."${sgName}".name ];
     };
 
+    # ec2.hvm = true;
+    # boot.extraModprobeConfig = "options kvm_intel nested=1";
+    # boot.kernelModules = [ "kvm-intel" ];
 in
 { 
   network.description = "Buildit-ops deployment";

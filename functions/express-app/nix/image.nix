@@ -1,12 +1,25 @@
-{ pkgs, env-config }:
+{ pkgs, env-config, callPackage }:
 let
-  express-app = pkgs.callPackage ./package.nix { };
-in
-pkgs.dockerTools.buildLayeredImage {
-  name = "express-knative-example-app";
-  tag = "latest"; # this should be env sensitive
+  express-app = callPackage ./package.nix { };
+  fn-config = callPackage ./config.nix {};
 
-  contents = [ pkgs.nodejs express-app pkgs.bash];
+  # as we are pusing to kind local cluster we don't want to create new image each time
+  local-development = 
+    if env-config.is-dev
+      then { tag = fn-config.local-development-tag; } 
+      else {};
+in
+pkgs.dockerTools.buildLayeredImage ({
+  name = 
+    if env-config.is-dev
+      then fn-config.image-name-for-docker-when-dev
+      else fn-config.label;
+
+  contents = [ 
+    pkgs.nodejs 
+    pkgs.bash
+    express-app # application
+  ];
 
   extraCommands = ''
     mkdir etc
@@ -16,8 +29,9 @@ pkgs.dockerTools.buildLayeredImage {
   # https://github.com/moby/moby/blob/master/image/spec/v1.2.md#image-json-field-descriptions
   config = {
     Cmd = ["start-server"];
+    WorkingDir = "${express-app}";
     ExposedPorts = {
-      "80/tcp" = {};
+      "${toString fn-config.port}/tcp" = {};
     };
   };
-}
+}  // local-development)
