@@ -1,4 +1,8 @@
-{fresh ? false}@args:
+{
+  fresh ? false,
+  updateResources ? false, # kubernetes resource,
+  exposePorts ? false
+}@args:
 let
   pkgs = (import ./nix {}).pkgs;
 in
@@ -57,5 +61,7 @@ mkShell {
 
     source export-ports
     expose-istio-ingress
+
+    export PATH="$PATH:${pkgs.node-development-tools}/bin"
   '';
 }

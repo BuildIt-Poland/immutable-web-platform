@@ -5,4 +5,6 @@ pkgs.yarn2nix.mkYarnPackage {
   packageJson = ./package.json;
   publishBinsFor = ["localtunnel"];
   yarnLock = ./yarn.lock;
+  postBuild = ''
+  '';
 }
