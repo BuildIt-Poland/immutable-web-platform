@@ -8,7 +8,8 @@
   },
   "scripts": {
     "start": "node index.js",
-    "get:logs": "knctl logs -f --service express-app"
+    "get:logs": "knctl logs -f --service express-app",
+    "invoke": "knctl curl -s express-app"
   },
   "dependencies": {
     "assert": "^2.0.0",

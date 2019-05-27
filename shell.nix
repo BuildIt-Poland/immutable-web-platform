@@ -20,11 +20,14 @@ mkShell {
     pkgs.k8s-local.create-local-cluster-if-not-exists
     pkgs.k8s-local.export-kubeconfig
     pkgs.k8s-local.expose-istio-ingress
+    # overridings
+    pkgs.k8s-local.curl-with-resolve
 
     # helm
     pkgs.cluster-stack.apply-cluster-stack
     pkgs.cluster-stack.apply-functions-to-cluster
     pkgs.cluster-stack.push-docker-images-to-local-cluster
+
   ];
 
   PROJECT_NAME = pkgs.env-config.projectName;
