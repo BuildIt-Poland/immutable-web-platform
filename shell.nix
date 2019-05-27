@@ -12,10 +12,13 @@ mkShell {
     nodejs
     pkgs.yarn2nix.yarn
 
-    # kind
+    # tools
     pkgs.kind
     pkgs.docker
     pkgs.knctl
+    pkgs.brigade
+
+    # cluster scripts
     pkgs.k8s-local.delete-local-cluster
     pkgs.k8s-local.create-local-cluster-if-not-exists
     pkgs.k8s-local.export-kubeconfig
