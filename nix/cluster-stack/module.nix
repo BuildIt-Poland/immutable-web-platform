@@ -18,6 +18,9 @@ in
 
   # INFO json cannot be applied here as it is handled via helm module
   # https://github.com/lukepatrick/brigade-bitbucket-gateway/blob/master/charts/brigade-bitbucket-gateway/values.yaml
+
+  # TODO rbac resource needs to be improved -> kubectl edit roles brigade-bitbucket-gateway-brigade-bitbucket-gateway -n local-infra
+  # and has access to pods
   kubernetes.helm.instances.brigade-bitbucket-gateway = {
     namespace = "${namespace}";
     name = "brigade-bitbucket-gateway";
