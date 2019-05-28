@@ -26,7 +26,8 @@ in
   # TODO EDITOR=nvim kubectl edit roles brigade-bitbucket-gateway-brigade-bitbucket-gateway
   # kubectl get secrets
   # EDITOR=nvim kubectl edit secret <brigade-project-name>
- 
+  
+  # add namespace
   # TODO rbac resource needs to be improved -> kubectl edit roles brigade-bitbucket-gateway-brigade-bitbucket-gateway -n local-infra
   # and has access to pods
   # rules:
@@ -34,6 +35,7 @@ in
   #   - ""
   #   resources:
   #   - pods
+  # . - secrets
   #   verbs:
   #   - '*'
   # - apiGroups:
