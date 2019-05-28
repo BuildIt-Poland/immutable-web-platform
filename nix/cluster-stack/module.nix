@@ -23,6 +23,9 @@ in
     name = "brigade-bitbucket-gateway";
     chart = charts.brigade-bitbucket;
     values = {
+      rbac = {
+        enabled = true;
+      };
       bitbucket = {
         name = "brigade-bitbucket-gateway";
         service = {
