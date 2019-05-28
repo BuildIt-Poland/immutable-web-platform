@@ -1,4 +1,26 @@
 { pkgs, lib, env-config, kubenix }:
+let
+  # INFO to filter out grep from ps
+  getGrepPhrase = phrase:
+    let
+      phraseLength = builtins.stringLength phrase;
+      grepPhrase = "[${builtins.substring 0 1 phrase}]";
+      grepPhraseRest = builtins.substring 1 phraseLength phrase;
+    in
+      "${grepPhrase}${grepPhraseRest}";
+
+  local-infra-ns = env-config.kubernetes.namespace.infra;
+
+  brigade-service = {
+    service = "brigade-bitbucket-gateway-brigade-bitbucket-gateway"; # INFO chart is so so and does not hanle name well ... investigate
+    namespace = local-infra-ns;
+  };
+
+  istio-service = {
+    service = "istio-ingressgateway";
+    namespace = "istio-system";
+  };
+in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
     echo "Deleting cluster"
@@ -36,10 +58,73 @@ rec {
 
   getPortScript = "$(kubectl get svc $INGRESSGATEWAY --namespace istio-system --output 'jsonpath={.spec.ports[?(@.port==80)].nodePort}')";
 
+  get-port = {
+    service,
+    type ? "port", # nodePort or port # TODO this should be an option
+    index ? 0,
+    namespace
+  }: pkgs.writeScript "get-port" ''
+    ${pkgs.kubectl}/bin/kubectl get svc ${service} --namespace ${namespace} --output 'jsonpath={.spec.ports[${toString index}].${type}}';
+  '';
+
+  port-forward = {
+    from,
+    to,
+    namespace,
+    resourceType ? "service",
+    service
+  }: 
+  pkgs.writeScript "port-forward-${namespace}-${service}" ''
+    echo "Forwarding ports $(${from}):$(${to}) for ${service}"
+
+    ps | grep "${getGrepPhrase service}" \
+      || ${pkgs.kubectl}/bin/kubectl \
+          --namespace ${namespace} \
+          port-forward ${resourceType}/${service} \
+          $(${toString to}):$(${toString from}) > /dev/null &
+  '';
+
+  wait-for = {
+    service,
+    namespace,
+    selector,
+    condition ? "condition=Ready",
+    resource ? "pod",
+    timeout ? 300,
+  }:
+    pkgs.writeScript "wait-for-${namespace}-${service}" ''
+      echo "Waiting for ${namespace}/${service}"
+      ${pkgs.kubectl}/bin/kubectl wait \
+        --namespace ${namespace} \
+        --for=${condition} ${resource} \
+        --selector '${selector}' --timeout=${toString timeout}s
+  '';
+
+  brigade-ports = {
+    from = get-port ({ type = "port"; } // brigade-service);
+    to = get-port ({ type = "nodePort"; } // brigade-service);
+  };
+
+  istio-ports = {
+    from = get-port ({ type = "port"; } // istio-service);
+    to = get-port ({ type = "nodePort"; } // istio-service);
+  };
+
+  wait-for-istio-ingress = pkgs.writeScriptBin "wait-for-istio-ingress" ''
+    ${wait-for ({selector= "app=${istio-service.service}";} // istio-service)}
+  '';
+
+  wait-for-brigade-ingress = pkgs.writeScriptBin "wait-for-brigade-ingress" ''
+    ${wait-for ({selector= "app=${brigade-service.service}";} // brigade-service)}
+  '';
+
   # https://github.com/kubernetes-sigs/kind/issues/99
   expose-istio-ingress = pkgs.writeScriptBin "expose-istio-ingress" ''
-    ps | grep "[i]stio-ingressgateway" \
-      || ${pkgs.kubectl}/bin/kubectl --namespace istio-system port-forward service/istio-ingressgateway $KUBE_NODE_PORT:80 > /dev/null &
+    ${port-forward (istio-service // istio-ports)}
+  '';
+
+  expose-brigade-gateway = pkgs.writeScriptBin "expose-brigade-gateway" ''
+    ${port-forward (brigade-service // brigade-ports)}
   '';
 
   # INFO ideally it would be handled via kubenix - need to do some reasearch
@@ -59,15 +144,6 @@ rec {
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
     export BRIGADE_NAMESPACE=${env-config.kubernetes.namespace.infra}
-  '';
-
-  wait-for-istio-ingress = pkgs.writeScriptBin "wait-for-istio-ingress" ''
-    ${pkgs.kubectl}/bin/kubectl -n istio-system wait --for=condition=Ready pod --selector "app=istio-ingressgateway" --timeout=300s
-  '';
-
-  export-ports = pkgs.writeScriptBin "export-ports" ''
-    export KUBE_NODE_PORT=${getPortScript}
-    echo "exposing ingress port from istio-ingress $KUBE_NODE_PORT"
   '';
 
   deploy-to-kind = {config, image}: 
