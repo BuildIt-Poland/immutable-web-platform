@@ -94,6 +94,10 @@ or super fancy `lorri` with watch capability (check required section)
 * setup a `builder` - by running command within your shell (before you run nix-shell) `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
 > This script going to download docker worker as well as setup some keys and export env var related to builder (`NIX_REMOTE_SYSTEMS`), however if you will go with new shell over and over again, you can re-run the script or, build with `--builders`, like so `nix-build <your-build.nix> --builders 'ssh://nix-docker-build-slave x86_64-linux'`
 
+### Setup local brigade
+* run `create-localtunnel-for-brigade`
+* after that you will get tunel, create webhook `https://tricky-grasshopper-9.localtunnel.me/events/bitbucket/`
+
 ### Important
 * when pushing to docker registry, provide your [credentials](https://github.com/containers/skopeo#private-registries-with-authentication) - on `os x` auth via `keychain` does not work - simple workaround is to delete `credStore` do the login and should be all good.
 
