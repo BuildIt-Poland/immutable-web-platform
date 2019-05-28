@@ -179,3 +179,6 @@ or super fancy `lorri` with watch capability (check required section)
 * knative ... https://github.com/knative/docs/issues/1234 - it was hard since in case of local docker, there has to be some tricks applied to make a name of local docker image prefixed by `dev.io/<docker_image>`
 
 * `kubenix` for `helm` module is doing `chart2json` so in chart `json` file cannot be specified - there is a extra helper for it.
+
+#### To consider for local dev
+* https://github.com/txn2/kubefwd - actually there are pretty neat scripts to forward ports but I'd like to delgate this to some other tools which is able to show me the list, rather than `grep` against `ps`
