@@ -9,8 +9,11 @@ in
   kubernetes.api.namespaces."${namespace}"= {};
   kubernetes.api.namespaces."istio-system"= {};
 
+
+  # most likely bitbucket gateway does not handle namespace -> envvar BRIGADE_NAMESPACE
+  # perhaps need to pass it somehow during creation -> invetigate
   kubernetes.helm.instances.brigade = {
-    namespace = "${namespace}";
+    # namespace = "${namespace}";
     chart = charts.brigade;
     # values = {
     # };
@@ -19,10 +22,30 @@ in
   # INFO json cannot be applied here as it is handled via helm module
   # https://github.com/lukepatrick/brigade-bitbucket-gateway/blob/master/charts/brigade-bitbucket-gateway/values.yaml
 
+  # TODO base64 X-Hook-UUID
+  # TODO EDITOR=nvim kubectl edit roles brigade-bitbucket-gateway-brigade-bitbucket-gateway
+  # kubectl get secrets
+  # EDITOR=nvim kubectl edit secret <brigade-project-name>
+ 
   # TODO rbac resource needs to be improved -> kubectl edit roles brigade-bitbucket-gateway-brigade-bitbucket-gateway -n local-infra
   # and has access to pods
+  # rules:
+  # - apiGroups:
+  #   - ""
+  #   resources:
+  #   - pods
+  #   verbs:
+  #   - '*'
+  # - apiGroups:
+  #   - extensions
+  #   - apps
+  #   resources:
+  #   - deployments
+  #   - replicasets
+  #   verbs:
+  #   - '*'
   kubernetes.helm.instances.brigade-bitbucket-gateway = {
-    namespace = "${namespace}";
+    # namespace = "${namespace}";
     name = "brigade-bitbucket-gateway";
     chart = charts.brigade-bitbucket;
     values = {
