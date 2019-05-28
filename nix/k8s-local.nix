@@ -1,4 +1,10 @@
-{ pkgs, lib, env-config, kubenix }:
+{ 
+  pkgs, 
+  lib, 
+  env-config, 
+  kubenix,
+  node-development-tools
+}:
 let
   # INFO to filter out grep from ps
   getGrepPhrase = phrase:
@@ -20,6 +26,8 @@ let
     service = "istio-ingressgateway";
     namespace = "istio-system";
   };
+
+  localtunnel = "${node-development-tools}/bin/lt";
 in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
@@ -125,6 +133,12 @@ rec {
 
   expose-brigade-gateway = pkgs.writeScriptBin "expose-brigade-gateway" ''
     ${port-forward (brigade-service // brigade-ports)}
+  '';
+
+  # TODO this comes from node.js package - make good reference
+  create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
+    echo "Exposing localtunnel for brigade on port $(${brigade-ports.to})"
+    ${localtunnel} --port $(${brigade-ports.to})
   '';
 
   # INFO ideally it would be handled via kubenix - need to do some reasearch

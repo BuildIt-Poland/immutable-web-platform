@@ -34,8 +34,11 @@ mkShell {
     pkgs.k8s-local.wait-for-istio-ingress
     pkgs.k8s-local.wait-for-brigade-ingress
 
+    # ingress & tunnels
     pkgs.k8s-local.expose-istio-ingress
     pkgs.k8s-local.expose-brigade-gateway
+    pkgs.k8s-local.create-localtunnel-for-brigade
+
     # overridings
     pkgs.k8s-local.curl-with-resolve
 
