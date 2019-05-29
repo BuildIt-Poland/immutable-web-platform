@@ -56,6 +56,9 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 ### Pushing `docker-image`
 * `nix-build nix -A functions.express-app.pushDockerImages --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
 
+### Setup brigade
+* generate `ssh-key` only for your `bitbucket` hook. named it `bitbucket-webook` (can be changed in `nix/default`)
+
 ### Start
 ### Required
 * [`nixpkgs`](https://nixos.org/nix/download.html)
