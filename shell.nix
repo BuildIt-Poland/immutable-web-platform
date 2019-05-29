@@ -11,7 +11,7 @@ let
 
   brigade-secret-check = 
     if brigadeSharedSecret == ""
-      then "echo 'Warning: You have to provide brigade shared secret to listen the repo hooks'" 
+      then "echo '## Warning: You have to provide brigade shared secret to listen the repo hooks'" 
       else "";
 in
 with pkgs;

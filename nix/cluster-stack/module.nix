@@ -48,12 +48,12 @@ in
     name = "brigade-project";
     chart = charts.brigade-project;
     values = {
-      project = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
-      repository = "bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
-      cloneURL = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
+      project = env-config.brigade.project-name;
+      repository = env-config.repository.location;
+      cloneURL = env-config.repository.git;
       vcsSidecar = "brigadecore/git-sidecar:latest";
       sharedSecret = env-config.brigade.sharedSecret;
-      defaultScript = builtins.readFile ./brigade.js; 
+      defaultScript = builtins.readFile env-config.brigade.pipeline; 
       sshKey = builtins.readFile ssh-keys.bitbucket.priv;
     };
   };

@@ -36,47 +36,10 @@ let
   };
 
   config = self: super: rec {
-    env-config = rec {
-      inherit rootFolder env;
-
-      knative-serve = import ./modules/knative-serve.nix;
-      projectName = "future-is-comming";
-      version = "0.0.1";
-      ports = {
-        istio-ingress = "32632";
-      };
-
-      ssh-keys = {
-        bitbucket = {
-          pub = toString ~/.ssh/bitbucket_webhook.pub;
-          priv = toString ~/.ssh/bitbucket_webhook;
-        };
-      };
-
-      kubernetes = {
-        version = "1.13";
-        namespace = {
-          functions = "default";
-          infra = "local-infra";
-          brigade = "brigade";
-          istio = "istio-system"; # TODO - done partially - does not change yet
-        };
-      };
-
-      is-dev = env == "dev";
-
-      brigade = {
-        sharedSecret = brigadeSharedSecret;
-      };
-
-      helm = {
-        home = "${builtins.toPath env-config.rootFolder}/.helm";
-      };
-
-      docker = {
-        registry = "docker.io/gatehub";
-        destination = "docker://damianbaar"; # skopeo path transport://repo
-      };
+    env-config = super.callPackage ./config.nix {
+      inherit brigadeSharedSecret;
+      inherit rootFolder;
+      inherit env;
     };
   };
 
