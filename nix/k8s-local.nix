@@ -3,6 +3,7 @@
   lib, 
   env-config, 
   kubenix,
+  cluster-stack,
   node-development-tools
 }:
 let
@@ -88,8 +89,8 @@ rec {
 
     ps | grep "${getGrepPhrase service}" \
       || ${pkgs.kubectl}/bin/kubectl \
-          --namespace ${namespace} \
           port-forward ${resourceType}/${service} \
+          --namespace ${namespace} \
           $(${toString to}):$(${toString from}) > /dev/null &
   '';
 
@@ -139,10 +140,10 @@ rec {
     ${port-forward (brigade-service // brigade-ports)}
   '';
 
-  # TODO this comes from node.js package - make good reference
+  # helpful flag ... --print-requests 
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
     echo "Exposing localtunnel for brigade on port $(${brigade-ports.to})"
-    ${localtunnel} --port $(${brigade-ports.to}) --print-requests --subdomain "${env-config.projectName}-bb"
+    ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${env-config.projectName}"
   '';
 
   # INFO ideally it would be handled via kubenix - need to do some reasearch
@@ -162,6 +163,7 @@ rec {
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
     export BRIGADE_NAMESPACE=${brigade-service.namespace}
+    export BRIGADE_PROJECT=${env-config.brigade.project-name}
   '';
 
   export-ports = pkgs.writeScriptBin "export-ports" ''
