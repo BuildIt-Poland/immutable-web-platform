@@ -34,7 +34,6 @@ mkShell {
     # cluster scripts
     pkgs.k8s-local.delete-local-cluster
     pkgs.k8s-local.create-local-cluster-if-not-exists
-    pkgs.k8s-local.export-kubeconfig
     pkgs.k8s-local.expose-istio-ingress
     pkgs.k8s-local.add-knative-label-to-istio
 
@@ -46,6 +45,10 @@ mkShell {
     pkgs.k8s-local.expose-istio-ingress
     pkgs.k8s-local.expose-brigade-gateway
     pkgs.k8s-local.create-localtunnel-for-brigade
+
+    # exports
+    pkgs.k8s-local.export-kubeconfig
+    pkgs.k8s-local.export-ports
 
     # overridings
     pkgs.k8s-local.curl-with-resolve
@@ -67,18 +70,17 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
-
     push-docker-images-to-local-cluster
     apply-cluster-stack
     apply-functions-to-cluster
 
+    source export-ports
+
     wait-for-istio-ingress
     add-knative-label-to-istio
     expose-istio-ingress
-
+    
     wait-for-brigade-ingress
     expose-brigade-gateway
-
-    export PATH="$PATH:${pkgs.node-development-tools}/bin"
   '';
 }
