@@ -1,10 +1,11 @@
+# TODO use buildGoPackage
 { pkgs, writeShellScript }:
 with pkgs.stdenv;
 let
-  version = "1.0.0";
+  version = "0.11.1";
   getSource = {version, os}: pkgs.fetchurl {
-    url = "https://github.com/brigadecore/brigade/releases/download/v${version}/brig-${os}-amd64";
-    sha256 = "1h9smrrlvmkg91gnmiby5dmsac99xnxprjlddb615wzdwb1pr9ps";
+    url = "https://github.com/slok/brigadeterm/releases/download/v${version}/brigadeterm-${os}-amd64";
+    sha256 = "076d32rcz56q58n8cy2r8qdycasgkh0hb05i736g5q60b793n5cy";
   };
 in
 mkDerivation rec {
@@ -20,7 +21,8 @@ mkDerivation rec {
   phases = ["installPhase"];
   installPhase = ''
     mkdir -p $out/bin
-    cp $src $out/bin/brig
-    chmod +x $out/bin/brig
+    cp $src $out/bin/brigadeterm
+    chmod +x $out/bin/brigadeterm
   '';
 }
+

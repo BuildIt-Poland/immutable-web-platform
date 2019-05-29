@@ -29,6 +29,7 @@ mkShell {
     pkgs.docker
     pkgs.knctl
     pkgs.brigade
+    pkgs.brigadeterm
     pkgs.node-development-tools
 
     # cluster scripts
@@ -79,7 +80,7 @@ mkShell {
     wait-for-istio-ingress
     add-knative-label-to-istio
     expose-istio-ingress
-    
+
     wait-for-brigade-ingress
     expose-brigade-gateway
   '';
