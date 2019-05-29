@@ -2,14 +2,30 @@ const { events, Job } = require("brigadier");
 
 function run(e, project) {
   console.log("hello default script")
-  var test = new Job("test", "alpine:3.4")
+  let test = new Job("test", "lnl7/nix:latest")
+
+  const { awsAccessKey, awsSecretKey, awsRegion } = project.secrets
+
+  test.env = {
+    AWS_ACCESS_KEY_ID: awsAccessKey,
+    AWS_SECRET_ACCESS_KEY: awsSecretKey,
+    AWS_DEFAULT_REGION: awsRegion,
+  }
 
   test.tasks = [
-    "ls -la",
-    "echo hello",
-    "echo refreshed",
     "ls -la /src",
+    "nix-env -i hello",
+    "hello",
+
+    "cd src",
+    "echo $AWS_ACCESS_KEY_ID",
+    "echo $AWS_SECRET_ACCESS_KEY"
   ];
+  // "nix-build nix -A cluster-stack.push-to-docker-registry"
+  // // nix-run
+
+  test.streamLogs = true;
+
   test.run()
 }
 
