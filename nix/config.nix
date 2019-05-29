@@ -11,14 +11,11 @@ rec {
     rootFolder 
     env;
 
-  aws-credentials = aws-profiles.default; # default profile
+  aws-credentials = aws-profiles.default; # default aws profile
 
   # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
   version = "0.0.1";
-  ports = {
-    istio-ingress = "32632";
-  };
 
   ssh-keys = {
     bitbucket = {
