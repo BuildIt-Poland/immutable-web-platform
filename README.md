@@ -97,6 +97,8 @@ or super fancy `lorri` with watch capability (check required section)
 ### Setup local brigade
 * run `create-localtunnel-for-brigade`
 * after that you will get tunel, create webhook `https://tricky-grasshopper-9.localtunnel.me/events/bitbucket/`
+* if you want to have auto-brigade configuration you have to pass `brigadeSharedSecret`, like so
+`nix-shell --argstr brigadeSharedSecret "<bitbucket.webhooks.request.X-Hook-UUID>"`
 
 ### Important
 * when pushing to docker registry, provide your [credentials](https://github.com/containers/skopeo#private-registries-with-authentication) - on `os x` auth via `keychain` does not work - simple workaround is to delete `credStore` do the login and should be all good.

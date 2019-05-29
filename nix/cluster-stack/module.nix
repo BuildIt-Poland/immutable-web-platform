@@ -1,19 +1,23 @@
 {config, env-config, pkgs, kubenix, callPackage, ...}: 
 let
   charts = callPackage ./charts.nix {};
-  namespace = env-config.kubernetes.namespace.infra;
+  namespace = env-config.kubernetes.namespace;
+  local-infra-ns = namespace.infra;
+  brigade-ns = namespace.brigade;
+  istio-ns = namespace.istio;
+  ssh-keys = env-config.ssh-keys;
 in
 {
   imports = with kubenix.modules; [ helm k8s ];
 
-  kubernetes.api.namespaces."${namespace}"= {};
-  kubernetes.api.namespaces."istio-system"= {};
-
+  kubernetes.api.namespaces."${local-infra-ns}"= {};
+  kubernetes.api.namespaces."${brigade-ns}"= {};
+  kubernetes.api.namespaces."${istio-ns}"= {};
 
   # most likely bitbucket gateway does not handle namespace -> envvar BRIGADE_NAMESPACE
   # perhaps need to pass it somehow during creation -> invetigate
   kubernetes.helm.instances.brigade = {
-    namespace = "${namespace}";
+    namespace = "${brigade-ns}";
     chart = charts.brigade;
     # values = {
     # };
@@ -22,7 +26,7 @@ in
   # INFO json cannot be applied here as it is handled via helm module
 
   kubernetes.helm.instances.brigade-bitbucket-gateway = {
-    namespace = "${namespace}";
+    namespace = "${brigade-ns}";
     name = "brigade-bitbucket-gateway";
     chart = charts.brigade-bitbucket;
     values = {
@@ -40,7 +44,7 @@ in
   };
 
   kubernetes.helm.instances.brigade-project = {
-    namespace = "${namespace}";
+    namespace = "${brigade-ns}";
     name = "brigade-project";
     chart = charts.brigade-project;
     values = {
@@ -49,10 +53,8 @@ in
       cloneURL = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
       vcsSidecar = "brigadecore/git-sidecar:latest";
       sharedSecret = env-config.brigade.sharedSecret;
-      sshKey = ''
-        -----BEGIN RSA PRIVATE KEY-----
-        -----END RSA PRIVATE KEY-----
-        '';
+      defaultScript = builtins.readFile ./brigade.js; 
+      sshKey = builtins.readFile ssh-keys.bitbucket.priv;
     };
   };
 }

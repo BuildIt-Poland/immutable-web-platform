@@ -1,7 +1,4 @@
 # TODO
-# Port forward to the first istio-ingressgateway pod
-kubectl -n istio-system port-forward $(kubectl -n istio-system get pods -listio=ingressgateway -o=jsonpath="{.items[0].metadata.name}") 15000
-
 # Get the http routes from the port-forwarded ingressgateway pod (requires jq)
 alias iroutes='curl --silent http://localhost:15000/config_dump |
 jq '\''.configs.routes.dynamic_route_configs[].route_config.virtual_hosts[]|

@@ -1,6 +1,6 @@
 { 
   sources ? import ./sources.nix,
-  brigadeSharedSecret,
+  brigadeSharedSecret ? "", # it would be good to display warning related to that
   env ? "dev"
 }:
 let
@@ -45,11 +45,20 @@ let
         istio-ingress = "32632";
       };
 
+      ssh-keys = {
+        bitbucket = {
+          pub = toString ~/.ssh/bitbucket_webhook.pub;
+          priv = toString ~/.ssh/bitbucket_webhook;
+        };
+      };
+
       kubernetes = {
         version = "1.13";
         namespace = {
           functions = "default";
           infra = "local-infra";
+          brigade = "brigade";
+          istio = "istio-system"; # TODO - done partially - does not change yet
         };
       };
 
