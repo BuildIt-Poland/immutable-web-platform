@@ -1,4 +1,11 @@
-{config, env-config, pkgs, kubenix, callPackage, ...}: 
+{
+  config, 
+  env-config, 
+  pkgs, 
+  kubenix, 
+  callPackage, 
+  ...
+}: 
 let
   charts = callPackage ./charts.nix {};
   namespace = env-config.kubernetes.namespace;
@@ -6,6 +13,7 @@ let
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
   ssh-keys = env-config.ssh-keys;
+  aws-credentials = env-config.aws-credentials;
 in
 {
   imports = with kubenix.modules; [ helm k8s ];
@@ -43,6 +51,7 @@ in
     };
   };
 
+  # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
   kubernetes.helm.instances.brigade-project = {
     namespace = "${brigade-ns}";
     name = "brigade-project";
@@ -55,6 +64,11 @@ in
       sharedSecret = env-config.brigade.sharedSecret;
       defaultScript = builtins.readFile env-config.brigade.pipeline; 
       sshKey = builtins.readFile ssh-keys.bitbucket.priv;
+      secrets = {
+        awsAccessKey = aws-credentials.aws_access_key_id;
+        awsSecretKey = aws-credentials.aws_secret_access_key;
+        awsRegion = aws-credentials.region;
+      };
     };
   };
 }

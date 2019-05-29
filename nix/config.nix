@@ -1,10 +1,16 @@
 {
   rootFolder, 
   env,
-  brigadeSharedSecret
+  brigadeSharedSecret,
+  aws-credentials
 }:
+let
+in
 rec {
-  inherit rootFolder env;
+  inherit 
+    rootFolder 
+    env 
+    aws-credentials;
 
   # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
