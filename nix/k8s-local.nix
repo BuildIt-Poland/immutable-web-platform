@@ -142,7 +142,7 @@ rec {
   # TODO this comes from node.js package - make good reference
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
     echo "Exposing localtunnel for brigade on port $(${brigade-ports.to})"
-    ${localtunnel} --port $(${brigade-ports.to}) --print-requests
+    ${localtunnel} --port $(${brigade-ports.to}) --print-requests --subdomain "${env-config.projectName}-bb"
   '';
 
   # INFO ideally it would be handled via kubenix - need to do some reasearch
