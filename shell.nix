@@ -1,10 +1,13 @@
 {
   fresh ? false,
   updateResources ? false, # kubernetes resource,
-  exposePorts ? false
+  exposePorts ? false,
+  brigadeSharedSecret
 }@args:
 let
-  pkgs = (import ./nix {}).pkgs;
+  pkgs = (import ./nix {
+    inherit brigadeSharedSecret;
+  }).pkgs;
 in
 with pkgs;
 mkShell {

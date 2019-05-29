@@ -67,4 +67,21 @@ in
       };
     };
   };
+
+  kubernetes.helm.instances.brigade-project = {
+    namespace = "${namespace}";
+    name = "brigade-project";
+    chart = charts.brigade-project;
+    values = {
+      project = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
+      repository = "bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
+      cloneURL = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
+      vcsSidecar = "Azure/git-sidecar:latest";
+      sharedSecret = env-config.brigade.sharedSecret;
+      sshKey = ''
+        -----BEGIN RSA PRIVATE KEY-----
+        -----END RSA PRIVATE KEY-----
+        '';
+    };
+  };
 }
