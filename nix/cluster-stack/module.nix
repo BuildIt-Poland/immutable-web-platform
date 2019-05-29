@@ -21,35 +21,6 @@ in
 
   # INFO json cannot be applied here as it is handled via helm module
 
-  # https://github.com/lukepatrick/brigade-bitbucket-gateway/blob/master/charts/brigade-bitbucket-gateway/values.yaml
-
-  # handling env var
-  # https://github.com/lukepatrick/brigade-bitbucket-gateway/blob/master/brigade-bitbucket-gateway/cmd/brigade-bitbucket-gateway/server.go#L71
-
-  # TODO base64 X-Hook-UUID
-  # TODO EDITOR=nvim kubectl edit roles brigade-bitbucket-gateway-brigade-bitbucket-gateway
-  # kubectl get secrets
-  # EDITOR=nvim kubectl edit secret <brigade-project-name>
-  
-  # add namespace
-  # TODO rbac resource needs to be improved -> kubectl edit roles brigade-bitbucket-gateway-brigade-bitbucket-gateway -n local-infra
-  # and has access to pods
-  # rules:
-  # - apiGroups:
-  #   - ""
-  #   resources:
-  #   - pods
-  # . - secrets
-  #   verbs:
-  #   - '*'
-  # - apiGroups:
-  #   - extensions
-  #   - apps
-  #   resources:
-  #   - deployments
-  #   - replicasets
-  #   verbs:
-  #   - '*'
   kubernetes.helm.instances.brigade-bitbucket-gateway = {
     namespace = "${namespace}";
     name = "brigade-bitbucket-gateway";
@@ -76,7 +47,7 @@ in
       project = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
       repository = "bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
       cloneURL = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
-      vcsSidecar = "Azure/git-sidecar:latest";
+      vcsSidecar = "brigadecore/git-sidecar:latest";
       sharedSecret = env-config.brigade.sharedSecret;
       sshKey = ''
         -----BEGIN RSA PRIVATE KEY-----
