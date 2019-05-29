@@ -1,14 +1,9 @@
 { 
   sources ? import ./sources.nix,
-  use-docker ? false,
+  brigadeSharedSecret,
   env ? "dev"
 }:
 let
-  pkgsOpts = 
-    if use-docker
-      then { system = "x86_64-linux"; }
-      else {};
-
   rootFolder = ../.;
 
   tools = self: super: rec {
@@ -60,6 +55,10 @@ let
 
       is-dev = env == "dev";
 
+      brigade = {
+        sharedSecret = brigadeSharedSecret;
+      };
+
       helm = {
         home = "${builtins.toPath env-config.rootFolder}/.helm";
       };
@@ -77,6 +76,6 @@ let
     kubenix-modules
     application
   ];
-  args = { } // pkgsOpts // { inherit overlays; };
+  args = { } // { inherit overlays; };
 in
   import sources.nixpkgs args
