@@ -93,6 +93,7 @@ rec {
           $(${toString to}):$(${toString from}) > /dev/null &
   '';
 
+  # kubectl wait pod --for condition=ready --all -n brigade
   wait-for = {
     service,
     namespace,
@@ -106,7 +107,8 @@ rec {
       ${pkgs.kubectl}/bin/kubectl wait \
         --namespace ${namespace} \
         --for=${condition} ${resource} \
-        --selector '${selector}' --timeout=${toString timeout}s
+        --selector '${selector}' \
+        --timeout=${toString timeout}s
   '';
 
   brigade-ports = {
@@ -123,7 +125,7 @@ rec {
     ${wait-for ({selector= "app=${istio-service.service}";} // istio-service)}
   '';
 
-  # first run -> wait for istio or namespace
+  # ISSUE: first run -> wait for istio or namespace
   wait-for-brigade-ingress = pkgs.writeScriptBin "wait-for-brigade-ingress" ''
     ${wait-for ({selector= "app=${brigade-service.service}"; timeout = 800;} // brigade-service)}
   '';
@@ -140,7 +142,7 @@ rec {
   # TODO this comes from node.js package - make good reference
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
     echo "Exposing localtunnel for brigade on port $(${brigade-ports.to})"
-    ${localtunnel} --port $(${brigade-ports.to})
+    ${localtunnel} --port $(${brigade-ports.to}) --print-requests
   '';
 
   # INFO ideally it would be handled via kubenix - need to do some reasearch
@@ -160,6 +162,9 @@ rec {
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
     export BRIGADE_NAMESPACE=${brigade-service.namespace}
+  '';
+
+  export-ports = pkgs.writeScriptBin "export-ports" ''
     export KUBE_NODE_PORT=$(${istio-ports.to})
   '';
 
