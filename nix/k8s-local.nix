@@ -158,7 +158,7 @@ rec {
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
     export BRIGADE_NAMESPACE=${env-config.kubernetes.namespace.infra}
-    export HELM-HOME=${toString env-config.rootFolder}/.helm
+    export HELM_HOME=${toString env-config.rootFolder}/.helm
   '';
 
   deploy-to-kind = {config, image}: 
