@@ -38,7 +38,7 @@ let
   config = self: super: rec {
     env-config = super.callPackage ./config.nix {
 
-      aws-credentials = super.callPackage ./get-aws-credentials.nix {};
+      aws-profiles = super.callPackage ./get-aws-credentials.nix {};
 
       inherit brigadeSharedSecret;
       inherit rootFolder;

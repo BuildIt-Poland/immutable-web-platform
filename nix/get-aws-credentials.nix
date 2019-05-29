@@ -20,4 +20,4 @@ let
 
   escaped = lib.concatStrings (lib.intersperse "\n" (builtins.map breakValues stringArr));
 in 
-  (fromTOML escaped).default
+  fromTOML escaped

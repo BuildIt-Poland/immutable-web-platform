@@ -2,15 +2,16 @@
   rootFolder, 
   env,
   brigadeSharedSecret,
-  aws-credentials
+  aws-profiles
 }:
 let
 in
 rec {
   inherit 
     rootFolder 
-    env 
-    aws-credentials;
+    env;
+
+  aws-credentials = aws-profiles.default; # default profile
 
   # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
