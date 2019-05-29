@@ -1,13 +1,18 @@
 {
   fresh ? false,
+  brigadeSharedSecret ? "", # take from bitbucket -> webhooks X-Hook-UUID
   updateResources ? false, # kubernetes resource,
   exposePorts ? false,
-  brigadeSharedSecret
 }@args:
 let
   pkgs = (import ./nix {
     inherit brigadeSharedSecret;
   }).pkgs;
+
+  brigade-secret-check = 
+    if brigadeSharedSecret == ""
+      then "echo 'Warning: You have to provide brigade shared secret to listen the repo hooks'" 
+      else "";
 in
 with pkgs;
 mkShell {
@@ -56,10 +61,12 @@ mkShell {
 
   shellHook= ''
     echo "Hey sailor!"
+    ${brigade-secret-check}
 
     ${if fresh then "delete-local-cluster" else ""}
     create-local-cluster-if-not-exists
     source export-kubeconfig
+
 
     push-docker-images-to-local-cluster
     apply-cluster-stack

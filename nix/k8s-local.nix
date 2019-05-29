@@ -15,16 +15,19 @@ let
     in
       "${grepPhrase}${grepPhraseRest}";
 
-  local-infra-ns = env-config.kubernetes.namespace.infra;
+  namespace = env-config.kubernetes.namespace;
+  local-infra-ns = namespace.infra;
+  brigade-ns = namespace.brigade;
+  istio-ns = namespace.istio;
 
   brigade-service = {
     service = "brigade-bitbucket-gateway-brigade-bitbucket-gateway"; # INFO chart is so so and does not hanle name well ... investigate
-    namespace = local-infra-ns;
+    namespace = brigade-ns;
   };
 
   istio-service = {
     service = "istio-ingressgateway";
-    namespace = "istio-system";
+    namespace = istio-ns;
   };
 
   localtunnel = "${node-development-tools}/bin/lt";
@@ -63,8 +66,6 @@ rec {
     echo "Checking existence of cluster ..."
     ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
   '';
-
-  getPortScript = "$(kubectl get svc $INGRESSGATEWAY --namespace istio-system --output 'jsonpath={.spec.ports[?(@.port==80)].nodePort}')";
 
   get-port = {
     service,
@@ -122,8 +123,9 @@ rec {
     ${wait-for ({selector= "app=${istio-service.service}";} // istio-service)}
   '';
 
+  # first run -> wait for istio or namespace
   wait-for-brigade-ingress = pkgs.writeScriptBin "wait-for-brigade-ingress" ''
-    ${wait-for ({selector= "app=${brigade-service.service}";} // brigade-service)}
+    ${wait-for ({selector= "app=${brigade-service.service}"; timeout = 800;} // brigade-service)}
   '';
 
   # https://github.com/kubernetes-sigs/kind/issues/99
@@ -152,13 +154,13 @@ rec {
 
   # https://github.com/cppforlife/knctl/blob/master/docs/cmd/knctl_ingress_list.md
   add-knative-label-to-istio = pkgs.writeScriptBin "add-knative-label-to-istio" ''
-    ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace istio-system -p '${builtins.toJSON knative-label-patch}'
+    ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace ${istio-ns} -p '${builtins.toJSON knative-label-patch}'
   '';
 
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
-    export BRIGADE_NAMESPACE=${env-config.kubernetes.namespace.infra}
-    export HELM_HOME=${toString env-config.rootFolder}/.helm
+    export BRIGADE_NAMESPACE=${brigade-service.namespace}
+    export KUBE_NODE_PORT=$(${istio-ports.to})
   '';
 
   deploy-to-kind = {config, image}: 
