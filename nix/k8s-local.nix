@@ -19,7 +19,7 @@ let
 
   brigade-service = {
     service = "brigade-bitbucket-gateway-brigade-bitbucket-gateway"; # INFO chart is so so and does not hanle name well ... investigate
-    namespace = "default"; # local-infra-ns;
+    namespace = local-infra-ns;
   };
 
   istio-service = {
@@ -157,8 +157,9 @@ rec {
 
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
     export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
+    export BRIGADE_NAMESPACE=${env-config.kubernetes.namespace.infra}
+    export HELM-HOME=${toString env-config.rootFolder}/.helm
   '';
-    # export BRIGADE_NAMESPACE=${env-config.kubernetes.namespace.infra}
 
   deploy-to-kind = {config, image}: 
     pkgs.writeScriptBin "deploy-to-kind" ''
