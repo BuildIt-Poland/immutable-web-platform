@@ -26,7 +26,7 @@ function run(e, project) {
     `nix-build shell.nix -A testScript`,
 
     `nix copy \
-        --to  "s3://our-nix-cache-bucket-name?profile=our-profile-name&endpoint=our.endpoint.example.com" \
+        --to  "s3://${bucket}?region=${awsRegion}" \
         --option narinfo-cache-positive-ttl 0 \
         $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
 
