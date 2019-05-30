@@ -5,6 +5,7 @@ let
   project = "future-is-coming-binary-store"; # would be good to take it from config
 in
 {
+  # TODO add tags
   resources.s3Buckets."${project}" =
     {
       inherit region accessKeyId;

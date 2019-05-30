@@ -39,6 +39,10 @@ rec {
   };
 
   is-dev = env == "dev";
+
+  s3 = {
+    bucket = "future-is-comming-binary-store";
+  };
   
   repository = {
     location = "bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
