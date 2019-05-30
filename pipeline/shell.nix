@@ -3,7 +3,7 @@
 {
 }:
 let
-  pkgs = (import ./nix {}).pkgs;
+  pkgs = (import ../nix {}).pkgs;
   testScript = pkgs.writeScriptBin "test-script" ''
     echo '{"foo": 0}' | ${pkgs.jq}/bin/jq .
     echo "hello test script"
