@@ -10,22 +10,25 @@ let
   '';
 in
 with pkgs;
-mkShell {
-  inputsFrom = [
-  ];
+{ 
+  inherit testScript;
+  shell = mkShell {
+    inputsFrom = [
+    ];
 
-  buildInputs = [
-    # secrets
-    sops
-    jq
-    testScript
-  ];
+    buildInputs = [
+      # secrets
+      sops
+      jq
+      testScript
+    ];
 
-  PROJECT_NAME = env-config.projectName;
-  VERSION = env-config.version;
+    PROJECT_NAME = env-config.projectName;
+    VERSION = env-config.version;
 
-  # known issue: when starting clean cluster expose-brigade is run to early
-  shellHook= ''
-    echo "hey hey hey worker"
-  '';
-}
+    # known issue: when starting clean cluster expose-brigade is run to early
+    shellHook= ''
+      echo "hey hey hey worker"
+    '';
+  };
+ }
