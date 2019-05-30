@@ -53,14 +53,12 @@ mkShell {
     k8s-local.curl-with-resolve
 
     # helm
-    cluster-stack.apply-cluster-stack
-    cluster-stack.apply-functions-to-cluster
-    cluster-stack.push-docker-images-to-local-cluster
+    k8s-cluster-operations.apply-cluster-stack
+    k8s-cluster-operations.apply-functions-to-cluster
+    k8s-cluster-operations.push-docker-images-to-local-cluster
   ];
 
   PROJECT_NAME = env-config.projectName;
-  INGRESSGATEWAY = "istio-ingressgateway";
-  BRIGADE_COMMIT_ID = "ffebb271960272c7762c61d38fb71b17bbace4fc";
 
   # known issue: when starting clean cluster expose-brigade is run to early
   shellHook= ''

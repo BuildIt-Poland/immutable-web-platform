@@ -8,6 +8,8 @@
 }: 
 let
   charts = callPackage ./charts.nix {};
+  remote-worker = callPackage ./remote-worker.nix {};
+
   namespace = env-config.kubernetes.namespace;
   local-infra-ns = namespace.infra;
   brigade-ns = namespace.brigade;
@@ -16,11 +18,41 @@ let
   aws-credentials = env-config.aws-credentials;
 in
 {
-  imports = with kubenix.modules; [ helm k8s ];
+  imports = with kubenix.modules; [ helm k8s docker ];
+
+  docker.images.remote-worker.image = remote-worker;
 
   kubernetes.api.namespaces."${local-infra-ns}"= {};
   kubernetes.api.namespaces."${brigade-ns}"= {};
   kubernetes.api.namespaces."${istio-ns}"= {};
+
+  kubernetes.api.deployments."remote-worker" = {
+    spec = {
+      replicas = 1;
+      selector.matchLabels.app = "remote-worker";
+      template = {
+        metadata.labels.app = "remote-worker";
+        spec = {
+          containers."remote-worker" = {
+            image = "remote-worker:latest"; #config.docker.images.remote-worker.path;
+            imagePullPolicy = "Never";
+            ports."5000" = {};
+            command = [ "nix-serve" ];
+          };
+        };
+      };
+    };
+  };
+
+  kubernetes.api.services.remote-worker = {
+    spec = {
+      ports = [{
+        name = "http";
+        port = 5000;
+      }];
+      selector.app = "remote-worker";
+    };
+  };
 
   # most likely bitbucket gateway does not handle namespace -> envvar BRIGADE_NAMESPACE
   # perhaps need to pass it somehow during creation -> invetigate

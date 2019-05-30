@@ -3,7 +3,6 @@
   lib, 
   env-config, 
   kubenix,
-  cluster-stack,
   log,
   node-development-tools
 }:

@@ -1,9 +1,8 @@
-{ env-config, kubenix, callPackage }:
+{ env-config, kubenix, pkgs, callPackage }:
 (kubenix.evalModules {
     modules = [
       ./module.nix 
     ];
-    # check = true;
     args = {
       inherit env-config;
       inherit callPackage;
