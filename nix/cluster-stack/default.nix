@@ -6,6 +6,7 @@
   writeScript,
   writeScriptBin,
   application,
+  log,
   kubenix,
   lib
 }:
@@ -44,14 +45,14 @@ rec {
   '';
 
   apply-cluster-stack = writeScriptBin "apply-cluster-stack" ''
-    echo "Applying helm charts"
+    ${log.important "Applying helm charts"}
     ${apply-knative-with-istio}
   '';
 
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
     (lib.concatMapStrings 
       (docker-image: ''
-        echo "Pushing docker image to local cluster: ${docker-image}"
+        ${log.important "Pushing docker image to local cluster: ${docker-image}"}
         ${pkgs.kind}/bin/kind load image-archive --name ${env-config.projectName} ${docker-image}
       '') (lib.flatten application.function-images));
 
