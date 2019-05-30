@@ -23,7 +23,15 @@ function run(e, project) {
   test.tasks = [
     "cd /src/pipeline",
     "ls -la",
-    `nix-shell --run test-script --store 's3://${bucket}?region=${awsRegion}'`
+    `nix-build shell.nix -A testScript`,
+
+    `nix copy \
+        --to  "s3://our-nix-cache-bucket-name?profile=our-profile-name&endpoint=our.endpoint.example.com" \
+        --option narinfo-cache-positive-ttl 0 \
+        $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
+
+    `./result/bin/test-script`
+    // `nix-shell --run test-script --store 's3://${bucket}?region=${awsRegion}'`
   ];
   // "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",
   // "cat secrets-encrypted.json"
