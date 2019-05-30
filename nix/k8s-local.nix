@@ -4,6 +4,7 @@
   env-config, 
   kubenix,
   cluster-stack,
+  log,
   node-development-tools
 }:
 let
@@ -35,7 +36,7 @@ let
 in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
-    echo "Deleting cluster"
+    ${log.message "Deleting cluster"}
     ${pkgs.kind}/bin/kind delete cluster --name ${env-config.projectName} || true
   '';
 
@@ -59,12 +60,12 @@ rec {
   cluster-config-yaml = kubenix.lib.toYAML cluster-config;
 
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
-    echo "Creating cluster"
+    ${log.message "Creating cluster"}
     ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
-    echo "Checking existence of cluster ..."
+    ${log.message "Checking existence of cluster ..."}
     ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
   '';
 
@@ -85,7 +86,7 @@ rec {
     service
   }: 
   pkgs.writeScript "port-forward-${namespace}-${service}" ''
-    echo "Forwarding ports $(${from}):$(${to}) for ${service}"
+    ${log.message "Forwarding ports $(${from}):$(${to}) for ${service}"}
 
     ps | grep "${getGrepPhrase service}" \
       || ${pkgs.kubectl}/bin/kubectl \
@@ -104,7 +105,8 @@ rec {
     timeout ? 300,
   }:
     pkgs.writeScript "wait-for-${namespace}-${service}" ''
-      echo "Waiting for ${namespace}/${service}"
+      ${log.message "Waiting for ${namespace}/${service}"}
+
       ${pkgs.kubectl}/bin/kubectl wait \
         --namespace ${namespace} \
         --for=${condition} ${resource} \
@@ -142,7 +144,7 @@ rec {
 
   # helpful flag ... --print-requests 
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
-    echo "Exposing localtunnel for brigade on port $(${brigade-ports.to})"
+    ${log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}
     ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${env-config.projectName}"
   '';
 
@@ -172,10 +174,11 @@ rec {
 
   deploy-to-kind = {config, image}: 
     pkgs.writeScriptBin "deploy-to-kind" ''
-      echo "Loading the ${pkgs.docker}/bin/docker image inside the kind docker container ..."
+      ${log.message "Loading the ${pkgs.docker}/bin/docker image inside the kind docker container ..."}
 
       kind load image-archive ${image}
-      echo "Applying the configuration ..."
+
+      ${log.important "Applying the configuration ..."}
 
       cat ${config} | ${pkgs.jq}/bin/jq "."
       cat ${config} | ${pkgs.kubectl}/bin/kubectl apply -f -

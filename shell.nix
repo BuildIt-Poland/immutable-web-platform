@@ -61,26 +61,29 @@ mkShell {
   PROJECT_NAME = env-config.projectName;
   INGRESSGATEWAY = "istio-ingressgateway";
 
+  # known issue: when starting clean cluster expose-brigade is run to early
   shellHook= ''
-    echo "Hey sailor!"
+    ${log.message "Hey sailor!"}
 
     ${env-config.info.printWarnings}
     ${env-config.info.printInfos}
+
+    ${if fresh then "delete-local-cluster" else ""}
+
+    create-local-cluster-if-not-exists
+    source export-kubeconfig
+
+    push-docker-images-to-local-cluster
+    apply-cluster-stack
+    apply-functions-to-cluster
+
+    source export-ports
+
+    wait-for-istio-ingress
+    add-knative-label-to-istio
+    expose-istio-ingress
+
+    wait-for-brigade-ingress
+    expose-brigade-gateway
   '';
-    # ${if fresh then "delete-local-cluster" else ""}
-    # create-local-cluster-if-not-exists
-    # source export-kubeconfig
-
-    # push-docker-images-to-local-cluster
-    # apply-cluster-stack
-    # apply-functions-to-cluster
-
-    # source export-ports
-
-    # wait-for-istio-ingress
-    # add-knative-label-to-istio
-    # expose-istio-ingress
-
-    # wait-for-brigade-ingress
-    # expose-brigade-gateway
 }

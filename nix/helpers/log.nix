@@ -17,6 +17,8 @@ let
   warning = wrap yellow "WARNING:";
   error = wrap red "ERROR:";
   info = wrap cyan "INFO:";
+  message = wrap magenta;
+  important = wrap green;
 in
 {
   error = str: ''
@@ -29,5 +31,13 @@ in
 
   info = str: ''
     printf "${info} ${str}\n"
+  '';
+
+  message = str: ''
+    printf "${message ("> " + str)}\n"
+  '';
+
+  important = str: ''
+    printf "> ${important ("> " + str)}\n"
   '';
 }

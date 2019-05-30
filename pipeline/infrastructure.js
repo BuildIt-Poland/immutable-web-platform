@@ -1,5 +1,7 @@
 const { events, Job } = require("brigadier");
 
+// TODO add --store property to s3
+
 function run(e, project) {
   console.log("hello default script")
   let test = new Job("test", "lnl7/nix:latest")
@@ -21,7 +23,9 @@ function run(e, project) {
     "cd src",
     "echo $AWS_ACCESS_KEY_ID",
     "echo $AWS_SECRET_ACCESS_KEY",
-    "echo $SECRETS"
+    "echo $SECRETS",
+    "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",
+    "cat secrets-encrypted.json"
     // "docker login -u $DOCKER_USER -p $DOCKER_PASS",
   ];
   // "nix-build nix -A cluster-stack.push-to-docker-registry"

@@ -1,0 +1,2 @@
+### Some issues / errors
+* if you see `warning: skipped value for secrets: Not a table.` - don't worry, it is lying, it is related to brigade secrets and go unmarshaling, seems that k8s is not happy to have a hashmap instead of array, but `go` expect to have a `hashmap` - so all good!

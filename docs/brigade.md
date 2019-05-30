@@ -6,6 +6,9 @@
 ### displaying job status in cli
 * `brigadeterm`
 
+### Important
+if you want to test pipeline, integration is not necessary, run is sufficient.
+
 ### setup with bitbucket
 * run `create-localtunnel-for-brigade`
 * run `nix-shell` with `sharedSecret`, like so`nix-shell --argstr brigadeSharedSecret "XXXXXX-XXXX-XXXX-XXXX-XXXXXXXX"`
