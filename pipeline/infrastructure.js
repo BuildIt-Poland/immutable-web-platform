@@ -1,6 +1,8 @@
-const { events, Job } = require("brigadier");
+const { events, Job } = require("brigadier")
 
 // TODO add --store property to s3
+
+const bucket = "future-is-comming-binary-store"
 
 function run(e, project) {
   console.log("hello default script")
@@ -12,22 +14,18 @@ function run(e, project) {
     AWS_ACCESS_KEY_ID: awsAccessKey,
     AWS_SECRET_ACCESS_KEY: awsSecretKey,
     AWS_DEFAULT_REGION: awsRegion,
+    AWS_PROFILE: '',
     SECRETS: secrets
   }
 
   test.tasks = [
-    "ls -la /src",
-    "nix-env -i hello",
-    "nix-env -i sops",
-    "hello",
-    "cd src",
-    "echo $AWS_ACCESS_KEY_ID",
-    "echo $AWS_SECRET_ACCESS_KEY",
-    "echo $SECRETS",
-    "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",
-    "cat secrets-encrypted.json"
-    // "docker login -u $DOCKER_USER -p $DOCKER_PASS",
+    "cd /src",
+    "ls -la",
+    `echo 's3://${bucket}?region=${awsRegion}'`
   ];
+  // `nix-shell --run test-script --store 's3://${bucket}?region=${awsRegion}'`
+  // "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",
+  // "cat secrets-encrypted.json"
   // "nix-build nix -A cluster-stack.push-to-docker-registry"
   // // nix-run
 

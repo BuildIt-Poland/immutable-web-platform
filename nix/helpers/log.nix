@@ -38,6 +38,6 @@ in
   '';
 
   important = str: ''
-    printf "> ${important ("> " + str)}\n"
+    printf "${important ("> " + str)}\n"
   '';
 }
