@@ -60,6 +60,7 @@ mkShell {
 
   PROJECT_NAME = env-config.projectName;
   INGRESSGATEWAY = "istio-ingressgateway";
+  BRIGADE_COMMIT_ID = "ffebb271960272c7762c61d38fb71b17bbace4fc";
 
   # known issue: when starting clean cluster expose-brigade is run to early
   shellHook= ''

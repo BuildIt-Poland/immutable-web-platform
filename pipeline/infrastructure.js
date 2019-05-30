@@ -4,6 +4,9 @@ const { events, Job } = require("brigadier")
 
 const bucket = "future-is-comming-binary-store"
 
+process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
+// process.env.BRIGADE_COMMIT_ID = "ffebb271960272c7762c61d38fb71b17bbace4fc"
+
 function run(e, project) {
   console.log("hello default script")
   let test = new Job("test", "lnl7/nix:latest")
