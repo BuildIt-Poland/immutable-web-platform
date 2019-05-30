@@ -1,5 +1,6 @@
-{ pkgs, env-config, callPackage }:
+{ linux-pkgs, env-config, callPackage }:
 let
+  pkgs = linux-pkgs;
   express-app = callPackage ./package.nix { };
   fn-config = callPackage ./config.nix {};
 
