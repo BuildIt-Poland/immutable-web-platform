@@ -5,7 +5,6 @@ const { events, Job } = require("brigadier")
 const bucket = "future-is-comming-binary-store"
 
 process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
-// process.env.BRIGADE_COMMIT_ID = "ffebb271960272c7762c61d38fb71b17bbace4fc"
 
 function run(e, project) {
   console.log("hello default script")
@@ -22,11 +21,10 @@ function run(e, project) {
   }
 
   test.tasks = [
-    "cd /src",
+    "cd /src/pipeline",
     "ls -la",
-    `echo 's3://${bucket}?region=${awsRegion}'`
+    `nix-shell --run test-script --store 's3://${bucket}?region=${awsRegion}'`
   ];
-  // `nix-shell --run test-script --store 's3://${bucket}?region=${awsRegion}'`
   // "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",
   // "cat secrets-encrypted.json"
   // "nix-build nix -A cluster-stack.push-to-docker-registry"
