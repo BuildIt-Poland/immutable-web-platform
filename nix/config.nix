@@ -2,7 +2,9 @@
   rootFolder, 
   env,
   brigadeSharedSecret,
-  aws-profiles
+  aws-profiles,
+  log,
+  lib
 }:
 let
 in
@@ -23,6 +25,8 @@ rec {
       priv = toString ~/.ssh/bitbucket_webhook;
     };
   };
+
+  secrets = "${rootFolder}/secrets.json";
 
   kubernetes = {
     version = "1.13";
@@ -50,5 +54,25 @@ rec {
   docker = {
     registry = "docker.io/gatehub";
     destination = "docker://damianbaar"; # skopeo path transport://repo
+  };
+
+  info = rec {
+    warnings = lib.dischargeProperties (
+      lib.mkMerge [
+        (lib.mkIf 
+          (brigadeSharedSecret == "") 
+          "You have to provide brigade shared secret to listen the repo hooks")
+      ]
+    );
+
+    infos = lib.dischargeProperties (
+      lib.mkMerge [
+        (lib.mkIf 
+          (is-dev) 
+          "You are in dev mode")
+      ]
+    );
+    printWarnings = lib.concatMapStrings log.warn warnings;
+    printInfos = lib.concatMapStrings log.info infos;
   };
 }

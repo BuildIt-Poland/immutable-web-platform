@@ -1,3 +1,4 @@
+# this is a tiny helper to escape values from ini to toml format
 {lib}:
 let
   credentials = builtins.readFile ~/.aws/credentials;

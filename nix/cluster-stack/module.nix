@@ -68,6 +68,7 @@ in
         awsAccessKey = aws-credentials.aws_access_key_id;
         awsSecretKey = aws-credentials.aws_secret_access_key;
         awsRegion = aws-credentials.region;
+        secrets = builtins.readFile env-config.secrets;
       };
     };
   };

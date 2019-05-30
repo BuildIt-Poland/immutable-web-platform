@@ -4,22 +4,25 @@ function run(e, project) {
   console.log("hello default script")
   let test = new Job("test", "lnl7/nix:latest")
 
-  const { awsAccessKey, awsSecretKey, awsRegion } = project.secrets
+  const { awsAccessKey, awsSecretKey, awsRegion, secrets } = project.secrets
 
   test.env = {
     AWS_ACCESS_KEY_ID: awsAccessKey,
     AWS_SECRET_ACCESS_KEY: awsSecretKey,
     AWS_DEFAULT_REGION: awsRegion,
+    SECRETS: secrets
   }
 
   test.tasks = [
     "ls -la /src",
     "nix-env -i hello",
+    "nix-env -i sops",
     "hello",
-
     "cd src",
     "echo $AWS_ACCESS_KEY_ID",
-    "echo $AWS_SECRET_ACCESS_KEY"
+    "echo $AWS_SECRET_ACCESS_KEY",
+    "echo $SECRETS"
+    // "docker login -u $DOCKER_USER -p $DOCKER_PASS",
   ];
   // "nix-build nix -A cluster-stack.push-to-docker-registry"
   // // nix-run
