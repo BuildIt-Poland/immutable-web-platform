@@ -17,6 +17,7 @@ let
     cluster-stack = super.callPackage ./cluster-stack {};
     node-development-tools = super.callPackage ../development-tools {};
     chart-from-git = super.callPackage ./helm {};
+    log = super.callPackage ./helpers/log.nix {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
