@@ -18,6 +18,8 @@ let
     chart-from-git = super.callPackage ./helm {};
     log = super.callPackage ./helpers/log.nix {};
     k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
+
+    inherit sources;
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
