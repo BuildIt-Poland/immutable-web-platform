@@ -1,10 +1,10 @@
 # worker shell
 # IMPORTANT: nix is lazy so we can require whole ./nix folder and reuse the scripts - awesome isn't it?
 {
+  pkgs ? import <nixpkgs> {}
 }:
 let
   # pkgs = (import ../nix {}).pkgs;
-  pkgs = import <nixpkgs> {};
   testScript2 = pkgs.writeScript "test-script" ''
     echo '{"foo": 0}' | ${pkgs.jq}/bin/jq .
     echo "hello test script"

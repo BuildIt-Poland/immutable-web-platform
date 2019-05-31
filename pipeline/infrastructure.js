@@ -48,20 +48,19 @@ function run(e, project) {
     "cd /src/pipeline",
     "ls -la",
     // `rm -rf ${storePath}`,
-    `echo "store = ${storePath}" >> /etc/nix/nix.conf`,
+    // `echo "store = ${storePath}" >> /etc/nix/nix.conf`,
     // `ls -la ${test.cache.path}/nix/store`,
     // `echo ${test.cache.path}`, // add nix store
     // `echo ${test.storage.path}`,
     // `echo $NIX_STORE`,
     `nix-env -i bash`,
-    `nix-build shell.nix -A testScript --store ${storePath} `, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+    `nix-build shell.nix -A testScript`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
     // `nix-shell --command test-script`,
     // `nix-build shell.nix -A testScript  --option extra-binary-caches 'https://cache.nixos.org' `, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
-    // `nix copy \
-    //     --to  "file://${storePath}" \
-    //     --option narinfo-cache-positive-ttl 0 \
-    //     $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
-    // `nix copy --option signed-binary-caches '*' --to local?root=${storePath} $(which bash) --no-check-sigs`
+    `nix copy \
+        --to  "file://${storePath}" \
+        --option narinfo-cache-positive-ttl 0 \
+        $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
 
     // `nix-store --store ${bucketURL({ bucket, awsRegion })}`,
     // "nix-env -i curl --option extra-binary-caches 'http://remote-worker.default:5000/ https://cache.nixos.org' --substituters http://remote-worker.default:5000/",
