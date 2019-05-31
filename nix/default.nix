@@ -25,7 +25,10 @@ let
   application = self: super: rec {
     linux-pkgs = 
       if builtins.currentSystem == "x86_64-darwin"
-        then (import sources.nixpkgs ({ system = "x86_64-linux"; } // { inherit overlays; }))
+        then (import sources.nixpkgs ({ 
+          system = "x86_64-linux"; 
+          config.allowUnfree = true;
+        } // { inherit overlays; }))
         else super.pkgs;
 
     application = super.callPackage ./functions.nix {};

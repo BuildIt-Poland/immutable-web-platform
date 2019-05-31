@@ -26,15 +26,19 @@ function run(e, project) {
   test.tasks = [
     "cd /src/pipeline",
     "ls -la",
-    "nix ping-store --store http://remote-worker:5000"
-    // `nix-build shell.nix -A testScript`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+    // `nix-store --store ${bucketURL({ bucket, awsRegion })}`,
+    // "nix-env -i curl --option extra-binary-caches 'http://remote-worker.default:5000/ https://cache.nixos.org' --substituters http://remote-worker.default:5000/",
+    // "nix ping-store --store http://remote-worker.default:5000"
+    `nix-build shell.nix -A testScript --option extra-binary-caches 'https://s3.eu-west-2.amazonaws.com/future-is-comming-binary-store https://cache.nixos.org' --substituters 'http://remote-worker.default:5000/'`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+    // "curl http://remote-worker.default:5000/nix-cache-info"
+    // `nix-build shell.nix -A testScript --option extra-binary-caches 'https://s3.eu-west-2.amazonaws.com/future-is-comming-binary-store https://cache.nixos.org/'`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
     // `nix copy --option signed-binary-caches="" --no-check-sigs --all --to "s3://${bucket}?region=${awsRegion}"`, // all
-    // `nix copy \
-    //     --to  "s3://${bucket}?region=${awsRegion}" \
-    //     --option narinfo-cache-positive-ttl 0 \
-    //     $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
+    `nix copy \
+        --to  "s3://${bucket}?region=${awsRegion}" \
+        --option narinfo-cache-positive-ttl 0 \
+        $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
 
-    // `./result/bin/test-script`
+    `./result/bin/test-script`
     // `nix-shell --run test-script --store 's3://${bucket}?region=${awsRegion}'`
   ];
   // "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",

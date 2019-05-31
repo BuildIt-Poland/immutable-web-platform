@@ -47,7 +47,7 @@ in
   kubernetes.api.services.remote-worker = {
     spec = {
       ports = [{
-        name = "http";
+        name = "https";
         port = 5000;
       }];
       selector.app = "remote-worker";
