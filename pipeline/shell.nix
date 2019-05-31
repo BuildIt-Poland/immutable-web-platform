@@ -34,8 +34,8 @@ with pkgs;
       testScript
     ];
 
-    PROJECT_NAME = env-config.projectName;
-    VERSION = env-config.version;
+    # PROJECT_NAME = env-config.projectName;
+    # VERSION = env-config.version;
 
     # known issue: when starting clean cluster expose-brigade is run to early
     shellHook= ''
