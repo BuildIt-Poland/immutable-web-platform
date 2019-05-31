@@ -48,12 +48,13 @@ function run(e, project) {
     "cd /src/pipeline",
     "ls -la",
     // `rm -rf ${storePath}`,
-    // `echo "store = ${storePath}" >> /etc/nix/nix.conf`,
+    `echo "store = ${storePath}" >> /etc/nix/nix.conf`,
     // `ls -la ${test.cache.path}/nix/store`,
     // `echo ${test.cache.path}`, // add nix store
     // `echo ${test.storage.path}`,
     // `echo $NIX_STORE`,
-    `nix-shell --command test-script --store ${storePath} --option extra-binary-caches 'https://cache.nixos.org'`,
+    `nix-env -i bash`,
+    `nix-shell --command test-script`,
     // `nix-build shell.nix -A testScript  --option extra-binary-caches 'https://cache.nixos.org' `, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
     // `nix copy \
     //     --to  "file://${storePath}" \
