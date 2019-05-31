@@ -45,13 +45,13 @@ rec {
   };
   
   repository = {
-    location = "bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
+    location = "bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative"; # this name cannot be longer than 64
     git = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
   };
 
   brigade = {
     sharedSecret = brigadeSharedSecret;
-    project-name = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
+    project-name = "embracing-nix-docker-k8s-helm-knative";
     pipeline = "${rootFolder}/pipeline/infrastructure.js"; 
   };
 

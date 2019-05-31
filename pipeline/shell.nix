@@ -11,7 +11,6 @@ let
   testScript = pkgs.stdenv.mkDerivation {
     name = "test-script";
     src = ./.;
-    buildInputs = [pkgs.bash];
     phases = ["installPhase"];
     installPhase = ''
       mkdir -p $out/bin
