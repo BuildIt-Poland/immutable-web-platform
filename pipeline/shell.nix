@@ -4,10 +4,19 @@
 }:
 let
   pkgs = (import ../nix {}).pkgs;
-  testScript = pkgs.writeScriptBin "test-script" ''
+  testScript2 = pkgs.writeScript "test-script" ''
     echo '{"foo": 0}' | ${pkgs.jq}/bin/jq .
     echo "hello test script"
   '';
+  testScript = pkgs.stdenv.mkDerivation {
+    src = ./.;
+    buildInputs = [pkgs.bash];
+    phases = ["installPhase"];
+    installPhase = ''
+      mkdir -p $out/bin
+      cp ${testScript2} bin/${testScript2.name}
+    '';
+  };
 in
 with pkgs;
 { 
