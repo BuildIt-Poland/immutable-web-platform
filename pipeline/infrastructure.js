@@ -42,7 +42,7 @@ function run(e, project) {
     // ...nix,
   }
 
-  const storePath = `${test.cache.path}/nix/store`
+  const storePath = `${test.cache.path}/nix/store_flat`
   // most likely remote worker would be ok ... 
   test.tasks = [
     "cd /src/pipeline",
@@ -54,7 +54,8 @@ function run(e, project) {
     // `echo ${test.storage.path}`,
     // `echo $NIX_STORE`,
     `nix-env -i bash`,
-    `nix-shell --command test-script`,
+    `nix-build shell.nix -A testScript --store ${storePath} `, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+    // `nix-shell --command test-script`,
     // `nix-build shell.nix -A testScript  --option extra-binary-caches 'https://cache.nixos.org' `, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
     // `nix copy \
     //     --to  "file://${storePath}" \

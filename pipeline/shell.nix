@@ -14,14 +14,15 @@ let
     src = ./.;
     phases = ["installPhase"];
     buildInputs = [pkgs.jq];
+    preferLocalBuild = true;
     installPhase = ''
       mkdir -p $out/bin
       cp ${testScript2} $out/bin/${testScript2.name}
     '';
   };
 in
-with pkgs;
-({ 
+with pkgs; 
+{ 
   inherit testScript;
   shell = mkShell {
     inputsFrom = [
@@ -42,4 +43,4 @@ with pkgs;
       echo "hey hey hey worker"
     '';
   };
- }).shell
+}
