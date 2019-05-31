@@ -27,17 +27,27 @@ in
   kubernetes.api.namespaces."${istio-ns}"= {};
 
   kubernetes.api.deployments."remote-worker" = {
+    metadata.namespace = brigade-ns;
     spec = {
       replicas = 1;
       selector.matchLabels.app = "remote-worker";
       template = {
         metadata.labels.app = "remote-worker";
         spec = {
+          # securityContext.fsGroup = 1000;
+
           containers."remote-worker" = {
             image = "remote-worker:latest"; #config.docker.images.remote-worker.path;
             imagePullPolicy = "Never";
             ports."5000" = {};
             command = [ "nix-serve" ];
+            volumeMounts."/_nix/store".name = "build-storage";
+          };
+          # BUG: it would mount when there will be first build
+          volumes."build-storage" = {
+            persistentVolumeClaim = {
+              claimName = "embracing-nix-docker-k8s-helm-knative-test";
+            };
           };
         };
       };
@@ -86,21 +96,23 @@ in
   kubernetes.api.storageclasses = {
     build-storage = {
       metadata = {
-        # namespace = brigade-ns;
+        namespace = brigade-ns;
         name = "build-storage";
         annotations = {
           "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
         };
         labels = {
           "addonmanager.kubernetes.io/mode" = "EnsureExists";
+          # exec
         };
       };
       reclaimPolicy = "Retain";
+      # volumeBindingMode = "WaitForFirstConsumer";
       provisioner = "kubernetes.io/host-path";
     };
     cache-storage = {
       metadata = {
-        # namespace = brigade-ns;
+        namespace = brigade-ns;
         name = "cache-storage";
         annotations = {
           "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
@@ -129,8 +141,8 @@ in
       defaultScript = builtins.readFile env-config.brigade.pipeline; 
       sshKey = builtins.readFile ssh-keys.bitbucket.priv;
       kubernetes = {
-        cacheStorageClass = "build-storage";
-        buildStorageClass = "cache-storage";
+        cacheStorageClass = "cache-storage";
+        buildStorageClass = "build-storage";
       };
       secrets = {
         awsAccessKey = aws-credentials.aws_access_key_id;

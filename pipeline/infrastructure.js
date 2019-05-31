@@ -8,12 +8,15 @@ process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
 
 const bucketURL = ({ bucket, awsRegion }) => `s3://${bucket}?region=${awsRegion}`;
 
+// most likely all these problems are related to nix and mounted PV with noexec option ... need to read more about it
 function run(e, project) {
   console.log("hello default script")
-  let test = new Job("test", "lnl7/nix:latest")
+  // let test = new Job("test", "dev.local/remote-worker:latest")
+  let test = new Job("test", "lnl7/nix")
   test.streamLogs = true;
   test.cache.enabled = true;
   test.storage.enabled = true;
+  test.docker.enabled = true;
 
   test.shell = "bash";
   test.cache.size = "1Gi";
@@ -42,25 +45,42 @@ function run(e, project) {
     // ...nix,
   }
 
-  const storePath = `${test.cache.path}/nix/store_flat`
+  const storePath = `${test.storage.path}`
+  const storeExport = `${test.cache.path}/nix/store_flat`
+  const resultPath = `$(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`
   // most likely remote worker would be ok ... 
   test.tasks = [
     "cd /src/pipeline",
     "ls -la",
-    // `rm -rf ${storePath}`,
+    // `mkdir -p ${storePath}`,
+    // `nix-store --import < ${storeExport}/worker.nar`,
     // `echo "store = ${storePath}" >> /etc/nix/nix.conf`,
     // `ls -la ${test.cache.path}/nix/store`,
     // `echo ${test.cache.path}`, // add nix store
     // `echo ${test.storage.path}`,
     // `echo $NIX_STORE`,
-    `nix-env -i bash`,
-    `nix-build shell.nix -A testScript`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+    // `rsync -a --ignore-existing ${storePath}/nix/store /nix/store/`,
+    // "nix ping-store --store http://remote-worker.default:5000",
+    `ls -la ${storePath}`,
+    // `nix-env -i rsync`,
+    // `nix run -f shell.nix testScript -c test-script --option require-sigs false`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+    `mkdir -p ${storePath}/test/test`,
+    `echo ${storePath}`,
+    `ls -la ${storePath}`,
+    // `rsync -a --ignore-existing /nix/store/ ${storePath}/`
+    // `rsync -a --ignore-existing /nix/store/ ${storePath}/`,
+    // `ls /nix/store`,
     // `nix-shell --command test-script`,
     // `nix-build shell.nix -A testScript  --option extra-binary-caches 'https://cache.nixos.org' `, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
-    `nix copy \
-        --to  "file://${storePath}" \
-        --option narinfo-cache-positive-ttl 0 \
-        $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
+    // `nix copy \
+    //     --to  "file://${storePath}" \
+    //     --option narinfo-cache-positive-ttl 0 \
+    //     $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
+    // `nix copy --to local?root=${storePath} \
+    //   $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))
+    // `
+    // `nix-store --export ${resultPath} > ${storePath}/worker.nar`
+    // `nix-store --export ${resultPath} > ${storeExport}/worker.nar`
 
     // `nix-store --store ${bucketURL({ bucket, awsRegion })}`,
     // "nix-env -i curl --option extra-binary-caches 'http://remote-worker.default:5000/ https://cache.nixos.org' --substituters http://remote-worker.default:5000/",
