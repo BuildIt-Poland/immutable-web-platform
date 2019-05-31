@@ -9,12 +9,13 @@ let
     echo "hello test script"
   '';
   testScript = pkgs.stdenv.mkDerivation {
+    name = "test-script";
     src = ./.;
     buildInputs = [pkgs.bash];
     phases = ["installPhase"];
     installPhase = ''
       mkdir -p $out/bin
-      cp ${testScript2} bin/${testScript2.name}
+      cp ${testScript2} $out/bin/${testScript2.name}
     '';
   };
 in
