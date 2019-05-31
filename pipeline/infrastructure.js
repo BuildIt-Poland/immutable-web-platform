@@ -19,26 +19,34 @@ function run(e, project) {
     AWS_SECRET_ACCESS_KEY: awsSecretKey,
     AWS_DEFAULT_REGION: awsRegion,
     AWS_PROFILE: '',
-    SECRETS: secrets
+    SECRETS: secrets,
+    NIX_STORE: `${test.cache.path}/nix/store`,
   }
 
   // most likely remote worker would be ok ... 
   test.tasks = [
     "cd /src/pipeline",
     "ls -la",
+    `mkdir -p ${test.cache.path}/nix/store`,
+    `ls -la ${test.cache.path}/nix/store`,
+    `echo ${test.cache.path}`, // add nix store
+    `echo ${test.storage.path}`,
+    `echo $NIX_STORE`,
+    `nix-build shell.nix -A testScript`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+
     // `nix-store --store ${bucketURL({ bucket, awsRegion })}`,
     // "nix-env -i curl --option extra-binary-caches 'http://remote-worker.default:5000/ https://cache.nixos.org' --substituters http://remote-worker.default:5000/",
     // "nix ping-store --store http://remote-worker.default:5000"
-    `nix-build shell.nix -A testScript --option extra-binary-caches 'https://s3.eu-west-2.amazonaws.com/future-is-comming-binary-store https://cache.nixos.org' --substituters 'http://remote-worker.default:5000/'`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
+    // `nix-build shell.nix -A testScript --option signed-binary-caches "" --option extra-binary-caches 'https://s3.eu-west-2.amazonaws.com/future-is-comming-binary-store https://cache.nixos.org' --substituters 'http://remote-worker.default:5000/'`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
     // "curl http://remote-worker.default:5000/nix-cache-info"
     // `nix-build shell.nix -A testScript --option extra-binary-caches 'https://s3.eu-west-2.amazonaws.com/future-is-comming-binary-store https://cache.nixos.org/'`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
     // `nix copy --option signed-binary-caches="" --no-check-sigs --all --to "s3://${bucket}?region=${awsRegion}"`, // all
-    `nix copy \
-        --to  "s3://${bucket}?region=${awsRegion}" \
-        --option narinfo-cache-positive-ttl 0 \
-        $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
+    // `nix copy \
+    //     --to  "s3://${bucket}?region=${awsRegion}" \
+    //     --option narinfo-cache-positive-ttl 0 \
+    //     $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
 
-    `./result/bin/test-script`
+    // `./result/bin/test-script`
     // `nix-shell --run test-script --store 's3://${bucket}?region=${awsRegion}'`
   ];
   // "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",
@@ -47,6 +55,8 @@ function run(e, project) {
   // // nix-run
 
   test.streamLogs = true;
+  test.cache.enabled = true;
+  test.storage.enabled = true;
 
   test.run()
 }

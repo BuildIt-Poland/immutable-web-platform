@@ -83,6 +83,38 @@ in
     };
   };
 
+  kubernetes.api.storageclasses = {
+    build-storage = {
+      metadata = {
+        # namespace = brigade-ns;
+        name = "build-storage";
+        annotations = {
+          "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
+        };
+        labels = {
+          "addonmanager.kubernetes.io/mode" = "EnsureExists";
+        };
+      };
+      provisioner = "kubernetes.io/host-path";
+    };
+    cache-storage = {
+      metadata = {
+        # namespace = brigade-ns;
+        name = "cache-storage";
+        annotations = {
+          "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
+        };
+        labels = {
+          "addonmanager.kubernetes.io/mode" = "EnsureExists";
+        };
+      };
+      provisioner = "kubernetes.io/host-path";
+    };
+  };
+
+  # kubernetes.api.storage
+  # c.cluster.config.kubernetes.api.storage.k8s.io
+  # .cluster.config.kubernetes.api.storageclasses
   # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
   kubernetes.helm.instances.brigade-project = {
     namespace = "${brigade-ns}";
@@ -90,12 +122,17 @@ in
     chart = charts.brigade-project;
     values = {
       project = env-config.brigade.project-name;
-      repository = env-config.repository.location;
+      repository = env-config.brigade.project-name; # repository.location is too long
+      # repository = env-config.repository.location;
       cloneURL = env-config.repository.git;
       vcsSidecar = "brigadecore/git-sidecar:latest";
       sharedSecret = env-config.brigade.sharedSecret;
       defaultScript = builtins.readFile env-config.brigade.pipeline; 
       sshKey = builtins.readFile ssh-keys.bitbucket.priv;
+      kubernetes = {
+        cacheStorageClass = "build-storage";
+        buildStorageClass = "cache-storage";
+      };
       secrets = {
         awsAccessKey = aws-credentials.aws_access_key_id;
         awsSecretKey = aws-credentials.aws_secret_access_key;
