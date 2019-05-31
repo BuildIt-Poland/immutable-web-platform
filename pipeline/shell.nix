@@ -12,6 +12,7 @@ let
     name = "test-script";
     src = ./.;
     phases = ["installPhase"];
+    buildInputs = [pkgs.jq];
     installPhase = ''
       mkdir -p $out/bin
       cp ${testScript2} $out/bin/${testScript2.name}
@@ -19,7 +20,7 @@ let
   };
 in
 with pkgs;
-{ 
+({ 
   inherit testScript;
   shell = mkShell {
     inputsFrom = [
@@ -40,4 +41,4 @@ with pkgs;
       echo "hey hey hey worker"
     '';
   };
- }
+ }).shell

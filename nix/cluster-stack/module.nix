@@ -95,6 +95,7 @@ in
           "addonmanager.kubernetes.io/mode" = "EnsureExists";
         };
       };
+      reclaimPolicy = "Retain";
       provisioner = "kubernetes.io/host-path";
     };
     cache-storage = {
@@ -108,13 +109,11 @@ in
           "addonmanager.kubernetes.io/mode" = "EnsureExists";
         };
       };
+      reclaimPolicy = "Retain";
       provisioner = "kubernetes.io/host-path";
     };
   };
 
-  # kubernetes.api.storage
-  # c.cluster.config.kubernetes.api.storage.k8s.io
-  # .cluster.config.kubernetes.api.storageclasses
   # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
   kubernetes.helm.instances.brigade-project = {
     namespace = "${brigade-ns}";
@@ -122,7 +121,7 @@ in
     chart = charts.brigade-project;
     values = {
       project = env-config.brigade.project-name;
-      repository = env-config.brigade.project-name; # repository.location is too long
+      repository = env-config.brigade.project-name; # repository.location is too long # TODO check if it would work with gateway now ...
       # repository = env-config.repository.location;
       cloneURL = env-config.repository.git;
       vcsSidecar = "brigadecore/git-sidecar:latest";
