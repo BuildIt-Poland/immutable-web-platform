@@ -1,6 +1,9 @@
+// I have to do here some magic to enable runtime transpilation
 const { events, Job, JobRunner } = require("brigadier")
 
 // TODO add --store property to s3
+
+const testtest = require('brigade-extension')
 
 const bucket = "future-is-comming-binary-store"
 
