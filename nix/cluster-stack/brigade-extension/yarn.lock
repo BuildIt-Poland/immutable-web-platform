@@ -942,6 +942,11 @@ type-check@~0.3.2:
   dependencies:
     prelude-ls "~1.1.2"
 
+typescript@^3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.1.tgz#ba72a6a600b2158139c5dd8850f700e231464202"
+  integrity sha512-64HkdiRv1yYZsSe4xC1WVgamNigVYjlssIoaH2HcZF0+ijsk5YK2g0G34w9wJkze8+5ow4STd22AynfO6ZYYLw==
+
 ulid@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/ulid/-/ulid-0.2.0.tgz#f43cf55c7807aec30d6695cb3bfe93b2e30b61a4"

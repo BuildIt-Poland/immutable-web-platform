@@ -4,9 +4,8 @@ pkgs.yarn2nix.mkYarnPackage {
   src = ./.;
   packageJson = ./package.json;
   yarnLock = ./yarn.lock;
-  preBuild = ''
-    echo "TODO transpile ts ..."
-    ls $src
-    ls $out
+  publishBinsFor = ["typescript"];
+  postBuild = ''
+    yarn run build
   '';
 }

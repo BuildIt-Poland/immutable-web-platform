@@ -1,10 +1,13 @@
 {
   "name": "brigade-extension",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
-    "@brigadecore/brigadier": "^0.4.0"
+    "@brigadecore/brigadier": "^0.4.0",
+    "typescript": "^3.5.1"
   }
 }
