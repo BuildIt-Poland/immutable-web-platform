@@ -4,7 +4,7 @@ let
   image = "brigadecore/brigade-worker";
   port = 5000;
   pkgs = linux-pkgs;
-  # skopeo inspect docker://docker.io/brigadecore/brigade-worker
+  # DOCS: to get imageDigest use `skopeo inspect docker://docker.io/brigadecore/brigade-worker`
   # THIS IS MAGIC!
   worker = pkgs.dockerTools.pullImage {
     imageName = image;
@@ -13,7 +13,7 @@ let
     os = "linux";
     arch = "amd64";
   };
-  brigade-extension = pkgs.callPackage ./brigade-extension/package.nix {};
+  brigade = pkgs.callPackage ./brigade-extension/package.nix {};
 in
 # INFO: this image is required to embed custom scripts
 pkgs.dockerTools.buildImage ({
@@ -24,7 +24,8 @@ pkgs.dockerTools.buildImage ({
 
   extraCommands = ''
     ${pkgs.yarn}/bin/yarn add xml-simple
-    ${pkgs.yarn}/bin/yarn add file:${brigade-extension}/tarballs/${brigade-extension.name}.tgz
+    ${pkgs.yarn}/bin/yarn add file:${brigade.extension}/tarballs/${brigade.extension.name}.tgz
+    ${pkgs.yarn}/bin/yarn add file:${brigade.base}/tarballs/${brigade.base.name}.tgz
   '';
 
   config = {
