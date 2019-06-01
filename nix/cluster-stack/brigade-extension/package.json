@@ -1,0 +1,10 @@
+{
+  "name": "brigade-extension",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "@brigadecore/brigadier": "^0.4.0"
+  }
+}

@@ -12,6 +12,7 @@ let
     os = "linux";
     arch = "amd64";
   };
+  brigade-extension = pkgs.callPackage ./brigade-extension/package.nix {};
 in
 # INFO: this image is required to embed custom scripts
 pkgs.dockerTools.buildImage ({
@@ -19,14 +20,16 @@ pkgs.dockerTools.buildImage ({
   tag = "latest";
 
   fromImage = worker;
-  # fromImageTag = "latest";
 
   extraCommands = ''
     ${pkgs.yarn}/bin/yarn add xml-simple
+    ${pkgs.yarn}/bin/yarn add file:${brigade-extension}/tarballs/${brigade-extension.name}.tgz
   '';
 
   config = {
-    Cmd = ["yarn run test"];
+    Cmd = [ 
+      "yarn run test" 
+    ];
     WorkingDir = "/home/src";
   };
 
