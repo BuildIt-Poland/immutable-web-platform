@@ -1,3 +1,7 @@
+## For local development
+* TODO there will be separate bucket for local builds on `s3` as project is growing and require lots of dependencies
+
+## For CI
 ### Brigade handle it via PVC
 https://docs.brigade.sh/topics/javascript/
 
