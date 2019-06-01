@@ -9,6 +9,7 @@
 let
   charts = callPackage ./charts.nix {};
   remote-worker = callPackage ./remote-worker.nix {};
+  brigade-worker = callPackage ./brigade-worker.nix {};
 
   namespace = env-config.kubernetes.namespace;
   local-infra-ns = namespace.infra;
@@ -21,6 +22,7 @@ in
   imports = with kubenix.modules; [ helm k8s docker ];
 
   docker.images.remote-worker.image = remote-worker;
+  docker.images.brigade-worker.image = brigade-worker;
 
   kubernetes.api.namespaces."${local-infra-ns}"= {};
   kubernetes.api.namespaces."${brigade-ns}"= {};
@@ -41,7 +43,7 @@ in
             imagePullPolicy = "Never";
             ports."5000" = {};
             command = [ "nix-serve" ];
-            volumeMounts."/_nix/store".name = "build-storage";
+            volumeMounts."/nix/store".name = "build-storage";
           };
           # BUG: it would mount when there will be first build
           volumes."build-storage" = {
@@ -140,9 +142,17 @@ in
       sharedSecret = env-config.brigade.sharedSecret;
       defaultScript = builtins.readFile env-config.brigade.pipeline; 
       sshKey = builtins.readFile ssh-keys.bitbucket.priv;
+      workerCommand = "yarn build-start";
+      worker = {
+        registry = "dev.local";
+        name = "brigade-worker";
+        tag = "latest";
+        pullPolicy = "IfNotPresent";
+        # pullPolicy = "Never"; # TODO for dev Never - create global rule! IfNotPresent
+      };
       kubernetes = {
         cacheStorageClass = "cache-storage";
-        buildStorageClass = "build-storage";
+        # buildStorageClass = "build-storage";
       };
       secrets = {
         awsAccessKey = aws-credentials.aws_access_key_id;

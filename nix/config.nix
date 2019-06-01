@@ -38,6 +38,9 @@ rec {
     };
   };
 
+  # TODO apply to all pods
+  imagePullPolicy = if is-dev then "Never" else "IfNotPresent";
+
   is-dev = env == "dev";
 
   s3 = {
@@ -52,7 +55,7 @@ rec {
   brigade = {
     sharedSecret = brigadeSharedSecret;
     project-name = "embracing-nix-docker-k8s-helm-knative";
-    pipeline = "${rootFolder}/pipeline/infrastructure.js"; 
+    pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
   };
 
   docker = {

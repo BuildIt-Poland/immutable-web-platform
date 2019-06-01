@@ -1,4 +1,4 @@
-const { events, Job } = require("brigadier")
+const { events, Job, JobRunner } = require("brigadier")
 
 // TODO add --store property to s3
 
@@ -6,7 +6,28 @@ const bucket = "future-is-comming-binary-store"
 
 process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
 
+const XML = require("xml-simple");
+
 const bucketURL = ({ bucket, awsRegion }) => `s3://${bucket}?region=${awsRegion}`;
+
+// class MyJob extends Job {
+//   jr: JobRunner;
+
+//   run(currentEvent, currentProject): Promise<any> {
+//     this.jr = new JobRunner().init(this, currentEvent, currentProject, process.env.BRIGADE_SECRET_KEY_REF == 'true');
+//     this._podName = this.jr.name;
+//     return this.jr.run().catch(err => {
+//       // Wrap the message to give clear context.
+//       console.error(err);
+//       let msg = `job ${this.name}(${this.jr.name}): ${err}`;
+//       return Promise.reject(new Error(msg));
+//     });
+//   }
+
+//   logs(): Promise<string> {
+//     return this.jr.logs();
+//   }
+// }
 
 // most likely all these problems are related to nix and mounted PV with noexec option ... need to read more about it
 function run(e, project) {
@@ -19,9 +40,11 @@ function run(e, project) {
   test.docker.enabled = true;
 
   test.shell = "bash";
-  test.cache.size = "1Gi";
-  test.storage.size = "1Gi";
+  // test.cache.size = "1Gi";
+  // test.storage.size = "1Gi";
   test.privileged = true
+
+  // test.useSource = false
 
   // job.resourceRequests.memory = "2Gi";
   // job.resourceRequests.cpu = "500m";
@@ -45,8 +68,12 @@ function run(e, project) {
     // ...nix,
   }
 
+  XML.parse("<say><to>world</to></say>", (e, say) => {
+    console.log(`Saying hello to ${say.to}`)
+  })
+
   const storePath = `${test.storage.path}`
-  const storeExport = `${test.cache.path}/nix/store_flat`
+  const storeExport = `${test.cache.path}`
   const resultPath = `$(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`
   // most likely remote worker would be ok ... 
   test.tasks = [
@@ -65,6 +92,7 @@ function run(e, project) {
     // `nix-env -i rsync`,
     // `nix run -f shell.nix testScript -c test-script --option require-sigs false`, // --store 's3://${bucket}?region=${awsRegion}&endpoint=example.com'`,
     `mkdir -p ${storePath}/test/test`,
+    `mkdir -p ${storeExport}/test/test`,
     `echo ${storePath}`,
     `ls -la ${storePath}`,
     // `rsync -a --ignore-existing /nix/store/ ${storePath}/`

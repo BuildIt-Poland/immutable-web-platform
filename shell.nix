@@ -81,8 +81,7 @@ mkShell {
     wait-for-istio-ingress
     add-knative-label-to-istio
     expose-istio-ingress
-
-    wait-for-brigade-ingress
-    expose-brigade-gateway
   '';
+  # wait-for-brigade-ingress
+  # expose-brigade-gateway
 }
