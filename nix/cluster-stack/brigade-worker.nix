@@ -1,3 +1,4 @@
+# TODO Align to functions convention - keep stuff in /nix folder related to image and package
 { linux-pkgs, env-config }:
 let
   image = "brigadecore/brigade-worker";
