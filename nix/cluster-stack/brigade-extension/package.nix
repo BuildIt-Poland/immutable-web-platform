@@ -27,15 +27,15 @@ let
 in
 { 
   # filter source here since there is a whole repo ...
-  base = pkgs.yarn2nix.mkYarnPackage {
-    name = "brigade-worker";
-    src = fixed-source;
-    packageJson = "${fixed-source}/package.json";
-    yarnLock = "${fixed-source}/yarn.lock";
-    preBuild = ''
-      yarn run build
-    '';
-  };
+  # base = pkgs.yarn2nix.mkYarnPackage {
+  #   name = "brigade-worker";
+  #   src = fixed-source;
+  #   packageJson = "${fixed-source}/package.json";
+  #   yarnLock = "${fixed-source}/yarn.lock";
+  #   preBuild = ''
+  #     yarn run build
+  #   '';
+  # };
 
  extension = pkgs.yarn2nix.mkYarnPackage {
     name = "brigade-extension";
@@ -43,9 +43,6 @@ in
     packageJson = ./package.json;
     yarnLock = ./yarn.lock;
     publishBinsFor = ["typescript"];
-    # workspaceDependencies = [
-    #   brigade-worker-base    
-    # ];
     postBuild = ''
       yarn run build
     '';

@@ -1,38 +1,58 @@
 // I have to do here some magic to enable runtime transpilation
-const { events, Job, JobRunner } = require("brigadier")
+const { events, Job, Group } = require("brigadier")
+const { JobRunner } = require("brigadier/../k8s")
+// const { MyJob } = require("brigade-extension")
 
 // TODO add --store property to s3
 
-const testtest = require('brigade-extension')
+// const testtest = require('brigade-extension')
 
 const bucket = "future-is-comming-binary-store"
 
 process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
 
 const XML = require("xml-simple");
-
 const bucketURL = ({ bucket, awsRegion }) => `s3://${bucket}?region=${awsRegion}`;
 
-// class MyJob extends Job {
-//   jr: JobRunner;
-
-//   run(currentEvent, currentProject): Promise<any> {
-//     this.jr = new JobRunner().init(this, currentEvent, currentProject, process.env.BRIGADE_SECRET_KEY_REF == 'true');
-//     this._podName = this.jr.name;
-//     return this.jr.run().catch(err => {
-//       // Wrap the message to give clear context.
-//       console.error(err);
-//       let msg = `job ${this.name}(${this.jr.name}): ${err}`;
-//       return Promise.reject(new Error(msg));
-//     });
-//   }
-
-//   logs(): Promise<string> {
-//     return this.jr.logs();
-//   }
-// }
-
+// dark magic involved
 // most likely all these problems are related to nix and mounted PV with noexec option ... need to read more about it
+class MyJob extends Job {
+  // name: string;
+  currentEvent: string
+  currentProject: string
+
+  with(currentEvent, currentProject) {
+    this.currentEvent = currentEvent
+    this.currentProject = currentProject
+    return this
+  }
+
+  run() {
+    // @ts-ignore
+    this.jr = new JobRunner().init(this, currentEvent, currentProject, process.env.BRIGADE_SECRET_KEY_REF == 'true');
+    this._podName = this.jr.name;
+
+    this.jr.runner.spec.volumes.push({
+      name: "global-build-storage",
+      persistentVolumeClaim: {
+        namespace: "brigade",
+        claimName: "embracing-nix-docker-k8s-helm-knative-test"
+      }
+    })
+
+    this.jr.runner.spec.containers[0].volumeMounts.push(
+      { name: "global-build-storage", mountPath: "/global" } // as kubernetes.V1VolumeMount
+    );
+
+    return this.jr.run().catch(err => {
+      // Wrap the message to give clear context.
+      console.error(err);
+      let msg = `job ${this.name}(${this.jr.name}): ${err}`;
+      return Promise.reject(new Error(msg));
+    });
+  }
+}
+
 function run(e, project) {
   console.log("hello default script")
   // let test = new Job("test", "dev.local/remote-worker:latest")
@@ -41,6 +61,14 @@ function run(e, project) {
   test.cache.enabled = true;
   test.storage.enabled = true;
   test.docker.enabled = true;
+
+  let job = new MyJob("test", "lnl7/nix")
+  job.tasks = [
+    `mkdir -p /global/test/test`,
+    `ls -la /global/test/test`,
+    `ls -la /global`,
+    `echo "yay" > /global/test.file`
+  ];
 
   test.shell = "bash";
   // test.cache.size = "1Gi";
@@ -133,8 +161,8 @@ function run(e, project) {
   // "nix-build nix -A cluster-stack.push-to-docker-registry"
   // // nix-run
 
-
-  test.run()
+  job.with(e, project).run()
+  // test.run()
 }
 
 events.on("exec", run)
