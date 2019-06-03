@@ -7,7 +7,7 @@ const { JobRunner } = require("brigadier/../k8s")
 
 // const testtest = require('brigade-extension')
 
-const bucket = "future-is-comming-binary-store"
+const bucket = "future-is-comming-worker-binary-store"
 
 process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
 
@@ -18,8 +18,6 @@ const bucketURL = ({ bucket, awsRegion }) => `s3://${bucket}?region=${awsRegion}
 // most likely all these problems are related to nix and mounted PV with noexec option ... need to read more about it
 class MyJob extends Job {
   // name: string;
-  currentEvent: string
-  currentProject: string
 
   with(currentEvent, currentProject) {
     this.currentEvent = currentEvent
@@ -29,20 +27,20 @@ class MyJob extends Job {
 
   run() {
     // @ts-ignore
-    this.jr = new JobRunner().init(this, currentEvent, currentProject, process.env.BRIGADE_SECRET_KEY_REF == 'true');
+    this.jr = new JobRunner().init(this, this.currentEvent, this.currentProject, process.env.BRIGADE_SECRET_KEY_REF == 'true');
     this._podName = this.jr.name;
 
-    this.jr.runner.spec.volumes.push({
-      name: "global-build-storage",
-      persistentVolumeClaim: {
-        namespace: "brigade",
-        claimName: "embracing-nix-docker-k8s-helm-knative-test"
-      }
-    })
+    // this.jr.runner.spec.volumes.push({
+    //   name: "global-build-storage",
+    //   persistentVolumeClaim: {
+    //     namespace: "brigade",
+    //     claimName: "embracing-nix-docker-k8s-helm-knative-test"
+    //   }
+    // })
 
-    this.jr.runner.spec.containers[0].volumeMounts.push(
-      { name: "global-build-storage", mountPath: "/global" } // as kubernetes.V1VolumeMount
-    );
+    // this.jr.runner.spec.containers[0].volumeMounts.push(
+    //   { name: "global-build-storage", mountPath: "/global" } // as kubernetes.V1VolumeMount
+    // );
 
     return this.jr.run().catch(err => {
       // Wrap the message to give clear context.
@@ -62,13 +60,46 @@ function run(e, project) {
   test.storage.enabled = true;
   test.docker.enabled = true;
 
+  const { awsAccessKey, awsSecretKey, awsRegion, secrets } = project.secrets
   let job = new MyJob("test", "lnl7/nix")
+  job.env = {
+    AWS_ACCESS_KEY_ID: awsAccessKey,
+    AWS_SECRET_ACCESS_KEY: awsSecretKey,
+    AWS_DEFAULT_REGION: awsRegion,
+    AWS_PROFILE: '',
+    SECRETS: secrets,
+    // ...nix,
+  }
   job.tasks = [
-    `mkdir -p /global/test/test`,
-    `ls -la /global/test/test`,
-    `ls -la /global`,
-    `echo "yay" > /global/test.file`
+    // "nix ping-store --store http://remote-worker.brigade:5000",
+    // `nix run -f shell.nix testScript -c test-script --option require-sigs false`,
+    `echo "require-sigs = false" >> /etc/nix/nix.conf`,
+    `echo "binary-caches = ${bucketURL({ bucket, awsRegion })} https://cache.nixos.org/" >> /etc/nix/nix.conf`,
+    // `cd /src/pipeline`,
+    `cd /src/pipeline`,
+    `nix-build shell.nix -A testScript`,
+    // `nix-store --repair --verify --check-contents`,
+    `nix-store --repair --verify`,
+    // // --to local?root=/global \
+    // // --to file://global \
+    `nix copy \
+        --to ${bucketURL({ bucket, awsRegion })}\
+        $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
+
+    `nix-env -i ./result`,
+    `nix-env -i sops`,
+    `test-script`,
+
+    // should be in image
+    // `nix copy \
+    //     --to ${bucketURL({ bucket, awsRegion })}\
+    //     $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver $(which sops)))`,
+
+    "echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > secrets-encrypted.json",
+    "cat secrets-encrypted.json"
   ];
+  job.streamLogs = true;
+  // --option signed-binary-caches "" \
 
   test.shell = "bash";
   // test.cache.size = "1Gi";
@@ -82,7 +113,6 @@ function run(e, project) {
   // job.resourceLimits.memory = "3Gi";
   // job.resourceLimits.cpu = "1";
 
-  const { awsAccessKey, awsSecretKey, awsRegion, secrets } = project.secrets
 
   const nix = {
     // NIX_STORE_DIR: `${test.cache.path}/nix/store`,
