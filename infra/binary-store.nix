@@ -2,7 +2,7 @@
 let
   region = "eu-west-2";
   accessKeyId = "default";
-  project = "future-is-coming-binary-store"; # would be good to take it from config
+  project = "future-is-coming-worker-binary-store"; # would be good to take it from config
 in
 {
   # TODO add tags
@@ -12,39 +12,55 @@ in
       name = project;
       versioning = "Suspended";
       policy = ''
-        {
-          "Version": "2012-10-17",
-          "Statement": [
+      {
+        "Id": "DirectReads",
+        "Version": "2012-10-17",
+        "Statement": [
             {
-              "Sid": "testing",
-              "Effect": "Allow",
-              "Principal": "*",
-              "Action": "s3:GetObject",
-              "Resource": "arn:aws:s3:::${project}/*"
+                "Sid": "AllowDirectReads",
+                "Action": [
+                    "s3:GetObject",
+                    "s3:GetBucketLocation"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                    "arn:aws:s3:::${project}",
+                    "arn:aws:s3:::${project}/*"
+                ],
+                "Principal": "*"
             }
+        ]
+      }
+      '';
+    };
+
+  resources.iam-role."${project}-iam-role" = 
+  {
+    inherit accessKeyId;
+    policy = ''
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "UploadToCache",
+          "Effect": "Allow",
+          "Action": [
+            "s3:AbortMultipartUpload",
+            "s3:GetBucketLocation",
+            "s3:GetObject",
+            "s3:ListBucket",
+            "s3:ListBucketMultipartUploads",
+            "s3:ListMultipartUploadParts",
+            "s3:ListAllMyBuckets",
+            "s3:PutObject"
+          ],
+          "Resource": [
+            "arn:aws:s3:::${project}",
+            "arn:aws:s3:::${project}/*"
           ]
         }
-        '';
-       lifeCycle = ''
-         {
-           "Rules": [
-              {
-                "Status": "Enabled",
-                "Prefix": "",
-                "Transitions": [
-                  {
-                    "Days": 30,
-                    "StorageClass": "GLACIER"
-                  }
-                ],
-                "ID": "Glacier",
-                "AbortIncompleteMultipartUpload":
-                  {
-                    "DaysAfterInitiation": 7
-                  }
-              }
-           ]
-         }
-       '';
-    };
+      ]
+    }
+    '';
+  }
 }

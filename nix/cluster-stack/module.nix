@@ -36,6 +36,8 @@ in
       template = {
         metadata.labels.app = "remote-worker";
         spec = {
+          # TODO
+          # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
           # securityContext.fsGroup = 1000;
 
           containers."remote-worker" = {
@@ -43,7 +45,11 @@ in
             imagePullPolicy = "Never";
             ports."5000" = {};
             command = [ "nix-serve" ];
-            volumeMounts."/_nix/store".name = "build-storage";
+            # env = [{
+            #   name = "NIX_STORE_DIR";
+            #   value = "/global-store";
+            # }];
+            volumeMounts."/global-store".name = "build-storage";
           };
           # BUG: it would mount when there will be first build
           volumes."build-storage" = {
@@ -59,7 +65,7 @@ in
   kubernetes.api.services.remote-worker = {
     spec = {
       ports = [{
-        name = "https";
+        name = "http";
         port = 5000;
       }];
       selector.app = "remote-worker";

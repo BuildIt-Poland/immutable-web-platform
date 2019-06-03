@@ -11,7 +11,9 @@ https://github.com/brandon-bethke-neudesic/brigade/blob/cef43b38fad83975da817245
  •  kubernetes.buildStorageClass: This is used for the shared per-build storage.
 
 
-Idea is that:
+Idea is that: 
 * each build is doing rsync to cache/build storage -- there is no way to do this without endpoint for upload since there is no shared space between workers - need to write custom worker with embeded pvc - easy ...
 * storage is mounted to remote-worker
 * remote-work act as remote-binary-store
+
+above is too tricky, possible but tricky, better is to go with s3, in case of azure, minio will provide interface for s3 like api
