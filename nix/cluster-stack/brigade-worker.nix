@@ -25,8 +25,8 @@ pkgs.dockerTools.buildImage ({
   extraCommands = ''
     ${pkgs.yarn}/bin/yarn add xml-simple
     ${pkgs.yarn}/bin/yarn add file:${brigade.extension}/tarballs/${brigade.extension.name}.tgz
-    ${pkgs.yarn}/bin/yarn add file:${brigade.base}/tarballs/${brigade.base.name}.tgz
   '';
+    # ${pkgs.yarn}/bin/yarn add file:${brigade.base}/tarballs/${brigade.base.name}.tgz
 
   config = {
     Cmd = [ 
@@ -36,8 +36,8 @@ pkgs.dockerTools.buildImage ({
   };
 
   contents = [
-    pkgs.bash
-    pkgs.coreutils
-    pkgs.yarn
+    # pkgs.bash
+    # pkgs.coreutils
+    # pkgs.yarn
   ];
 })

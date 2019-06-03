@@ -43,7 +43,7 @@ in
             imagePullPolicy = "Never";
             ports."5000" = {};
             command = [ "nix-serve" ];
-            volumeMounts."/nix/store".name = "build-storage";
+            volumeMounts."/_nix/store".name = "build-storage";
           };
           # BUG: it would mount when there will be first build
           volumes."build-storage" = {
@@ -96,6 +96,8 @@ in
   };
 
   kubernetes.api.storageclasses = {
+    # INFO this build storage is global! definition is not the same as for brigade.build-bucket
+    # this is cache for NIX!
     build-storage = {
       metadata = {
         namespace = brigade-ns;
