@@ -44,7 +44,7 @@ rec {
   is-dev = env == "dev";
 
   s3 = {
-    bucket = "future-is-comming-binary-store";
+    worker-cache = "${projectName}-worker-binary-store";
   };
   
   repository = {
@@ -59,8 +59,17 @@ rec {
   };
 
   docker = {
-    registry = "docker.io/gatehub";
+    # stil so so, if defined for brigade worker it is trying to hit http ...
+    registry = 
+      if is-dev
+        then "dev.local"
+        else "docker.io/gatehub";
+
     destination = "docker://damianbaar"; # skopeo path transport://repo
+
+    tag = if is-dev
+      then { tag = "latest"; }
+      else { tag = version; };
   };
 
   info = rec {

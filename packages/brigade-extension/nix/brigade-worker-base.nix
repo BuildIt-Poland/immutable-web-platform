@@ -1,3 +1,4 @@
+
 # INFO: this package is in general tricky ... I'm taking source from github and making it as dependency
 # INFO: as this works like a workspace it has to have the same dependencies with the same versions
 { pkgs }:
@@ -23,28 +24,13 @@ let
       cd $out && yarn
     '';
   };
-
-in
-{ 
-  # filter source here since there is a whole repo ...
-  # base = pkgs.yarn2nix.mkYarnPackage {
-  #   name = "brigade-worker";
-  #   src = fixed-source;
-  #   packageJson = "${fixed-source}/package.json";
-  #   yarnLock = "${fixed-source}/yarn.lock";
-  #   preBuild = ''
-  #     yarn run build
-  #   '';
-  # };
-
- extension = pkgs.yarn2nix.mkYarnPackage {
-    name = "brigade-extension";
-    src = ./.;
-    packageJson = ./package.json;
-    yarnLock = ./yarn.lock;
-    publishBinsFor = ["typescript"];
-    postBuild = ''
-      yarn run build
-    '';
-  };
+# filter source here since there is a whole repo ...
+in pkgs.yarn2nix.mkYarnPackage {
+  name = "brigade-worker";
+  src = fixed-source;
+  packageJson = "${fixed-source}/package.json";
+  yarnLock = "${fixed-source}/yarn.lock";
+  preBuild = ''
+    yarn run build
+  '';
 }

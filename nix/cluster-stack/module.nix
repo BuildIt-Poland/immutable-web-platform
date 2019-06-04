@@ -4,14 +4,15 @@
   pkgs, 
   kubenix, 
   callPackage, 
+  brigade-extension,
+  remote-worker,
   ...
 }: 
 let
   charts = callPackage ./charts.nix {};
-  remote-worker = callPackage ./remote-worker.nix {};
-  brigade-worker = callPackage ./brigade-worker.nix {};
 
   namespace = env-config.kubernetes.namespace;
+
   local-infra-ns = namespace.infra;
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
@@ -21,67 +22,17 @@ in
 {
   imports = with kubenix.modules; [ helm k8s docker ];
 
-  docker.images.remote-worker.image = remote-worker;
-  docker.images.brigade-worker.image = brigade-worker;
+  docker.images.brigade-worker.image = remote-worker.docker-image;
+  docker.images.brigade-extension.image = brigade-extension.docker-image;
 
   kubernetes.api.namespaces."${local-infra-ns}"= {};
   kubernetes.api.namespaces."${brigade-ns}"= {};
   kubernetes.api.namespaces."${istio-ns}"= {};
 
-  kubernetes.api.deployments."remote-worker" = {
-    metadata.namespace = brigade-ns;
-    spec = {
-      replicas = 1;
-      selector.matchLabels.app = "remote-worker";
-      template = {
-        metadata.labels.app = "remote-worker";
-        spec = {
-          # TODO
-          # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
-          # securityContext.fsGroup = 1000;
-
-          containers."remote-worker" = {
-            image = "remote-worker:latest"; #config.docker.images.remote-worker.path;
-            imagePullPolicy = "Never";
-            ports."5000" = {};
-            command = [ "nix-serve" ];
-            # env = [{
-            #   name = "NIX_STORE_DIR";
-            #   value = "/global-store";
-            # }];
-            volumeMounts."/global-store".name = "build-storage";
-          };
-          # BUG: it would mount when there will be first build
-          volumes."build-storage" = {
-            persistentVolumeClaim = {
-              claimName = "embracing-nix-docker-k8s-helm-knative-test";
-            };
-          };
-        };
-      };
-    };
-  };
-
-  kubernetes.api.services.remote-worker = {
-    spec = {
-      ports = [{
-        name = "http";
-        port = 5000;
-      }];
-      selector.app = "remote-worker";
-    };
-  };
-
-  # most likely bitbucket gateway does not handle namespace -> envvar BRIGADE_NAMESPACE
-  # perhaps need to pass it somehow during creation -> invetigate
   kubernetes.helm.instances.brigade = {
     namespace = "${brigade-ns}";
     chart = charts.brigade;
-    # values = {
-    # };
   };
-
-  # INFO json cannot be applied here as it is handled via helm module
 
   kubernetes.helm.instances.brigade-bitbucket-gateway = {
     namespace = "${brigade-ns}";
@@ -102,8 +53,6 @@ in
   };
 
   kubernetes.api.storageclasses = {
-    # INFO this build storage is global! definition is not the same as for brigade.build-bucket
-    # this is cache for NIX!
     build-storage = {
       metadata = {
         namespace = brigade-ns;
@@ -117,9 +66,9 @@ in
         };
       };
       reclaimPolicy = "Retain";
-      # volumeBindingMode = "WaitForFirstConsumer";
       provisioner = "kubernetes.io/host-path";
     };
+
     cache-storage = {
       metadata = {
         namespace = brigade-ns;
@@ -137,7 +86,13 @@ in
   };
 
   # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
-  kubernetes.helm.instances.brigade-project = {
+  kubernetes.helm.instances.brigade-project = 
+  let
+    cfg = config.docker.images;
+    extension = cfg.brigade-extension;
+    worker = cfg.brigade-worker;
+  in
+  {
     namespace = "${brigade-ns}";
     name = "brigade-project";
     chart = charts.brigade-project;
@@ -152,21 +107,23 @@ in
       sshKey = builtins.readFile ssh-keys.bitbucket.priv;
       workerCommand = "yarn build-start";
       worker = {
-        registry = "dev.local";
-        name = "brigade-worker";
-        tag = "latest";
-        pullPolicy = "IfNotPresent";
-        # pullPolicy = "Never"; # TODO for dev Never - create global rule! IfNotPresent
+        registry = if env-config.is-dev then "" else env-config.docker.registry;
+        name = extension.name;
+        tag = extension.tag;
+        # actually should be never but it seems that they are applying to this policy to sidecar as well
+        pullPolicy = "IfNotPresent"; 
       };
       kubernetes = {
         cacheStorageClass = "cache-storage";
-        # buildStorageClass = "build-storage";
+        buildStorageClass = "build-storage";
       };
       secrets = {
         awsAccessKey = aws-credentials.aws_access_key_id;
         awsSecretKey = aws-credentials.aws_secret_access_key;
         awsRegion = aws-credentials.region;
-        secrets = builtins.readFile env-config.secrets;
+        sopsSecrets = builtins.readFile env-config.secrets;
+        cacheBucket = env-config.s3.worker-cache;
+        workerDockerImage = "${worker.name}:${worker.tag}";
       };
     };
   };

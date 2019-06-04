@@ -9,7 +9,7 @@ const { JobRunner } = require("brigadier/../k8s") // because they are doing runt
 
 // dark magic involved
 // most likely all these problems are related to nix and mounted PV with noexec option ... need to read more about it
-class MyJob extends Job {
+export class MyJob extends Job {
   // name: string;
   currentEvent: string
   currentProject: string
