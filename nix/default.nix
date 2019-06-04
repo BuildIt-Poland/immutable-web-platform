@@ -14,12 +14,13 @@ let
     yarn2nix = super.callPackage sources.yarn2nix {};
     k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
-    node-development-tools = super.callPackage ../development-tools {};
     chart-from-git = super.callPackage ./helm {};
     log = super.callPackage ./helpers/log.nix {};
     k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
 
-    inherit sources;
+    # NodeJS packagea
+    node-development-tools = super.callPackage "${rootFolder}/packages/development-tools/nix" {};
+    brigade-extension = super.callPackage "${rootFolder}/packages/brigade-extension/nix" {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
@@ -33,6 +34,7 @@ let
         } // { inherit overlays; }))
         else super.pkgs;
 
+    remote-worker = super.callPackage ./remote-worker {};
     application = super.callPackage ./functions.nix {};
     cluster = super.callPackage ./cluster-stack {};
   };
