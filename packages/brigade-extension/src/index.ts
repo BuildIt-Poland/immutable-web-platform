@@ -30,7 +30,6 @@ const applyNixConfig = ({ cacheBucket, awsRegion }) => [
 ]
 
 export const saveSecrets = (fileName: string = 'secrets-encrypted.json') => [
-  `nix-env -i sops`, // TODO get rid of it - using different image ...
   `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`
 ]
 
@@ -54,6 +53,7 @@ export const copyToCache =
 
 type Tasks = (string | ((secrets: WorkerSecrets) => string[]))[]
 
+// investigate: https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L886
 export class NixJob extends Job {
 
   secrets: Secrets
@@ -63,7 +63,7 @@ export class NixJob extends Job {
 
   withSecrets(secrets: Secrets) {
     this.secrets = secrets as Secrets
-    // this.image = this.secrets.workerDockerImage
+    this.image = this.image ? this.image : this.secrets.workerDockerImage
     return this
   }
 

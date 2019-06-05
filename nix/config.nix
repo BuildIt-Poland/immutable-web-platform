@@ -62,13 +62,14 @@ rec {
     # stil so so, if defined for brigade worker it is trying to hit http ...
     registry = 
       if is-dev
-        then "dev.local"
+        then ""
+        # then "dev.local"
         else "docker.io/gatehub";
 
     destination = "docker://damianbaar"; # skopeo path transport://repo
 
     tag = if is-dev
-      then { tag = "latest"; }
+      then { tag = "dev-build"; }
       else { tag = version; };
   };
 

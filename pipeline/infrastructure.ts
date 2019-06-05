@@ -4,10 +4,11 @@ const { NixJob, saveSecrets, buildNixExpression } = require('brigade-extension')
 process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
 
 const createJob = (name) =>
-  new NixJob(name, 'lnl7/nix')
+  new NixJob(name)
     .withExtraParams({
       streamLogs: true,
       privileged: true,
+      shell: 'bash',
     })
     .withTasks([
       `cd /src/pipeline`,

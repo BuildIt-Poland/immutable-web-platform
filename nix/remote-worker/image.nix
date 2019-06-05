@@ -30,4 +30,13 @@ pkgs.dockerTools.buildImage ({
     pkgs.nix-serve
     pkgs.sops
   ];
+
+  config.Cmd = [ "${pkgs.bashInteractive}/bin/bash" ];
+  config.Env =
+    [ "PATH=/root/.nix-profile/bin:/run/current-system/sw/bin"
+      "MANPATH=/root/.nix-profile/share/man:/run/current-system/sw/share/man"
+      "NIX_PAGER=cat"
+      "NIX_PATH=nixpkgs=/root/.nix-defexpr/nixpkgs"
+      "NIX_SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
+    ];
 } // env-config.docker.tag)

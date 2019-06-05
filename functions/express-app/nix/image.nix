@@ -7,6 +7,7 @@ let
   fn-config = callPackage ./config.nix {};
 
   # as we are pusing to kind local cluster we don't want to create new image each time
+  # TODO take from env-config -> and use other tag than latest to avoid imagePullPolicy to Always
   local-development = 
     if env-config.is-dev
       then { tag = fn-config.local-development-tag; } 
