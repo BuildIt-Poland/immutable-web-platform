@@ -123,7 +123,7 @@ in
         awsRegion = aws-credentials.region;
         sopsSecrets = builtins.readFile env-config.secrets;
         cacheBucket = env-config.s3.worker-cache;
-        workerDockerImage = "${worker.name}:${worker.tag}";
+        workerDockerImage = "${worker.name}:${worker.tag}"; # sth is not work well here
       };
     };
   };
