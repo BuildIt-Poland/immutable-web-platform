@@ -30,6 +30,7 @@ const applyNixConfig = ({ cacheBucket, awsRegion }) => [
 ]
 
 export const saveSecrets = (fileName: string = 'secrets-encrypted.json') => [
+  `nix-env -i sops`, // TODO get rid of it - using different image ...
   `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`
 ]
 
@@ -45,7 +46,7 @@ export const copyToCache =
   (result: string = './result') =>
     ({ cacheBucket, awsRegion }: Secrets) =>
       [
-        `nix-store --repair --verify`,
+        `nix-store --repair --verify`, // need to check how to skip this step
         `nix copy \
           --to ${bucketURL({ cacheBucket, awsRegion })}\
           $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ${result}))`,
@@ -54,30 +55,15 @@ export const copyToCache =
 type Tasks = (string | ((secrets: WorkerSecrets) => string[]))[]
 
 export class NixJob extends Job {
-  job: Job
-  secrets: Secrets
-  env: Job['env']
-  image: string
 
-  project: NixProject
+  secrets: Secrets
   event: BrigadeEvent
   extraParams: Partial<Job>
   _tasks: Tasks
 
-  constructor(name: string) {
-    super(name)
-  }
-
-  withProject(project: Project) {
-    this.project = project as NixProject
-    this.secrets = project.secrets as Secrets
-    this.image = this.secrets.workerDockerImage
-    this.job = new Job(this.name, this.image)
-    return this
-  }
-
-  withEvent(event: BrigadeEvent) {
-    this.event = event
+  withSecrets(secrets: Secrets) {
+    this.secrets = secrets as Secrets
+    // this.image = this.secrets.workerDockerImage
     return this
   }
 
@@ -99,46 +85,49 @@ export class NixJob extends Job {
   run(): Promise<Result> {
     const { cacheBucket, awsRegion } = this.secrets
 
-    this.job.env = {
-      ...this.createDefaultEnvVars(),
-      ...this.env
-    }
+    this.env = this.getEnvVars() as any as Job['env']
 
-    this.job.tasks = [
+    this.tasks = [
       ...applyNixConfig({ cacheBucket, awsRegion }),
       ...this.resolveTasks(this.secrets)
     ]
 
-    this.applyExtraParams()
-    return this.job.run()
-  }
+    this.cache.enabled = true
+    this.storage.enabled = true
+    this.docker.enabled = true
 
-  logs(): Promise<string> {
-    return this.job.logs()
+    this.applyExtraParams()
+    return super.run.apply(this)
   }
 
   private applyExtraParams() {
     Object
       .keys(this.extraParams)
       .forEach(param => {
-        this.job[param] = this.extraParams[param]
+        if (this[param]) this[param] = { ...this[param], ...this.extraParams[param] }
+        this[param] = this.extraParams[param]
       })
   }
 
   private resolveTasks(secrets: Secrets) {
     return this._tasks
       .map(t => typeof t == 'function' ? t(secrets) : t)
-      .reduce((acc, val) => [...acc, ...val], []) as string[]
+      .reduce((acc, val) =>
+        typeof val == "string"
+          ? [...acc, val]
+          : [...acc, ...val]
+        , []) as string[]
   }
 
-  private createDefaultEnvVars() {
-    const { awsAccessKey, awsSecretKey, awsRegion, secrets } = this.secrets
+  private getEnvVars() {
+    const { awsAccessKey, awsSecretKey, awsRegion, sopsSecrets } = this.secrets
 
     return {
       AWS_ACCESS_KEY_ID: awsAccessKey,
       AWS_SECRET_ACCESS_KEY: awsSecretKey,
       AWS_DEFAULT_REGION: awsRegion,
-      SECRETS: secrets,
+      SECRETS: sopsSecrets,
+      ...this.env,
     }
   }
 }
