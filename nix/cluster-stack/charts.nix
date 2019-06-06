@@ -14,9 +14,16 @@ rec {
     sha256 = "0i5i3h346dz4a771zkgjpbx4hbyf7r6zfhvqhvfjv234dha4fj50";
   };
 
+  brigade-project = fetch {
+    chart = "brigade-project";
+    repo = "https://brigadecore.github.io/charts";
+    version = "1.0.0";
+    sha256 = "05q4vvl1h79xd5xk44x29dq3y2a06pjvan355qzh5xga1jiga934";
+  };
+
   brigade-bitbucket = chart-from-git {
-    url = https://github.com/lukepatrick/brigade-bitbucket-gateway;
-    sha256 = "0hmww7gzpa2arhjhmsbc8shmprfgfdy89rmz93xl6hqviy9rl0yg";
+    url = https://github.com/damianbaar/brigade-bitbucket-gateway;
+    sha256 = "00vk1ywnkxihp3gqfkn7j641lgx353dkl7gbfsbkanc8rzdjbs5j";
     path = "charts/brigade-bitbucket-gateway";
   };
 

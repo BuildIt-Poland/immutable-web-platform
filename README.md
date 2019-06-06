@@ -56,6 +56,9 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 ### Pushing `docker-image`
 * `nix-build nix -A functions.express-app.pushDockerImages --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
 
+### Setup brigade
+* generate `ssh-key` only for your `bitbucket` hook. named your key as `bitbucket-webook` and place in `~/.ssh/` folder - (no worries, it can be changed in `nix/default.nix`)
+
 ### Start
 ### Required
 * [`nixpkgs`](https://nixos.org/nix/download.html)
@@ -93,6 +96,12 @@ or super fancy `lorri` with watch capability (check required section)
 ### Building docker with nix on `mac`
 * setup a `builder` - by running command within your shell (before you run nix-shell) `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
 > This script going to download docker worker as well as setup some keys and export env var related to builder (`NIX_REMOTE_SYSTEMS`), however if you will go with new shell over and over again, you can re-run the script or, build with `--builders`, like so `nix-build <your-build.nix> --builders 'ssh://nix-docker-build-slave x86_64-linux'`
+
+### Setup local brigade
+* run `create-localtunnel-for-brigade`
+* after that you will get tunel, create webhook `https://tricky-grasshopper-9.localtunnel.me/events/bitbucket/`
+* if you want to have auto-brigade configuration you have to pass `brigadeSharedSecret`, like so
+`nix-shell --argstr brigadeSharedSecret "<bitbucket.webhooks.request.X-Hook-UUID>"`
 
 ### Important
 * when pushing to docker registry, provide your [credentials](https://github.com/containers/skopeo#private-registries-with-authentication) - on `os x` auth via `keychain` does not work - simple workaround is to delete `credStore` do the login and should be all good.
@@ -179,3 +188,6 @@ or super fancy `lorri` with watch capability (check required section)
 * knative ... https://github.com/knative/docs/issues/1234 - it was hard since in case of local docker, there has to be some tricks applied to make a name of local docker image prefixed by `dev.io/<docker_image>`
 
 * `kubenix` for `helm` module is doing `chart2json` so in chart `json` file cannot be specified - there is a extra helper for it.
+
+#### To consider for local dev
+* https://github.com/txn2/kubefwd - actually there are pretty neat scripts to forward ports but I'd like to delgate this to some other tools which is able to show me the list, rather than `grep` against `ps`
