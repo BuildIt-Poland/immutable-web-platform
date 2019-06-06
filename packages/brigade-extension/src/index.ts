@@ -30,7 +30,7 @@ const applyNixConfig = ({ cacheBucket, awsRegion }) => [
 ]
 
 export const saveSecrets = (fileName: string = 'secrets-encrypted.json') => [
-  `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`
+  `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`,
 ]
 
 export const buildNixExpression =
@@ -49,6 +49,7 @@ export const copyToCache =
         `nix copy \
           --to ${bucketURL({ cacheBucket, awsRegion })}\
           $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ${result}))`,
+        `nix path-info -r --json ./result | jq .`,
       ]
 
 type Tasks = (string | ((secrets: WorkerSecrets) => string[]))[]
