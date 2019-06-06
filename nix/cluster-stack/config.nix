@@ -1,11 +1,15 @@
-{ env-config, kubenix, callPackage }:
+{ env-config, kubenix, pkgs, callPackage, brigade-extension, remote-worker }:
 (kubenix.evalModules {
     modules = [
-      ./module.nix 
+      ./module.nix
+      { 
+        docker.registry.url = env-config.docker.registry; 
+      }
     ];
-    # check = true;
     args = {
       inherit env-config;
       inherit callPackage;
+      inherit brigade-extension;
+      inherit remote-worker;
     };
   }).config

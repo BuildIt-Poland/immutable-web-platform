@@ -1,54 +1,84 @@
 {
   fresh ? false,
+  brigadeSharedSecret ? "", # take from bitbucket -> webhooks X-Hook-UUID
   updateResources ? false, # kubernetes resource,
-  exposePorts ? false
+  autoExposePorts ? false
 }@args:
 let
-  pkgs = (import ./nix {}).pkgs;
+  pkgs = (import ./nix {
+    inherit brigadeSharedSecret;
+  }).pkgs;
+
+  # TODO make it better at least concatString
+  get-help = pkgs.writeScriptBin "get-help" ''
+    echo "You've got in shell some extra spells under your hand ..."
+    echo "-- Brigade integration --"
+    echo "To expose brigade gateway for BitBucket events, run '${pkgs.k8s-local.expose-brigade-gateway.name}'"
+    echo "To make gateway accessible from outside, run '${pkgs.k8s-local.create-localtunnel-for-brigade.name}'"
+  '';
 in
 with pkgs;
 mkShell {
-  inputsFrom = [
-  ];
-
   buildInputs = [
     # js
     nodejs
-    pkgs.yarn2nix.yarn
+    yarn2nix.yarn
 
     # tools
-    pkgs.kind
-    pkgs.docker
-    pkgs.knctl
-    pkgs.brigade
-    pkgs.node-development-tools
+    kind
+    docker
+    knctl
+    brigade
+    brigadeterm
+    node-development-tools
+
+    # secrets
+    sops
 
     # cluster scripts
-    pkgs.k8s-local.delete-local-cluster
-    pkgs.k8s-local.create-local-cluster-if-not-exists
-    pkgs.k8s-local.export-kubeconfig
-    pkgs.k8s-local.expose-istio-ingress
-    pkgs.k8s-local.add-knative-label-to-istio
-    pkgs.k8s-local.export-ports
-    pkgs.k8s-local.expose-istio-ingress
-    pkgs.k8s-local.wait-for-istio-ingress
+    k8s-local.delete-local-cluster
+    k8s-local.create-local-cluster-if-not-exists
+    k8s-local.expose-istio-ingress
+    k8s-local.add-knative-label-to-istio
+
+    # waits
+    k8s-local.wait-for-istio-ingress
+    k8s-local.wait-for-brigade-ingress
+
+    # ingress & tunnels
+    k8s-local.expose-istio-ingress
+    k8s-local.expose-brigade-gateway
+    k8s-local.create-localtunnel-for-brigade
+
+    # exports
+    k8s-local.export-kubeconfig
+    k8s-local.export-ports
+
     # overridings
-    pkgs.k8s-local.curl-with-resolve
+    k8s-local.curl-with-resolve
 
     # helm
-    pkgs.cluster-stack.apply-cluster-stack
-    pkgs.cluster-stack.apply-functions-to-cluster
-    pkgs.cluster-stack.push-docker-images-to-local-cluster
+    k8s-cluster-operations.apply-cluster-stack
+    k8s-cluster-operations.apply-functions-to-cluster
+    k8s-cluster-operations.push-docker-images-to-local-cluster
 
+    # help
+    get-help
   ];
 
-  PROJECT_NAME = pkgs.env-config.projectName;
-  INGRESSGATEWAY = "istio-ingressgateway";
+  PROJECT_NAME = env-config.projectName;
 
+  # known issue: when starting clean cluster expose-brigade is run to early
+  
   shellHook= ''
-    echo "Hey sailor!"
+    ${log.message "Hey sailor!"}
+    ${log.info "If you need any help, run 'get-help'"}
+
+    ${env-config.info.printWarnings}
+    ${env-config.info.printInfos}
 
     ${if fresh then "delete-local-cluster" else ""}
+
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
@@ -56,12 +86,14 @@ mkShell {
     apply-cluster-stack
     apply-functions-to-cluster
 
+    source export-ports
+
     wait-for-istio-ingress
     add-knative-label-to-istio
-
-    source export-ports
     expose-istio-ingress
 
-    export PATH="$PATH:${pkgs.node-development-tools}/bin"
+    get-help
   '';
+  # wait-for-brigade-ingress
+  # expose-brigade-gateway
 }

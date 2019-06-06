@@ -1,36 +1,42 @@
 { 
   sources ? import ./sources.nix,
-  use-docker ? false,
+  brigadeSharedSecret ? "", # it would be good to display warning related to that
   env ? "dev"
 }:
 let
-  pkgsOpts = 
-    if use-docker
-      then { system = "x86_64-linux"; }
-      else {};
-
   rootFolder = ../.;
 
   tools = self: super: rec {
     kubenix = super.callPackage sources.kubenix {};
     knctl = super.callPackage ./tools/knctl.nix {};
     brigade = super.callPackage ./tools/brigade.nix {};
+    brigadeterm = super.callPackage ./tools/brigadeterm.nix {};
     yarn2nix = super.callPackage sources.yarn2nix {};
     k8s-local = super.callPackage ./k8s-local.nix {};
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
-    cluster-stack = super.callPackage ./cluster-stack {};
-    node-development-tools = super.callPackage ../development-tools {};
     chart-from-git = super.callPackage ./helm {};
+    log = super.callPackage ./helpers/log.nix {};
+    k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
+
+    # NodeJS packagea
+    node-development-tools = super.callPackage "${rootFolder}/packages/development-tools/nix" {};
+    brigade-extension = super.callPackage "${rootFolder}/packages/brigade-extension/nix" {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
   # building on darwin in linux in one run
   application = self: super: rec {
-    application = super.callPackage ./functions.nix {
-      pkgs = import sources.nixpkgs ({
-        system = "x86_64-linux";
-      } // { inherit overlays; });
-    };
+    linux-pkgs = 
+      if builtins.currentSystem == "x86_64-darwin"
+        then (import sources.nixpkgs ({ 
+          system = "x86_64-linux"; 
+          config.allowUnfree = true;
+        } // { inherit overlays; }))
+        else super.pkgs;
+
+    remote-worker = super.callPackage ./remote-worker {};
+    application = super.callPackage ./functions.nix {};
+    cluster = super.callPackage ./cluster-stack {};
   };
 
   kubenix-modules = self: super: rec {
@@ -40,34 +46,13 @@ let
   };
 
   config = self: super: rec {
-    env-config = rec {
-      inherit rootFolder env;
+    env-config = super.callPackage ./config.nix {
 
-      knative-serve = import ./modules/knative-serve.nix;
-      projectName = "future-is-comming";
-      version = "0.0.1";
-      ports = {
-        istio-ingress = "32632";
-      };
+      aws-profiles = super.callPackage ./get-aws-credentials.nix {};
 
-      kubernetes = {
-        version = "1.13";
-        namespace = {
-          functions = "default";
-          infra = "local-infra";
-        };
-      };
-
-      is-dev = env == "dev";
-
-      helm = {
-        home = "${builtins.toPath env-config.rootFolder}/.helm";
-      };
-
-      docker = {
-        registry = "docker.io/gatehub";
-        destination = "docker://damianbaar"; # skopeo path transport://repo
-      };
+      inherit brigadeSharedSecret;
+      inherit rootFolder;
+      inherit env;
     };
   };
 
@@ -77,6 +62,6 @@ let
     kubenix-modules
     application
   ];
-  args = { } // pkgsOpts // { inherit overlays; };
+  args = { } // { inherit overlays; };
 in
   import sources.nixpkgs args

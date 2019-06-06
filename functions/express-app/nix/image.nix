@@ -1,9 +1,13 @@
-{ pkgs, env-config, callPackage }:
+{ linux-pkgs, env-config, callPackage }:
 let
-  express-app = callPackage ./package.nix { };
+  pkgs = linux-pkgs;
+  express-app = callPackage ./package.nix {
+    inherit pkgs;
+   };
   fn-config = callPackage ./config.nix {};
 
   # as we are pusing to kind local cluster we don't want to create new image each time
+  # TODO take from env-config -> and use other tag than latest to avoid imagePullPolicy to Always
   local-development = 
     if env-config.is-dev
       then { tag = fn-config.local-development-tag; } 
@@ -18,13 +22,14 @@ pkgs.dockerTools.buildLayeredImage ({
   contents = [ 
     pkgs.nodejs 
     pkgs.bash
+    pkgs.coreutils
     express-app # application
   ];
 
-  extraCommands = ''
-    mkdir etc
-    chmod u+w etc
-  '';
+  # extraCommands = ''
+  #   mkdir etc
+  #   chmod u+w etc
+  # '';
 
   # https://github.com/moby/moby/blob/master/image/spec/v1.2.md#image-json-field-descriptions
   config = {
