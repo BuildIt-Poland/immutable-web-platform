@@ -1,7 +1,7 @@
 const { events, Job, Group } = require("brigadier")
 const { NixJob, saveSecrets, buildNixExpression } = require('brigade-extension')
 
-process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
+// process.env.BRIGADE_COMMIT_REF = "bitbucket-integration"
 
 const createJob = (name) =>
   new NixJob(name)
