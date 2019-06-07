@@ -3,3 +3,5 @@ result*
 .helm
 dist
 yarn-error.*
+# nixops state - super crucial
+*.nixops

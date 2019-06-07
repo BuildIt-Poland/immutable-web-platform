@@ -23,7 +23,7 @@ mkShell {
     # js
     nodejs
     yarn2nix.yarn
-    terraform
+    terraform-with-plugins
 
     # tools
     kind

@@ -9,7 +9,7 @@ in
     { config, pkgs, nodes, ...}: 
     {
       imports = [
-        ./services/concourse-ci.nix
+        # ./services/concourse-ci.nix
         ./services/kubernetes.nix
         ./services/nginx.nix
       ];
