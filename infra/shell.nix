@@ -2,9 +2,6 @@
   pkgs ? import <nixpkgs> {},
   kms
 }:
-# TODO
-# export state to bucket
-# load state
 with pkgs;
 let
   encode-state = pkgs.writeScript "encode-state" ''
@@ -15,16 +12,18 @@ let
     ${pkgs.sops}/bin/sops -d infra.state > localstate.nixops
   '';
 
-  ops-with-state = pkgs.writeScriptBin "ops" ''
+  nixops-with-state = pkgs.writeScriptBin "nixops" ''
     ${decode-state}
     ${pkgs.nixops}/bin/nixops $* --state localstate.nixops
     ${encode-state}
   '';
 
+  # TODO port make scripts here
+  # TODO compare states
 in
 mkShell {
   buildInputs = [
-    ops-with-state
+    nixops-with-state
     pkgs.sops
   ];
   shellHook = ''
