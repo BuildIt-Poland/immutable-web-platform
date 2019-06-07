@@ -1,3 +1,4 @@
+# move this make scripts to shell.nix
 SHELL   := /usr/bin/env bash
 NIXOPS  := $(shell which ops)
 DEPLOYMENT_NAME := buildit-ops
