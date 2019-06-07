@@ -8,10 +8,6 @@ let
 
   # as we are pusing to kind local cluster we don't want to create new image each time
   # TODO take from env-config -> and use other tag than latest to avoid imagePullPolicy to Always
-  local-development = 
-    if env-config.is-dev
-      then { tag = fn-config.local-development-tag; } 
-      else {};
 in
 pkgs.dockerTools.buildLayeredImage ({
   name = 
@@ -20,16 +16,11 @@ pkgs.dockerTools.buildLayeredImage ({
       else fn-config.label;
 
   contents = [ 
-    pkgs.nodejs 
+    pkgs.nodejs-slim-11_x
     pkgs.bash
     pkgs.coreutils
     express-app # application
   ];
-
-  # extraCommands = ''
-  #   mkdir etc
-  #   chmod u+w etc
-  # '';
 
   # https://github.com/moby/moby/blob/master/image/spec/v1.2.md#image-json-field-descriptions
   config = {
@@ -39,4 +30,4 @@ pkgs.dockerTools.buildLayeredImage ({
       "${toString fn-config.port}/tcp" = {};
     };
   };
-}  // local-development)
+} // env-config.docker.tag)
