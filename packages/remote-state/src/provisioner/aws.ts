@@ -6,7 +6,9 @@ import * as AWS from 'aws-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { S3 } from 'aws-sdk'
 
-import { tableName, awsRegion, bucketName } from '../../infra/config' // TODO make aliases instead of this ugly dots
+// TODO make aliases instead of this ugly dots
+// with aliases after build thru nix, alias is not resolved - investigate
+import { tableName, awsRegion, bucketName } from '../../config'
 
 const lockerId = 'locker'
 
