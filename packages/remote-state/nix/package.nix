@@ -4,7 +4,7 @@ pkgs.yarn2nix.mkYarnPackage {
   src = ./..;
   packageJson = ../package.json;
   yarnLock = ../yarn.lock;
-  publishBinsFor = ["aws-cdk"];
+  publishBinsFor = ["aws-cdk" "remote-state"];
   postBuild = ''
     yarn run build
   '';

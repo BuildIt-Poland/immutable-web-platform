@@ -1,6 +1,8 @@
 import { aws } from './provisioner'
 
 // console.log(aws.setLock(true))
+console.log('@@@', process.cwd())
+
 aws.setLock(true)
   .then(() => aws.getLockState())
   .then(console.log)

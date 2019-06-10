@@ -4,15 +4,13 @@
     "module": "commonjs",
     "outDir": "./dist",
     "strict": false,
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "baseUrl": "."
   },
   "include": [
     "src/**/*",
-    "infra/config/**/*"
+    "config/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
   ]
 }

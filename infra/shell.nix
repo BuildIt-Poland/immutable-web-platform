@@ -2,7 +2,7 @@
 # this state is required to be able to do a gitops
 {
   pkgs ? (import ../nix {}).pkgs,
-  kms
+  kms ? ""
 }:
 # What I need
 # remote state -> s3 with lambda
