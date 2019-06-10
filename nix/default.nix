@@ -5,6 +5,7 @@
 }:
 let
   rootFolder = ../.;
+  nodePackages = "${rootFolder}/packages";
 
   overridings = self: super: rec {
     # INFO recent update of kind in nixpgs does not work on darwin
@@ -34,8 +35,9 @@ let
 
     # NodeJS packages
     yarn2nix = super.callPackage sources.yarn2nix {};
-    node-development-tools = super.callPackage "${rootFolder}/packages/development-tools/nix" {};
-    brigade-extension = super.callPackage "${rootFolder}/packages/brigade-extension/nix" {};
+    node-development-tools = super.callPackage "${nodePackages}/development-tools/nix" {};
+    brigade-extension = super.callPackage "${nodePackages}/brigade-extension/nix" {};
+    remote-state = super.callPackage "${nodePackages}/remote-state/nix" {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
