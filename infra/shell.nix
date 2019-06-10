@@ -62,6 +62,7 @@ mkShell {
     pkgs.sops
   ];
   NIX_PATH="${./.}";
+  PROJECT_NAME = env-config.projectName;
   shellHook = ''
   '';
 }
