@@ -9,7 +9,8 @@
     ]
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "infra/config/**/*"
   ],
   "exclude": [
     "node_modules"

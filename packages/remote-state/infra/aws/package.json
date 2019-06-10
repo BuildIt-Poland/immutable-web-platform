@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@aws-cdk/cdk": "^0.33.0",
-    "source-map-support": "^0.5.9"
+    "source-map-support": "^0.5.9",
+    "@aws-cdk/aws-dynamodb": "^0.33.0",
+    "@aws-cdk/aws-s3": "^0.33.0"
   }
 }
