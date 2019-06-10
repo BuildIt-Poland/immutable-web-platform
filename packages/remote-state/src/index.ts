@@ -2,8 +2,11 @@ import { aws } from './provisioner'
 
 // console.log(aws.setLock(true))
 aws.setLock(true)
-  .then(() => aws.getState())
+  .then(() => aws.getLockState())
   .then(console.log)
   .then(() => aws.setLock(false))
-  .then(() => aws.getState())
+  .then(() => aws.getLockState())
+  .then(console.log)
+  .then(() => aws.uploadState('./test.nixops'))
+  .then(() => aws.getStateFromBucket('test.nixops'))
   .then(console.log)

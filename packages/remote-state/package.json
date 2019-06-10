@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "license": "MIT",
+  "bin": {
+    "locker": "bin/locker"
+  },
   "scripts": {
     "build": "tsc",
     "deploy:aws": "(cd infra/aws && cdk deploy)"
