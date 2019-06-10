@@ -33,6 +33,14 @@ export const saveSecrets = (fileName: string = 'secrets-encrypted.json') => [
   `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`,
 ]
 
+// https://github.com/mozilla/sops#45extract-a-sub-part-of-a-document-tree
+const escapePath = (d: string) => `["${d}"]`
+const toSopsPath = (path: string) => path.split('.').map(escapePath).join('')
+
+// i.e. extractSecret('docker.pass')
+export const extractSecret = (path: string) =>
+  `$(echo $SECRETS | sops  --input-type json -d --extract ${toSopsPath(path)})`
+
 export const buildNixExpression =
   (file: string, attribute: string, extraArgs: string = '') =>
     (secrets: Secrets) =>

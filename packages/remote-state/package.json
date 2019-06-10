@@ -1,0 +1,22 @@
+{
+  "name": "remote-state",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "deploy:aws": "cdk deploy"
+  },
+  "devDependencies": {
+    "typescript": "^3.2.2",
+    "@types/node": "^11.9.6"
+  },
+  "dependencies": {
+    "aws-cdk": "^0.33.0",
+    "@aws-cdk/aws-s3": "^0.33.0",
+    "@aws-cdk/aws-dynamodb": "^0.33.0",
+    "@azure/arm-storage": "^8.1.0",
+    "@azure/ms-rest-nodeauth": "^2.0.1"
+  },
+  "peerDependencies": {}
+}
