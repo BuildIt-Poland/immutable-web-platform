@@ -61,14 +61,14 @@ export const getLockState = () => {
     .then(d => d.Item)
 }
 
-export const uploadState = (file: string) => {
+export const uploadState = (file: string, fileName?: string) => {
   updateCredentials()
 
   const s3 = new AWS.S3()
   const fileStream = createReadStream(resolve(file))
   const params: S3.PutObjectRequest = {
     Bucket: bucketName,
-    Key: basename(file),
+    Key: fileName || basename(file),
     Body: fileStream
   }
 
