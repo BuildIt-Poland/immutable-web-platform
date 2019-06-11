@@ -1,15 +1,15 @@
 import * as diff from 'changeset'
 import { readFileSync } from 'fs'
 
-export const fileToJSON = (path: string) =>
+export const readStateFile = (path: string) =>
   readFileSync(path).toString()
 
 export const isStateDiffers =
   ({ changes }: ChangeDescriptor) =>
     changes.length > 0
 
-type Change = { type: 'put' | 'del', key: string[], value: any }
-type ChangeDescriptor = { changes: Change[], a: JSON, b: JSON }
+export type Change = { type: 'put' | 'del', key: string[], value: any }
+export type ChangeDescriptor = { changes: Change[], a: JSON, b: JSON }
 
 export const diffState = (a: string, b: string): ChangeDescriptor => {
   const fileA = JSON.parse(a)
@@ -24,9 +24,19 @@ export const diffState = (a: string, b: string): ChangeDescriptor => {
 export const reconcileState = (desc: ChangeDescriptor) =>
   diff.apply(desc.changes, desc.a)
 
-// TODO - nixops is keeping resources as full paths -> this is for escape them
-export const escapeResoures =
-  (a: JSON) => {
-    // from "nixExprs": "[\"<configuration.nix>\", \"<virtualbox.nix>\"]"
-    // to "nixExprs": "['<basename(file)>']"
-  }
+const escapeNixExpression = (path: string) => {
+  const dir = process.cwd()
+  const withoutDir = path.replace(dir, '')
+  return `"<${withoutDir}>"`
+}
+
+export const escapeResources =
+  (args: string) =>
+    args
+      .split(' ')
+      .map(d =>
+        d.indexOf('.nix') > -1
+          ? escapeNixExpression(d)
+          : d
+      )
+      .join(' ')

@@ -21,11 +21,6 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "baseUrl": ".",
-    "paths": {
-      "config": [
-        "./../../config/index.ts"
-      ],
-    }
+    "baseUrl": "."
   }
 }
