@@ -3,7 +3,7 @@ import * as s3 from '@aws-cdk/aws-s3'
 import { Table, AttributeType, StreamViewType, BillingMode } from '@aws-cdk/aws-dynamodb'
 import { BlockPublicAccess } from '@aws-cdk/aws-s3'
 
-import { bucketName, tableName } from 'config'
+import { bucketName, tableName } from '../../../config'
 
 export class AwsStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -24,6 +24,10 @@ export class AwsStack extends cdk.Stack {
       partitionKey: {
         name: `id`, // changing this id makes aws-cdk very unhappy
         type: AttributeType.String
+      },
+      sortKey: {
+        name: 'timestamp',
+        type: AttributeType.Number,
       },
       billingMode: BillingMode.PayPerRequest,
       streamSpecification: StreamViewType.NewImage
