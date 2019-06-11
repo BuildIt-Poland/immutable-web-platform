@@ -75,6 +75,19 @@ export const uploadState = (file: string) => {
   return s3.upload(params).promise()
 }
 
+export const uploadStateFromStdout = (stdout: string, fileName: string) => {
+  updateCredentials()
+
+  const s3 = new AWS.S3()
+  const params: S3.PutObjectRequest = {
+    Bucket: bucketName,
+    Key: fileName,
+    Body: stdout
+  }
+
+  return s3.upload(params).promise()
+}
+
 export const getStateFromBucket = (fileName: string) => {
   updateCredentials()
 
