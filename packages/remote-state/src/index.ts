@@ -92,14 +92,13 @@ const runUploadCommand =
 // TODO add reason why lock / unlock
 yargs
   .command('lock', 'Lock state', { reason: { default: 'CLI force change' } }, ({ reason }) => aws.setLock(true, reason))
-  .command('unlock', 'Unlock state', { reason: { default: 'CLI force chage' } }, ({ reason }) => aws.setLock(false, reason))
+  .command('unlock', 'Unlock state', { reason: { default: 'CLI force change' } }, ({ reason }) => aws.setLock(false, reason))
 
-  .command('status', 'Get status of locker', { dump: {} },
+  .command('status', 'Get status of locker', { dump: { type: 'boolean' } },
     ({ dump }) =>
       (dump
         ? aws.getLockState()
-        // : aws.getLockState().then(d => d.locked))
-        : aws.getLockState().then(d => d))
+        : aws.getLockState().then(d => d.locked))
         .then(console.log)
   )
   // TODO provide auto run - in case of CI or accept-all
