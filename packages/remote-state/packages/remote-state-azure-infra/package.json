@@ -1,0 +1,15 @@
+{
+  "name": "remote-state-azure-infra",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@azure/arm-storage": "^8.1.0",
+    "@azure/ms-rest-nodeauth": "^2.0.1"
+  },
+  "peerDependencies": {}
+}

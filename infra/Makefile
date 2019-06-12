@@ -1,5 +1,6 @@
+# move this make scripts to shell.nix
 SHELL   := /usr/bin/env bash
-NIXOPS  := $(shell which nixops)
+NIXOPS  := $(shell which ops)
 DEPLOYMENT_NAME := buildit-ops
 
 # local env
@@ -22,10 +23,10 @@ ssh-local:
 		$(NIXOPS) create configuration.nix ec2.nix -d $(DEPLOYMENT_NAME)-ec2
 
 deploy-ec2: .create-ec2
-	$(NIXOPS) deploy -d $(DEPLOYMENT_NAME)-ec2 --kill-obsolete --allow-reboot --allow-recreate
+	# $(NIXOPS) deploy -d $(DEPLOYMENT_NAME)-ec2 --kill-obsolete --allow-reboot --allow-recreate
 
 destroy-ec2:
-	$(NIXOPS) destroy -d $(DEPLOYMENT_NAME)-ec2
+	# $(NIXOPS) destroy -d $(DEPLOYMENT_NAME)-ec2
 
 ssh-ec2:
-	$(NIXOPS) ssh -d $(DEPLOYMENT_NAME)-ec2 $(DEPLOYMENT_NAME)
+	# $(NIXOPS) ssh -d $(DEPLOYMENT_NAME)-ec2 $(DEPLOYMENT_NAME)

@@ -4,7 +4,6 @@
   pkgs ? import <nixpkgs> {}
 }:
 let
-  # pkgs = (import ../nix {}).pkgs;
   testScript2 = pkgs.writeScript "test-script" ''
     echo '{"foo": 0}' | ${pkgs.jq}/bin/jq .
     echo "hello test script"
@@ -13,7 +12,7 @@ let
     name = "test-script";
     src = ./.;
     phases = ["installPhase"];
-    buildInputs = [pkgs.jq];
+    buildInputs = [];
     preferLocalBuild = true;
     installPhase = ''
       mkdir -p $out/bin
@@ -29,16 +28,9 @@ with pkgs;
     ];
 
     buildInputs = [
-      # secrets
-      sops
-      jq
       testScript
     ];
 
-    # PROJECT_NAME = env-config.projectName;
-    # VERSION = env-config.version;
-
-    # known issue: when starting clean cluster expose-brigade is run to early
     shellHook= ''
       echo "hey hey hey worker"
     '';

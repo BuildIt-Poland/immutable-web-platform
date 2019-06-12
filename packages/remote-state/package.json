@@ -1,0 +1,19 @@
+{
+  "name": "remote-state",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "lerna run build --stream --parallel"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.7"
+  },
+  "dependencies": {
+    "lerna": "^3.15.0",
+    "typescript": "^3.5.1"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

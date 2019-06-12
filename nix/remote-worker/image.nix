@@ -19,6 +19,8 @@ let
     };
   };
 in
+# INFO: to avoid extending path like below, investigate
+# pkgs.dockerTools.buildImageWithNixDb
 pkgs.dockerTools.buildImage ({
   name = "remote-worker";
 
@@ -26,14 +28,13 @@ pkgs.dockerTools.buildImage ({
 
   contents = [
     pkgs.bash
-    pkgs.coreutils
-    pkgs.nix-serve
+    pkgs.jq
     pkgs.sops
   ];
 
   config.Cmd = [ "${pkgs.bashInteractive}/bin/bash" ];
   config.Env =
-    [ "PATH=/root/.nix-profile/bin:/run/current-system/sw/bin"
+    [ "PATH=/root/.nix-profile/bin:/run/current-system/sw/bin:${pkgs.sops}/bin"
       "MANPATH=/root/.nix-profile/share/man:/run/current-system/sw/share/man"
       "NIX_PAGER=cat"
       "NIX_PATH=nixpkgs=/root/.nix-defexpr/nixpkgs"

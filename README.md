@@ -29,6 +29,8 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * full determinism of results
 * incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
 * diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
+* custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage)
+
 #### Work in progress
 * `gitops` via `brigade.js`
 * distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
@@ -136,22 +138,6 @@ or super fancy `lorri` with watch capability (check required section)
 #### Tips and Tricks
 * [kubeclt wait](https://hackernoon.com/kubectl-tip-of-the-day-wait-like-a-boss-40a818c423ac)
 
-#### TODO
-* setup `nix-channel`
-* setup `ci` - scratching my head ... `concourse-ci` or `hydra` -> `brigade.js` and remote workers!
-* setup distributed cache - `s3`
-* sharing state for `nixops`
-* docker - https://github.com/NixOS/nixpkgs/pull/55179/files
-* gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
-* provision to `ec2`
-* [formatting](https://github.com/serokell/nixfmt)
-
-#### Debugging - within `nixos`
-* `systemctl cat container@database.service`
-* `systemctl status container@database.service`
-* `systemctl status test-service`
-* just to have wrapping `systemctl status --no-pager --full`
-
 #### When you are new - some user stories & articles
 
 
@@ -168,26 +154,3 @@ or super fancy `lorri` with watch capability (check required section)
 
 #### Changing direction
 * `arion` and `docker-compose` is ok, however having troubles to setup it locally and on `vm`, so I expect that with `ec2` will be the same story. As `nixos` handle kuberntes and I've got already kubernetes resources, there is no point to use `docker-compose` in any variation. If I will setup kubernetes on `ec2` then most likely I can skip `eks` - however not sure if it is super easy.
-
-#### Some lessons during hacking
-> copying to `target` machine can be done via `environment.etc.local-folder.source = ./local-folder;`
-  (related [discussion](https://groups.google.com/forum/#!topic/nix-devel/0AS_sEH7n-M))
-  however as we can create derivation which I believe is more nix way as it provides artifact rather than mutation.
-> when attaching service via `systemd` and if it using `nix-build` as it is with `arion` then sourcing bashrc from `/etc/bashrc` is necessary - need to raise an issue agains that
-> running `docker-container` within `container` - [no chance](https://github.com/NixOS/nixpkgs/issues/28659) - trying with `rkt` - getting loop ...
-> when using containers - if container does not work, it tell us that this container has to be restarted (ping to check is enough) - checking how to do autorestart without `--force-reboot` flag
-
-#### Hard things
-* multicompilation in one step - docker requires linux but I'm working on darwin - in two steps it is easy - got the solution! overriding `pkgs` in overlay did the job - this is absolutely magic
-> All functions are deployed to docker image, so it is required to keep only logic related to function and kubernetes resources or any function which would be run in container in case of developing on `os x` - in short, there cannot be any scripts which is allowed to run in `nix-shell` (TODO rephrase it ...)
-
-* local environment - if we spawnin local cluster, and we are creating images locally we need to push docker to cluster without a need to push to docker registry - newest `kind` handle `kind load image-archive`
-
-* running integration test from `nix` - [issue](https://stackoverflow.com/questions/54251855/virtualbox-enable-nested-vtx-amd-v-greyed-out) is that ... on `intel` processors there is no way to enable `kvm` virtualization - no idea for now ...
-
-* knative ... https://github.com/knative/docs/issues/1234 - it was hard since in case of local docker, there has to be some tricks applied to make a name of local docker image prefixed by `dev.io/<docker_image>`
-
-* `kubenix` for `helm` module is doing `chart2json` so in chart `json` file cannot be specified - there is a extra helper for it.
-
-#### To consider for local dev
-* https://github.com/txn2/kubefwd - actually there are pretty neat scripts to forward ports but I'd like to delgate this to some other tools which is able to show me the list, rather than `grep` against `ps`

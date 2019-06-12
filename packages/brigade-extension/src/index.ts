@@ -30,8 +30,16 @@ const applyNixConfig = ({ cacheBucket, awsRegion }) => [
 ]
 
 export const saveSecrets = (fileName: string = 'secrets-encrypted.json') => [
-  `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`
+  `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`,
 ]
+
+// https://github.com/mozilla/sops#45extract-a-sub-part-of-a-document-tree
+const escapePath = (d: string) => `["${d}"]`
+const toSopsPath = (path: string) => path.split('.').map(escapePath).join('')
+
+// i.e. extractSecret('docker.pass')
+export const extractSecret = (path: string) =>
+  `$(echo $SECRETS | sops  --input-type json -d --extract ${toSopsPath(path)})`
 
 export const buildNixExpression =
   (file: string, attribute: string, extraArgs: string = '') =>
@@ -49,6 +57,7 @@ export const copyToCache =
         `nix copy \
           --to ${bucketURL({ cacheBucket, awsRegion })}\
           $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ${result}))`,
+        `nix path-info -r --json ./result | jq .`,
       ]
 
 type Tasks = (string | ((secrets: WorkerSecrets) => string[]))[]
