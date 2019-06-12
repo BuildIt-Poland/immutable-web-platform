@@ -29,6 +29,8 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * full determinism of results
 * incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
 * diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
+* custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage)
+
 #### Work in progress
 * `gitops` via `brigade.js`
 * distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
