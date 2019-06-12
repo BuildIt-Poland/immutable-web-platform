@@ -64,3 +64,11 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [Some tips and tricks](/docs/tips-and-tricks.md)
 * [Where I'm and where I want to be](/docs/roadmap.md)
 * [Some alternative approaches](/docs/alternatives.md)
+
+
+### How to start
+
+#### You need to install these
+* get [`docker`](https://www.docker.com/products/docker-desktop) - for [`kind`](https://kind.sigs.k8s.io/)
+* get [`nix`](https://nixos.org/nix/download.html) - creating isolated local environment
+* run `nix-shell` - if you encounter any issues check [docs](/docs/)

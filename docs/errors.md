@@ -3,4 +3,7 @@
 
 * getting `error: a 'x86_64-linux' with features {} is required to build '/nix/store/vxwxcykyhdbiwyysj8fad14m0ynq6wlq-yarn.nix.drv', but I am a 'x86_64-darwin' with features {benchmark, big-parallel, nixos-test}
 (use '--show-trace' to show detailed location information)`
+
 > you need to run remote worker since most likely you are on darwin
+
+> solution: run `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
