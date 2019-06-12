@@ -5,22 +5,39 @@
 }:
 let
   rootFolder = ../.;
+  nodePackages = "${rootFolder}/packages";
+
+  overridings = self: super: rec {
+    # INFO recent update of kind in nixpgs does not work on darwin
+    # INFO version 0.3.0 returns invalid tar.gz header
+    kind = (super.callPackage ./tools/kind.nix {});
+  };
 
   tools = self: super: rec {
-    kubenix = super.callPackage sources.kubenix {};
-    knctl = super.callPackage ./tools/knctl.nix {};
+    # Terraform
+    terraform-with-plugins = super.callPackage ./terraform {};
+
+    # Helpers
+    find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
+    log = super.callPackage ./helpers/log.nix {};
+
+    # Brigade
     brigade = super.callPackage ./tools/brigade.nix {};
     brigadeterm = super.callPackage ./tools/brigadeterm.nix {};
-    yarn2nix = super.callPackage sources.yarn2nix {};
-    k8s-local = super.callPackage ./k8s-local.nix {};
-    find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
+
+    # K8S
+
+    kubenix = super.callPackage sources.kubenix {};
+    knctl = super.callPackage ./tools/knctl.nix {}; # knative
     chart-from-git = super.callPackage ./helm {};
-    log = super.callPackage ./helpers/log.nix {};
+    k8s-local = super.callPackage ./k8s-local.nix {};
     k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
 
-    # NodeJS packagea
-    node-development-tools = super.callPackage "${rootFolder}/packages/development-tools/nix" {};
-    brigade-extension = super.callPackage "${rootFolder}/packages/brigade-extension/nix" {};
+    # NodeJS packages
+    yarn2nix = super.callPackage sources.yarn2nix {};
+    node-development-tools = super.callPackage "${nodePackages}/development-tools/nix" {};
+    brigade-extension = super.callPackage "${nodePackages}/brigade-extension/nix" {};
+    remote-state = super.callPackage "${nodePackages}/remote-state/nix" {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
@@ -57,6 +74,7 @@ let
   };
 
   overlays = [
+    overridings
     tools
     config
     kubenix-modules

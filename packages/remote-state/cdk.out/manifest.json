@@ -1,0 +1,141 @@
+{
+  "version": "0.33.0",
+  "artifacts": {
+    "AwsStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://006393696278/eu-west-2",
+      "properties": {
+        "templateFile": "AwsStack.template.json"
+      },
+      "metadata": {
+        "/AwsStack/future-is-comming-remote-state-bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "futureiscommingremotestatebucketE8110EA4",
+            "trace": [
+              "new Bucket (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/node_modules/@aws-cdk/aws-s3/lib/bucket.ts:784:22)",
+              "new AwsStack (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/lib/aws-stack.ts:14:24)",
+              "Object.<anonymous> (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/bin/aws.ts:8:1)",
+              "Module._compile (module.js:653:30)",
+              "Module.m._compile (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:439:23)",
+              "Module._extensions..js (module.js:664:10)",
+              "Object.require.extensions.(anonymous function) [as .ts] (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:442:12)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "Object.<anonymous> (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/bin.ts:154:12)",
+              "Module._compile (module.js:653:30)",
+              "Object.Module._extensions..js (module.js:664:10)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "findNodeScript.then.existing (/nix/store/55wy1rzyq0322lcjw26kg44lgf17mnam-nodejs-8.16.0/lib/node_modules/npm/node_modules/libnpx/index.js:268:14)",
+              "<anonymous>"
+            ]
+          }
+        ],
+        "/AwsStack/Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket",
+            "trace": [
+              "new AwsStack (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/lib/aws-stack.ts:21:5)",
+              "Object.<anonymous> (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/bin/aws.ts:8:1)",
+              "Module._compile (module.js:653:30)",
+              "Module.m._compile (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:439:23)",
+              "Module._extensions..js (module.js:664:10)",
+              "Object.require.extensions.(anonymous function) [as .ts] (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:442:12)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "Object.<anonymous> (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/bin.ts:154:12)",
+              "Module._compile (module.js:653:30)",
+              "Object.Module._extensions..js (module.js:664:10)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "findNodeScript.then.existing (/nix/store/55wy1rzyq0322lcjw26kg44lgf17mnam-nodejs-8.16.0/lib/node_modules/npm/node_modules/libnpx/index.js:268:14)",
+              "<anonymous>"
+            ]
+          }
+        ],
+        "/AwsStack/future-is-comming-remote-state-dynamodb": [
+          {
+            "type": "aws:cdk:hasPhysicalName",
+            "data": "future-is-comming-remote-state",
+            "trace": [
+              "new Table (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/node_modules/@aws-cdk/aws-dynamodb/lib/table.ts:249:38)",
+              "new AwsStack (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/lib/aws-stack.ts:23:24)",
+              "Object.<anonymous> (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/bin/aws.ts:8:1)",
+              "Module._compile (module.js:653:30)",
+              "Module.m._compile (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:439:23)",
+              "Module._extensions..js (module.js:664:10)",
+              "Object.require.extensions.(anonymous function) [as .ts] (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:442:12)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "Object.<anonymous> (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/bin.ts:154:12)",
+              "Module._compile (module.js:653:30)",
+              "Object.Module._extensions..js (module.js:664:10)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "findNodeScript.then.existing (/nix/store/55wy1rzyq0322lcjw26kg44lgf17mnam-nodejs-8.16.0/lib/node_modules/npm/node_modules/libnpx/index.js:268:14)",
+              "<anonymous>"
+            ]
+          }
+        ],
+        "/AwsStack/future-is-comming-remote-state-dynamodb/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "futureiscommingremotestatedynamodb74BB93E0",
+            "trace": [
+              "new Table (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/node_modules/@aws-cdk/aws-dynamodb/lib/table.ts:232:18)",
+              "new AwsStack (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/lib/aws-stack.ts:23:24)",
+              "Object.<anonymous> (/nix/store/mzkk6fmy668v58k8vy5c0mwxwavlfxid-remote-state/libexec/remote-state-aws-infra/deps/remote-state-aws-infra/bin/aws.ts:8:1)",
+              "Module._compile (module.js:653:30)",
+              "Module.m._compile (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:439:23)",
+              "Module._extensions..js (module.js:664:10)",
+              "Object.require.extensions.(anonymous function) [as .ts] (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/index.ts:442:12)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "Object.<anonymous> (/Users/damianbaar/workspaces/infra/kubenix-playground/packages/remote-state/node_modules/ts-node/src/bin.ts:154:12)",
+              "Module._compile (module.js:653:30)",
+              "Object.Module._extensions..js (module.js:664:10)",
+              "Module.load (module.js:566:32)",
+              "tryModuleLoad (module.js:506:12)",
+              "Function.Module._load (module.js:498:3)",
+              "Function.Module.runMain (module.js:694:10)",
+              "findNodeScript.then.existing (/nix/store/55wy1rzyq0322lcjw26kg44lgf17mnam-nodejs-8.16.0/lib/node_modules/npm/node_modules/libnpx/index.js:268:14)",
+              "<anonymous>"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "runtime": {
+    "libraries": {
+      "@aws-cdk/cdk": "0.33.0",
+      "@aws-cdk/cx-api": "0.33.0",
+      "@aws-cdk/aws-s3": "0.33.0",
+      "@aws-cdk/aws-events": "0.33.0",
+      "@aws-cdk/aws-iam": "0.33.0",
+      "@aws-cdk/region-info": "0.33.0",
+      "@aws-cdk/aws-kms": "0.33.0",
+      "@aws-cdk/aws-dynamodb": "0.33.0",
+      "@aws-cdk/aws-applicationautoscaling": "0.33.0",
+      "@aws-cdk/aws-autoscaling-common": "0.33.0",
+      "@aws-cdk/aws-cloudwatch": "0.33.0",
+      "jsii-runtime": "node.js/v8.16.0"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "remote-state-cli",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "bin": {
+    "locker": "bin/locker"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^3.5.1",
+    "@types/yargs": "^13.0.0",
+    "@types/inquirer": "^6.0.3",
+    "@types/shelljs": "^0.8.5",
+    "@types/uuid": "^3.4.4"
+  },
+  "dependencies": {
+    "inquirer": "^6.3.1",
+    "shelljs": "^0.8.3",
+    "json-diff": "^0.5.4",
+    "aws-cdk": "^0.33.0",
+    "uuid": "^3.3.2",
+    "yargs": "^13.2.4",
+    "get-stdin": "^7.0.0",
+    "changeset": "^0.2.4",
+    "remote-state-config": "^1.0.0"
+  },
+  "peerDependencies": {}
+}
