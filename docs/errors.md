@@ -6,4 +6,4 @@
 
 > you need to run remote worker since most likely you are on darwin
 
-> solution: run `source <(curl -fsSL https://raw.githubusercontent.com/LnL7/nix-docker/master/start-docker-nix-build-slave)`
+> solution: run `source run-linux-worker.sh`
