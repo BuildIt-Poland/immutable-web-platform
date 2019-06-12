@@ -1,5 +1,6 @@
 import * as diff from 'changeset'
 import { readFileSync } from 'fs'
+import { relative } from 'path'
 
 export const readStateFile = (path: string) =>
   readFileSync(path).toString()
@@ -21,22 +22,19 @@ export const diffState = (a: string, b: string): ChangeDescriptor => {
   }
 }
 
-export const reconcileState = (desc: ChangeDescriptor) =>
+export const reconcileState = (desc: ChangeDescriptor): JSON =>
   diff.apply(desc.changes, desc.a)
 
-const escapeNixExpression = (path: string) => {
-  const dir = process.cwd()
-  const withoutDir = path.replace(dir, '')
-  return `"<${withoutDir}>"`
-}
+export const escapeNixExpression = (path: string, cwd: string) =>
+  `<${relative(cwd || process.cwd(), path)}>`
 
 export const escapeResources =
-  (args: string) =>
+  (args: string, cwd: string) =>
     args
       .split(' ')
       .map(d =>
         d.indexOf('.nix') > -1
-          ? escapeNixExpression(d)
+          ? escapeNixExpression(d, cwd)
           : d
       )
       .join(' ')

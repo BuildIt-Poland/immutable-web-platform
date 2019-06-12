@@ -110,4 +110,5 @@ export const getStateFromBucket = (fileName: string) => {
     .getObject(params)
     .promise()
     .then(d => d.Body.toString())
+    .catch(d => '{}')
 }

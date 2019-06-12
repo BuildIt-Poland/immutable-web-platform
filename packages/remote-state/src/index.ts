@@ -4,7 +4,7 @@ import * as inquirer from 'inquirer'
 import { basename } from 'path'
 import { diffString as prettyDiff } from 'json-diff'
 
-import { isStateDiffers, diffState, readStateFile, reconcileState, ChangeDescriptor, escapeResources } from './reconciler'
+import { isStateDiffers, diffState, readStateFile, reconcileState, ChangeDescriptor, escapeResources, escapeNixExpression } from './reconciler'
 import { aws } from './provisioner'
 
 const remoteStateFileName = "localstate.nixops.json"
@@ -14,31 +14,25 @@ const defaultRemote = {
   }
 }
 
-const readFromStdin = (): Promise<string> =>
-  new Promise((res, rej) => {
-    const chunks = []
-    process.stdin.on('data', (data) => chunks.push(data))
-    process.stdin.on('end', () => res(chunks.join('').toString().trim()))
-    process.stdin.on('error', rej)
-  })
-
 const getLocalStateFile =
-  (fileName: string, stdin: boolean = false): Promise<string> =>
-    stdin
-      ? readFromStdin()
-      : Promise.resolve(readStateFile(fileName))
+  (pathToFile: string, from: string): Promise<string> =>
+    Promise.resolve(
+      !!from
+        ? shell.exec(from).stdout
+        : readStateFile(pathToFile)
+    )
 
 const notifyAboutChanges =
   (remoteState: string, localState: string) => {
-    console.log('Changes to be aplied\n', prettyDiff(JSON.parse(remoteState), JSON.parse(localState)))
+    console.log('Changes to be applied\n', prettyDiff(JSON.parse(remoteState), JSON.parse(localState)))
   }
 
-const askAboutReconciliation = () =>
+const askAboutReconciliation = (message?: string) =>
   inquirer.prompt<{ proceed: boolean }>([
     {
       type: 'confirm',
       name: 'proceed',
-      message: 'Remote state differs, should changes above should be applied to remote state?',
+      message: message || 'Remote state differs, should changes above should be applied to remote state?',
       default: false
     }
   ])
@@ -66,14 +60,14 @@ const diffStateWithNotification =
       })
 
 const shouldApplyTransformation =
-  (beforeUploadScript: string, data: string): Promise<string> =>
+  (beforeUploadScript: string, data: JSON): Promise<string> =>
     new Promise((res) => {
       const transformed =
         beforeUploadScript && shell
           .echo(JSON.stringify(data))
           .exec(beforeUploadScript as string)
 
-      transformed.stdout
+      transformed && transformed.stdout
         ? res(transformed.stdout)
         : res(JSON.stringify(data, null, 2))
     })
@@ -81,7 +75,6 @@ const shouldApplyTransformation =
 const runUploadCommand =
   (beforeUploadScript: string, diff: ChangeDescriptor, remoteFileName: string) => {
     const reconciled = reconcileState(diff as ChangeDescriptor)
-
     return shouldApplyTransformation(beforeUploadScript, reconciled)
       .then(data =>
         aws.uploadStateFromStdout(data, remoteFileName)
@@ -107,19 +100,21 @@ yargs
     remoteFileName: { default: basename(remoteStateFileName) },
     force: { default: false },
     stdin: {},
+    from: {},
     beforeUpload: {
       defaultDescription: "Extra command before uploading - data are passed thru stdin, to be used i.e for encryption before send",
     },
     ...defaultRemote,
   },
-    ({ local, remote, force, stdin, beforeUpload, remoteFileName }) =>
+    ({ local, from, remote, force, stdin, beforeUpload, remoteFileName }) =>
       aws.setLock(true, "State upload lock.")
         .then(_ =>
-          getLocalStateFile(local as string, stdin as boolean)
+          getLocalStateFile(local as string, from as string)
             .then(localState =>
               force
                 ? aws.uploadState(localState, remoteFileName)
-                : aws.getStateFromBucket(remote as string)
+                : aws
+                  .getStateFromBucket(remote as string)
                   .then(remoteState =>
                     diffStateWithNotification(localState, remoteState)
                       .then(diff =>
@@ -128,28 +123,49 @@ yargs
                           .then(answers =>
                             !answers.proceed
                               ? console.log('Aborting action') as any
-                              : runUploadCommand(beforeUpload as string, diff, remoteFileName))
-
-                      ))
-                  .catch(e =>
-                    aws.uploadState(localState, remoteFileName) // INFO: key does not exists
-                      .then(() => console.log('State update complete.'))
-                  ))
+                              : runUploadCommand(beforeUpload as string, diff, remoteFileName))),
+                  )
+            )
         )
         .then(() => aws.setLock(false, "State upload lock finish."))
-        .catch((e) => aws.setLock(false, `State upload lock error with message: ${e.message}`))
+        .catch(e => aws.setLock(false, `State upload lock error with message: ${e.message}`))
   )
-
-  .command('reconcile-state', 'Merge local state with remote state', {}, () => {
-    console.log('@@ todo')
-  })
-  .command('rewrite-arguments', 'Escape arguments for nixops', { input: { type: 'string' } },
-    ({ input }) =>
-      console.log(escapeResources(input.trim()))
+  .command('has-remote-state', 'Checking existence of remote state on remote drive', defaultRemote,
+    ({ remote }) =>
+      aws.getStateFromBucket(remote)
+        .then(result => Object.keys(result).length > 0)
+        .then(console.log)
   )
-  .command('download-state', 'Download state', { file: {} },
-    ({ file }) =>
-      aws.getStateFromBucket(file as string).then(console.log))
+  .command('rewrite-arguments', 'Escape arguments for nixops', { input: { type: 'string' }, cwd: { type: 'string' } },
+    ({ input, cwd }) =>
+      console.log(escapeResources(input.trim(), cwd as string))
+  )
+  .command('download-state', 'Download state', { toFile: {} },
+    ({ toFile }) =>
+      aws
+        .getStateFromBucket(toFile as string)
+        .then(console.log)
+  )
+  .command('import-state', 'Import state', { from: { required: true }, beforeTo: {}, to: { required: true }, ...defaultRemote },
+    ({ to, from, beforeTo, remote }) =>
+      aws
+        .getStateFromBucket(remote)
+        .then(remoteState => {
+          const localState = shell.exec(from as string).stdout
+          return diffStateWithNotification(remoteState, localState)
+            .then(diff => {
+              diff &&
+                askAboutReconciliation("Local state differs, final state would be as above.")
+                  .then(answers => {
+                    if (answers.proceed) {
+                      shell.exec(beforeTo as string) // clean state
+                      const reconciled = reconcileState(diff as ChangeDescriptor)
+                      shell.echo(JSON.stringify(reconciled)).exec(to as string)
+                    }
+                  })
+            })
+        })
+  )
 
   .command('diff-state <local>', 'Diff remote state with local state', {
     local: {},
