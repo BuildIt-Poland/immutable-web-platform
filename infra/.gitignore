@@ -2,4 +2,3 @@
 # I know that one gitignore will be enough ... but this is super important
 # to not push this files!
 *.nixops
-*.nixops.json

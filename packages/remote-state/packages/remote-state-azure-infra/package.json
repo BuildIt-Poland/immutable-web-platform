@@ -1,16 +1,12 @@
 {
-  "name": "remote-state",
+  "name": "remote-state-azure-infra",
   "version": "1.0.0",
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "deploy:aws": "cdk deploy"
+    "build": "tsc"
   },
-  "devDependencies": {
-    "typescript": "^3.2.2",
-    "@types/node": "^11.9.6"
-  },
+  "devDependencies": {},
   "dependencies": {
     "@azure/arm-storage": "^8.1.0",
     "@azure/ms-rest-nodeauth": "^2.0.1"
