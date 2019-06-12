@@ -7,10 +7,7 @@ import * as AWS from 'aws-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { S3 } from 'aws-sdk'
 
-// TODO make aliases instead of this ugly dots
-// with aliases after build thru nix, alias is not resolved - investigate
-import { tableName, awsRegion, bucketName } from '../../config'
-import { stringify } from 'querystring';
+import { tableName, awsRegion, bucketName } from 'remote-state-config'
 
 const lockerId = 'locker'
 
@@ -122,6 +119,6 @@ export const getStateFromBucket = (fileName: string) => {
   return s3
     .getObject(params)
     .promise()
-    .then(d => d.Body.toString())
+    .then(d => d.Body ? d.Body.toString() : '{}')
     .catch(d => '{}')
 }

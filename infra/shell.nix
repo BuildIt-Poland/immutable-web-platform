@@ -6,7 +6,7 @@
 }:
 with pkgs;
 let
-  locker = remote-state.package;
+  locker = remote-state.package.remote-state-cli;
 
   paths = {
     state-sql = "state.nixops";
@@ -55,11 +55,11 @@ in
 mkShell {
   buildInputs = [
     locker
+    remote-state.package.remote-state-aws-infra
     upload-remote-state
     import-remote-state
     nixops
 
-    pkgs.nodejs
     pkgs.sops
   ];
   NIX_PATH = "${./.}";
