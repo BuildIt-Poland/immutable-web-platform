@@ -1,5 +1,5 @@
 ### Purpose
-As I'm super passionate about `nix` and it's ecosystem, I'd like share this awesomeness on some common `ops` tasks in examples to increase `nix` adoption.
+As I'm super passionate about `nix` and it's ecosystem, I'd like share this awesomeness on some common `ops` tasks in examples to increase `nix` adoption. 
 
 ### Inspiration part
 * [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)
@@ -21,7 +21,6 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 ### What is super hot!
 * `helm charts` without `helm` and `tiller`
 * scale to `0` with `knative & istio`
-* lo
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs` and `nixOS`
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
 * `nix` in charge of building and pushing docker images to `docker repository`
