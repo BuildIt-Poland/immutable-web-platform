@@ -1,8 +1,0 @@
-{
-  "d276827d-8c1b-11e9-a72e-acde48001122": {
-    "name": "future-is-comming-local", 
-    "nixExprs": "[\"<configuration.nix>\", \"<virtualbox.nix>\"]", 
-    "resources": {}
-  }
-}
-

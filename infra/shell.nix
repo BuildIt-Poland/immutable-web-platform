@@ -8,6 +8,11 @@ with pkgs;
 let
   locker = remote-state.package;
 
+  paths = {
+    state-sql = "state.nixops";
+    state-json = "state.nixops.json";
+  };
+
   # ENCODE / DECODE
   # use --before-upload to encode data before uploading
   # pipe when download-state and decode
@@ -22,34 +27,40 @@ let
 
   # TODO this should be a bit smarter - check first whether there are differences
   keep-it-stateless = pkgs.writeScript "keep-it-stateless" ''
-    rm ${paths.localstate-sqlite}
+    rm ${paths.state-sql}
   '';
 
   state-import = pkgs.writeScript "import-state" ''
     ${keep-it-stateless}
-    ${locker}/bin/locker download-state --file ${paths.localstate-json} | ${pkgs.nixops}/bin/nixops import --include-keys 
+
+    ${locker}/bin/locker download-state --file ${paths.state-json} \
+      | ${pkgs.nixops}/bin/nixops import --include-keys 
   '';
 
-  reconcile-remote-state = pkgs.writeScriptBin "reconcile-remote-state" ''
-    ${pkgs.nixops}/bin/nixops export --all | ${locker}/bin/locker upload-state --stdin
-  '';
+  # INFO: interactive mode does not work when piping - investigate
+  # ${pkgs.nixops}/bin/nixops export --all \
+  #   | ${locker}/bin/locker upload-state --stdin
 
-  paths = {
-    localstate-sqlite = "localstate.nixops";
-    localstate-json = "localstate.nixops.json";
-  };
-
-  # TODO not sure if there should be autoupload
-  # TODO add possibility to reconcile local-state and remote one -> import should be interactive as well
-  nixops = pkgs.writeScriptBin "nixops" ''
+  upload-remote-state = pkgs.writeScriptBin "upload-remote-state" ''
     IS_LOCKED=$(${locker}/bin/locker status)
     echo "Remote state is locked? $IS_LOCKED"
 
     if [ "$IS_LOCKED" == "false" ]; then
-      ${state-import}
-      ${pkgs.nixops}/bin/nixops $(${locker}/bin/locker rewrite-arguments --input "$*")
-      ${reconcile-remote-state}/bin/reconcile-remote-state
+      ${locker}/bin/locker upload-state --from "${pkgs.nixops}/bin/nixops export --all"
     fi
+  '';
+
+  import-remote-state = pkgs.writeScriptBin "import-remote-state" ''
+    ${locker}/bin/locker import-state \
+      --from "${pkgs.nixops}/bin/nixops export --all" \
+      --before-to "rm ${paths.state-sql}" \
+      --to "${pkgs.nixops}/bin/nixops import --include-keys"
+  '';
+#  --from "${pkgs.nixops}/bin/nixops export --all"
+     # | ${pkgs.nixops}/bin/nixops import --include-keys 
+
+  nixops = pkgs.writeScriptBin "nixops" ''
+    ${pkgs.nixops}/bin/nixops $(${locker}/bin/locker rewrite-arguments --input "$*" --cwd $(pwd))
   '';
 in
 mkShell {
@@ -57,13 +68,14 @@ mkShell {
     nixops
     locker
 
-    reconcile-remote-state
+    upload-remote-state
+    import-remote-state
 
     pkgs.nodejs
     pkgs.sops
   ];
   NIX_PATH = "${./.}";
-  NIXOPS_STATE = paths.localstate-sqlite;
+  NIXOPS_STATE = paths.state-sql;
   PROJECT_NAME = env-config.projectName;
   shellHook = ''
     echo "You are now entering the remote deployer ... have fun!"
