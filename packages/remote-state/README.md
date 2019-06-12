@@ -1,15 +1,38 @@
 # `remote-state`
 Wrapper for any command which is able to export the state of infrastructure and do a lock during deployment.
-Ready for `aws` and `azure`.
+Pluggable into `aws` and `azure`.
 
-### TODO
-* separate packages for `azure` and `aws`
+# Commands
+```
+locker <command>
 
-### How to use it
+Commands:
+  locker lock                Lock state
+  locker unlock              Unlock state
+  locker status              Get status of locker
+  locker upload-state        Upload state
+  locker has-remote-state    Checking existence of remote state on remote drive
+  locker rewrite-arguments   Escape arguments for nixops
+  locker download-state      Download state
+  locker import-state        Import state
+  locker diff-state <local>  Diff remote state with local state
 
-### Reads
-*https://azure.microsoft.com/pl-pl/blog/announcing-azure-sdk-node-2-preview/
+Options:
+  --version  Show version number                                       [boolean]
+  --help     Show help                                                 [boolean]
+```
 
-* https://blog.kloud.com.au/2018/08/16/deploying-azure-functions-with-arm-templates/
-> Azure Resource Manager (ARM) templates are JSON files that describe the state of a resource group. They typically declare the full set of resources that need to be provisioned or updated. ARM templates are idempotent, so a common pattern is to run the template deployment regularly—often as part of a continuous deployment process—which will ensure that the resource group stays in sync with the description within the template.
+# Example Usage
+* `importing-state`
+```bash
+  locker import-state \
+    --from "${nixops-export-state}" \        # importing state
+    --before-to "${keep-nixops-stateless}" \ # removing state
+    --to "${nixops-import-state}"            # exporting state
+```
 
+* `exporting-state`
+```bash
+  locker upload-state \
+    --from "${pkgs.nixops}/bin/nixops export --all"
+```
