@@ -57,6 +57,7 @@ mkShell {
     locker
     upload-remote-state
     import-remote-state
+    nixops
 
     pkgs.nodejs
     pkgs.sops
