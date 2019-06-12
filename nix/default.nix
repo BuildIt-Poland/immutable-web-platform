@@ -54,6 +54,7 @@ let
     remote-worker = super.callPackage ./remote-worker {};
     application = super.callPackage ./functions.nix {};
     cluster = super.callPackage ./cluster-stack {};
+    inherit sources;
   };
 
   kubenix-modules = self: super: rec {

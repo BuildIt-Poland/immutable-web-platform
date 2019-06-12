@@ -5,3 +5,4 @@ dist
 yarn-error.*
 # nixops state - super crucial
 *.nixops
+cdk.out/*
