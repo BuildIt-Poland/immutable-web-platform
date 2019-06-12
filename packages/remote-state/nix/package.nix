@@ -6,7 +6,6 @@ pkgs.yarn2nix.mkYarnWorkspace {
   yarnLock = ../yarn.lock;
   packageOverrides = {
     remote-state-cli = {
-      # publishBinsFor = ["remote-state-cli"];
       postBuild = ''
         yarn run build
       '';

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+DIR=$(dirname "$0")
+cdk --app "npx ts-node $DIR/app" $*
