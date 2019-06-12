@@ -32,7 +32,7 @@ in
                   then fn-config.image-name-for-knative-service-when-dev
                   else config.docker.images.express-app.path;
 
-              imagePullPolicy = fn-config.imagePolicy;
+              imagePullPolicy = env-config.imagePullPolicy;
               env = fn-config.env;
               livenessProbe = {
                 httpGet = {
