@@ -46,8 +46,6 @@ Options:
 
 #### Full example
 ```nix
-# INSPIRATION: https://github.com/WeAreWizards/blog/blob/master/content/articles/sharing-deployments-with-nixops.md
-# INFO: this state is required to be able to do a gitops
 {
   pkgs ? import <nixpkgs> {}
 }:
