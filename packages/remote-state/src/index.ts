@@ -7,7 +7,7 @@ import { diffString as prettyDiff } from 'json-diff'
 import { isStateDiffers, diffState, readStateFile, reconcileState, ChangeDescriptor, escapeResources, escapeNixExpression } from './reconciler'
 import { aws } from './provisioner'
 
-const remoteStateFileName = "localstate.nixops.json"
+const remoteStateFileName = "remotestate.nixops.json"
 const defaultRemote = {
   remote: {
     default: remoteStateFileName
@@ -16,11 +16,13 @@ const defaultRemote = {
 
 const getLocalStateFile =
   (pathToFile: string, from: string): Promise<string> =>
-    Promise.resolve(
-      !!from
-        ? shell.exec(from).stdout
-        : readStateFile(pathToFile)
-    )
+    Promise
+      .resolve(console.log('Current local state:'))
+      .then(() =>
+        !!from
+          ? shell.exec(from).stdout
+          : readStateFile(pathToFile)
+      )
 
 const notifyAboutChanges =
   (remoteState: string, localState: string) => {
@@ -55,7 +57,7 @@ const diffStateWithNotification =
         return diff
       })
       .catch(e => {
-        console.log('State seems to be the same - skipping upload')
+        console.log('State seems to be the same - skipping ...')
         return null
       })
 
@@ -82,7 +84,7 @@ const runUploadCommand =
   }
 
 // TODO provide better logging -> these console.log are a bit crappy
-// TODO add reason why lock / unlock
+// TODO make refactoring of this arrows - but first tests!
 yargs
   .command('lock', 'Lock state', { reason: { default: 'CLI force change' } }, ({ reason }) => aws.setLock(true, reason))
   .command('unlock', 'Unlock state', { reason: { default: 'CLI force change' } }, ({ reason }) => aws.setLock(false, reason))
@@ -90,9 +92,8 @@ yargs
   .command('status', 'Get status of locker', { dump: { type: 'boolean' } },
     ({ dump }) =>
       (dump
-        ? aws.getLockState()
-        : aws.getLockState().then(d => d.locked))
-        .then(console.log)
+        ? aws.getLockState().then(console.log)
+        : aws.getLockState().then(d => d.locked).then(console.log))
   )
   // TODO provide auto run - in case of CI or accept-all
   .command('upload-state', 'Upload state', {
@@ -107,29 +108,34 @@ yargs
     ...defaultRemote,
   },
     ({ local, from, remote, force, stdin, beforeUpload, remoteFileName }) =>
-      aws.setLock(true, "State upload lock.")
-        .then(_ =>
-          getLocalStateFile(local as string, from as string)
-            .then(localState =>
-              force
-                ? aws.uploadState(localState, remoteFileName)
-                : aws
-                  .getStateFromBucket(remote as string)
-                  .then(remoteState =>
-                    diffStateWithNotification(localState, remoteState)
-                      .then(diff =>
-                        diff &&
-                        askAboutReconciliation()
-                          .then(answers =>
-                            !answers.proceed
-                              ? console.log('Aborting action') as any
-                              : runUploadCommand(beforeUpload as string, diff, remoteFileName))),
+      aws.getLockState()
+        .then(({ locked, ...details }) =>
+          !locked
+            ? aws
+              .setLock(true, "State upload lock.")
+              .then(_ =>
+                getLocalStateFile(local as string, from as string)
+                  .then(localState =>
+                    force
+                      ? aws.uploadState(localState, remoteFileName)
+                      : aws
+                        .getStateFromBucket(remote as string)
+                        .then(remoteState =>
+                          diffStateWithNotification(localState, remoteState)
+                            .then(diff =>
+                              diff &&
+                              askAboutReconciliation()
+                                .then(answers =>
+                                  !answers.proceed
+                                    ? console.log('Aborting action') as any
+                                    : runUploadCommand(beforeUpload as string, diff, remoteFileName))),
+                        )
                   )
-            )
-        )
-        .then(() => aws.setLock(false, "State upload lock finish."))
-        .catch(e => aws.setLock(false, `State upload lock error with message: ${e.message}`))
-  )
+              )
+              .then(() => aws.setLock(false, "State upload lock finish."))
+              .catch(e => aws.setLock(false, `State upload lock error with message: ${e.message}`))
+            : console.log(`State is locked, details: ${JSON.stringify(details, null, 2)}`) as any
+        ))
   .command('has-remote-state', 'Checking existence of remote state on remote drive', defaultRemote,
     ({ remote }) =>
       aws.getStateFromBucket(remote)

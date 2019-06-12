@@ -10,7 +10,6 @@ let
 
   paths = {
     state-sql = "state.nixops";
-    state-json = "state.nixops.json";
   };
 
   # ENCODE / DECODE
@@ -25,39 +24,29 @@ let
   #   ${pkgs.sops}/bin/sops -d infra.state > localstate.nixops
   # '';
 
-  # TODO this should be a bit smarter - check first whether there are differences
-  keep-it-stateless = pkgs.writeScript "keep-it-stateless" ''
+  keep-nixops-stateless = pkgs.writeScript "keep-it-stateless" ''
     rm ${paths.state-sql}
   '';
 
-  state-import = pkgs.writeScript "import-state" ''
-    ${keep-it-stateless}
-
-    ${locker}/bin/locker download-state --file ${paths.state-json} \
-      | ${pkgs.nixops}/bin/nixops import --include-keys 
+  nixops-export-state = pkgs.writeScript "nixops-export-state" ''
+    ${pkgs.nixops}/bin/nixops export --all
   '';
 
-  # INFO: interactive mode does not work when piping - investigate
-  # ${pkgs.nixops}/bin/nixops export --all \
-  #   | ${locker}/bin/locker upload-state --stdin
-
-  upload-remote-state = pkgs.writeScriptBin "upload-remote-state" ''
-    IS_LOCKED=$(${locker}/bin/locker status)
-    echo "Remote state is locked? $IS_LOCKED"
-
-    if [ "$IS_LOCKED" == "false" ]; then
-      ${locker}/bin/locker upload-state --from "${pkgs.nixops}/bin/nixops export --all"
-    fi
+  nixops-import-state = pkgs.writeScript "nixops-import-state" ''
+    ${pkgs.nixops}/bin/nixops import --include-keys
   '';
 
   import-remote-state = pkgs.writeScriptBin "import-remote-state" ''
     ${locker}/bin/locker import-state \
-      --from "${pkgs.nixops}/bin/nixops export --all" \
-      --before-to "rm ${paths.state-sql}" \
-      --to "${pkgs.nixops}/bin/nixops import --include-keys"
+      --from "${nixops-export-state}" \
+      --before-to "${keep-nixops-stateless}" \
+      --to "${nixops-import-state}"
   '';
-#  --from "${pkgs.nixops}/bin/nixops export --all"
-     # | ${pkgs.nixops}/bin/nixops import --include-keys 
+
+  upload-remote-state = pkgs.writeScriptBin "upload-remote-state" ''
+    ${locker}/bin/locker upload-state \
+      --from "${pkgs.nixops}/bin/nixops export --all"
+  '';
 
   nixops = pkgs.writeScriptBin "nixops" ''
     ${pkgs.nixops}/bin/nixops $(${locker}/bin/locker rewrite-arguments --input "$*" --cwd $(pwd))
@@ -65,9 +54,7 @@ let
 in
 mkShell {
   buildInputs = [
-    nixops
     locker
-
     upload-remote-state
     import-remote-state
 

@@ -26,6 +26,15 @@ export const updateCredentials = () => {
   return credentials
 }
 
+export type RemoteState = {
+  id: string
+  locked: boolean
+  time: string
+  timestamp: number
+  who: string
+  'change-id': string
+}
+
 // TODO this should append next state
 export const setLock = (locked: boolean, reason: string) => {
   const credentials = updateCredentials()
@@ -49,7 +58,7 @@ export const setLock = (locked: boolean, reason: string) => {
     .promise()
 }
 
-export const getLockState = () => {
+export const getLockState = (): Promise<RemoteState> => {
 
   updateCredentials()
 
@@ -67,7 +76,11 @@ export const getLockState = () => {
   return docClient
     .query(params)
     .promise()
-    .then(d => d.Items[0])
+    .then(d =>
+      (d && d.Items && d.Items.length > 0
+        ? d.Items[0]
+        : { locked: false }) as RemoteState
+    )
 }
 
 export const uploadState = (file: string, fileName?: string) => {
