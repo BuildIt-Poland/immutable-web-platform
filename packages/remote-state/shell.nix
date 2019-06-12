@@ -9,7 +9,8 @@ mkShell {
   buildInputs = [
     package.remote-state-cli
     package.remote-state-aws-infra
+    pkgs.nodejs
   ];
-  shellHook = ''
-  '';
+  PROJECT_NAME = env-config.projectName;
+  shellHook = '''';
 }

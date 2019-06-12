@@ -1,0 +1,63 @@
+{
+  "Resources": {
+    "futureiscommingremotestatebucketE8110EA4": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "future-is-comming-remote-state",
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "VersioningConfiguration": {
+          "Status": "Enabled"
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "Metadata": {
+        "aws:cdk:path": "AwsStack/future-is-comming-remote-state-bucket/Resource"
+      }
+    },
+    "futureiscommingremotestatedynamodb74BB93E0": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "timestamp",
+            "KeyType": "RANGE"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "timestamp",
+            "AttributeType": "N"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "StreamSpecification": {
+          "StreamViewType": "NEW_IMAGE"
+        },
+        "TableName": "future-is-comming-remote-state"
+      },
+      "Metadata": {
+        "aws:cdk:path": "AwsStack/future-is-comming-remote-state-dynamodb/Resource"
+      }
+    }
+  },
+  "Outputs": {
+    "Bucket": {
+      "Value": {
+        "Ref": "futureiscommingremotestatebucketE8110EA4"
+      }
+    }
+  }
+}

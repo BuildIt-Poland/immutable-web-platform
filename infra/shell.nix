@@ -54,8 +54,9 @@ let
 in
 mkShell {
   buildInputs = [
-    locker
+    remote-state.package.remote-state-cli
     remote-state.package.remote-state-aws-infra
+
     upload-remote-state
     import-remote-state
     nixops

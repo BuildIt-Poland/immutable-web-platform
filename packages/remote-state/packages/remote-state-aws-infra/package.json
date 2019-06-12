@@ -2,7 +2,8 @@
   "name": "remote-state-aws-infra",
   "version": "1.0.0",
   "bin": {
-    "remote-state-deploy-aws": "bin/aws.js"
+    "remote-state-aws-stack": "./bin/cdk-run",
+    "app": "./bin/aws.ts"
   },
   "scripts": {
     "build": "tsc",
