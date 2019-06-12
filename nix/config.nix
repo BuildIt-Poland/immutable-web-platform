@@ -4,6 +4,7 @@
   brigadeSharedSecret,
   aws-profiles,
   log,
+  nix-gitignore,
   lib
 }:
 let
@@ -18,6 +19,7 @@ rec {
   # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
   version = "0.0.1";
+  gitignore = nix-gitignore.gitignoreSourcePure [ "${rootFolder}/.gitignore" ];
 
   ssh-keys = {
     bitbucket = {

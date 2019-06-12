@@ -1,7 +1,7 @@
-{ pkgs }:
+{ pkgs, env-config }:
 pkgs.yarn2nix.mkYarnWorkspace {
   name = "remote-state";
-  src = ./..;
+  src = env-config.gitignore ./..;
   packageJson = ../package.json;
   yarnLock = ../yarn.lock;
   packageOverrides = {
