@@ -29,7 +29,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * full determinism of results
 * incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
 * diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
-* custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage)
+* custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docks](/packages/remote-state/README.md))
 
 #### Work in progress
 * `gitops` via `brigade.js`
