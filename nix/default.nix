@@ -1,7 +1,8 @@
 { 
   sources ? import ./sources.nix,
   brigadeSharedSecret ? "", # it would be good to display warning related to that
-  env ? "dev"
+  env ? "dev",
+  system ? null
 }:
 let
   rootFolder = ../.;
@@ -47,7 +48,6 @@ let
       if builtins.currentSystem == "x86_64-darwin"
         then (import sources.nixpkgs ({ 
           system = "x86_64-linux"; 
-          config.allowUnfree = true;
         } // { inherit overlays; }))
         else super.pkgs;
 
@@ -81,6 +81,9 @@ let
     kubenix-modules
     application
   ];
-  args = { } // { inherit overlays; };
+  args = 
+    { } 
+    // { inherit overlays; } 
+    // (if system != null then { inherit system; } else {});
 in
   import sources.nixpkgs args

@@ -1,10 +1,16 @@
 let
   host-name = "example.org";
-  local-nixpkgs = (import ../nix { use-docker = true; });
+  local-nixpkgs = (import ../nix { 
+    system = "x86_64-linux"; 
+  });
+  # local-nixpkgs = import <nixpkgs> {};
   containers = import ./container/example.nix;
   helpers = import ./helpers.nix { nixpkgs = local-nixpkgs; };
 in
+with local-nixpkgs;
 {
+  # grub -> https://github.com/NixOS/nixpkgs/issues/62824
+  # solution -> ln -s /dev/nvme0n1 /dev/xvda 
   buildit-ops = 
     { config, pkgs, nodes, ...}: 
     {
@@ -19,7 +25,17 @@ in
         setSendmail = true;
       };
 
-      environment.systemPackages = with local-nixpkgs; [ 
+      system.userActivationScripts = {
+        k8s-cluster = {
+          text = ''
+            echo "Applying cluster stuff"
+            ${k8s-cluster-operations.apply-cluster-stack}/bin/apply-cluster-stack
+          '';
+          deps = [];
+        };
+      };
+
+      environment.systemPackages = [ 
         neovim
         kubectl
         zsh
@@ -29,19 +45,19 @@ in
       virtualisation.docker.enable = true;
       virtualisation.rkt.enable = true;
 
-      system.autoUpgrade.enable = true;
-      system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre180188.2439b3049b1;
+      # system.autoUpgrade.enable = true;
+      # system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre180188.2439b3049b1;
 
-      services.concourseci = {
-        githubClientId = "";
-        githubClientSecret = "";
-        virtualhost = "buildit.com";
-        sshPublicKeys = [];
-      };
+      # services.concourseci = {
+      #   githubClientId = "";
+      #   githubClientSecret = "";
+      #   virtualhost = "buildit.com";
+      #   sshPublicKeys = [];
+      # };
 
       containers = containers;
 
-      environment.etc.local-source-folder.source = ../.;
+      environment.etc.local-source-folder.source = ./.;
       
       programs.zsh = {
         interactiveShellInit = ''
@@ -67,6 +83,9 @@ in
       nix.autoOptimiseStore = true;
       nix.trustedUsers = [];
       networking.firewall.allowedTCPPorts = [ 80 22 ];
+      nix.binaryCaches = [ "https://cache.nixos.org" ];
+      nix.binaryCachePublicKeys = [];
+
       nix.buildMachines = [
         {
           hostName = "localhost";

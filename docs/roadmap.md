@@ -5,6 +5,7 @@
 * provide hooks for `nixops` infra updates
 * apply scripts from local shell to `nixos` cluster
 * running cluster in `brigade` worker to test release - `dind`
+* virtual kublet integration
 
 ### `gitops` via `brigade.js`
 * make brigade responsible for a `k8s` resources update with `git commit`, `infra` updates with `nixops`

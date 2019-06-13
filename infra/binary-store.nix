@@ -1,11 +1,12 @@
-{ }:
+{ 
+  pkgs ? (import ../nix {}).pkgs
+}:
 let
   region = "eu-west-2";
   accessKeyId = "default";
-  project = "future-is-coming-worker-binary-store"; # would be good to take it from config
+  project = "${pkgs.env-config.projectName}-worker-binary-store";
 in
 {
-  # TODO add tags
   resources.s3Buckets."${project}" =
     {
       inherit region accessKeyId;
