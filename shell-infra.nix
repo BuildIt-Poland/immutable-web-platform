@@ -1,8 +1,5 @@
 # INSPIRATION: https://github.com/WeAreWizards/blog/blob/master/content/articles/sharing-deployments-with-nixops.md
 # INFO: this state is required to be able to do a gitops
-
-# TODO: downside of shell is that it copy content so to refresh configuration you need to restart shell
-# solution: lorri or just export pwd ...
 {
   pkgs ? (import ./nix {}).pkgs,
   kms ? ""
@@ -73,7 +70,6 @@ mkShell {
 
     pkgs.sops
   ];
-  # NIX_PATH = "${./.}"; # this is path to store - if don't use pwd then we need to restart the shell to get file changes
   NIXOPS_STATE = paths.state-sql;
   PROJECT_NAME = env-config.projectName;
   shellHook = ''
