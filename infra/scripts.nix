@@ -10,6 +10,11 @@ let
       ${nixops}/bin/nixops destroy -d ${name}
     '';
 
+    delete = writeScriptBin "ops-delete-${name}" ''
+      ${destroy}/bin/${destroy.name}
+      ${nixops}/bin/nixops delete -d ${name}
+    '';
+
     deploy = writeScriptBin "ops-deploy-${name}" ''
       ${create}/bin/${create.name}
       ${nixops}/bin/nixops deploy -d ${name} --kill-obsolete
@@ -21,17 +26,20 @@ let
   };
 in
 {
+  # TODO think whether rewriting is args in shell-infra is necessary
+  # either will keep paths like below from root of monorepo
+  # or enable rewriting - without rewriting all is cleaner
   deploy-ec2 = deployment {
     name = "ec2";
-    configuration = ./configuration.nix;
-    machine = ./ec2.nix;
+    configuration = "infra/configuration.nix";
+    machine = "infra/ec2.nix";
     resource-name = "buildit-ops"; # take from external config
   };
 
   deploy-vbox = deployment {
     name = "local-deployment";
-    configuration = ./configuration.nix;
-    machine = ./virtualbox.nix;
+    configuration = "infra/configuration.nix";
+    machine = "infra/virtualbox.nix";
     resource-name = "buildit-ops"; # take from external config
   };
 }
