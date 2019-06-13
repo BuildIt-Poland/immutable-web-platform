@@ -9,7 +9,8 @@ let
 in
 with local-nixpkgs;
 {
-  # grub -> https://github.com/NixOS/nixpkgs/issues/62824
+  # issue with grub -> https://github.com/NixOS/nixpkgs/issues/62824
+  # happen on c5 but not a t2 - INVESTIGATE what is a difference on AWS
   # solution -> ln -s /dev/nvme0n1 /dev/xvda 
   buildit-ops = 
     { config, pkgs, nodes, ...}: 

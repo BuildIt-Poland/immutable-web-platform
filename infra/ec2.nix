@@ -31,7 +31,7 @@ let
       deployment.targetEnv = "ec2";
       deployment.ec2.accessKeyId = accessKeyId;
       deployment.ec2.region = region;
-      deployment.ec2.instanceType = "t2.micro";
+      deployment.ec2.instanceType = "t2.xlarge"; # micro has only 1 CPU
       # deployment.ec2.instanceType = "c5.large"; # this work with kvm - nested virtualization
       deployment.ec2.keyPair = resources.ec2KeyPairs.deployment-key;
 
