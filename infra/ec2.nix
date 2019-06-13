@@ -32,6 +32,7 @@ let
       deployment.ec2.accessKeyId = accessKeyId;
       deployment.ec2.region = region;
       deployment.ec2.instanceType = "t2.micro";
+      # deployment.ec2.instanceType = "c5.large"; # this work with kvm - nested virtualization
       deployment.ec2.keyPair = resources.ec2KeyPairs.deployment-key;
 
       deployment.ec2.ebsInitialRootDiskSize = 40; # GB
@@ -41,10 +42,6 @@ let
       deployment.ec2.securityGroups = []; # INFO: we don't want its default `[ "default" ]`
       deployment.ec2.securityGroupIds = [ resources.ec2SecurityGroups."${sgName}".name ];
     };
-
-    # ec2.hvm = true;
-    # boot.extraModprobeConfig = "options kvm_intel nested=1";
-    # boot.kernelModules = [ "kvm-intel" ];
 in
 { 
   network.description = "Buildit-ops deployment";
