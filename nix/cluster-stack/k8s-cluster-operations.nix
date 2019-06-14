@@ -18,9 +18,10 @@ rec {
     ${pkgs.kubectl}/bin/kubectl label namespace ${namespace} istio-injection=enabled
   '';
 
+  ## remove this two resources related to istio
+  # ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .istio-crds}/istio-crds.yaml
+  # ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .istio}/istio-node-port.yaml
   apply-knative-with-istio = writeScript "apply-knative-with-istio" ''
-    ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .istio-crds}/istio-crds.yaml
-    ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .istio}/istio-node-port.yaml
     ${inject-sidecar-to env-config.kubernetes.namespace.functions}
 
     ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .knative-serving}/knative-serving.yaml

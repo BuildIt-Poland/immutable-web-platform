@@ -1,5 +1,6 @@
 {stdenv, pkgs}:
 rec {
+  # this things can dissapear
   istio-crds = stdenv.mkDerivation {
     name = "istio-crds";
     src = pkgs.fetchurl {

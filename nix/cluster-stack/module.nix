@@ -18,9 +18,16 @@ let
   istio-ns = namespace.istio;
   ssh-keys = env-config.ssh-keys;
   aws-credentials = env-config.aws-credentials;
+
+  create-istio-cr = kind: {
+    group = "config.istio.io";
+    version = "v1alpha2";
+    kind = kind;
+    description = "";
+  };
 in
 {
-  imports = with kubenix.modules; [ helm k8s docker ];
+  imports = with kubenix.modules; [ helm k8s docker istio ];
 
   docker.images.brigade-worker.image = remote-worker.docker-image;
   docker.images.brigade-extension.image = brigade-extension.docker-image;
@@ -39,10 +46,21 @@ in
     chart = charts.istio-init;
   };
 
+  # TODO: istio-ingressgateway -> change to NodePort
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
+    values = {
+
+    };
   };
+
+  kubernetes.customResources = [
+    (create-istio-cr "attributemanifest")
+    (create-istio-cr "kubernetes")
+    (create-istio-cr "rule")
+    (create-istio-cr "handler")
+  ];
 
   kubernetes.helm.instances.brigade-bitbucket-gateway = {
     namespace = "${brigade-ns}";

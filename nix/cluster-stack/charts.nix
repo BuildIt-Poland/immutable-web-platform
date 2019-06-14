@@ -44,6 +44,6 @@ rec {
     chart = "istio-init";
     version = "1.1.3";
     repo = "https://storage.googleapis.com/istio-release/releases/1.1.3/charts";
-    sha256 = "1p86xkzqycpbgysdlzjbd6xspz1bmd4sb2667diln80qxwyv10fx";
+    sha256 = "0znx8ixy0rvjvrkw5xw30i78qfzhq4jjm7k4n79mkv4z4am95wz5";
   };
 }
