@@ -10,13 +10,12 @@ in
 with local-nixpkgs;
 {
   # issue with grub -> https://github.com/NixOS/nixpkgs/issues/62824
-  # happen on c5 but not a t2 - INVESTIGATE what is a difference on AWS
+  # happen on c5 but not a t2 (micro and xlarge) - INVESTIGATE what is a difference on AWS
   # solution -> ln -s /dev/nvme0n1 /dev/xvda 
   buildit-ops = 
     { config, pkgs, nodes, ...}: 
     {
       imports = [
-        # ./services/concourse-ci.nix
         ./services/kubernetes.nix
         ./services/nginx.nix
       ];
@@ -41,6 +40,8 @@ with local-nixpkgs;
         kubectl
         zsh
         htop
+        k8s-cluster-operations.apply-cluster-stack
+        kubernetes-helm
       ];
 
       virtualisation.docker.enable = true;
@@ -49,15 +50,7 @@ with local-nixpkgs;
       # system.autoUpgrade.enable = true;
       # system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre180188.2439b3049b1;
 
-      # services.concourseci = {
-      #   githubClientId = "";
-      #   githubClientSecret = "";
-      #   virtualhost = "buildit.com";
-      #   sshPublicKeys = [];
-      # };
-
       containers = containers;
-
       environment.etc.local-source-folder.source = ./.;
       
       programs.zsh = {

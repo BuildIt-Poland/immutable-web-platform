@@ -2,7 +2,7 @@
   nixpkgs ? (import ./nix/sources.nix).nixpkgs
 }:
 {
-  integrationTest = import ./test.nix {
+  integrationTest = import ./infra.test.nix {
     inherit nixpkgs;
   };
 }

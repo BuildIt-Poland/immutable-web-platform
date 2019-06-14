@@ -34,6 +34,16 @@ in
     chart = charts.brigade;
   };
 
+  kubernetes.helm.instances.istio-init = {
+    namespace = "${istio-ns}";
+    chart = charts.istio-init;
+  };
+
+  kubernetes.helm.instances.istio = {
+    namespace = "${istio-ns}";
+    chart = charts.istio;
+  };
+
   kubernetes.helm.instances.brigade-bitbucket-gateway = {
     namespace = "${brigade-ns}";
     name = "brigade-bitbucket-gateway";
