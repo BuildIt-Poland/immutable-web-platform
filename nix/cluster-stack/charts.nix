@@ -35,7 +35,7 @@ rec {
     sha256 = "1fm8l0nsmjiglfvrx9xqyzzz3jw1xpf4fy4radi1n51yjkp51lji";
   };
 
-  istio_ = chart2json {
+  istio_test = chart2json {
     name = "istio";
     chart = istio;
   };

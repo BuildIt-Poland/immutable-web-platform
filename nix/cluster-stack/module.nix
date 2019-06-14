@@ -46,15 +46,19 @@ in
     chart = charts.istio-init;
   };
 
-  # TODO: istio-ingressgateway -> change to NodePort
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
     values = {
-
+      gateways = {
+        istio-ingressgateway = {
+          type = "NodePort";
+        };
+      };
     };
   };
 
+  # kubernetes.api.Ser
   kubernetes.customResources = [
     (create-istio-cr "attributemanifest")
     (create-istio-cr "kubernetes")
