@@ -7,3 +7,6 @@
 * https://github.com/deislabs/osiris
 * https://github.com/kedacore/keda/wiki/Samples-and-Blog-posts
 * https://github.com/Azure/azure-functions-core-tools
+
+### nixops
+* https://cgit.krebsco.de/krops/about/

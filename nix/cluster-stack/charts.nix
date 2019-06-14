@@ -1,7 +1,6 @@
 {
   kubenix,
-  pkgs,
-  chart-from-git
+  chart-from-git,
 }:
 let 
 in
@@ -29,17 +28,22 @@ rec {
 
   # INFO these below are not used yet
   # TODO they should work with helper from GIT so do it!
-  istio-chart = fetch {
+  istio = fetch {
     chart = "istio";
-    version = "1.1.0";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.0-rc.0/charts";
-    sha256 = "0ippv2914hwpsb3kkhk8d839dii5whgrhxjwhpb9vdwgji5s7yfl";
+    version = "1.1.3";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.3/charts/index.yaml";
+    sha256 = "1fm8l0nsmjiglfvrx9xqyzzz3jw1xpf4fy4radi1n51yjkp51lji";
   };
 
-  istio-init-chart = fetch {
+  istio_ = chart2json {
+    name = "istio";
+    chart = istio;
+  };
+
+  istio-init = fetch {
     chart = "istio-init";
-    version = "1.1.0";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.0-rc.0/charts";
+    version = "1.1.3";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.3/charts";
     sha256 = "1p86xkzqycpbgysdlzjbd6xspz1bmd4sb2667diln80qxwyv10fx";
   };
 }
