@@ -28,11 +28,7 @@ let
 
     # K8S
 
-    kubenix = super.callPackage sources.kubenix {
-      lib= {
-        helm.chart2json = (super.callPackage ./kubenix-chart2json.nix {});
-      };
-    };
+    kubenix = super.callPackage sources.kubenix {};
     knctl = super.callPackage ./tools/knctl.nix {}; # knative
     chart-from-git = super.callPackage ./helm {};
     k8s-local = super.callPackage ./k8s-local.nix {};
