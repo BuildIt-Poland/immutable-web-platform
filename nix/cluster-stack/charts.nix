@@ -29,9 +29,9 @@ rec {
 
   istio = helm.fetch {
     chart = "istio";
-    version = "1.1.3";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.3/charts/index.yaml";
-    sha256 = "1fm8l0nsmjiglfvrx9xqyzzz3jw1xpf4fy4radi1n51yjkp51lji";
+    version = "1.1.9";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
+    sha256 = "1ly6nd4y9shvx166pbpm8gmh0r1pn00d5y4arxvxb5rqbsdknzjh";
   };
 
   istio-json = helm.chart2json {
@@ -41,9 +41,9 @@ rec {
 
   istio-init = helm.fetch {
     chart = "istio-init";
-    version = "1.1.3";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.3/charts";
-    sha256 = "0znx8ixy0rvjvrkw5xw30i78qfzhq4jjm7k4n79mkv4z4am95wz5";
+    version = "1.1.9";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
+    sha256 = "1vdsxrz4gis5za519p0zjmd9zjckjaa34pdssbn9lis19x20ki7v";
   };
 
   istio-init-json = helm.chart2json {
