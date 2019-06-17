@@ -61,6 +61,8 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share how to co
 * [Some tips and tricks](/docs/tips-and-tricks.md)
 * [Where I'm and where I want to be](/docs/roadmap.md)
 * [Some alternative approaches](/docs/alternatives.md)
+* [Cluster monitoring](/docs/monitoring.md)
+* [Some good reads](/docs/reads.md)
 * [`nix-darwin` and `remote-builders`](/docs/linux-darwin-builds.md)
 
 ### How to start
