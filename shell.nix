@@ -31,7 +31,9 @@ mkShell {
     knctl
     brigade
     brigadeterm
+    kubectl-repl
     node-development-tools
+    kubernetes-helm
 
     # secrets
     sops

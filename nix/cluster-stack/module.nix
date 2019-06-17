@@ -16,6 +16,7 @@ let
   local-infra-ns = namespace.infra;
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
+  functions-ns = namespace.functions;
   ssh-keys = env-config.ssh-keys;
   aws-credentials = env-config.aws-credentials;
 
@@ -35,17 +36,35 @@ in
   kubernetes.api.namespaces."${local-infra-ns}"= {};
   kubernetes.api.namespaces."${brigade-ns}"= {};
   kubernetes.api.namespaces."${istio-ns}"= {};
+  kubernetes.api.namespaces."${functions-ns}"= {
+    metadata = {
+      labels = {
+        "istio-injection" = "enabled";
+      };
+    };
+  };
+
+  # because of istio crds defined as Jobs
+  # default [ "CustomResourceDefinition" "Namespace" ]
+  # kubernetes.resourceOrder = [
+  #   "CustomResourceDefinition" 
+  #   "Namespace"
+  #   "ServiceAccount" # istio crd require istio-init-service-account
+  #   "DestinationRule"
+  #   "ConfigMap" 
+  #   "Job" 
+  #   "Gateway"
+  #   "Deployment"
+  #   "Service"
+  #   "Pod"
+  # ];
 
   kubernetes.helm.instances.brigade = {
     namespace = "${brigade-ns}";
     chart = charts.brigade;
   };
 
-  kubernetes.helm.instances.istio-init = {
-    namespace = "${istio-ns}";
-    chart = charts.istio-init;
-  };
-
+  # https://knative.dev/docs/install/installing-istio/#installing-istio-with-sidecar-injection
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
@@ -53,10 +72,33 @@ in
       gateways = {
         istio-ingressgateway = {
           type = "NodePort";
+          autoscaleMin = 1;
+          autoscaleMax = 1;
+          resources.requests = {
+            cpu = "500m";
+            memory="256Mi";
+          };
         };
+      };
+      mixer.policy.enabled = true;
+      mixer.telemetry.enabled = true;
+      mixer.adapters.prometheus.enabled = false;
+      grafana.enabled = false;
+      pilot.autoscaleMin = 2;
+      pilot.traceSampling = 100;
+      global = {
+        disablePolicyChecks = true;
+        # proxy.autoInject = "disabled";
+        sidecarInjectorWebhook.enabled = true;
+        sidecarInjectorWebhook.enableNamespacesByDefault = true;
       };
     };
   };
+
+  # kubernetes.helm.instances.istio-init = {
+  #   namespace = "${istio-ns}";
+  #   chart = charts.istio-init;
+  # };
 
   # kubernetes.api.Ser
   kubernetes.customResources = [
