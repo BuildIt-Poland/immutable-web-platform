@@ -11,4 +11,4 @@
 ### nixops
 * https://cgit.krebsco.de/krops/about/
 * http://www.haskellforall.com/2018/08/nixos-in-production.html
-* https://discourse.nixos.org/t/morph-nix-based-deployment-tool/1276
+* https://discourse.nixos.org/t/morph-nix-based-deployment-tool/127 
