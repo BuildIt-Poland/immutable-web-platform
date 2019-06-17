@@ -10,8 +10,7 @@ rec {
     };
     phases = ["installPhase"];
     installPhase = ''
-      mkdir -p $out
-      cp $src $out/knative-serving.yaml
+      cat $src > $out
     '';
   };
 }

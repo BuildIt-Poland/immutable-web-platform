@@ -70,11 +70,14 @@ rec {
 
   get-port = {
     service,
-    type ? "port", # nodePort or port # TODO this should be an option
+    type ? "nodePort",
     index ? 0,
+    port ? "",
     namespace
   }: pkgs.writeScript "get-port" ''
-    ${pkgs.kubectl}/bin/kubectl get svc ${service} --namespace ${namespace} --output 'jsonpath={.spec.ports[${toString index}].${type}}';
+    ${pkgs.kubectl}/bin/kubectl get svc ${service} \
+      --namespace ${namespace} \
+      --output 'jsonpath={.spec.ports[${if port != "" then "?(@.port==${port})" else toString index}].${type}}'
   '';
 
   port-forward = {
@@ -119,8 +122,8 @@ rec {
   };
 
   istio-ports = {
-    from = get-port ({ type = "port"; } // istio-service);
-    to = get-port ({ type = "nodePort"; } // istio-service);
+    from = "echo '80'"; # so so but it expect a bash command
+    to = get-port ({ type = "nodePort"; port = "80"; } // istio-service);
   };
 
   wait-for-istio-ingress = pkgs.writeScriptBin "wait-for-istio-ingress" ''

@@ -19,7 +19,7 @@ rec {
   ## remove this two resources related to istio
   ## check if order is okey for knative - istio is defined in module knative applied after crd not istio
   apply-knative = writeScript "apply-knative" ''
-    ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources.knative-serving}/knative-serving.yaml
+    ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources.knative-serving}
   '';
 
   apply-resources = resources: writeScript "apply-resources" ''
