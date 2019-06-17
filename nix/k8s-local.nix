@@ -144,6 +144,14 @@ rec {
     ${port-forward (brigade-service // brigade-ports)}
   '';
 
+  # TODO make this more robust
+  expose-grafana = pkgs.writeScriptBin "expose-grafana" ''
+    ${pkgs.kubectl}/bin/kubectl port-forward --namespace knative-monitoring \
+      $(${pkgs.kubectl}/bin/kubectl get pods --namespace knative-monitoring \
+      --selector=app=grafana --output=jsonpath="{.items..metadata.name}") \
+      3000
+  '';
+
   # helpful flag ... --print-requests 
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
     ${log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}

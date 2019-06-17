@@ -16,12 +16,6 @@ in
 with kubenix.lib;
 rec {
 
-  ## remove this two resources related to istio
-  ## check if order is okey for knative - istio is defined in module knative applied after crd not istio
-  apply-knative = writeScript "apply-knative" ''
-    ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources.knative-serving}
-  '';
-
   apply-resources = resources: writeScript "apply-resources" ''
     cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply -f -
   '';
@@ -47,7 +41,6 @@ rec {
 
     ${apply-istio-crd}
     ${apply-resources cluster.k8s-cluster-resources}
-    ${apply-knative}
   '';
 
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
@@ -60,7 +53,7 @@ rec {
   push-to-docker-registry = writeScriptBin "push-to-docker-registry"
     (lib.concatMapStrings 
       (docker-images: ''
-        ${kubenix.lib.docker.copyDockerImages { 
+        ${docker.copyDockerImages { 
           images = docker-images; 
           dest = env-config.docker.destination;
         }}/bin/copy-docker-images

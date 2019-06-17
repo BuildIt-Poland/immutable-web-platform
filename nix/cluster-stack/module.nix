@@ -44,27 +44,14 @@ in
     };
   };
 
-  # because of istio crds defined as Jobs
   # default [ "CustomResourceDefinition" "Namespace" ]
-  # kubernetes.resourceOrder = [
-  #   "CustomResourceDefinition" 
-  #   "Namespace"
-  #   "ServiceAccount" # istio crd require istio-init-service-account
-  #   "DestinationRule"
-  #   "ConfigMap" 
-  #   "Job" 
-  #   "Gateway"
-  #   "Deployment"
-  #   "Service"
-  #   "Pod"
-  # ];
+  # kubernetes.resourceOrder = []
 
   kubernetes.helm.instances.brigade = {
     namespace = "${brigade-ns}";
     chart = charts.brigade;
   };
 
-  # https://knative.dev/docs/install/installing-istio/#installing-istio-with-sidecar-injection
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
@@ -88,19 +75,13 @@ in
       pilot.traceSampling = 100;
       global = {
         disablePolicyChecks = true;
-        # proxy.autoInject = "disabled";
+        proxy.autoInject = "disabled";
         sidecarInjectorWebhook.enabled = true;
         sidecarInjectorWebhook.enableNamespacesByDefault = true;
       };
     };
   };
 
-  # kubernetes.helm.instances.istio-init = {
-  #   namespace = "${istio-ns}";
-  #   chart = charts.istio-init;
-  # };
-
-  # kubernetes.api.Ser
   kubernetes.customResources = [
     (create-istio-cr "attributemanifest")
     (create-istio-cr "kubernetes")
