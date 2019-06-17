@@ -1,0 +1,1 @@
+* https://www.slideshare.net/mbbx6spp/from-zero-to-application-delivery-with-nixos

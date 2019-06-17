@@ -3,7 +3,6 @@ let
   local-nixpkgs = (import ../nix { 
     system = "x86_64-linux"; 
   });
-  # local-nixpkgs = import <nixpkgs> {};
   containers = import ./container/example.nix;
   helpers = import ./helpers.nix { nixpkgs = local-nixpkgs; };
 in
@@ -40,8 +39,11 @@ with local-nixpkgs;
         kubectl
         zsh
         htop
+
+        # TODO push to docker 
+        # TODO change config to production from env
         k8s-cluster-operations.apply-cluster-stack
-        kubernetes-helm
+        k8s-cluster-operations.apply-functions-to-cluster
       ];
 
       virtualisation.docker.enable = true;
@@ -56,6 +58,8 @@ with local-nixpkgs;
       programs.zsh = {
         interactiveShellInit = ''
           echo "Hey hey hey"
+          apply-cluster-stack
+          apply-functions-to-cluster
         '';
         enable = true;
         enableCompletion = true;

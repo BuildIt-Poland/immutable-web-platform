@@ -187,7 +187,7 @@ rec {
   # about resolve https://curl.haxx.se/docs/manpage.html
   curl-with-resolve = pkgs.stdenv.mkDerivation rec {
     name = "curl-with-localhost";
-    version = "0.0.1";
+    version = "0.0.3";
     buildInputs = [pkgs.makeWrapper pkgs.curl];
     phases = ["installPhase"];
     installPhase = ''

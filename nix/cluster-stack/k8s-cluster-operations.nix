@@ -13,27 +13,41 @@
 let
   k8s-resources = callPackage ./k8s-resources.nix {};
 in
+with kubenix.lib;
 rec {
-  inject-sidecar-to = namespace: writeScript "inside-sidecar-to" ''
-    ${pkgs.kubectl}/bin/kubectl label namespace ${namespace} istio-injection=enabled
-  '';
 
   ## remove this two resources related to istio
-  # ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .istio-crds}/istio-crds.yaml
-  # ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .istio}/istio-node-port.yaml
-  apply-knative-with-istio = writeScript "apply-knative-with-istio" ''
-    ${inject-sidecar-to env-config.kubernetes.namespace.functions}
+  ## check if order is okey for knative - istio is defined in module knative applied after crd not istio
+  apply-knative = writeScript "apply-knative" ''
+    ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources.knative-serving}/knative-serving.yaml
+  '';
 
-    ${pkgs.kubectl}/bin/kubectl apply -f ${k8s-resources .knative-serving}/knative-serving.yaml
+  apply-resources = resources: writeScript "apply-resources" ''
+    cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply -f -
+  '';
+
+  wait-for = resource: condition: writeScript "wait-for-condition" ''
+    ${pkgs.kubectl}/bin/kubectl wait ${resource} --for condition=${condition} --all --timeout=300s
+  '';
+
+  # INFO why waits -> https://github.com/knative/serving/issues/2195
+  apply-istio-crd = writeScript "apply-istio-crd" ''
+    ${apply-resources cluster.charts.istio-init-yaml}
+    ${wait-for "job" "complete"}
+    ${wait-for "crd" "established"}
   '';
 
   apply-functions-to-cluster = writeScriptBin "apply-functions-to-cluster" ''
-    cat ${cluster.k8s-resources} | ${pkgs.kubectl}/bin/kubectl apply -f -
+    ${log.important "Applying functions helm charts"}
+    ${apply-resources cluster.k8s-functions-resources}
   '';
 
   apply-cluster-stack = writeScriptBin "apply-cluster-stack" ''
-    ${log.important "Applying helm charts"}
-    ${apply-knative-with-istio}
+    ${log.important "Applying cluster helm charts"}
+
+    ${apply-istio-crd}
+    ${apply-resources cluster.k8s-cluster-resources}
+    ${apply-knative}
   '';
 
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"

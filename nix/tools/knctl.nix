@@ -6,10 +6,6 @@ let
     url = "https://github.com/cppforlife/knctl/releases/download/v${version}/knctl-${os}-amd64";
     sha256 = "1fchz6c58mzrh6ly2c5lncpcmsyk9j9ljc9qsqrwpwyvixg0fbrq";
   };
-  curl-with-hosts = writeShellScript "curl" ''
-
-    echo "curl curl" 
-  '';
 in
 mkDerivation rec {
   name = "knctl";

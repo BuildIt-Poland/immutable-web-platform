@@ -8,3 +8,4 @@ yarn-error.*
 *.nixops-shm
 *.nixops-wal
 cdk.out/*
+.temp
