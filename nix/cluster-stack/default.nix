@@ -13,26 +13,29 @@
 with kubenix.lib;
 let
   configuration = callPackage ./configurations.nix {};
+  extra-k8s-resources = callPackage ./k8s-resources.nix {};
 in
 rec {
   charts = callPackage ./charts.nix {};
   config = callPackage ./config.nix {
     inherit pkgs;
   };
-
+  inherit extra-k8s-resources;
   cluster-images = config.docker.export;
 
-  result = k8s.mkHashedList { 
+  k8s-cluster-resources = toYAML (k8s.mkHashedList { 
     items = 
-      config.kubernetes.objects
-      # TODO take all functions
-      ++ application.functions.express-app.config.kubernetes.objects;
+        config.kubernetes.objects
+        # has to be postponed - check helm instance -> and attach this
+      ;
+  });
 
-      # INFO having issue with knative compatibility - wip
-      # ++ (lib.importJSON charts.istio-init)
-      # ++ (lib.importJSON charts.istio);
-  };
+  k8s-functions-resources = toYAML (k8s.mkHashedList { 
+    # TODO make a helper to take all functions
+    items = 
+        extra-k8s-resources.knative-stack
+        ++ application.functions.express-app.config.kubernetes.objects;
+  });
 
-  k8s-resources = toYAML result;
   images = (lib.flatten application.function-images) ++ cluster-images;
 }

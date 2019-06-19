@@ -70,11 +70,14 @@ rec {
 
   get-port = {
     service,
-    type ? "port", # nodePort or port # TODO this should be an option
+    type ? "nodePort",
     index ? 0,
+    port ? "",
     namespace
   }: pkgs.writeScript "get-port" ''
-    ${pkgs.kubectl}/bin/kubectl get svc ${service} --namespace ${namespace} --output 'jsonpath={.spec.ports[${toString index}].${type}}';
+    ${pkgs.kubectl}/bin/kubectl get svc ${service} \
+      --namespace ${namespace} \
+      --output 'jsonpath={.spec.ports[${if port != "" then "?(@.port==${port})" else toString index}].${type}}'
   '';
 
   port-forward = {
@@ -119,8 +122,8 @@ rec {
   };
 
   istio-ports = {
-    from = get-port ({ type = "port"; } // istio-service);
-    to = get-port ({ type = "nodePort"; } // istio-service);
+    from = "echo '80'"; # so so but it expect a bash command
+    to = get-port ({ type = "nodePort"; port = "80"; } // istio-service);
   };
 
   wait-for-istio-ingress = pkgs.writeScriptBin "wait-for-istio-ingress" ''
@@ -139,6 +142,18 @@ rec {
 
   expose-brigade-gateway = pkgs.writeScriptBin "expose-brigade-gateway" ''
     ${port-forward (brigade-service // brigade-ports)}
+  '';
+
+  # TODO make this more robust
+  expose-grafana = pkgs.writeScriptBin "expose-grafana" ''
+    ${pkgs.kubectl}/bin/kubectl port-forward --namespace knative-monitoring \
+      $(${pkgs.kubectl}/bin/kubectl get pods --namespace knative-monitoring \
+      --selector=app=grafana --output=jsonpath="{.items..metadata.name}") \
+      3001:3000
+  '';
+
+  expose-weave-scope = pkgs.writeScriptBin "expose-weave-scope" ''
+    ${pkgs.kubectl}/bin/kubectl port-forward --namespace weave svc/weave-scope-app 3002:80
   '';
 
   # helpful flag ... --print-requests 
@@ -187,7 +202,7 @@ rec {
   # about resolve https://curl.haxx.se/docs/manpage.html
   curl-with-resolve = pkgs.stdenv.mkDerivation rec {
     name = "curl-with-localhost";
-    version = "0.0.1";
+    version = "0.0.3";
     buildInputs = [pkgs.makeWrapper pkgs.curl];
     phases = ["installPhase"];
     installPhase = ''

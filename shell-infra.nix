@@ -1,12 +1,17 @@
 # INSPIRATION: https://github.com/WeAreWizards/blog/blob/master/content/articles/sharing-deployments-with-nixops.md
 # INFO: this state is required to be able to do a gitops
 {
-  pkgs ? (import ../nix {}).pkgs,
+  pkgs ? (import ./nix {}).pkgs,
   kms ? ""
 }:
 with pkgs;
+with remote-state.package;
 let
-  locker = remote-state.package.remote-state-cli;
+  state-locker = remote-state-cli;
+
+  scripts = pkgs.callPackage ./infra/scripts.nix {
+    inherit nixops;
+  };
 
   paths = {
     state-sql = "state.nixops";
@@ -37,36 +42,38 @@ let
   '';
 
   import-remote-state = pkgs.writeScriptBin "import-remote-state" ''
-    ${locker}/bin/locker import-state \
+    ${state-locker}/bin/locker import-state \
       --from "${nixops-export-state}" \
       --before-to "${keep-nixops-stateless}" \
       --to "${nixops-import-state}"
   '';
 
   upload-remote-state = pkgs.writeScriptBin "upload-remote-state" ''
-    ${locker}/bin/locker upload-state \
+    ${state-locker}/bin/locker upload-state \
       --from "${pkgs.nixops}/bin/nixops export --all"
   '';
 
   nixops = pkgs.writeScriptBin "nixops" ''
-    ${pkgs.nixops}/bin/nixops $(${locker}/bin/locker rewrite-arguments --input "$*" --cwd $(pwd))
+    ${pkgs.nixops}/bin/nixops $(${state-locker}/bin/locker rewrite-arguments --input "$*" --cwd $(pwd))
   '';
 in
 mkShell {
   buildInputs = [
-    remote-state.package.remote-state-cli
-    remote-state.package.remote-state-aws-infra
+    remote-state-cli
+    remote-state-aws-infra
 
     upload-remote-state
     import-remote-state
     nixops
 
+    (builtins.attrValues scripts.deploy-ec2)
+
     pkgs.sops
   ];
-  NIX_PATH = "${./.}";
   NIXOPS_STATE = paths.state-sql;
   PROJECT_NAME = env-config.projectName;
   shellHook = ''
+    export NIX_PATH="$NIX_PATH:$(pwd)"
     echo "You are now entering the remote deployer ... have fun!"
   '';
 }

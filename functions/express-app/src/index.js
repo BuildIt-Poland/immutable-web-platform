@@ -5,7 +5,10 @@ app.get("/", (req, res) => {
   console.log("Hello world received a request.")
 
   const target = process.env.TARGET || "World!!!!"
-  res.send(`Hello ${target}!`)
+  const delay = process.env.DELAY || 1000
+  setTimeout(() => {
+    res.send(`Hello ${target}!`)
+  }, delay)
 })
 
 // https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#define-a-liveness-http-request

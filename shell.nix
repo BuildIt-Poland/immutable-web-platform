@@ -2,7 +2,8 @@
   fresh ? false,
   brigadeSharedSecret ? "", # take from bitbucket -> webhooks X-Hook-UUID
   updateResources ? false, # kubernetes resource,
-  autoExposePorts ? false
+  autoExposePorts ? false,
+  uploadDockerImages ? false
 }@args:
 let
   pkgs = (import ./nix {
@@ -30,7 +31,10 @@ mkShell {
     knctl
     brigade
     brigadeterm
+    kubectl-repl
     node-development-tools
+    kubernetes-helm
+    hey
 
     # secrets
     sops
@@ -48,6 +52,8 @@ mkShell {
     # ingress & tunnels
     k8s-local.expose-istio-ingress
     k8s-local.expose-brigade-gateway
+    k8s-local.expose-grafana
+    k8s-local.expose-weave-scope
     k8s-local.create-localtunnel-for-brigade
 
     # exports
@@ -77,12 +83,15 @@ mkShell {
     ${env-config.info.printWarnings}
     ${env-config.info.printInfos}
 
-    ${if fresh then "delete-local-cluster" else ""}
+    ${if fresh 
+         then "delete-local-cluster" else ""}
 
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
-    push-docker-images-to-local-cluster
+    ${if uploadDockerImages 
+         then "push-docker-images-to-local-cluster" else ""}
+
     apply-cluster-stack
     apply-functions-to-cluster
 

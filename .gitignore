@@ -5,3 +5,8 @@ dist
 yarn-error.*
 # nixops state - super crucial
 *.nixops
+*.nixops-shm
+*.nixops-wal
+cdk.out/*
+.temp
+temp.*

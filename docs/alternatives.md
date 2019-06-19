@@ -7,3 +7,11 @@
 * https://github.com/deislabs/osiris
 * https://github.com/kedacore/keda/wiki/Samples-and-Blog-posts
 * https://github.com/Azure/azure-functions-core-tools
+
+### nixops
+* https://cgit.krebsco.de/krops/about/
+* http://www.haskellforall.com/2018/08/nixos-in-production.html
+* https://discourse.nixos.org/t/morph-nix-based-deployment-tool/127 
+
+### YAML
+* http://leebriggs.co.uk/blog/2019/02/07/why-are-we-templating-yaml.html
