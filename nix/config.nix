@@ -3,17 +3,25 @@
   env,
   brigadeSharedSecret,
   aws-profiles,
-  region ? "eu-west-2",
+  region ? null,
   log,
   nix-gitignore,
   lib
 }:
+let
+in
 rec {
   inherit 
     rootFolder 
     env;
 
-  aws-credentials = aws-profiles.default // { inherit region; }; # default aws profile
+  aws-credentials = 
+    let
+      aws = aws-profiles.default; # TODO add ability to change profile
+    in
+      if (builtins.hasAttr "region" aws)
+        then aws
+        else aws // { region = if region != null then region else "eu-west-2"; };
 
   # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
