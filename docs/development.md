@@ -64,3 +64,7 @@ or super fancy `lorri` with watch capability (check required section)
 
 ### Performance
 * if you want to speed up `nix` a bit you can leverage `--max-job` params
+
+### Infra deployment
+* run `nix-shell shell-infra.nix`
+* you would have commands prefixed by `ops-*` (deploy / destroy)

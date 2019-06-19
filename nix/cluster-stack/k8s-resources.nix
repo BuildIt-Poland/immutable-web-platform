@@ -40,6 +40,7 @@ rec {
     };
   };
 
+  # not happy when deployed
   weavescope = 
     pkgs.stdenv.mkDerivation {
       name = "waveworks-scope";
@@ -75,8 +76,9 @@ rec {
       knative-serving
       # INFO - I'm overriding it as dashboard has to be fixed
       # knative-monitoring
+
       knative-e2e-request-tracing
-      weavescope
+      # weavescope
     ];
     overridings = monitoring-dashboard-fix;
   in

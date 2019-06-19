@@ -73,10 +73,15 @@ in
 
     services.kubernetes = {
       roles = [ "master" "node" ];
-      addons.dashboard.enable = true;
+      # addons.dashboard.enable = true;
       kubelet.extraOpts = "--fail-swap-on=false";
-      masterAddress = "localhost";
-      pki.certs = { inherit dev; };
+      # masterAddress = "localhost";
+      masterAddress = "localhost";#config.networking.privateIPv4;
+      # pki.certs = { inherit dev; };
+      # apiserver = {
+      #   securePort = 443;
+      #   advertiseAddress = config.networking.privateIPv4;
+      # };
     };
   };
 }
