@@ -1,29 +1,5 @@
-{stdenv, lib, pkgs, kubenix}:
+{stdenv, lib, pkgs, kubenix, yaml-to-json}:
 rec {
-  yaml-to-json = {src, name, version}:
-    stdenv.mkDerivation {
-      inherit name version src;
-      phases = ["installPhase"];
-      buildInputs = [pkgs.remarshal pkgs.gawk pkgs.jq];
-      installPhase = ''
-        awk 'BEGIN{i=1}{line[i++]=$0}END{j=1;n=0; while (j<i) {if (line[j] ~ /^---/) n++; else print line[j] >>"resource-"n".yaml"; j++}}' $src
-
-        for file in ./resource-*.yaml
-        do
-          remarshal -i $file -if yaml -of json >>resources.jsonl
-        done
-
-        # convert jsonl file to json array, remove null values and write to $out
-        cat resources.jsonl | jq -Scs 'walk(
-          if type == "object" then
-            with_entries(select(.value != null))
-          elif type == "array" then
-            map(select(. != null))
-          else
-            .
-          end)' > $out
-      '';
-    };
 
   knative-serving = yaml-to-json {
     name = "knative-serving";
@@ -71,7 +47,6 @@ rec {
       installPhase = ''
         curl -L "https://cloud.weave.works/k8s/scope.yaml?k8s-version=$(kubectl version | base64 | tr -d '\n')" > file.yaml
         remarshal -i file.yaml -if yaml -of json | jq '.items' > $out
-        cat $out
       '';
       nativeBuildInputs = [
         pkgs.curl 
@@ -82,11 +57,31 @@ rec {
       ];
     };
 
-  knative-stack = lib.foldl (lib.concat) [] (builtins.map lib.importJSON [
-    knative-serving
-    knative-monitoring
-    # knative-monitoring-metrics
-    knative-e2e-request-tracing
-    weavescope
-  ]);
+  scaling-dashboard = (builtins.readFile ../grafana/knative-scaling.json);
+  monitoring-dashboard-fix = 
+    let
+      src = lib.importJSON knative-monitoring;
+      remapDashboard = builtins.map (
+        x: if (lib.hasAttrByPath ["data" "scaling-dashboard.json"] x)
+          then (x // ({ data."scaling-dashboard.json" = ''${scaling-dashboard}'';}))
+          else x
+      );
+    in 
+      remapDashboard src;
+
+  knative-stack = 
+  let
+    jsons = [
+      knative-serving
+      # INFO - I'm overriding it as dashboard has to be fixed
+      # knative-monitoring
+      knative-e2e-request-tracing
+      weavescope
+    ];
+    overridings = monitoring-dashboard-fix;
+  in
+    (lib.foldl 
+      lib.concat
+      overridings
+      (builtins.map lib.importJSON jsons));
 }
