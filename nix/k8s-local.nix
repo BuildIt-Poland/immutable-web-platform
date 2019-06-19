@@ -149,7 +149,11 @@ rec {
     ${pkgs.kubectl}/bin/kubectl port-forward --namespace knative-monitoring \
       $(${pkgs.kubectl}/bin/kubectl get pods --namespace knative-monitoring \
       --selector=app=grafana --output=jsonpath="{.items..metadata.name}") \
-      3000
+      3001:3000
+  '';
+
+  expose-weave-scope = pkgs.writeScriptBin "expose-weave-scope" ''
+    ${pkgs.kubectl}/bin/kubectl port-forward --namespace weave svc/weave-scope-app 3002:80
   '';
 
   # helpful flag ... --print-requests 
