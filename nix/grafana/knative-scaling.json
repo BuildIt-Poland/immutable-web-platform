@@ -1,8 +1,37 @@
 {
+  "__inputs": [
+    {
+      "description": "",
+      "label": "prometheus",
+      "name": "prometheus",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus",
+      "type": "datasource"
+    }
+  ],
+  "__requires": [
+    {
+      "id": "grafana",
+      "name": "Grafana",
+      "type": "grafana",
+      "version": "5.0.3"
+    },
+    {
+      "id": "graph",
+      "name": "Graph",
+      "type": "panel",
+      "version": "5.0.0"
+    },
+    {
+      "id": "prometheus",
+      "name": "Prometheus",
+      "type": "datasource",
+      "version": "5.0.0"
+    }
+  ],
   "annotations": {
     "list": [
       {
-        "$$hashKey": "object:255",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -17,8 +46,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 17,
-  "iteration": 1560877316462,
+  "iteration": 1527886043818,
   "links": [],
   "panels": [
     {

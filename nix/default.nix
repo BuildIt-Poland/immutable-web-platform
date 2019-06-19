@@ -21,6 +21,7 @@ let
     # Helpers
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
     log = super.callPackage ./helpers/log.nix {};
+    yaml-to-json = super.callPackage ./helpers/yaml-to-json.nix {};
 
     # Brigade
     brigade = super.callPackage ./tools/brigade.nix {};
