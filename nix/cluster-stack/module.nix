@@ -155,7 +155,8 @@ in
     chart = charts.brigade-project;
     values = {
       project = env-config.brigade.project-name;
-      repository = env-config.brigade.project-name; # repository.location is too long # TODO check if it would work with gateway now ...
+      repository = env-config.brigade.project-name; 
+      # INFO: repository.location is too long
       # repository = env-config.repository.location;
       cloneURL = env-config.repository.git;
       vcsSidecar = "brigadecore/git-sidecar:latest";
@@ -181,7 +182,7 @@ in
       secrets = {
         awsAccessKey = aws-credentials.aws_access_key_id;
         awsSecretKey = aws-credentials.aws_secret_access_key;
-        awsRegion = aws-credentials.region; # TODO if aws 
+        awsRegion = aws-credentials.region;
         sopsSecrets = builtins.readFile env-config.secrets;
         cacheBucket = env-config.s3.worker-cache;
         workerDockerImage = "${worker.path}";
