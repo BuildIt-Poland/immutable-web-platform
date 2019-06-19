@@ -34,6 +34,7 @@ mkShell {
     kubectl-repl
     node-development-tools
     kubernetes-helm
+    hey
 
     # secrets
     sops
@@ -52,6 +53,7 @@ mkShell {
     k8s-local.expose-istio-ingress
     k8s-local.expose-brigade-gateway
     k8s-local.expose-grafana
+    k8s-local.expose-weave-scope
     k8s-local.create-localtunnel-for-brigade
 
     # exports

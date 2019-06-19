@@ -25,6 +25,15 @@ in
       };
       spec = {
         template = {
+          metadata = {
+            # https://github.com/knative/docs/blob/master/docs/serving/samples/autoscale-go/README.md
+            annotations = {
+              "autoscaling.knative.dev/class" = "kpa.autoscaling.knative.dev";
+              "autoscaling.knative.dev/metric" = "concurrency";
+              "autoscaling.knative.dev/target" = "5";
+              "autoscaling.knative.dev/maxScale" = "100";
+            };
+          };
           spec = {
             containers = [{
               image = 
