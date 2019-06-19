@@ -1,7 +1,8 @@
 { 
   sources ? import ./sources.nix,
   brigadeSharedSecret ? "", # it would be good to display warning related to that
-  env ? "dev"
+  env ? "dev",
+  system ? null
 }:
 let
   rootFolder = ../.;
@@ -20,15 +21,17 @@ let
     # Helpers
     find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
     log = super.callPackage ./helpers/log.nix {};
+    yaml-to-json = super.callPackage ./helpers/yaml-to-json.nix {};
 
     # Brigade
     brigade = super.callPackage ./tools/brigade.nix {};
     brigadeterm = super.callPackage ./tools/brigadeterm.nix {};
 
     # K8S
-
     kubenix = super.callPackage sources.kubenix {};
     knctl = super.callPackage ./tools/knctl.nix {}; # knative
+    kubectl-repl = super.callPackage ./tools/kubectl-repl.nix {}; 
+    hey = super.callPackage ./tools/hey.nix {}; 
     chart-from-git = super.callPackage ./helm {};
     k8s-local = super.callPackage ./k8s-local.nix {};
     k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
@@ -47,13 +50,13 @@ let
       if builtins.currentSystem == "x86_64-darwin"
         then (import sources.nixpkgs ({ 
           system = "x86_64-linux"; 
-          config.allowUnfree = true;
         } // { inherit overlays; }))
         else super.pkgs;
 
     remote-worker = super.callPackage ./remote-worker {};
     application = super.callPackage ./functions.nix {};
     cluster = super.callPackage ./cluster-stack {};
+    inherit sources;
   };
 
   kubenix-modules = self: super: rec {
@@ -80,6 +83,9 @@ let
     kubenix-modules
     application
   ];
-  args = { } // { inherit overlays; };
+  args = 
+    { } 
+    // { inherit overlays; } 
+    // (if system != null then { inherit system; } else {});
 in
   import sources.nixpkgs args

@@ -1,20 +1,20 @@
 {
   kubenix,
-  pkgs,
-  chart-from-git
+  chart-from-git,
+  lib
 }:
 let 
 in
-with kubenix.lib.helm;
+with kubenix.lib;
 rec {
-  brigade = fetch {
+  brigade = helm.fetch {
     chart = "brigade";
     repo = "https://brigadecore.github.io/charts";
     version = "1.0.0";
     sha256 = "0i5i3h346dz4a771zkgjpbx4hbyf7r6zfhvqhvfjv234dha4fj50";
   };
 
-  brigade-project = fetch {
+  brigade-project = helm.fetch {
     chart = "brigade-project";
     repo = "https://brigadecore.github.io/charts";
     version = "1.0.0";
@@ -27,19 +27,32 @@ rec {
     path = "charts/brigade-bitbucket-gateway";
   };
 
-  # INFO these below are not used yet
-  # TODO they should work with helper from GIT so do it!
-  istio-chart = fetch {
+  istio = helm.fetch {
     chart = "istio";
-    version = "1.1.0";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.0-rc.0/charts";
-    sha256 = "0ippv2914hwpsb3kkhk8d839dii5whgrhxjwhpb9vdwgji5s7yfl";
+    version = "1.1.9";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
+    sha256 = "1ly6nd4y9shvx166pbpm8gmh0r1pn00d5y4arxvxb5rqbsdknzjh";
   };
 
-  istio-init-chart = fetch {
-    chart = "istio-init";
-    version = "1.1.0";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.0-rc.0/charts";
-    sha256 = "1p86xkzqycpbgysdlzjbd6xspz1bmd4sb2667diln80qxwyv10fx";
+  istio-json = helm.chart2json {
+    name = "istio";
+    chart = istio;
   };
+
+  istio-init = helm.fetch {
+    chart = "istio-init";
+    version = "1.1.9";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
+    sha256 = "1vdsxrz4gis5za519p0zjmd9zjckjaa34pdssbn9lis19x20ki7v";
+  };
+
+  istio-init-json = helm.chart2json {
+    name = "istio-init";
+    chart = istio-init;
+  };
+
+  istio-init-yaml = toYAML (k8s.mkHashedList { 
+    items = 
+      (lib.importJSON istio-init-json);
+  });
 }

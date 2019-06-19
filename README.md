@@ -1,5 +1,5 @@
 ### Purpose
-As I'm super passionate about `nix` and it's ecosystem, I'd like share this awesomeness on some common `ops` tasks in examples to increase `nix` adoption. 
+As I'm super passionate about `nix` and it's ecosystem, I'd like share how to connect the dots to get fully automated infrastructure which can be run on local environment, virtual machines or in cloud.
 
 ### Inspiration part
 * [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)
@@ -7,9 +7,6 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [some why`s around nix](https://www.youtube.com/watch?v=YbUPdv03ciI)
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
 * [brigade & virtual-kubelet](https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/)
-
-### Some handy tools
-* [exposing docker ports for existing containers](https://sosedoff.com/2018/04/25/expose-docker-ports.html)
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
@@ -64,7 +61,9 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share this awes
 * [Some tips and tricks](/docs/tips-and-tricks.md)
 * [Where I'm and where I want to be](/docs/roadmap.md)
 * [Some alternative approaches](/docs/alternatives.md)
-
+* [Cluster monitoring](/docs/monitoring.md)
+* [Some good reads](/docs/reads.md)
+* [`nix-darwin` and `remote-builders`](/docs/linux-darwin-builds.md)
 
 ### How to start
 
