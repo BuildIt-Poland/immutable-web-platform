@@ -3,18 +3,17 @@
   env,
   brigadeSharedSecret,
   aws-profiles,
+  region ? "eu-west-2",
   log,
   nix-gitignore,
   lib
 }:
-let
-in
 rec {
   inherit 
     rootFolder 
     env;
 
-  aws-credentials = aws-profiles.default; # default aws profile
+  aws-credentials = aws-profiles.default // { inherit region; }; # default aws profile
 
   # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
@@ -81,6 +80,10 @@ rec {
         (lib.mkIf 
           (brigadeSharedSecret == "") 
           "You have to provide brigade shared secret to listen the repo hooks")
+
+        (lib.mkIf 
+          (!(builtins.pathExists ssh-keys.bitbucket.priv))
+          "Bitbucket key does not exists") 
       ]
     );
 

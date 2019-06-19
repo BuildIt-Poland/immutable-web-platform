@@ -140,6 +140,8 @@ in
     };
   };
 
+  # TODO if there is no secret for gateway then print the region and ssh key requirements
+
   # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
   kubernetes.helm.instances.brigade-project = 
   let
@@ -159,7 +161,11 @@ in
       vcsSidecar = "brigadecore/git-sidecar:latest";
       sharedSecret = env-config.brigade.sharedSecret;
       defaultScript = builtins.readFile env-config.brigade.pipeline; 
-      sshKey = builtins.readFile ssh-keys.bitbucket.priv;
+      sshKey = 
+        if builtins.pathExists ssh-keys.bitbucket.priv
+          then builtins.readFile ssh-keys.bitbucket.priv 
+          else "";
+
       workerCommand = "yarn build-start";
       worker = {
         registry = if env-config.is-dev then "" else env-config.docker.registry;
@@ -175,7 +181,7 @@ in
       secrets = {
         awsAccessKey = aws-credentials.aws_access_key_id;
         awsSecretKey = aws-credentials.aws_secret_access_key;
-        awsRegion = aws-credentials.region;
+        awsRegion = aws-credentials.region; # TODO if aws 
         sopsSecrets = builtins.readFile env-config.secrets;
         cacheBucket = env-config.s3.worker-cache;
         workerDockerImage = "${worker.path}";

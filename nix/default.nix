@@ -2,6 +2,7 @@
   sources ? import ./sources.nix,
   brigadeSharedSecret ? "", # it would be good to display warning related to that
   env ? "dev",
+  region ? null,
   system ? null
 }:
 let
@@ -68,11 +69,13 @@ let
   config = self: super: rec {
     env-config = super.callPackage ./config.nix {
 
-      aws-profiles = super.callPackage ./get-aws-credentials.nix {};
+      aws-profiles = super.callPackage ./get-aws-credentials.nix { };
 
-      inherit brigadeSharedSecret;
-      inherit rootFolder;
-      inherit env;
+      inherit 
+        brigadeSharedSecret 
+        rootFolder 
+        region
+        env;
     };
   };
 
