@@ -17,7 +17,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share how to co
 
 ### What is super hot!
 * `helm charts` without `helm` and `tiller`
-* scale to `0` with `knative & istio`
+* scale to `0` with `knative & istio`, scale based on concurrency level
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs` and `nixOS`
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
 * `nix` in charge of building and pushing docker images to `docker repository`
@@ -29,6 +29,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share how to co
 * `nixops` is provisioning based upon `declarative` nix file
 * I can share all `nix` code across everything and don't worry about copying any `bash` scripts
 * custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docs](/packages/remote-state/README.md))
+* monitoring tools
 
 ### People are doing it already ...
 * [step towards future configuration infrastructure management nix](https://container-solutions.com/step-towards-future-configuration-infrastructure-management-nix/)
@@ -71,3 +72,7 @@ As I'm super passionate about `nix` and it's ecosystem, I'd like share how to co
 * get [`docker`](https://www.docker.com/products/docker-desktop) - for [`kind`](https://kind.sigs.k8s.io/)
 * get [`nix`](https://nixos.org/nix/download.html) - creating isolated local environment
 * run `nix-shell` - if you encounter any issues check [docs](/docs/)
+
+#### Monitoring
+![grafana](https://bitbucket.org/repo/6zKBnz9/images/1943034243-Screenshot%202019-06-19%20at%2013.45.21.png)
+![weavescope](https://bitbucket.org/repo/6zKBnz9/images/3906895708-Screenshot%202019-06-19%20at%2013.45.55.png)
