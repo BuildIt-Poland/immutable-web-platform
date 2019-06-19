@@ -1,7 +1,7 @@
 { 
   sources ? import ./sources.nix,
   brigadeSharedSecret ? "", # it would be good to display warning related to that
-  env ? "dev",
+  env ? "dev", # TODO env should be more descriptive, sth like { target: "ec2|local", env: "dev|prod", experimental: "true|false" }
   system ? null
 }:
 let

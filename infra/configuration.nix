@@ -1,6 +1,7 @@
 let
   host-name = "example.org";
   local-nixpkgs = (import ../nix { 
+    env = "prod";
     system = "x86_64-linux"; 
   });
   containers = import ./container/example.nix;
@@ -24,21 +25,23 @@ with local-nixpkgs;
         setSendmail = true;
       };
 
-      system.userActivationScripts = {
-        k8s-cluster = {
-          text = ''
-            echo "Applying cluster stuff"
-            ${k8s-cluster-operations.apply-cluster-stack}/bin/apply-cluster-stack
-          '';
-          deps = [];
-        };
-      };
-
+      # system.userActivationScripts = {
+      #   k8s-cluster = {
+      #     text = ''
+      #       echo "Applying cluster stuff"
+      #       ${k8s-cluster-operations.apply-cluster-stack}/bin/apply-cluster-stack
+      #     '';
+      #     deps = [];
+      #   };
+      # };
+  
       environment.systemPackages = [ 
         neovim
         kubectl
         zsh
         htop
+        curl
+        kubernetes-helm
 
         # TODO push to docker 
         # TODO change config to production from env
@@ -48,16 +51,19 @@ with local-nixpkgs;
 
       virtualisation.docker.enable = true;
       virtualisation.rkt.enable = true;
+      services.dockerRegistry.enable = true;
 
-      # system.autoUpgrade.enable = true;
-      # system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre180188.2439b3049b1;
+      system.autoUpgrade.enable = true;
+      system.autoUpgrade.channel = https://releases.nixos.org/nixpkgs/nixpkgs-19.09pre182717.b58ada326aa;
 
       containers = containers;
       environment.etc.local-source-folder.source = ./.;
       
+      #this stuff has to go to activation script
       programs.zsh = {
         interactiveShellInit = ''
           echo "Hey hey hey"
+          echo ${config.networking.privateIPv4}
           apply-cluster-stack
           apply-functions-to-cluster
         '';
