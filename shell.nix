@@ -3,11 +3,14 @@
   brigadeSharedSecret ? "", # take from bitbucket -> webhooks X-Hook-UUID
   updateResources ? false, # kubernetes resource,
   autoExposePorts ? false,
-  uploadDockerImages ? false
+  uploadDockerImages ? false,
+  region ? null,
 }@args:
 let
   pkgs = (import ./nix {
-    inherit brigadeSharedSecret;
+    inherit 
+      brigadeSharedSecret 
+      region;
   }).pkgs;
 
   # TODO make it better at least concatString

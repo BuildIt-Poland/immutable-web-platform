@@ -1,16 +1,8 @@
 ## How to
 ### Running clean cluster
-* `nix-shell --arg fresh true`
+* `nix-shell --arg fresh true --arg uploadDockerImages true`
 
 > These ... below are already integrated with nix-shell! in case of local environment cluster is provisioned automatically, you can rerun using `push-docker-images-to-local-cluster`
-
-### Building images from derivation
-* `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
-* `docker load < result`
-* and then `docker run -it <container_id> /bin/sh`
-
-### Pushing `docker-image`
-* `nix-build nix -A functions.express-app.pushDockerImages --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
 
 ### Setup brigade
 * generate `ssh-key` only for your `bitbucket` hook. named your key as `bitbucket-webook` and place in `~/.ssh/` folder - (no worries, it can be changed in `nix/default.nix`)
@@ -64,3 +56,11 @@ or super fancy `lorri` with watch capability (check required section)
 
 ### Performance
 * if you want to speed up `nix` a bit you can leverage `--max-job` params
+
+### Building images from derivation
+* `nix-build nix -A functions.express-app.images --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`
+* `docker load < result`
+* and then `docker run -it <container_id> /bin/sh`
+
+### Pushing `docker-image`
+* `nix-build nix -A functions.express-app.pushDockerImages --builders 'ssh://nix-docker-build-slave x86_64-linux' --arg use-docker true`

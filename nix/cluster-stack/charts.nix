@@ -22,7 +22,7 @@ rec {
   };
 
   brigade-bitbucket = chart-from-git {
-    url = https://github.com/damianbaar/brigade-bitbucket-gateway;
+    url = https://github.com/lukepatrick/brigade-bitbucket-gateway;
     sha256 = "00vk1ywnkxihp3gqfkn7j641lgx353dkl7gbfsbkanc8rzdjbs5j";
     path = "charts/brigade-bitbucket-gateway";
   };
