@@ -13,7 +13,7 @@ let
   # version = "0.3.0";
   bin-name = "kind";
   url = {version, os}: 
-    "https://github.com/kubernetes-sigs/kind/releases/download/v${version}/kind-${os}-amd64";
+    "https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-${os}-amd64";
 
   getSource = {version, os}: pkgs.fetchurl {
     url = url { inherit version os; };
