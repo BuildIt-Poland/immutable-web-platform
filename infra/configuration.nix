@@ -25,16 +25,20 @@ with local-nixpkgs;
         setSendmail = true;
       };
 
-      # system.userActivationScripts = {
-      #   k8s-cluster = {
-      #     text = ''
-      #       echo "Applying cluster stuff"
-      #       ${k8s-cluster-operations.apply-cluster-stack}/bin/apply-cluster-stack
-      #     '';
-      #     deps = [];
-      #   };
-      # };
-  
+      system.userActivationScripts = {
+        k8s-cluster = {
+          text = ''
+            echo "Applying cluster stuff"
+          '';
+          deps = [];
+        };
+      };
+            # ${k8s-cluster-operations.apply-cluster-stack}/bin/apply-cluster-stack
+
+      networking.domain = "my.xzy";
+
+      boot.postBootCommands = "echo 'yay'";
+
       environment.systemPackages = [ 
         neovim
         kubectl
@@ -42,6 +46,9 @@ with local-nixpkgs;
         htop
         curl
         kubernetes-helm
+        git
+        # kubernetes
+        # kubelet
 
         # TODO push to docker 
         # TODO change config to production from env
@@ -49,14 +56,20 @@ with local-nixpkgs;
         k8s-cluster-operations.apply-functions-to-cluster
       ];
 
-      virtualisation.docker.enable = true;
+      # virtualisation.docker.enable = true;
+      virtualisation.docker = {
+        enable = true;
+      };
+
       virtualisation.rkt.enable = true;
       services.dockerRegistry.enable = true;
 
       system.autoUpgrade.enable = true;
       system.autoUpgrade.channel = https://releases.nixos.org/nixpkgs/nixpkgs-19.09pre182717.b58ada326aa;
 
-      containers = containers;
+      # https://github.com/mayflower/nixpkgs/blob/2e29412e9c33ebc2d78431dfc14ee2db722bcb30/nixos/modules/services/cluster/kubernetes/default.nix
+
+      # containers = containers;
       environment.etc.local-source-folder.source = ./.;
       
       #this stuff has to go to activation script
@@ -72,8 +85,8 @@ with local-nixpkgs;
       };
 
       # neccessary to allow containers call outside world
-      networking.nat.enable = true;
-      networking.nat.internalInterfaces = ["ve-+"];
+      # networking.nat.enable = true;
+      # networking.nat.internalInterfaces = ["ve-+"];
 
       users.extraUsers.root = {
         shell = local-nixpkgs.zsh;
@@ -86,7 +99,11 @@ with local-nixpkgs;
 
       nix.autoOptimiseStore = true;
       nix.trustedUsers = [];
-      networking.firewall.allowedTCPPorts = [ 80 22 ];
+      networking.firewall.allowedTCPPorts = [ 
+        80 
+        22 
+      ];
+
       nix.binaryCaches = [ "https://cache.nixos.org" ];
       nix.binaryCachePublicKeys = [];
 

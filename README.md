@@ -1,5 +1,5 @@
 ### Purpose
-As I'm super passionate about `nix` and it's ecosystem, I'd like share how to connect the dots to get fully automated infrastructure which can be run on local environment, virtual machines or in cloud.
+As I'm super passionate about `nix` and it's ecosystem, I'd like to share how to connect the dots to get fully automated infrastructure which can be run on local environment, virtual machines or in cloud.
 
 ### Inspiration part
 * [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)

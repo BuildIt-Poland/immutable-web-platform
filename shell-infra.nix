@@ -2,6 +2,7 @@
 # INFO: this state is required to be able to do a gitops
 {
   pkgs ? (import ./nix {}).pkgs,
+  local ? false,
   kms ? ""
 }:
 with pkgs;
@@ -70,9 +71,12 @@ mkShell {
 
     pkgs.sops
   ];
-  NIXOPS_STATE = paths.state-sql;
   PROJECT_NAME = env-config.projectName;
   shellHook = ''
+    ${if !local 
+      then "export NIXOPS_STATE=${paths.state-sql}" 
+      else ""}
+
     export NIX_PATH="$NIX_PATH:$(pwd)"
     echo "You are now entering the remote deployer ... have fun!"
   '';
