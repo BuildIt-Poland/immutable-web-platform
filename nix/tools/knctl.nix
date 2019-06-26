@@ -2,6 +2,7 @@
 with pkgs.stdenv;
 let
   version = "0.3.0";
+  # TODO this hashes are not ok for linux variant - build from source!
   getSource = {version, os}: pkgs.fetchurl {
     url = "https://github.com/cppforlife/knctl/releases/download/v${version}/knctl-${os}-amd64";
     sha256 = "1fchz6c58mzrh6ly2c5lncpcmsyk9j9ljc9qsqrwpwyvixg0fbrq";

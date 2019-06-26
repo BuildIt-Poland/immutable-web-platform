@@ -25,7 +25,7 @@ in
 
   config = 
   let
-    domain = "my.xyz";
+    domain = config.networking.domain;
   in
   {
     environment.variables.KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";#"${kubeConfig}";
@@ -62,20 +62,20 @@ in
     };
     
     #https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/kubernetes/base.nix
+
+    # INFO -> when changing domain ...
+    # rm -rf /var/lib/cfssl /var/lib/kubernetes
     boot = {
       # https://github.com/NixOS/nixpkgs/issues/59364
-        # rm -rf /var/lib/cfssl /var/lib/kubernetes
       postBootCommands = ''
         rm -fr /var/lib/kubernetes/secrets /tmp/shared/*
       '';
       kernel.sysctl = { "fs.inotify.max_user_instances" = 256; };
     };
-    # services.flannel.enable = false;
-    # services.flannel.iface = "eth1";
+
     services.kubernetes = {
       roles = [ "master" "node" ];
       # addons.dashboard.enable = true;
-      # masterAddress = "localhost";#config.networking.privateIPv4;
       easyCerts = true;
       masterAddress = "${config.networking.hostName}.${domain}";
       # masterAddress = "localhost";

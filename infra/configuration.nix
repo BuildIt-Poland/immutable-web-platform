@@ -4,8 +4,11 @@ let
     env = "prod";
     system = "x86_64-linux"; 
   });
-  containers = import ./container/example.nix;
   helpers = import ./helpers.nix { nixpkgs = local-nixpkgs; };
+
+  # TODO
+  mkMaster = {}:{};
+  mkNode = {}:{};
 in
 with local-nixpkgs;
 {
@@ -17,7 +20,7 @@ with local-nixpkgs;
     {
       imports = [
         ./services/kubernetes.nix
-        ./services/nginx.nix
+        # ./services/nginx.nix
       ];
 
       services.postfix = {
@@ -25,68 +28,74 @@ with local-nixpkgs;
         setSendmail = true;
       };
 
-      system.userActivationScripts = {
-        k8s-cluster = {
-          text = ''
-            echo "Applying cluster stuff"
-          '';
-          deps = [];
-        };
-      };
-            # ${k8s-cluster-operations.apply-cluster-stack}/bin/apply-cluster-stack
+      networking.domain = "my.xyz";
 
-      networking.domain = "my.xzy";
+      systemd.services.nixos-upgrade.environment.NIXOS_CONFIG = pkgs.writeText "configuration.nix" ''
+        all@{ lib, ... }: lib.filterAttrs (n: v: n != "deployment")
+          ((import /etc/nixos/current/default.nix).server all)
+      '';
 
-      boot.postBootCommands = "echo 'yay'";
+      swapDevices = [ ];
 
       environment.systemPackages = [ 
         neovim
-        kubectl
         zsh
         htop
         curl
-        kubernetes-helm
         git
-        # kubernetes
-        # kubelet
+        knctl
+        # kubectl
+        # kubectl-repl
 
         # TODO push to docker 
         # TODO change config to production from env
-        k8s-cluster-operations.apply-cluster-stack
-        k8s-cluster-operations.apply-functions-to-cluster
+
+        k8s-local.expose-grafana
+        k8s-local.expose-weave-scope
       ];
 
-      # virtualisation.docker.enable = true;
+      systemd.services.k8s-resources = {
+        enable   = true;
+        description = "Kubernetes provisioning";
+        wantedBy = [ "multi-user.target" ];
+        requires = [ "kube-apiserver.service" ];
+        environment = {
+          KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";
+        };
+        path = [
+          k8s-cluster-operations.apply-cluster-stack 
+          k8s-cluster-operations.apply-functions-to-cluster
+          kubectl
+        ];
+        script = ''
+          apply-cluster-stack
+          apply-functions-to-cluster
+        '';
+        serviceConfig.Type = "oneshot";
+      };
+
       virtualisation.docker = {
         enable = true;
       };
 
-      virtualisation.rkt.enable = true;
       services.dockerRegistry.enable = true;
-
+      # https://discourse.nixos.org/t/systemd-backend-or-using-nixops-to-manage-ubuntu/1546/3
+      # https://releases.nixos.org/nixos/unstable/nixos-19.09pre183392.83ba5afcc96
       system.autoUpgrade.enable = true;
-      system.autoUpgrade.channel = https://releases.nixos.org/nixpkgs/nixpkgs-19.09pre182717.b58ada326aa;
+      system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre183392.83ba5afcc96;
 
       # https://github.com/mayflower/nixpkgs/blob/2e29412e9c33ebc2d78431dfc14ee2db722bcb30/nixos/modules/services/cluster/kubernetes/default.nix
 
-      # containers = containers;
       environment.etc.local-source-folder.source = ./.;
       
-      #this stuff has to go to activation script
       programs.zsh = {
         interactiveShellInit = ''
           echo "Hey hey hey"
           echo ${config.networking.privateIPv4}
-          apply-cluster-stack
-          apply-functions-to-cluster
         '';
         enable = true;
         enableCompletion = true;
       };
-
-      # neccessary to allow containers call outside world
-      # networking.nat.enable = true;
-      # networking.nat.internalInterfaces = ["ve-+"];
 
       users.extraUsers.root = {
         shell = local-nixpkgs.zsh;
@@ -94,14 +103,18 @@ with local-nixpkgs;
 
       nix.gc = {
         automatic = true;
-        dates = "15 3 * * *"; # [1]
+        # dates = "15 3 * * *"; # [1]
       };
 
       nix.autoOptimiseStore = true;
       nix.trustedUsers = [];
+      # TODO add ingress-controller
+      # networking.firewall.allowedTCPPortRanges = [ 
+      #   { from = 30000; to = 32000; }
+      # ];
       networking.firewall.allowedTCPPorts = [ 
         80 
-        22 
+        22
       ];
 
       nix.binaryCaches = [ "https://cache.nixos.org" ];
