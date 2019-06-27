@@ -3,13 +3,14 @@
   env-config, 
   pkgs, 
   kubenix, 
+  charts,
   callPackage, 
   brigade-extension,
   remote-worker,
   ...
 }: 
 let
-  charts = callPackage ./charts.nix {};
+  # charts = callPackage ./charts.nix {};
 
   namespace = env-config.kubernetes.namespace;
 
@@ -28,6 +29,7 @@ let
     kind = kind;
     description = "";
   };
+  monitoring-gateway = config.kubernetes.monitoring.gateway;
 in
 {
   imports = with kubenix.modules; [ helm k8s docker istio ];
@@ -54,20 +56,6 @@ in
     chart = charts.brigade;
   };
 
-  kubernetes.helm.instances.weave-scope = {
-    name = "weave-scope";
-    chart = charts.weave-scope;
-    namespace = "${istio-ns}";
-    values = {
-      global = {
-        service = {
-          port = 80;
-          name = "weave-scope-app";
-        };
-      };
-    };
-  };
-
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
@@ -83,27 +71,7 @@ in
           };
         };
 
-        monitoring-gateway = {
-          enabled = true;
-          labels = {
-            app = "monitoring-gateway";
-            istio = "monitoring-ingressgateway";
-          };
-          type = "NodePort";
-          ports = [{
-            port = 15300;
-            targetPort = 15300;
-            name = "grafana-port";
-          } {
-            port = 15301;
-            targetPort = 15301;
-            name = "weavescope-port";
-          } {
-            port = 15302;
-            targetPort = 15302;
-            name = "zipkin-port";
-          } ];
-        };
+        inherit monitoring-gateway;
       };
 
       mixer.policy.enabled = true;
@@ -117,98 +85,6 @@ in
         proxy.autoInject = "disabled";
         sidecarInjectorWebhook.enabled = true;
         sidecarInjectorWebhook.enableNamespacesByDefault = true;
-      };
-    };
-  };
-
-  # TODO should be module
-  kubernetes.api."networking.istio.io"."v1alpha3" = {
-    Gateway."grafana-gateway" = {
-      # BUG: this metadata should be taken from name
-      metadata = {
-        name = "grafana-gateway";
-      };
-      spec = {
-        selector.istio = "monitoring-ingressgateway";
-        servers = [{
-          port = {
-            number = 15301;
-            name = "http2-weavescope";
-            protocol = "HTTP2";
-          };
-          hosts = ["*"];
-        } {
-          port = {
-            number = 15300;
-            name = "http2-grafana";
-            protocol = "HTTP2";
-          };
-          hosts = ["*"];
-        } {
-          port = {
-            number = 15302;
-            name = "http2-zipkin";
-            protocol = "HTTP2";
-          };
-          hosts = ["*"];
-        }];
-      };
-    };
-    DestinationRule.grafana = {
-      metadata = {
-        name = "destination-rule-grafana";
-      };
-      spec = {
-        host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
-        trafficPolicy.tls.mode = "DISABLE";
-      };
-    };
-    VirtualService.grafana = {
-      metadata = {
-        name = "virtualservice-grafana";
-      };
-      spec = {
-        hosts = ["*"];
-        gateways = ["grafana-gateway"];
-        http = [
-        {
-          match = [
-            { port = 15301; }
-          ];
-          route = [{
-            destination = {
-              host = "weave-scope-app.${istio-ns}.svc.cluster.local";
-              port.number = 80; # take this port from somewhere - create ports map
-            };
-          }];
-        }
-        {
-          match = [
-            { port = 15302; }
-            # { url.prefix.match = "/"; }
-          ];
-          route = [{
-            destination = {
-              host = "zipkin.${istio-ns}.svc.cluster.local";
-              port.number = 9411; # take this port from somewhere - create ports map
-            };
-          }];
-        }
-        {
-          match = [
-            { port = 15300; }
-            # { headers = {
-            #   app.exact = "grafana";
-            # };}
-          ];
-          route = [{
-            destination = {
-              host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
-              port.number = 30802; # take this port from somewhere - create ports map
-            };
-          }];
-        } 
-        ];
       };
     };
   };
