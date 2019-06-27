@@ -78,7 +78,7 @@ rec {
       # knative-monitoring
 
       knative-e2e-request-tracing
-      # weavescope
+      weavescope
     ];
     overridings = monitoring-dashboard-fix;
   in

@@ -54,7 +54,6 @@ in
     chart = charts.brigade;
   };
   
-
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
@@ -69,6 +68,7 @@ in
             memory="256Mi";
           };
         };
+
         monitoring-gateway = {
           enabled = true;
           labels = {
@@ -80,9 +80,18 @@ in
             port = 15300;
             targetPort = 15300;
             name = "grafana-port";
-          }];
+          } {
+            port = 15301;
+            targetPort = 15301;
+            name = "weavescope-port";
+          } {
+            port = 15302;
+            targetPort = 15302;
+            name = "zipkin-port";
+          } ];
         };
       };
+
       mixer.policy.enabled = true;
       mixer.telemetry.enabled = true;
       mixer.adapters.prometheus.enabled = false;
@@ -109,8 +118,22 @@ in
         selector.istio = "monitoring-ingressgateway";
         servers = [{
           port = {
+            number = 15301;
+            name = "http2-weavescope";
+            protocol = "HTTP2";
+          };
+          hosts = ["*"];
+        } {
+          port = {
             number = 15300;
             name = "http2-grafana";
+            protocol = "HTTP2";
+          };
+          hosts = ["*"];
+        } {
+          port = {
+            number = 15302;
+            name = "http2-zipkin";
             protocol = "HTTP2";
           };
           hosts = ["*"];
@@ -133,21 +156,49 @@ in
       spec = {
         hosts = ["*"];
         gateways = ["grafana-gateway"];
-        http = [{
+        http = [
+        {
           match = [
-            { port = 15300; } 
+            # { port = 15301; }
+            { url.prefix.match = "/scope"; }
+          ];
+          route = [{
+            destination = {
+              host = "weave-scope-app.weave.svc.cluster.local";
+              port.number = 80; # take this port from somewhere - create ports map
+            };
+          }];
+        }
+        {
+          match = [
+            { port = 15302; }
+            # { url.prefix.match = "/"; }
+          ];
+          route = [{
+            destination = {
+              host = "zipkin.istio-system.svc.cluster.local";
+              port.number = 9411; # take this port from somewhere - create ports map
+            };
+          }];
+        }
+        {
+          match = [
+            { port = 15300; }
+            # { headers = {
+            #   app.exact = "grafana";
+            # };}
           ];
           route = [{
             destination = {
               host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
-              port.number = 30802;
+              port.number = 30802; # take this port from somewhere - create ports map
             };
           }];
-        }];
+        } 
+        ];
       };
     };
   };
-
 
   kubernetes.customResources = [
     (create-istio-cr "attributemanifest")
