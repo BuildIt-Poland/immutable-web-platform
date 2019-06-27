@@ -53,7 +53,21 @@ in
     namespace = "${brigade-ns}";
     chart = charts.brigade;
   };
-  
+
+  kubernetes.helm.instances.weave-scope = {
+    name = "weave-scope";
+    chart = charts.weave-scope;
+    namespace = "${istio-ns}";
+    values = {
+      global = {
+        service = {
+          port = 80;
+          name = "weave-scope-app";
+        };
+      };
+    };
+  };
+
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
@@ -159,12 +173,11 @@ in
         http = [
         {
           match = [
-            # { port = 15301; }
-            { url.prefix.match = "/scope"; }
+            { port = 15301; }
           ];
           route = [{
             destination = {
-              host = "weave-scope-app.weave.svc.cluster.local";
+              host = "weave-scope-app.${istio-ns}.svc.cluster.local";
               port.number = 80; # take this port from somewhere - create ports map
             };
           }];
@@ -176,7 +189,7 @@ in
           ];
           route = [{
             destination = {
-              host = "zipkin.istio-system.svc.cluster.local";
+              host = "zipkin.${istio-ns}.svc.cluster.local";
               port.number = 9411; # take this port from somewhere - create ports map
             };
           }];

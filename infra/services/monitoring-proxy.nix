@@ -8,7 +8,9 @@ in
   options.services.k8s-proxy = {
     port = mkOption { type = types.int; default = 3001; };
     virtualhost = mkOption { type = types.str; };
-    grafana = mkOption { type = types.int; default = 3001; };
+    grafana = mkOption { type = types.int; default = 15300; };
+    weavescope = mkOption { type = types.int; default = 15301; };
+    zipkin = mkOption { type = types.int; default = 15302; };
   };  
 
   config = {
@@ -20,23 +22,18 @@ in
       recommendedTlsSettings = true;
 
       virtualHosts."${hostName}" = {
-        forceSSL = true;
-        enableACME = true;
+        # forceSSL = true;
+        # enableACME = true;
         locations."/grafana" ={
-          proxyPass = "http://localhost:${toString cfg.grafana}";
+          proxyPass = "http://buildit-ops.my.xyz:${toString cfg.grafana}";
         };
-        locations."/scope" ={
-          proxyPass = "http://localhost:";
+        locations."/weavescope" ={
+          proxyPass = "http://buildit-ops.my.xyz:${toString cfg.weavescope}";
+        };
+        locations."/zipkin" ={
+          proxyPass = "http://buildit-ops.my.xyz:${toString cfg.zipkin}";
         };
       };
-  #   services.nginx.virtualHosts."${cfg.virtualhost}" = {
-  #     enableACME = true;
-  #     forceSSL = true;
-  #     locations."/" = {
-  #       proxyPass = "http://localhost:${toString cfg.port}/";
-  #       proxyWebsockets = true;
-  #     };
-  #   };
     };
   };
 }

@@ -40,10 +40,19 @@ rec {
     sha256 = "12kal4q07al25wz9j1422sn2zg8icj1csznch64vgci38h6m06vd";
   };
 
-  ambassador = helm.fetch {
-    chart = "stable/ambassador";
-    version = "2.11.0";
-    sha256 = "0mkis9a1xhzgqd64dz5dmhaxdagilhyih8qcm1ix9l1rwx9ag7sz";
+  weave-scope = helm.fetch {
+    chart = "stable/weave-scope";
+    version = "1.1.2";
+    sha256 = "0x7nas78jj517znx448wsgzin70nzd91j7961zk9lnmjha5jxa0m";
+  };
+
+  knative-serving = yaml-to-json {
+    name = "knative-serving";
+    version = "0.6.1";
+    src = pkgs.fetchurl {
+      url = https://github.com/knative/serving/releases/download/v0.6.1/serving.yaml;
+      sha256="0y9h2mw1f2rbhmv2qfsz2m2cppa1s725i9hni5105s3js07h0r0i";
+    };
   };
 
   istio-json = helm.chart2json {

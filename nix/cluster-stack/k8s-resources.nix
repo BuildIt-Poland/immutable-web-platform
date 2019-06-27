@@ -40,24 +40,6 @@ rec {
     };
   };
 
-  # not happy when deployed
-  weavescope = 
-    pkgs.stdenv.mkDerivation {
-      name = "waveworks-scope";
-      phases = ["installPhase"];
-      installPhase = ''
-        curl -L "https://cloud.weave.works/k8s/scope.yaml?k8s-version=$(kubectl version | base64 | tr -d '\n')" > file.yaml
-        remarshal -i file.yaml -if yaml -of json | jq '.items' > $out
-      '';
-      nativeBuildInputs = [
-        pkgs.curl 
-        pkgs.kubectl 
-        pkgs.cacert 
-        pkgs.remarshal 
-        pkgs.jq
-      ];
-    };
-
   scaling-dashboard = (builtins.readFile ../grafana/knative-scaling.json);
   monitoring-dashboard-fix = 
     let
@@ -78,7 +60,6 @@ rec {
       # knative-monitoring
 
       knative-e2e-request-tracing
-      weavescope
     ];
     overridings = monitoring-dashboard-fix;
   in

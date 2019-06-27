@@ -20,7 +20,7 @@ with local-nixpkgs;
     {
       imports = [
         ./services/kubernetes.nix
-        # ./services/nginx.nix
+        ./services/monitoring-proxy.nix
       ];
 
       services.postfix = {
@@ -30,11 +30,6 @@ with local-nixpkgs;
 
       networking.domain = "my.xyz";
 
-      systemd.services.nixos-upgrade.environment.NIXOS_CONFIG = pkgs.writeText "configuration.nix" ''
-        all@{ lib, ... }: lib.filterAttrs (n: v: n != "deployment")
-          ((import /etc/nixos/current/default.nix).server all)
-      '';
-
       swapDevices = [ ];
 
       environment.systemPackages = [ 
@@ -42,23 +37,20 @@ with local-nixpkgs;
         zsh
         htop
         curl
-        git
-        knctl
-        # kubectl
+        kubectl
+        # knctl
         # kubectl-repl
 
         # TODO push to docker 
         # TODO change config to production from env
-
-        k8s-local.expose-grafana
-        k8s-local.expose-weave-scope
+        k8s-cluster-operations.apply-cluster-stack 
       ];
 
       systemd.services.k8s-resources = {
         enable   = true;
         description = "Kubernetes provisioning";
-        wantedBy = [ "multi-user.target" ];
-        requires = [ "kube-apiserver.service" ];
+       # wantedBy = [ "multi-user.target" ];
+        requires = [ "kube-apiserver.service" "kube-controller-manager.service" ];
         environment = {
           KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";
         };
@@ -68,6 +60,11 @@ with local-nixpkgs;
           kubectl
         ];
         script = ''
+          while [ ! -f /var/lib/kubernetes/secrets/cluster-admin-key.pem ]
+          do
+            sleep 1
+          done
+
           apply-cluster-stack
           apply-functions-to-cluster
         '';
