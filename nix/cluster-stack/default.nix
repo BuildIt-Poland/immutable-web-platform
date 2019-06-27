@@ -12,7 +12,6 @@
 }:
 with kubenix.lib;
 let
-  configuration = callPackage ./configurations.nix {};
   extra-k8s-resources = callPackage ./k8s-resources.nix {};
 in
 rec {

@@ -56,12 +56,16 @@ let
     remote-worker = super.callPackage ./remote-worker {};
     application = super.callPackage ./functions.nix {};
     cluster = super.callPackage ./cluster-stack {};
+    charts = super.callPackage ./cluster-stack/charts.nix {};
     inherit sources;
   };
 
   kubenix-modules = self: super: rec {
     kubenix-modules = [
       ./modules/knative-serve.nix
+    ];
+    kubenix-infra-modules = [
+      ./modules/monitoring.nix
     ];
   };
 
