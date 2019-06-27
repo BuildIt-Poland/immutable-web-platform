@@ -20,3 +20,15 @@
 > when attaching service via `systemd` and if it using `nix-build` as it is with `arion` then sourcing bashrc from `/etc/bashrc` is necessary - need to raise an issue agains that
 > running `docker-container` within `container` - [no chance](https://github.com/NixOS/nixpkgs/issues/28659) - trying with `rkt` - getting loop ...
 > when using containers - if container does not work, it tell us that this container has to be restarted (ping to check is enough) - checking how to do autorestart without `--force-reboot` flag
+
+#### Reverse proxy
+#### istio virtual service
+- forwarding traffic with `virtualservice` to host works good, but if something is serving frontend then there is a problem - example `grafana` even when `GF_SERVER_ROOT_URL` forwarding does not work well
+
+#### nginx-ingress
+- require extra work to spin up services in different namespaces
+
+# grafana behind proxy: https://github.com/grafana/grafana/issues/16613
+https://github.com/istio/istio/issues/9247
+https://github.com/grafana/grafana/issues/16613
+knative has a bit outdated grafana - recent versions allow to https://github.com/grafana/grafana/pull/17048 

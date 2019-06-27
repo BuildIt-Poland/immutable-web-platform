@@ -17,6 +17,8 @@ let
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
   functions-ns = namespace.functions;
+  knative-monitoring-ns = namespace.knative-monitoring;
+
   ssh-keys = env-config.ssh-keys;
   aws-credentials = env-config.aws-credentials;
 
@@ -51,6 +53,7 @@ in
     namespace = "${brigade-ns}";
     chart = charts.brigade;
   };
+  
 
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
@@ -65,6 +68,19 @@ in
             cpu = "500m";
             memory="256Mi";
           };
+        };
+        monitoring-gateway = {
+          enabled = true;
+          labels = {
+            app = "monitoring-gateway";
+            istio = "monitoring-ingressgateway";
+          };
+          type = "NodePort";
+          ports = [{
+            port = 15300;
+            targetPort = 15300;
+            name = "grafana-port";
+          }];
         };
       };
       mixer.policy.enabled = true;
@@ -81,6 +97,57 @@ in
       };
     };
   };
+
+  # TODO should be module
+  kubernetes.api."networking.istio.io"."v1alpha3" = {
+    Gateway."grafana-gateway" = {
+      # BUG: this metadata should be taken from name
+      metadata = {
+        name = "grafana-gateway";
+      };
+      spec = {
+        selector.istio = "monitoring-ingressgateway";
+        servers = [{
+          port = {
+            number = 15300;
+            name = "http2-grafana";
+            protocol = "HTTP2";
+          };
+          hosts = ["*"];
+        }];
+      };
+    };
+    DestinationRule.grafana = {
+      metadata = {
+        name = "destination-rule-grafana";
+      };
+      spec = {
+        host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
+        trafficPolicy.tls.mode = "DISABLE";
+      };
+    };
+    VirtualService.grafana = {
+      metadata = {
+        name = "virtualservice-grafana";
+      };
+      spec = {
+        hosts = ["*"];
+        gateways = ["grafana-gateway"];
+        http = [{
+          match = [
+            { port = 15300; } 
+          ];
+          route = [{
+            destination = {
+              host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
+              port.number = 30802;
+            };
+          }];
+        }];
+      };
+    };
+  };
+
 
   kubernetes.customResources = [
     (create-istio-cr "attributemanifest")
