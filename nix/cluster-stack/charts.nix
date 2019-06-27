@@ -34,6 +34,18 @@ rec {
     sha256 = "1ly6nd4y9shvx166pbpm8gmh0r1pn00d5y4arxvxb5rqbsdknzjh";
   };
 
+  nginx-ingress = helm.fetch {
+    chart = "stable/nginx-ingress";
+    version = "1.7.0";
+    sha256 = "12kal4q07al25wz9j1422sn2zg8icj1csznch64vgci38h6m06vd";
+  };
+
+  ambassador = helm.fetch {
+    chart = "stable/ambassador";
+    version = "2.11.0";
+    sha256 = "0mkis9a1xhzgqd64dz5dmhaxdagilhyih8qcm1ix9l1rwx9ag7sz";
+  };
+
   istio-json = helm.chart2json {
     name = "istio";
     chart = istio;

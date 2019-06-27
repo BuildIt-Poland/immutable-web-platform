@@ -37,6 +37,8 @@ rec {
       infra = "local-infra";
       brigade = "brigade";
       istio = "istio-system";
+      knative-monitoring = "knative-monitoring";
+      knative-serving = "knative-serving";
     };
   };
 
