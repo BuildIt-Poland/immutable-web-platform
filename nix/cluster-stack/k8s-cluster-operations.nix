@@ -5,6 +5,7 @@
   callPackage,
   writeScript,
   writeScriptBin,
+  charts,
   cluster,
   log,
   kubenix,
@@ -26,7 +27,7 @@ rec {
 
   # INFO why waits -> https://github.com/knative/serving/issues/2195
   apply-istio-crd = writeScript "apply-istio-crd" ''
-    ${apply-resources cluster.charts.istio-init-yaml}
+    ${apply-resources charts.istio-init-yaml}
     ${wait-for "job" "complete"}
     ${wait-for "crd" "established"}
   '';

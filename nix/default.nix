@@ -34,7 +34,6 @@ let
     hey = super.callPackage ./tools/hey.nix {}; 
     chart-from-git = super.callPackage ./helm {};
     k8s-local = super.callPackage ./k8s-local.nix {};
-    k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
 
     # NodeJS packages
     yarn2nix = super.callPackage sources.yarn2nix {};
@@ -57,6 +56,7 @@ let
     application = super.callPackage ./functions.nix {};
     cluster = super.callPackage ./cluster-stack {};
     charts = super.callPackage ./cluster-stack/charts.nix {};
+    k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
     inherit sources;
   };
 
@@ -66,6 +66,7 @@ let
     ];
     kubenix-infra-modules = [
       ./modules/monitoring.nix
+      ./modules/brigade.nix
     ];
   };
 

@@ -11,6 +11,7 @@ let
   istio-ns = namespace.istio;
   knative-monitoring-ns = namespace.knative-monitoring;
 in
+# TODO add enabled true/false
 {
   imports = with kubenix.modules; [ 
     k8s
