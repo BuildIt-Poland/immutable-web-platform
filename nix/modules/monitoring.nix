@@ -24,6 +24,7 @@ in
   };
 
   config = {
+    # values: https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml
     kubernetes.monitoring.gateway = {
       enabled = true;
       labels = {
@@ -34,14 +35,17 @@ in
       ports = [{
         port = 15300;
         targetPort = 15300;
+        nodePort = 31300;
         name = "grafana-port";
       } {
         port = 15301;
         targetPort = 15301;
+        nodePort = 31301;
         name = "weavescope-port";
       } {
         port = 15302;
         targetPort = 15302;
+        nodePort = 31302;
         name = "zipkin-port";
       } ];
     };
