@@ -1,5 +1,4 @@
 let
-  host-name = "example.org";
   local-nixpkgs = (import ../nix { 
     env = "prod";
     system = "x86_64-linux"; 
@@ -17,16 +16,18 @@ with local-nixpkgs;
   # solution -> ln -s /dev/nvme0n1 /dev/xvda 
   buildit-ops = 
     { config, pkgs, nodes, ...}: 
+    let
+      kubernetes = import ./services/kubernetes.nix {
+        inherit local-nixpkgs;
+      };
+    in
     {
       imports = [
-        ./services/kubernetes.nix
-        ./services/monitoring-proxy.nix
+        kubernetes
+        # ./services/kubernetes.nix
       ];
 
-      services.postfix = {
-        enable = true;
-        setSendmail = true;
-      };
+      # _module.args.local-nixpkgs = local-nixpkgs;
 
       networking.domain = "my.xyz";
 
@@ -38,50 +39,24 @@ with local-nixpkgs;
         htop
         curl
         kubectl
+        virtualbox
         # knctl
         # kubectl-repl
 
         # TODO push to docker 
         # TODO change config to production from env
         k8s-cluster-operations.apply-cluster-stack 
+        k8s-cluster-operations.apply-functions-to-cluster
       ];
 
-      systemd.services.k8s-resources = {
-        enable   = true;
-        description = "Kubernetes provisioning";
-       # wantedBy = [ "multi-user.target" ];
-        requires = [ "kube-apiserver.service" "kube-controller-manager.service" ];
-        environment = {
-          KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";
-        };
-        path = [
-          k8s-cluster-operations.apply-cluster-stack 
-          k8s-cluster-operations.apply-functions-to-cluster
-          kubectl
-        ];
-        script = ''
-          while [ ! -f /var/lib/kubernetes/secrets/cluster-admin-key.pem ]
-          do
-            sleep 1
-          done
+      services.kubernetes.resources.auto-provision = true;
 
-          apply-cluster-stack
-          apply-functions-to-cluster
-        '';
-        serviceConfig.Type = "oneshot";
-      };
-
-      virtualisation.docker = {
-        enable = true;
-      };
+      # done here https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/cluster/kubernetes/default.nix#L221
+      # virtualisation.docker = {
+      #   enable = true;
+      # };
 
       services.dockerRegistry.enable = true;
-      # https://discourse.nixos.org/t/systemd-backend-or-using-nixops-to-manage-ubuntu/1546/3
-      # https://releases.nixos.org/nixos/unstable/nixos-19.09pre183392.83ba5afcc96
-      system.autoUpgrade.enable = true;
-      system.autoUpgrade.channel = https://releases.nixos.org/nixos/unstable/nixos-19.09pre183392.83ba5afcc96;
-
-      # https://github.com/mayflower/nixpkgs/blob/2e29412e9c33ebc2d78431dfc14ee2db722bcb30/nixos/modules/services/cluster/kubernetes/default.nix
 
       environment.etc.local-source-folder.source = ./.;
       
@@ -95,7 +70,7 @@ with local-nixpkgs;
       };
 
       users.extraUsers.root = {
-        shell = local-nixpkgs.zsh;
+        shell = zsh;
       };
 
       nix.gc = {
@@ -105,10 +80,7 @@ with local-nixpkgs;
 
       nix.autoOptimiseStore = true;
       nix.trustedUsers = [];
-      # TODO add ingress-controller
-      # networking.firewall.allowedTCPPortRanges = [ 
-      #   { from = 30000; to = 32000; }
-      # ];
+
       networking.firewall.allowedTCPPorts = [ 
         80 
         22
@@ -127,6 +99,3 @@ with local-nixpkgs;
       ];
     };
 }
-# not necessary
-# ifconfig -a - need to check how to
-# networking.nat.externalInterface = "enp0s3"; # enp0s8

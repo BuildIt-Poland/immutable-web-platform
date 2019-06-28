@@ -1,16 +1,14 @@
 { config, lib, pkgs, ...}:
 with lib;
 let
-  hostName = "nana";
+  hostName = config.networking.privateIPv4;
+  # hostName = "localhost";
   cfg = config.services.k8s-proxy;
 in
 {
   options.services.k8s-proxy = {
     port = mkOption { type = types.int; default = 3001; };
     virtualhost = mkOption { type = types.str; };
-    grafana = mkOption { type = types.int; default = 15300; };
-    weavescope = mkOption { type = types.int; default = 15301; };
-    zipkin = mkOption { type = types.int; default = 15302; };
   };  
 
   config = {
@@ -20,19 +18,11 @@ in
       recommendedGzipSettings = true;
       recommendedOptimisation = true;
       recommendedTlsSettings = true;
+      # appendHttpConfig = "listen 127.0.0.1:80;";
 
       virtualHosts."${hostName}" = {
         # forceSSL = true;
         # enableACME = true;
-        locations."/grafana" ={
-          proxyPass = "http://buildit-ops.my.xyz:${toString cfg.grafana}";
-        };
-        locations."/weavescope" ={
-          proxyPass = "http://buildit-ops.my.xyz:${toString cfg.weavescope}";
-        };
-        locations."/zipkin" ={
-          proxyPass = "http://buildit-ops.my.xyz:${toString cfg.zipkin}";
-        };
       };
     };
   };

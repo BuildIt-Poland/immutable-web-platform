@@ -1,5 +1,6 @@
-{ config, lib, pkgs, ...}:
+{ config, lib, pkgs, local-nixpkgs,...}:
 with lib;
+with local-nixpkgs;
 let
   kub = config.services.kubernetes;
   # dev = kub.lib.mkCert {
@@ -18,10 +19,9 @@ let
 in
 {
   # imports = [ kubernetesBaseConfig ];
-  # options.services.kubernetes = {
-  #   port = mkOption { type = types.int; default = 3001; };
-  #   virtualhost = mkOption { type = types.str; };
-  # };  
+  options.services.kubernetes.resources = {
+    auto-provision = mkOption { type = types.bool; default = true; };
+  };  
 
   config = 
   let
@@ -43,6 +43,36 @@ in
         done
       '';
 
+    # TODO use mkIf cfg.enabled https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/cluster/kubernetes/kubelet.nix#L236
+    systemd.services.k8s-resources = 
+    let
+      run = ''
+        apply-cluster-stack
+        apply-functions-to-cluster
+      '';
+    in
+    {
+      enable  = config.services.kubernetes.resources.auto-provision;
+      description = "Kubernetes provisioning";
+      wantedBy = [ "multi-user.target" ];
+      requires = [ "kube-apiserver.service" "kube-controller-manager.service" ];
+      after = [ "certmgr.service" "kube-control-plane-online.target"];
+
+      environment = {
+        KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";
+      };
+      path = [
+        k8s-cluster-operations.apply-cluster-stack 
+        k8s-cluster-operations.apply-functions-to-cluster
+        kubectl
+      ];
+      script = run;
+      reload = run;
+      serviceConfig = {
+        Type = "oneshot";
+      };
+    };
+
     # INFO this is only for master
     networking.extraHosts = ''
       ${config.networking.privateIPv4} api.${domain}
@@ -51,6 +81,10 @@ in
     '';
 
     networking.firewall = {
+      allowedTCPPortRanges = [ 
+        # monitoring-gateway
+        { from = 31300; to = 31310; }
+      ];
       allowedTCPPorts = [
         10250 # kubelet
         443
@@ -80,10 +114,12 @@ in
       masterAddress = "${config.networking.hostName}.${domain}";
       # masterAddress = "localhost";
       kubelet = {
+        allowPrivileged = true;
         networkPlugin = "cni";
         extraOpts = "--fail-swap-on=false";
       };
       apiserver = {
+        allowPrivileged = true;
         securePort = 443;
         advertiseAddress = config.networking.privateIPv4;
       };
