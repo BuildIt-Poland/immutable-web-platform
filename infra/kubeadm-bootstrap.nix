@@ -41,7 +41,8 @@ in
       type = listOf (enum ["master" "node"]);
     };
   };
-
+  # kubeadmin init
+  # TODO untaint kubectl taint nodes --all node-role.kubernetes.io/master-
   config = {
 
     # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
@@ -77,14 +78,23 @@ in
     # https://github.com/NixOS/nixops/issues/1062
     swapDevices = mkForce [ ];
 
+    # TODO kubeadm init --apiserver-advertise-address 192.168.99.253 (masterhost)
+
+    programs.bash = {
+      interactiveShellInit = ''
+        echo "Hey hey hey"
+        echo ${config.networking.privateIPv4}
+        echo ${config.system.path}
+      '';
+      # enable = true;
+      # enableCompletion = true;
+    };
+
     networking = {
       inherit domain;
 
-      # enableIPv6 = false;
-
       extraHosts = ''
-        ${config.networking.privateIPv4}  localhost
-        127.0.0.1	localhost
+        ${masterHost.config.networking.privateIPv4}  master-0
         ${masterHost.config.networking.privateIPv4}  api.${domain}
         ${masterHost.config.networking.privateIPv4} etcd.${domain}
         ${concatMapStringsSep "\n" (hostName:"${nodes.${hostName}.config.networking.privateIPv4} ${hostName}.${domain}") (attrNames nodes)}
@@ -92,6 +102,18 @@ in
 
       # https://github.com/kubernetes/kubeadm/issues/193
       firewall = {
+        allowedTCPPortRanges = [ 
+          # monitoring-gateway
+          { from = 31300; to = 31310; }
+          # testing
+          { from = 30000; to = 32000; }
+        ];
+
+        allowedUDPPorts = [
+          # weavenet
+          6783
+          6784
+        ];
         allowedTCPPorts = if isMaster then [
           10248
 
@@ -100,12 +122,22 @@ in
           2379 2380  # etcd
           443
           6443        # kubernetes apiserver
+          15014 # istio
+
+          #weavenet -> https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#-installation
+          6783
+          6784
         ] else [
           10250      # kubelet
           10255      # kubelet read-only port
+          15014 # istio
+
+          #weavenet
+          6783
+          6784
         ];
         # "vxlan" 
-        trustedInterfaces = [ "docker0" "flannel.1" ];
+        trustedInterfaces = [ "docker0" "flannel.1" "cni0" ];
 
         # allow any traffic from all of the nodes in the cluster
         extraCommands = concatMapStrings (node: ''
@@ -113,7 +145,6 @@ in
           ${if isMaster then "iptables -P FORWARD ACCEPT" else ""}
         '') (attrValues nodes);
       };
-
     };
 
       systemd.targets.kubernetes = {
@@ -123,7 +154,7 @@ in
       # docker info | grep -i cgroup
       # kubelet --cgroup-driver=systemd
       systemd.tmpfiles.rules = [
-         "d /opt/cni/bin 0755 root root -"
+        "d /opt/cni/bin 0755 root root -"
         "d /run/kubernetes 0755 kubernetes kubernetes -"
         "d /var/lib/kubernetes 0755 kubernetes kubernetes -"
         "d /var/lib/kubelet 0755 kubernetes kubernetes -"

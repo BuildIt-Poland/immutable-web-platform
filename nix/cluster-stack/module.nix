@@ -23,7 +23,7 @@ let
 
   create-istio-cr = kind: {
     group = "config.istio.io";
-    version = "v1alpha3";
+    version = "v1alpha2";
     kind = kind;
     description = "";
   };
@@ -50,44 +50,44 @@ in
   #   chart = charts.istio-cni;
   # };
 
-  # kubernetes.helm.instances.istio = {
-  #   namespace = "${istio-ns}";
-  #   chart = charts.istio;
-  #   values = {
-  #     gateways = {
-  #       istio-ingressgateway = {
-  #         type = "NodePort";
-  #         autoscaleMin = 1;
-  #         autoscaleMax = 1;
-  #         resources.requests = {
-  #           cpu = "500m";
-  #           memory="256Mi";
-  #         };
-  #       };
+  kubernetes.helm.instances.istio = {
+    namespace = "${istio-ns}";
+    chart = charts.istio;
+    values = {
+      gateways = {
+        istio-ingressgateway = {
+          type = "NodePort";
+          autoscaleMin = 1;
+          autoscaleMax = 1;
+          resources.requests = {
+            cpu = "500m";
+            memory="256Mi";
+          };
+        };
 
-  #       inherit monitoring-gateway;
-  #     };
+        inherit monitoring-gateway;
+      };
 
-  #     istio_cni.enabled = true;
-  #     mixer.policy.enabled = true;
-  #     mixer.telemetry.enabled = true;
-  #     mixer.adapters.prometheus.enabled = false;
-  #     grafana.enabled = false;
-  #     pilot.autoscaleMin = 2;
-  #     pilot.traceSampling = 100;
-  #     global = {
-  #       disablePolicyChecks = true;
-  #       proxy.autoInject = "disabled";
-  #       sidecarInjectorWebhook.enabled = true;
-  #       sidecarInjectorWebhook.enableNamespacesByDefault = true;
-  #     };
-  #   };
-  # };
+      istio_cni.enabled = true;
+      mixer.policy.enabled = true;
+      mixer.telemetry.enabled = true;
+      mixer.adapters.prometheus.enabled = false;
+      grafana.enabled = false;
+      pilot.autoscaleMin = 2;
+      pilot.traceSampling = 100;
+      global = {
+        disablePolicyChecks = true;
+        proxy.autoInject = "disabled";
+        sidecarInjectorWebhook.enabled = true;
+        sidecarInjectorWebhook.enableNamespacesByDefault = true;
+      };
+    };
+  };
 
-  # kubernetes.customResources = [
-  #   (create-istio-cr "attributemanifest")
-  #   (create-istio-cr "kubernetes")
-  #   (create-istio-cr "rule")
-  #   (create-istio-cr "handler")
-  # ];
+  kubernetes.customResources = [
+    (create-istio-cr "attributemanifest")
+    (create-istio-cr "kubernetes")
+    (create-istio-cr "rule")
+    (create-istio-cr "handler")
+  ];
 }

@@ -4,17 +4,90 @@ with pkgs.lib;
 let
   cfg = config.services.k8s;
   domain = "cluster.local";
+  packages = [pkgs.cni-plugins];
+
+  cniConfig =
+    if cfg.cni.config != [] && cfg.cni.configDir != null then
+      throw "Verbatim CNI-config and CNI configDir cannot both be set."
+    else if cfg.cni.configDir != null then
+      cfg.cni.configDir
+    else
+      (pkgs.buildEnv {
+        name = "kubernetes-cni-config";
+        paths = imap (i: entry:
+          pkgs.writeTextDir "${toString (10+i)}-${entry.type}.conf" (builtins.toJSON entry)
+        ) cfg.cni.config;
+      });
 in
 {
-  options.services.k8s = with lib.types; {
+  options.services.k8s = with types; {
     kubelet = {
       enable = mkEnableOption "Kubernetes kubelet.";
       # cgroup-driver = mkOption {};
+    };
+    # TODO
+    cni = {
+      packages = mkOption {
+        description = "List of network plugin packages to install.";
+        type = listOf package;
+        default = [];
+      };
+
+      config = mkOption {
+        description = "Kubernetes CNI configuration.";
+        type = listOf attrs;
+        default = [{
+            "cniVersion" = "0.2.0";
+            "name" = "mynet";
+            "type" = "bridge";
+            "bridge" = "cni0";
+            "isGateway" = true;
+            "ipMasq" = true;
+            "ipam" = {
+                "type" = "host-local";
+                "subnet" = "10.22.0.0/16";
+                "routes" = [
+                    { "dst" = "0.0.0.0/0"; }
+                ];
+            };
+          } {
+            "cniVersion" = "0.2.0";
+            "type" = "loopback";
+          }];
+        example = literalExample ''
+          [{
+            "cniVersion": "0.2.0",
+            "name": "mynet",
+            "type": "bridge",
+            "bridge": "cni0",
+            "isGateway": true,
+            "ipMasq": true,
+            "ipam": {
+                "type": "host-local",
+                "subnet": "10.22.0.0/16",
+                "routes": [
+                    { "dst": "0.0.0.0/0" }
+                ]
+            }
+          } {
+            "cniVersion": "0.2.0",
+            "type": "loopback"
+          }]
+        '';
+      };
+
+      configDir = mkOption {
+        description = "Path to Kubernetes CNI configuration directory.";
+        type = nullOr path;
+        default = null;
+      };
     };
   };
 
   config = {
     boot.kernelModules = ["br_netfilter"];
+    # only for masters
+    environment.variables.KUBECONFIG = "/etc/kubernetes/admin.conf";#"${kubeConfig}";
 
     # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
     # cat > /etc/docker/daemon.json <<EOF
@@ -62,47 +135,31 @@ in
         pkgs.socat
         pkgs.iptables
         pkgs.docker
-        # pkgs.docker
-      ];# ++ top.path;
+        pkgs.cni-plugins
+        pkgs.conntrack-tools
+      ];
 
-      # preStart = ''
-      #   ${concatMapStrings (img: ''
-      #     echo "Seeding docker image: ${img}"
-      #     docker load <${img}
-      #   '') cfg.seedDockerImages}
-      # '';
-      # docker system info --format '{{.CgroupDriver}}'
-
-      # preStart = ''
-      # '';
-      # take from /var/lib/kubelet/kubeadm-flags.env
+      preStart = ''
+        rm -f /opt/cni/bin/* || true
+        ${concatMapStrings (package: ''
+          echo "Linking cni package: ${package}"
+          ln -fs ${package}/bin/* /opt/cni/bin
+        '') packages}
+      '';
       script = ''
         echo "starting"
-        echo "env var: $KUBELET_KUBEADM_ARGS"
-        echo "env var: $KUBELET_KUBECONFIG_ARGS"
-        echo "env var: $KUBELET_KUBEADM_ARGS"
-        echo "env var: $KUBELET_EXTRA_ARGS"
-        ${pkgs.kubernetes}/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS
+        export PATH="${config.system.path}/bin:$PATH";
+        ${pkgs.kubernetes}/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS --cni-conf-dir=${cniConfig}
       '';
       # --allow-privileged=${boolToString cfg.allowPrivileged} \
       serviceConfig = {
-        # Slice = "kubernetes.slice";
         # PermissionsStartOnly=true;
-        # CPUAccounting = true;
-        # MemoryAccounting = true;
+        CPUAccounting = true;
+        MemoryAccounting = true;
         Restart = "on-failure";
         RestartSec = "1000ms";
-        # User = "kubernetes";
-        # Group = "kubernetes";
-        # WorkingDirectory = cfg.dataDir;      
-        # WorkingDirectory="/var/lib/kubelet";
-        # User = "kubernetes";
-        # WorkingDirectory="/var/lib/kubelet";
-        # EnvironmentFile="-/etc/kubernetes/config";
-        # EnvironmentFile="-/etc/kubernetes/kubelet";
+        WorkingDirectory = cfg.dataDir;      
         EnvironmentFile="/var/lib/kubelet/kubeadm-flags.env";
-        # RuntimeDirectory = cfg.dataDir;      
-        # RuntimeDirectoryMode="0775";
       };
       # unitConfig.ConditionPathExists = kubeletPaths;
     };
