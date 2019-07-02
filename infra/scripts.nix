@@ -30,6 +30,11 @@ let
   };
 in
 {
+  # TODO copy secret to workers
+  # nixops ssh -d cluster master-0 "cat  /var/lib/kubernetes/secrets/apitoken.secret"
+  # nixops ssh -d cluster worker-0 "echo $token | nixos-kubernetes-node-join"
+  # nixops ssh -d cluster worker-0 "echo $(nixops ssh -d cluster master-0 'cat /var/lib/kubernetes/secrets/apitoken.secret') | nixos-kubernetes-node-join"
+
   # TODO think whether rewriting is args in shell-infra is necessary
   # either will keep paths like below from root of monorepo
   # or enable rewriting - without rewriting all is cleaner

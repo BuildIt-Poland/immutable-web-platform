@@ -55,6 +55,24 @@ rec {
     };
   };
 
+  istio-cni = helm.fetch {
+    chart = "istio-cni";
+    version = "0.1.0";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
+    sha256 = "1qb2qx088bwf6pv4xay0bbdqkjk1i0cmgjvn0xsxjb1z7x7xy01d";
+  };
+
+  istio-cni-json = helm.chart2json {
+    name = "istio-cni";
+    namespace = "kube-system"; # TODO
+    chart = istio-cni;
+  };
+
+  istio-cni-yaml = toYAML (k8s.mkHashedList { 
+    items = 
+      (lib.importJSON istio-cni-json);
+  });
+
   istio-json = helm.chart2json {
     name = "istio";
     chart = istio;

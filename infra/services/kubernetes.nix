@@ -117,6 +117,7 @@ in
         allowPrivileged = true;
         networkPlugin = "cni";
         extraOpts = "--fail-swap-on=false";
+        verbosity = 5;
       };
       apiserver = {
         allowPrivileged = true;
