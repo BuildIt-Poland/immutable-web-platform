@@ -1,6 +1,10 @@
 { machinesConfigPath ? ./machines.json }:
 
 let
+  local-nixpkgs = (import ../nix { 
+    env = "prod";
+    system = "x86_64-linux"; 
+  });
   machines = builtins.fromJSON (builtins.readFile machinesConfigPath);
 
   makeMasterServer = machine: {   
@@ -8,18 +12,23 @@ let
     value =
       { config, pkgs, lib, nodes, ... }:
       let
-        kubernetes = import ./kubernetes {
-          inherit config pkgs nodes; 
+        kubeadm-bootstrap = import ./kubeadm-bootstrap.nix {
+          inherit config pkgs nodes local-nixpkgs; 
         };
       in {
         imports = [
-          kubernetes
+          kubeadm-bootstrap
         ];
-        environment.variables.KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";#"${kubeConfig}";
-        services.kubernetes.roles = [ "master" ];
-        environment.systemPackages = with pkgs; [
+        # environment.variables.KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";#"${kubeConfig}";
+        services.k8s.roles = [ "master" ];
+        # services.k8s.kubelet.enable = true;
+        environment.systemPackages = with local-nixpkgs; [
           nfs-utils
           kubectl
+          kubernetes
+          ethtool
+          socat
+          # kubelet
         ];
       };
   };
@@ -30,17 +39,19 @@ let
     value =
       { config, pkgs, lib, nodes, ... }:
       let
-        kubernetes = import ./kubernetes {
-          inherit config pkgs nodes; 
-          # oidc = machines.oidc;
+        kubeadm-bootstrap = import ./kubeadm-bootstrap.nix {
+          inherit config pkgs nodes local-nixpkgs; 
         };
       in {
         imports = [
-          kubernetes
+          kubeadm-bootstrap
         ];
-        services.kubernetes.roles = [ "node" ];
-        environment.systemPackages = with pkgs; [
+        services.k8s.roles = [ "node" ];
+        # services.k8s.kubelet.enable = true;
+        environment.systemPackages = with local-nixpkgs; [
           nfs-utils
+          kubernetes
+          # kubelet
         ];
       };
   }; 

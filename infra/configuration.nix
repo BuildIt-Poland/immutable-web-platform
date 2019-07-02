@@ -31,7 +31,7 @@ with local-nixpkgs;
 
       networking.domain = "my.xyz";
 
-      swapDevices = [ ];
+      swapDevices = pkgs.lib.mkForce [ ];
 
       environment.systemPackages = [ 
         neovim

@@ -1,0 +1,1 @@
+nixops ssh -d cluster worker-0 "echo $(nixops ssh -d cluster master-0 'cat /var/lib/kubernetes/secrets/apitoken.secret') | nixos-kubernetes-node-join"
