@@ -28,7 +28,8 @@ let
           kubernetes
           ethtool
           socat
-          # kubelet
+          k8s-cluster-operations.apply-cluster-stack 
+          k8s-cluster-operations.apply-functions-to-cluster
         ];
       };
   };
@@ -51,7 +52,10 @@ let
         environment.systemPackages = with local-nixpkgs; [
           nfs-utils
           kubernetes
-          # kubelet
+          ethtool
+          socat
+          k8s-cluster-operations.apply-cluster-stack 
+          k8s-cluster-operations.apply-functions-to-cluster
         ];
       };
   }; 

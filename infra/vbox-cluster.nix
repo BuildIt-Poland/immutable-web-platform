@@ -15,7 +15,7 @@ let
           targetEnv = "virtualbox";
           virtualbox = {
             vcpu = 2;
-            memorySize = 4096;
+            memorySize = 2048;
             headless = true;
             #vmFlags = [];
           };
@@ -36,7 +36,7 @@ let
           targetEnv = "virtualbox";
           virtualbox = {
             vcpu = 2;
-            memorySize = 4096;
+            memorySize = 5024;
             headless = true;
             #vmFlags = [];
             disks = { 
