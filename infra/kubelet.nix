@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, isMaster, ... }:
 
 with pkgs.lib;
 let
@@ -21,6 +21,7 @@ let
 in
 {
   options.services.k8s = with types; {
+    # isMaster = {};
     kubelet = {
       enable = mkEnableOption "Kubernetes kubelet.";
       # cgroup-driver = mkOption {};
@@ -37,22 +38,17 @@ in
         description = "Kubernetes CNI configuration.";
         type = listOf attrs;
         default = [{
-            "cniVersion" = "0.2.0";
-            "name" = "mynet";
-            "type" = "bridge";
-            "bridge" = "cni0";
-            "isGateway" = true;
-            "ipMasq" = true;
-            "ipam" = {
-                "type" = "host-local";
-                "subnet" = "10.22.0.0/16";
-                "routes" = [
-                    { "dst" = "0.0.0.0/0"; }
-                ];
+            cniVersion = "0.3.0";
+            name = "mynet";
+            type = "flannel";
+            # bridge = "cni0";
+            delegate = {
+              isDefaultGateway = true;
+              bridge = "docker0";
             };
           } {
-            "cniVersion" = "0.2.0";
-            "type" = "loopback";
+            cniVersion = "0.3.0";
+            type = "loopback";
           }];
         example = literalExample ''
           [{
@@ -84,10 +80,17 @@ in
     };
   };
 
+  # /etc/kubernetes/manifests/
+
   config = {
     boot.kernelModules = ["br_netfilter"];
     # only for masters
-    environment.variables.KUBECONFIG = "/etc/kubernetes/admin.conf";#"${kubeConfig}";
+    environment.variables.KUBECONFIG = 
+      if isMaster 
+        then "/etc/kubernetes/admin.conf"#"${kubeConfig}";
+        else "/etc/kubernetes/kubelet.conf";
+
+    # environment.etc."kubernetes/manifests".source = [];
 
     # https://kubernetes.io/docs/setup/production-environment/container-runtimes/#docker
     # cat > /etc/docker/daemon.json <<EOF
@@ -145,12 +148,15 @@ in
           echo "Linking cni package: ${package}"
           ln -fs ${package}/bin/* /opt/cni/bin
         '') packages}
+
+        mkdir -p /etc/kubernetes/manifest
       '';
       script = ''
         echo "starting"
         export PATH="${config.system.path}/bin:$PATH";
-        ${pkgs.kubernetes}/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS --cni-conf-dir=${cniConfig}
+        ${pkgs.kubernetes}/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS --allow-privileged=true --node-ip=${config.networking.privateIPv4}
       '';
+      # --cni-conf-dir=${cniConfig}
       # --allow-privileged=${boolToString cfg.allowPrivileged} \
       serviceConfig = {
         # PermissionsStartOnly=true;

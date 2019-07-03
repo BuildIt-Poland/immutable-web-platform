@@ -27,11 +27,6 @@
         "id": 0,
         "name": "worker-0",
         "aws-subnetId": "subnet-"
-      },
-      {
-        "id": 1,
-        "name": "worker-1",
-        "aws-subnetId": "subnet-"
       }
     ]
   }
