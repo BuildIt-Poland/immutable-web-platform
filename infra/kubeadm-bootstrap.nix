@@ -24,7 +24,7 @@ in
 
   imports = [
     (import ./kubelet.nix {
-      inherit config;
+      inherit config isMaster;
       pkgs = local-nixpkgs; 
     })
   ];
@@ -57,7 +57,9 @@ in
     # EOF
     virtualisation.docker = {
       enable = true;
-      extraOptions = "--exec-opt native.cgroupdriver=systemd"; # cgroupfs -> kube
+      # INFO https://github.com/weaveworks/weave/issues/2826
+      extraOptions = "--exec-opt native.cgroupdriver=systemd --iptables=false --ip-masq=false -b none"; # cgroupfs -> kube
+      logDriver = mkDefault "json-file";
       storageDriver = "overlay2";
     };
 
@@ -66,10 +68,10 @@ in
       postBootCommands = ''
         rm -fr /var/lib/kubernetes/secrets /tmp/shared/*
       '';
+      # "fs.inotify.max_user_instances" = 256; 
+      # "net.ipv4.conf.all.forwarding" = 1;
+      # "net.ipv4.conf.default.forwarding" = 1;
       kernel.sysctl = { 
-        "fs.inotify.max_user_instances" = 256; 
-        "net.ipv4.conf.all.forwarding" = 1;
-        "net.ipv4.conf.default.forwarding" = 1;
         "net.bridge.bridge-nf-call-iptables" = 1;
       };
     };
@@ -93,13 +95,16 @@ in
     networking = {
       inherit domain;
 
+        # ${masterHost.config.networking.privateIPv4}  master-0
+        # ${masterHost.config.networking.privateIPv4}  api.${domain}
+        # ${masterHost.config.networking.privateIPv4} etcd.${domain}
       extraHosts = ''
-        ${masterHost.config.networking.privateIPv4}  master-0
-        ${masterHost.config.networking.privateIPv4}  api.${domain}
-        ${masterHost.config.networking.privateIPv4} etcd.${domain}
+        ${concatMapStringsSep "\n" (hostName:"${nodes.${hostName}.config.networking.privateIPv4} ${hostName}") (attrNames nodes)}
         ${concatMapStringsSep "\n" (hostName:"${nodes.${hostName}.config.networking.privateIPv4} ${hostName}.${domain}") (attrNames nodes)}
       '';
-
+      
+      # kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=0.0.0.0 --apiserver-cert-extra-sans=192.168.99.251
+      dhcpcd.denyInterfaces = [ "docker*" "flannel*" ];
       # https://github.com/kubernetes/kubeadm/issues/193
       firewall = {
         allowedTCPPortRanges = [ 
@@ -109,10 +114,15 @@ in
           { from = 30000; to = 32000; }
         ];
 
+
         allowedUDPPorts = [
           # weavenet
           6783
           6784
+
+          #flannel
+          8285
+          8472
         ];
         allowedTCPPorts = if isMaster then [
           10248
@@ -127,6 +137,7 @@ in
           #weavenet -> https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#-installation
           6783
           6784
+          80
         ] else [
           10250      # kubelet
           10255      # kubelet read-only port
@@ -135,15 +146,17 @@ in
           #weavenet
           6783
           6784
+          443
+          80
         ];
         # "vxlan" 
         trustedInterfaces = [ "docker0" "flannel.1" "cni0" ];
 
         # allow any traffic from all of the nodes in the cluster
-        extraCommands = concatMapStrings (node: ''
-          iptables -A INPUT -s ${node.config.networking.privateIPv4} -j ACCEPT
-          ${if isMaster then "iptables -P FORWARD ACCEPT" else ""}
-        '') (attrValues nodes);
+        extraCommands = ''${concatMapStrings (node: "
+          iptables -A INPUT -s ${node.config.networking.privateIPv4} -j ACCEPT") (attrValues nodes)}
+          iptables -P FORWARD ACCEPT
+        '';
       };
     };
 

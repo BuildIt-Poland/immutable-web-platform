@@ -72,6 +72,8 @@ in
       mixer.policy.enabled = true;
       mixer.telemetry.enabled = true;
       mixer.adapters.prometheus.enabled = false;
+      # https://github.com/istio/istio/issues/7675#issuecomment-415447894
+      mixer.adapters.useAdapterCRDs = false;
       grafana.enabled = false;
       pilot.autoscaleMin = 2;
       pilot.traceSampling = 100;
