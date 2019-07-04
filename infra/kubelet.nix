@@ -104,15 +104,15 @@ in
     # EOF 
 
     # docker info | grep -i cgroup
-    networking = {
-      firewall = {
-        allowedTCPPorts = [
-          10248      # healtz
-          10250      # kubelet
-          10255      # kubelet read-only port
-        ];
-      };
-    };
+    # networking = {
+    #   firewall = {
+    #     allowedTCPPorts = [
+    #       10248      # healtz
+    #       10250      # kubelet
+    #       10255      # kubelet read-only port
+    #     ];
+    #   };
+    # };
 
   # kubeletPahts = [
   #   /var/lib/kubelet/kubeadm-flags.env
