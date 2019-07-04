@@ -38,7 +38,7 @@ let
           targetEnv = "virtualbox";
           virtualbox = {
             vcpu = 2;
-            memorySize = 4048;
+            memorySize = 4096;
             headless = true;
             #vmFlags = [];
             disks = { 
