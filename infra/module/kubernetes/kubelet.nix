@@ -1,5 +1,4 @@
-{ config, pkgs, isMaster, ... }:
-
+{ config, pkgs, ... }:
 with pkgs.lib;
 let
   cfg = config.services.k8s;
@@ -7,25 +6,17 @@ let
 in
 {
   options.services.k8s = with types; {
-    # isMaster = {};
     kubelet = {
       enable = mkEnableOption "Kubernetes kubelet.";
       allowPrivileged = mkOption {
         default = true;
         type = bool;
       };
-      # docker info | grep -i cgroup
-      # cgroup-driver = mkOption {};
     };
   };
 
   config = {
     boot.kernelModules = ["br_netfilter"];
-
-    environment.variables.KUBECONFIG = 
-      if isMaster 
-        then "/etc/kubernetes/admin.conf"
-        else "/etc/kubernetes/kubelet.conf";
 
     networking = {
       firewall = {
@@ -44,6 +35,7 @@ in
     # mk merge does not work
     # https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/#the-kubelet-drop-in-file-for-systemd
     systemd.services.kubelet = {
+      enable = false;
       description = "Kubernetes Kubelet Service";
       requires = ["docker.service"];
       wantedBy = [ "kubernetes.target" ];
@@ -91,7 +83,5 @@ in
         EnvironmentFile = "/var/lib/kubelet/kubeadm-flags.env";
       };
     };
-  };# else {};
-  # )
-  # ];
+  };
 }

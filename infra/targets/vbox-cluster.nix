@@ -1,4 +1,4 @@
-{ machinesConfigPath ? ./machines.json }:
+{ machinesConfigPath ? ../machines.json }:
 
 let
   machines = builtins.fromJSON (builtins.readFile machinesConfigPath);

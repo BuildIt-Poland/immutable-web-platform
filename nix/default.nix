@@ -19,7 +19,7 @@ let
     terraform-with-plugins = super.callPackage ./terraform {};
 
     # Helpers
-    find-files-in-folder = (super.callPackage ./find-files-in-folder.nix {}) rootFolder;
+    find-files-in-folder = (super.callPackage ./helpers/find-files-in-folder.nix {}) rootFolder;
     log = super.callPackage ./helpers/log.nix {};
     yaml-to-json = super.callPackage ./helpers/yaml-to-json.nix {};
 
@@ -73,7 +73,7 @@ let
   config = self: super: rec {
     env-config = super.callPackage ./config.nix {
 
-      aws-profiles = super.callPackage ./get-aws-credentials.nix {};
+      aws-profiles = super.callPackage ./helpers/get-aws-credentials.nix {};
 
       inherit brigadeSharedSecret;
       inherit rootFolder;

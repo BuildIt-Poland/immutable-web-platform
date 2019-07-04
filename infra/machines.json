@@ -35,5 +35,11 @@
         "aws-subnetId": "subnet-"
       }
     ]
+  },
+  "membership": {
+    "master-0": [
+      "worker-0",
+      "worker-1"
+    ]
   }
 }

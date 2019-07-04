@@ -2,6 +2,7 @@
 # INFO: this state is required to be able to do a gitops
 {
   pkgs ? (import ./nix {}).pkgs,
+  machinesConfigPath ? ./infra/machines.json,
   local ? false,
   kms ? ""
 }:
@@ -10,8 +11,12 @@ with remote-state.package;
 let
   state-locker = remote-state-cli;
 
-  scripts = pkgs.callPackage ./infra/scripts.nix {
+  scripts = pkgs.callPackage ./infra/deployment-scripts.nix {
     inherit nixops;
+  };
+
+  machines = pkgs.callPackage ./infra/machines.nix {
+    inherit machinesConfigPath;
   };
 
   paths = {
@@ -57,6 +62,29 @@ let
   nixops = pkgs.writeScriptBin "nixops" ''
     ${pkgs.nixops}/bin/nixops $(${state-locker}/bin/locker rewrite-arguments --input "$*" --cwd $(pwd))
   '';
+
+  # TODO deployment name
+  join-to-cluster = 
+    let
+      masters = builtins.attrNames machines.membership;
+      concat = lib.concatMapStringsSep "\n";
+      ops = "${nixops}/bin/nixops";
+      safeEnvVar = builtins.replaceStrings ["-"] ["_"];
+    in
+      writeScriptBin "kubernetes-join-nodes-to-master" ''
+        ${concat (master: 
+          let
+            name = safeEnvVar master;
+            opsArgs = "$*";
+          in
+          ''
+          COMMAND_${name}="$(${ops} ssh ${opsArgs} ${master} get-join-command)"
+             ${concat 
+               (node: ''${ops} ssh ${opsArgs} ${node} "$COMMAND_${name}"'') 
+               (machines.membership.${master})
+             }
+          '') masters}
+        '';
 in
 mkShell {
   buildInputs = [
@@ -66,6 +94,7 @@ mkShell {
     upload-remote-state
     import-remote-state
     nixops
+    join-to-cluster
 
     (builtins.attrValues scripts.deploy-ec2)
 
