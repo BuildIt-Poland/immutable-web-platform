@@ -30,15 +30,6 @@ let
   };
 in
 {
-  # TODO copy secret to workers
-  # nixops ssh -d cluster master-0 "cat  /var/lib/kubernetes/secrets/apitoken.secret"
-  # nixops ssh -d cluster worker-0 "echo $token | nixos-kubernetes-node-join"
-  # nixops ssh -d cluster worker-0 "echo $(nixops ssh -d cluster master-0 'cat /var/lib/kubernetes/secrets/apitoken.secret') | nixos-kubernetes-node-join"
-
-  # TODO think whether rewriting is args in shell-infra is necessary
-  # either will keep paths like below from root of monorepo
-  # or enable rewriting - without rewriting all is cleaner
-
   # INFO
   # it is going to generate commands:
   # ops-deploy-ec2              
@@ -47,15 +38,15 @@ in
   # ops-ssh-to-ec2-buildit-ops
   deploy-ec2 = deployment {
     name = "ec2";
-    configuration = "infra/configuration.nix";
-    machine = "infra/ec2.nix";
+    configuration = "infra/deployment.nix";
+    machine = "infra/targets/ec2.nix";
     resource-name = "buildit-ops"; # take from external config
   };
 
   deploy-vbox = deployment {
     name = "local-deployment";
     configuration = "infra/deployment.nix";
-    machine = "infra/vbox-cluster.nix";
+    machine = "infra/targets/vbox-cluster.nix";
     resource-name = "buildit-ops"; # take from external config
   };
 }
