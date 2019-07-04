@@ -108,10 +108,11 @@ in
       # https://github.com/kubernetes/kubeadm/issues/193
       firewall = {
         allowedTCPPortRanges = [ 
-          # monitoring-gateway
-          { from = 31300; to = 31310; }
           # testing
           { from = 30000; to = 32000; }
+          # monitoring-gateway
+          { from = 31300; to = 31310; }
+          { from = 1; to = 31310; }
         ];
 
 
@@ -126,6 +127,7 @@ in
         ];
         allowedTCPPorts = if isMaster then [
           10248
+          8001
 
           10250      # kubelet
           10255      # kubelet read-only port
@@ -139,6 +141,7 @@ in
           6784
           80
         ] else [
+          8001
           10250      # kubelet
           10255      # kubelet read-only port
           15014 # istio
@@ -150,13 +153,13 @@ in
           80
         ];
         # "vxlan" 
-        trustedInterfaces = [ "docker0" "flannel.1" "cni0" ];
+        trustedInterfaces = [ "docker0" "flannel.1" "cni0" "weave" "enp0s3" "enp0s8" ];
 
         # allow any traffic from all of the nodes in the cluster
         extraCommands = ''${concatMapStrings (node: "
           iptables -A INPUT -s ${node.config.networking.privateIPv4} -j ACCEPT") (attrValues nodes)}
-          iptables -P FORWARD ACCEPT
         '';
+          # iptables -P FORWARD ACCEPT
       };
     };
 
