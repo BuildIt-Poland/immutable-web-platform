@@ -5,7 +5,10 @@ let
     env = "prod";
     system = "x86_64-linux"; 
   });
+
   machines = builtins.fromJSON (builtins.readFile machinesConfigPath);
+
+  kube-scripts = local-nixpkgs.callPackage ./kubeadm-scripts.nix {};
 
   makeMasterServer = machine: {   
     name  = machine.name;
@@ -19,18 +22,19 @@ let
         imports = [
           kubeadm-bootstrap
         ];
-        # environment.variables.KUBECONFIG = "/etc/kubernetes/cluster-admin.kubeconfig";#"${kubeConfig}";
+        # machine.pod-cidr
         services.k8s.roles = [ "master" ];
-        # services.k8s.kubelet.enable = true;
         environment.systemPackages = with local-nixpkgs; [
-          nfs-utils
           kubectl
           kubernetes
           ethtool
           socat
           k8s-cluster-operations.apply-cluster-stack 
           k8s-cluster-operations.apply-functions-to-cluster
-        ];
+        ] ++ (kube-scripts.make-master {
+          ip = config.networking.privateIPv4; 
+          pods-cidr = machine.pods-cidr; 
+        });
       };
   };
   masterServers = map makeMasterServer machines.masters.configs;
@@ -48,14 +52,10 @@ let
           kubeadm-bootstrap
         ];
         services.k8s.roles = [ "node" ];
-        # services.k8s.kubelet.enable = true;
         environment.systemPackages = with local-nixpkgs; [
-          nfs-utils
           kubernetes
           ethtool
           socat
-          k8s-cluster-operations.apply-cluster-stack 
-          k8s-cluster-operations.apply-functions-to-cluster
         ];
       };
   }; 

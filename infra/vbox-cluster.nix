@@ -2,14 +2,18 @@
 
 let
   machines = builtins.fromJSON (builtins.readFile machinesConfigPath);
+  ssh-local-keys = {      
+    users = {
+      mutableUsers = false;
+      users.root.openssh.authorizedKeys.keyFiles = [ ~/.ssh/id_rsa.pub ];
+    };
+  };
 
   makeMasterServer = machine: {
     name  = machine.name;
     value =
       { ... }:
       {
-        # because of interface creation order in vbox
-        # services.flannel.iface = "enp0s8";
         systemd.services.virtualbox.enable = false;
         deployment = {
           targetEnv = "virtualbox";
@@ -20,7 +24,7 @@ let
             #vmFlags = [];
           };
         };
-      };
+      } // ssh-local-keys;
   };
   masterServers = map makeMasterServer machines.masters.configs;
 
@@ -29,14 +33,12 @@ let
     value =
       { ... }:
       {
-        # because of interface creation order in vbox
-        # services.flannel.iface = "enp0s8";
         systemd.services.virtualbox.enable = false;
         deployment = {
           targetEnv = "virtualbox";
           virtualbox = {
             vcpu = 2;
-            memorySize = 5024;
+            memorySize = 4048;
             headless = true;
             #vmFlags = [];
             disks = { 
@@ -54,7 +56,7 @@ let
           autoFormat = true;
           mountPoint = "/data";
         };
-      };
+      } // ssh-local-keys;
   };
   workerServers = map makeWorkerServer machines.workers.configs;
 

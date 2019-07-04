@@ -10,7 +10,8 @@
       {
         "id": 0,
         "name": "master-0",
-        "aws-subnetId": "subnet-"
+        "aws-subnetId": "subnet-",
+        "pods-cidr": "10.32.0.0/12"
       }
     ]
   },
