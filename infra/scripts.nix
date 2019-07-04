@@ -54,8 +54,8 @@ in
 
   deploy-vbox = deployment {
     name = "local-deployment";
-    configuration = "infra/configuration.nix";
-    machine = "infra/virtualbox.nix";
+    configuration = "infra/deployment.nix";
+    machine = "infra/vbox-cluster.nix";
     resource-name = "buildit-ops"; # take from external config
   };
 }
