@@ -33,13 +33,19 @@
         "id": 1,
         "name": "worker-1",
         "aws-subnetId": "subnet-"
+      },
+      {
+        "id": 1,
+        "name": "worker-2",
+        "aws-subnetId": "subnet-"
       }
     ]
   },
   "membership": {
     "master-0": [
       "worker-0",
-      "worker-1"
+      "worker-1",
+      "worker-2"
     ]
   }
 }

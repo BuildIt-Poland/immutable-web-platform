@@ -13,6 +13,8 @@
   machines
 }:
 let
+  optionalArgs = "$*";
+
   cluster-scripts = pkgs.callPackage ./cluster-scripts.nix {
     inherit nixops machines;
   };
@@ -20,9 +22,10 @@ let
   create-ssh-variants = let
     make-ssh = name: resource-name: 
       writeScriptBin "ops-ssh-to-${name}-${resource-name}" ''
-        ${nixops}/bin/nixops ssh -d ${name} ${resource-name}
+        ${nixops}/bin/nixops ssh -d ${name} ${resource-name} ${optionalArgs}
       '';
 
+    # TODO should be in machine.nix
     masters = (builtins.attrNames machines.membership) ;
     nodes = 
       (lib.flatten 
