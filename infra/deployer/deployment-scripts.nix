@@ -7,11 +7,15 @@
   nixops, 
   writeScript, 
   writeScriptBin, 
+  pkgs,
   rsync,
   lib,
   machines
 }:
 let
+  cluster-scripts = pkgs.callPackage ./cluster-scripts.nix {
+    inherit nixops machines;
+  };
 
   create-ssh-variants = let
     make-ssh = name: resource-name: 
@@ -56,7 +60,7 @@ let
       # copy-contents = writeScriptBin "ops-folder-sync-${name}" ''
       #   ${rsync}/bin/rsync --rsh="${make-ssh}/bin/${make-ssh.name}" $*
       # '';
-    } // (create-ssh-variants name);
+    } // (create-ssh-variants name) // (cluster-scripts name);
 in
 {
   deploy-ec2 = deployment {

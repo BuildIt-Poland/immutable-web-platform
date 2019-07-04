@@ -35,7 +35,7 @@ in
     # mk merge does not work
     # https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/#the-kubelet-drop-in-file-for-systemd
     systemd.services.kubelet = {
-      enable = false;
+      # enable = false;
       description = "Kubernetes Kubelet Service";
       requires = ["docker.service"];
       wantedBy = [ "kubernetes.target" ];
