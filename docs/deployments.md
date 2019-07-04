@@ -19,3 +19,10 @@ Flow: `creation -> node-joining -> provisioning`
 * `apply-cluster-stack`
 * `apply-functions-to-cluster`
 > There is a chance to enable `auto-provision` feature
+
+
+#### Nixops remote state infra
+* `remote-state-aws-stack`
+
+#### Asking remote state
+* `locker --help`
