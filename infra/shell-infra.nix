@@ -1,8 +1,8 @@
 # INSPIRATION: https://github.com/WeAreWizards/blog/blob/master/content/articles/sharing-deployments-with-nixops.md
 # INFO: this state is required to be able to do a gitops
 {
-  pkgs ? (import ./nix {}).pkgs,
-  machinesConfigPath ? ./infra/machines.json,
+  pkgs ? (import ../nix {}).pkgs,
+  machinesConfigPath ? ./machines.json,
   local ? false,
   kms ? ""
 }:
@@ -11,12 +11,12 @@ with remote-state.package;
 let
   state-locker = remote-state-cli;
 
-  scripts = pkgs.callPackage ./infra/deployment-scripts.nix {
-    inherit nixops;
+  machines = pkgs.callPackage ./machines.nix {
+    inherit machinesConfigPath;
   };
 
-  machines = pkgs.callPackage ./infra/machines.nix {
-    inherit machinesConfigPath;
+  scripts = pkgs.callPackage ./deployment-scripts.nix {
+    inherit nixops machines;
   };
 
   paths = {
@@ -96,7 +96,9 @@ mkShell {
     nixops
     join-to-cluster
 
-    (builtins.attrValues scripts.deploy-ec2)
+    (if !local 
+      then (builtins.attrValues scripts.deploy-ec2)
+      else (builtins.attrValues scripts.deploy-vbox))
 
     pkgs.sops
   ];

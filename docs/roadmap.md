@@ -1,9 +1,11 @@
 ## TODO
+* populate docker registry or nixos docker repository
+* make diffing of resources possible
+* align ec2 deployment to `machine.json` descriptor
 
 ## priorities
-* improve docs
+* improve docs - wip
 * provide hooks for `nixops` infra updates
-* apply scripts from local shell to `nixos` cluster
 * running cluster in `brigade` worker to test release - `dind`
 * virtual kublet integration
 
@@ -23,5 +25,8 @@
 
 ### nice to have
 * setup `nix-channel`
+* [formatting](https://github.com/nixcloud/nix-beautify)
+
+### DONE
+* apply scripts from local shell to `nixos` cluster - done
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
-* [formatting](https://github.com/serokell/nixfmt)
