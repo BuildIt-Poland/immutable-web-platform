@@ -9,7 +9,7 @@ const createJob = (name) =>
       streamLogs: true,
       privileged: true,
       shell: 'bash',
-      serviceAccount: "deployer-sa"
+      serviceAccount: "brigade-worker"
     })
     .withTasks([
       `cd /src/pipeline`,

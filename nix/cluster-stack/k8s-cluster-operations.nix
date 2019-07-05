@@ -50,12 +50,33 @@ rec {
     ${apply-resources cluster.k8s-cluster-resources}
   '';
 
+  create-private-registry = writeScriptBin "create-private-registry" ''
+    docker run -d -p 5000:5000 --restart=always --name registry registry:2
+    # IP -> docker inspect --format '{{ .NetworkSettings.IPAddress }}' registry
+
+docker exec future-is-comming-control-plane bash -c 'cat <<EOF > /etc/docker/daemon.json
+{
+    "insecure-registries": ["172.17.0.3:5000"]
+}
+EOF'
+
+    docker exec future-is-comming-control-plane bash -c 'kill -s SIGHUP $(pgrep dockerd)'
+  '';
+
+  # localhost:5000 should be taken from env-config
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
     (lib.concatMapStrings 
       (docker-image: ''
-        ${log.important "Pushing docker image to local cluster: ${docker-image}"}
-        ${pkgs.kind}/bin/kind load image-archive --name ${env-config.projectName} ${docker-image}
+        ${log.important "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}/${docker-image.imageTag}"}
+        ${pkgs.skopeo}/bin/skopeo \
+          --insecure-policy \
+          copy \
+          docker-archive://${docker-image} \
+          docker://localhost:32001/${docker-image.imageName}/${docker-image.imageTag} \
+          --dest-tls-verify=false
       '') cluster.images);
+
+  # ${pkgs.kind}/bin/kind load image-archive --name ${env-config.projectName} ${docker-image}
 
   push-to-docker-registry = writeScriptBin "push-to-docker-registry"
     (lib.concatMapStrings 

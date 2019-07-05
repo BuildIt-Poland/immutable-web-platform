@@ -43,7 +43,8 @@ rec {
   };
 
   # TODO apply to all pods
-  imagePullPolicy = if is-dev then "Never" else "IfNotPresent";
+  # imagePullPolicy = if is-dev then "Never" else "IfNotPresent";
+  imagePullPolicy = "IfNotPresent";
 
   is-dev = env == "dev";
 
@@ -62,14 +63,17 @@ rec {
     pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
   };
 
-  docker = {
+  docker = rec {
     # stil so so, if defined for brigade worker it is trying to hit http ...
+    local-registry-port = 32001;
+
     registry = 
       if is-dev
-        then ""
+        then "localhost:${toString local-registry-port}"
         # then "dev.local"
         else "docker.io/gatehub";
 
+    # TODO dev should point to localost -> instead of two ways there will be a one variant to upload images - super cool!
     destination = "docker://damianbaar"; # skopeo path transport://repo
 
     tag = if is-dev
