@@ -30,11 +30,12 @@ pkgs.dockerTools.buildImage ({
     pkgs.bash
     pkgs.jq
     pkgs.sops
+    pkgs.kubectl
   ];
 
   config.Cmd = [ "${pkgs.bashInteractive}/bin/bash" ];
   config.Env =
-    [ "PATH=/root/.nix-profile/bin:/run/current-system/sw/bin:${pkgs.sops}/bin"
+    [ "PATH=/root/.nix-profile/bin:/run/current-system/sw/bin:${pkgs.sops}/bin:${pkgs.kubectl}/bin"
       "MANPATH=/root/.nix-profile/share/man:/run/current-system/sw/share/man"
       "NIX_PAGER=cat"
       "NIX_PATH=nixpkgs=/root/.nix-defexpr/nixpkgs"
