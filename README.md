@@ -1,5 +1,6 @@
 ### Purpose
-As I'm super passionate about `nix` and it's ecosystem, I'd like to share how to connect the dots to get fully automated infrastructure which can be run on local environment, virtual machines or in cloud.
+Yet another story about `kubernetes` and declarative approach to infrastructure. Fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and works like a idempotent function which builds full infrastructure.
+It assumes full testing ability of infrastructure as well as on application level following `gitops` way realized by `brigade.js`.
 
 ### Inspiration part
 * [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)

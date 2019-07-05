@@ -8,6 +8,7 @@
 }:
 let
   # INFO to filter out grep from ps
+  docker-registry = pkgs.callPackage ./docker-local-registry.nix {};
   getGrepPhrase = phrase:
     let
       phraseLength = builtins.stringLength phrase;
@@ -29,6 +30,11 @@ let
   istio-service = {
     service = "istio-ingressgateway";
     namespace = istio-ns;
+  };
+
+  registry-service = {
+    service = "registry";
+    namespace = "container-registry"; 
   };
 
   localtunnel = "${node-development-tools}/bin/lt";
@@ -57,10 +63,27 @@ rec {
   };
 
   cluster-config-yaml = kubenix.lib.toYAML cluster-config;
+  # --config ${cluster-config-yaml}
+
+  # WHY: https://github.com/windmilleng/kind-local#why
+  # + able to bump kind to 0.4.0
+  setup-registry = pkgs.writeScript "setup-registry" ''
+    source ${export-kubeconfig}/bin/export-kubeconfig
+
+    ${docker-registry}/bin/create-registry
+
+    ${wait-for ({ 
+      condition="condition=available"; 
+      resource="deployment/registry"; 
+    } // registry-service)}
+
+    ${port-forward (registry-service // registry-ports)}
+  '';
 
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
     ${log.message "Creating cluster"}
-    ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
+    ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName}
+    ${setup-registry}
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
@@ -101,7 +124,7 @@ rec {
   wait-for = {
     service,
     namespace,
-    selector,
+    selector ? "",
     condition ? "condition=Ready",
     resource ? "pod",
     timeout ? 300,
@@ -112,9 +135,14 @@ rec {
       ${pkgs.kubectl}/bin/kubectl wait \
         --namespace ${namespace} \
         --for=${condition} ${resource} \
-        --selector '${selector}' \
+        ${if selector != "" then "--selector '${selector}'" else ""} \
         --timeout=${toString timeout}s
   '';
+
+  registry-ports = {
+    from = get-port ({ type = "port"; } // registry-service);
+    to = get-port ({ type = "nodePort"; } // registry-service);
+  };
 
   brigade-ports = {
     from = get-port ({ type = "port"; } // brigade-service);
@@ -153,7 +181,7 @@ rec {
   '';
 
   expose-weave-scope = pkgs.writeScriptBin "expose-weave-scope" ''
-    ${pkgs.kubectl}/bin/kubectl port-forward --namespace weave svc/weave-scope-app 3002:80
+    ${pkgs.kubectl}/bin/kubectl port-forward --namespace istio-system svc/weave-scope-app 3002:80
   '';
 
   # helpful flag ... --print-requests 

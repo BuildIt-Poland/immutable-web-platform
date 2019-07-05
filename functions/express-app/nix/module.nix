@@ -36,10 +36,7 @@ in
           };
           spec = {
             containers = [{
-              image = 
-                if env-config.is-dev 
-                  then fn-config.image-name-for-knative-service-when-dev
-                  else config.docker.images.express-app.path;
+              image = config.docker.images.express-app.path;
 
               imagePullPolicy = env-config.imagePullPolicy;
               env = fn-config.env;

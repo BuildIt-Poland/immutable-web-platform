@@ -9,28 +9,23 @@ with pkgs.stdenv;
 # https://github.com/kubernetes-sigs/kind/pull/382 
 # 
 let
-  version = "0.2.1";
+  version = "0.4.0";
   # version = "0.3.0";
   bin-name = "kind";
-  url = {version, os}: 
-    "https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-${os}-amd64";
-
-  getSource = {version, os}: pkgs.fetchurl {
-    url = url { inherit version os; };
-    sha256 = "1yd61xn8wb3xk9ywxjaxhqahiamfzrdip9i9gr2rbqshgwi8s1zl";
-    # sha256 = "13396vbwa0b3gx0kpl85jsgslbj5dadyfmf6h8n00cb4ffxzvsil"; # 0.3.0
-  };
+  os = if isDarwin then "darwin" else "linux";
 in
 mkDerivation rec {
-  inherit version name;
+  inherit version;
 
-  src = 
-    if isDarwin
-      then getSource {inherit version; os = "darwin";}
-      else getSource {inherit version; os = "linux";};
+  name = "kind";
+
+  src = pkgs.fetchurl {
+    url = "https://github.com/kubernetes-sigs/kind/releases/download/v${version}/kind-${os}-amd64";
+    sha256 = "1lyjx6vzdmiickncj01bfc8959w8jkq8d6hkcbydqcki4231hgq2";
+  };
 
   buildInputs = [ ];
-  phases = ["installPhase"];
+  phases = ["installPhase" "patchPhase"];
   installPhase = ''
     mkdir -p $out/bin
     cp $src $out/bin/${bin-name}

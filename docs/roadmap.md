@@ -4,8 +4,10 @@
 * align ec2 deployment to `machine.json` descriptor
 * create repository for infra code
 * run example tests agains artifact in brigade
-* setup brigade (serviceaccount) to be able to operate on kubernetes cluster
+* setup brigade (serviceaccount) to be able to operate on kubernetes cluster (partially done - custom binding is there)
+* forward `kubenix` results to brigade workers
 * watch github hooks when approving the pull request
+* use private docker registry for local development - to make things faster (kind 0.3 > does not play well with images from os x)
 
 ## priorities
 * improve docs - wip
