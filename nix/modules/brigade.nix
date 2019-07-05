@@ -90,6 +90,10 @@ in
       };
     };
 
+    # TODO
+    # kubernetes.api.rolebindings = {};
+    # kubernetes.api.clusterrole = {};
+
     # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
     kubernetes.helm.instances.brigade-project = 
     let

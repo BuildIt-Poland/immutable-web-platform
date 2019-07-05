@@ -1,1 +1,1 @@
-import ./infra/shell-infra.nix
+import ./infra/shell.nix

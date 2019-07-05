@@ -2,6 +2,10 @@
 * populate docker registry or nixos docker repository
 * make diffing of resources possible
 * align ec2 deployment to `machine.json` descriptor
+* create repository for infra code
+* run example tests agains artifact in brigade
+* setup brigade (serviceaccount) to be able to operate on kubernetes cluster
+* watch github hooks when approving the pull request
 
 ## priorities
 * improve docs - wip

@@ -9,13 +9,15 @@ const createJob = (name) =>
       streamLogs: true,
       privileged: true,
       shell: 'bash',
+      serviceAccount: "deployer-sa"
     })
     .withTasks([
       `cd /src/pipeline`,
       saveSecrets('secrets.json'),
       `cat secrets.json`,
       buildNixExpression('shell.nix', 'testScript'),
-      `./result/bin/test-script`
+      `./result/bin/test-script`,
+      `kubectl get pods -A`
     ])
 
 events.on("exec", (event, project) => {
