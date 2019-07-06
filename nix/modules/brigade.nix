@@ -116,7 +116,7 @@ in
         sshKey = builtins.readFile ssh-keys.bitbucket.priv;
         workerCommand = "yarn build-start";
         worker = {
-          registry = if env-config.is-dev then "" else env-config.docker.registry;
+          registry = env-config.docker.registry;
           name = extension.name;
           tag = extension.tag;
           # actually should be never but it seems that they are applying to this policy to sidecar as well

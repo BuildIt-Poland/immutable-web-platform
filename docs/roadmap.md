@@ -9,6 +9,8 @@
 * watch github hooks when approving the pull request
 * use private docker registry for local development - to make things faster (kind 0.3 > does not play well with images from os x)
 
+* refactoring -> create `kubectl-helpers`
+
 ## priorities
 * improve docs - wip
 * provide hooks for `nixops` infra updates
