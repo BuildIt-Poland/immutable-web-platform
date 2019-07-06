@@ -65,12 +65,13 @@ rec {
 
   docker = rec {
     # stil so so, if defined for brigade worker it is trying to hit http ...
-    local-registry-port = 32001;
+    local-registry-port = 5000;
 
     registry = 
       if is-dev
-        then "localhost:${toString local-registry-port}"
-        # then "dev.local"
+      
+        then "172.17.0.3:5000"
+        # then "http://registry.container-registry.svc.cluster.local:${toString local-registry-port}"
         else "docker.io/gatehub";
 
     # TODO dev should point to localost -> instead of two ways there will be a one variant to upload images - super cool!
