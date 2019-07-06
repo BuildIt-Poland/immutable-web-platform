@@ -8,7 +8,7 @@
 }:
 let
   # INFO to filter out grep from ps
-  docker-registry = pkgs.callPackage ./docker-local-registry.nix {};
+  docker-registry = pkgs.callPackage ./patch/kind-docker-local-registry.nix {};
   getGrepPhrase = phrase:
     let
       phraseLength = builtins.stringLength phrase;
@@ -22,6 +22,7 @@ let
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
 
+  # TODO should be in config
   brigade-service = {
     service = "brigade-bitbucket-gateway-brigade-bitbucket-gateway"; # INFO chart is so so and does not hanle name well ... investigate
     namespace = brigade-ns;
@@ -33,8 +34,8 @@ let
   };
 
   registry-service = {
-    service = "registry";
-    namespace = "container-registry"; 
+    service = "docker-registry";
+    namespace = local-infra-ns;
   };
 
   localtunnel = "${node-development-tools}/bin/lt";
@@ -67,14 +68,15 @@ rec {
 
   setup-registry = pkgs.writeScript "setup-registry" ''
     source ${export-kubeconfig}/bin/export-kubeconfig
-
     ${docker-registry}/bin/create-registry
+  '';
 
-    ${wait-for ({ 
-      condition="condition=available"; 
-      resource="deployment/registry"; 
-    } // registry-service)}
-
+    # ${wait-for ({ 
+    #   condition="condition=available"; 
+    #   resource="deployment/${registry-service.service}"; 
+    # } // registry-service)}
+  wait-for-docker-registry = pkgs.writeScriptBin "wait-for-docker-registry" ''
+    ${wait-for ({selector= "app=${registry-service.service}";} // registry-service)}
     ${port-forward (registry-service // registry-ports)}
   '';
 
@@ -137,9 +139,13 @@ rec {
         --timeout=${toString timeout}s
   '';
 
-  registry-ports = {
-    from = get-port ({ type = "port"; } // registry-service);
-    to = get-port ({ type = "nodePort"; } // registry-service);
+  registry-ports = 
+  let
+    registry = env-config.docker.local-registry;
+  in
+  {
+    from = "echo ${toString registry.clusterPort}"; # get-port ({ type = "port"; } // registry-service);
+    to = "echo ${toString registry.exposedPort}"; # get-port ({ type = "nodePort"; } // registry-service);
   };
 
   brigade-ports = {

@@ -42,13 +42,20 @@ in
     };
   };
 
-  # default [ "CustomResourceDefinition" "Namespace" ]
-  # kubernetes.resourceOrder = []
-
-  # kubernetes.helm.instances.istio = {
-  #   namespace = "${istio-ns}";
-  #   chart = charts.istio-cni;
-  # };
+  kubernetes.helm.instances.docker-registry = {
+    namespace = "${local-infra-ns}";
+    chart = charts.docker-registry;
+    values = {
+      # ClusterPort for knative ...
+      service.type = "NodePort";
+      service.port = env-config.docker.local-registry.clusterPort;
+      service.nodePort = env-config.docker.local-registry.exposedPort;
+      # ingress.enabled = true;
+      # ingress.hosts = [
+      #   "docker-registry.local"
+      # ];
+    };
+  };
 
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
@@ -92,4 +99,7 @@ in
     (create-istio-cr "rule")
     (create-istio-cr "handler")
   ];
+
+  # default [ "CustomResourceDefinition" "Namespace" ]
+  # kubernetes.resourceOrder = []
 }

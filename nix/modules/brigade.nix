@@ -90,8 +90,29 @@ in
       };
     };
 
-    # TODO
-    # kubernetes.api.rolebindings = {};
+    kubernetes.api.rolebindings = 
+      let
+        admin = "brigade-admin-privileges";
+      in
+      {
+        "${admin}" = {
+          metadata = {
+            name = "${admin}";
+          };
+          roleRef = {
+            apiGroup = "rbac.authorization.k8s.io";
+            kind = "ClusterRole";
+            name = "cluster-admin"; # TODO this is too much in case of privilages
+          };
+          subjects = [
+            {
+              kind = "ServiceAccount";
+              name = "brigade-worker";
+              namespace = brigade-ns;
+            }
+          ];
+        };
+      };
     # kubernetes.api.clusterrole = {};
 
     # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
@@ -132,7 +153,7 @@ in
           awsRegion = aws-credentials.region;
           sopsSecrets = builtins.readFile env-config.secrets;
           cacheBucket = env-config.s3.worker-cache;
-          workerDockerImage = "${worker.path}";
+          workerDockerImage = worker.path;
         };
       };
     };

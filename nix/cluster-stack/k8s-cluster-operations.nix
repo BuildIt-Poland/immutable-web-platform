@@ -30,8 +30,6 @@ rec {
   # TODO this should be in k8s-resources - too many places with charts and jsons
   # ${apply-resources charts.istio-cni-yaml}
 
-  # TODO
-  # ${apply-resources charts.docker-registry-yaml}
   apply-istio-crd = writeScript "apply-istio-crd" ''
     ${apply-resources charts.istio-init-yaml}
     ${wait-for "job" "complete"}
@@ -62,7 +60,7 @@ rec {
           --insecure-policy \
           copy \
           docker-archive://${docker-image} \
-          docker://localhost:32001/${docker-image.imageName}:${docker-image.imageTag} \
+          docker://${env-config.docker.registry}/${docker-image.imageName}:${docker-image.imageTag} \
           --dest-tls-verify=false
       '') cluster.images);
 

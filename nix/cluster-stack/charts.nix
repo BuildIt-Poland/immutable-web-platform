@@ -52,17 +52,6 @@ rec {
     sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
   };
 
-  docker-registry-json = helm.chart2json {
-    namespace = "local-infra";
-    name = "docker-registry";
-    chart = docker-registry;
-  };
-
-  docker-registry-yaml = toYAML (k8s.mkHashedList { 
-    items = 
-      (lib.importJSON docker-registry-json);
-  });
-
   knative-serving = yaml-to-json {
     name = "knative-serving";
     version = "0.6.1";
@@ -72,28 +61,15 @@ rec {
     };
   };
 
-  istio-cni = helm.fetch {
-    chart = "istio-cni";
-    version = "0.1.0";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
-    sha256 = "1qb2qx088bwf6pv4xay0bbdqkjk1i0cmgjvn0xsxjb1z7x7xy01d";
+  # https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
+  argo-cd = helm.fetch {
+    chart = "argo-cd";
+    repo = "https://brigadecore.github.io/charts";
+    version = "0.2.2";
+    sha256 = "0i5i3h346dz4a771zkgjpbx4hbyf7r6zfhvqhvfjv234dha4fj50";
   };
 
-  istio-cni-json = helm.chart2json {
-    name = "istio-cni";
-    namespace = "kube-system"; # TODO
-    chart = istio-cni;
-  };
-
-  istio-cni-yaml = toYAML (k8s.mkHashedList { 
-    items = 
-      (lib.importJSON istio-cni-json);
-  });
-
-  istio-json = helm.chart2json {
-    name = "istio";
-    chart = istio;
-  };
+  # BOOTSTRAP
 
   istio-init = helm.fetch {
     chart = "istio-init";

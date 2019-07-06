@@ -42,8 +42,6 @@ rec {
     };
   };
 
-  # TODO apply to all pods
-  # imagePullPolicy = if is-dev then "Never" else "IfNotPresent";
   imagePullPolicy = "IfNotPresent";
 
   is-dev = env == "dev";
@@ -63,17 +61,29 @@ rec {
     pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
   };
 
+  # INFO this is a bit tricky - knative is not able to reach localhost
+  # possible workaround -> https://github.com/triggermesh/knative-local-registry/blob/master/sysadmin/nodes-etc-hosts-update.yaml
   docker = rec {
-    # stil so so, if defined for brigade worker it is trying to hit http ...
-    local-registry-port = 5000;
-    namespace = if is-dev then "dev.local" else "dev.${env}";
+    knative = {
+      registry = 
+        if is-dev 
+          then "docker-registry.local-infra.svc.cluster.local" 
+          else "";
+    };
+
+    local-registry = {
+      host = "localhost";
+      clusterPort = 80;
+      exposedPort = 32001;
+    };
+
+    namespace = env;
+
     registry = 
       if is-dev
-        then "localhost:32001"
-        # then "http://registry.container-registry.svc.cluster.local:${toString local-registry-port}"
+        then "${local-registry.host}:${toString local-registry.exposedPort}"
         else "docker.io/gatehub";
 
-    # TODO dev should point to localost -> instead of two ways there will be a one variant to upload images - super cool!
     destination = "docker://damianbaar"; # skopeo path transport://repo
 
     tag = if is-dev
