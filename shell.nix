@@ -44,6 +44,7 @@ mkShell {
     k8s-local.create-local-cluster-if-not-exists
     k8s-local.expose-istio-ingress
     k8s-local.add-knative-label-to-istio
+    k8s-local.wait-for-docker-registry
 
     # waits
     k8s-local.wait-for-istio-ingress
@@ -89,10 +90,12 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
+    apply-cluster-stack
+    wait-for-docker-registry
+
     ${if uploadDockerImages 
          then "push-docker-images-to-local-cluster" else ""}
 
-    apply-cluster-stack
     apply-functions-to-cluster
 
     source export-ports

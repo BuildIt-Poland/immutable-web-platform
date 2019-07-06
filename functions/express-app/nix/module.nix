@@ -35,14 +35,8 @@ in
             };
           };
           spec = {
-            containers = 
-            let
-              image = config.docker.images.express-app;
-            in
-            [{
-              # image = "${image.registry}/${image.name}:${image.tag}";
+            containers = [{
               image = config.docker.images.express-app.path;
-
               imagePullPolicy = env-config.imagePullPolicy;
               env = fn-config.env;
               livenessProbe = {

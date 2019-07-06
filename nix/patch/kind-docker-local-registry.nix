@@ -1,4 +1,4 @@
-{ pkgs, writeShellScript }:
+{ pkgs, writeShellScript, env-config }:
 with pkgs.stdenv;
 # TODO PASS port as a param
 mkDerivation rec {
@@ -10,8 +10,7 @@ mkDerivation rec {
     sha256 = "0cn6wr8adyr4x8gm2w5w0zw7dvhxlybwn50kcjqaxdck0jvfacgd";
   };
 
-  # TODO should be in helm chart
-  port = 32001;
+  port = env-config.docker.local-registry.exposedPort;
 
   phases = ["installPhase" "patchPhase"];
   installPhase = ''
@@ -22,10 +21,9 @@ mkDerivation rec {
       -e '2 i\DIR="$(dirname $(realpath $0))"' \
       -e 's/--name=\"kind\"/--name=\"$PROJECT_NAME\"/' \
       -e 's/cp\ config.toml/cp\ $DIR\/config.toml/' \
-      -e 's/registry.yaml/$DIR\/registry.yaml/' \
       -e 's/32001/${toString port}/' \
         $src/kind-registry.sh \
-          | sed '$d' | sed '$d' \
+          | sed '$d' | sed '$d' | sed '$d' \
           > $out/bin/create-registry
 
     chmod +x $out/bin/create-registry
