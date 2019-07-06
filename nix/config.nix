@@ -61,18 +61,18 @@ rec {
     pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
   };
 
-  # INFO this is a bit tricky - knative is not able to reach localhost
-  # possible workaround -> https://github.com/triggermesh/knative-local-registry/blob/master/sysadmin/nodes-etc-hosts-update.yaml
+  # TODO change this ifs to mkIf (if dev)
   docker = rec {
     knative = {
       registry = 
         if is-dev 
-          then "docker-registry.local-infra.svc.cluster.local" 
+          # then "knative.local-infra.svc.cluster.local" 
+          then "dev.local" 
           else "";
     };
 
     local-registry = {
-      host = "localhost";
+      host = "localhost:5555";
       clusterPort = 80;
       exposedPort = 32001;
     };
@@ -81,7 +81,8 @@ rec {
 
     registry = 
       if is-dev
-        then "${local-registry.host}:${toString local-registry.exposedPort}"
+        # then "${local-registry.host}:${toString local-registry.exposedPort}"
+        then "localhost"
         else "docker.io/gatehub";
 
     destination = "docker://damianbaar"; # skopeo path transport://repo

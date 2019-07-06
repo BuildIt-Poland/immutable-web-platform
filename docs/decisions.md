@@ -3,3 +3,5 @@
 - with custom repo, upload is done by docker and recognize uploaded layers - it is faster
   # WHY: https://github.com/windmilleng/kind-local#why
   # + able to bump kind to 0.4.0
+
+update: actually `kube-registry-proxy` allows to skip `path` (above) on `kind` and give possibility to point to whatever registry is out there
