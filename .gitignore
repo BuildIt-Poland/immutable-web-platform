@@ -12,3 +12,4 @@ cdk.out/*
 temp.*
 resources/*.yaml
 temp/
+/.gtm/
