@@ -45,18 +45,51 @@ in
   kubernetes.helm.instances.docker-registry = {
     namespace = "${local-infra-ns}";
     chart = charts.docker-registry;
+    values = 
+      let
+        registry = env-config.docker.local-registry;
+      in
+      {
+        service.type = "ClusterIP";
+        service.port = registry.clusterPort;
+        # service.nodePort = registry.exposedPort;
+      };
+  };
+
+  kubernetes.helm.instances.kube-registry-proxy = {
+    namespace = "${local-infra-ns}";
+    chart = charts.kube-registry-proxy;
     values = {
-      # ClusterPort for knative ...
-      service.type = "NodePort";
-      service.port = env-config.docker.local-registry.clusterPort;
-      service.nodePort = env-config.docker.local-registry.exposedPort;
-      # ingress.enabled = true;
-      # ingress.hosts = [
-      #   "docker-registry.local"
-      # ];
+      registry.host = "docker-registry.local-infra.svc.cluster.local";
+      registry.port = env-config.docker.local-registry.clusterPort;
+      # hostPort
+      # hostIp
     };
   };
 
+  kubernetes.api.services = {
+    "knative-registry" = {
+      metadata = {
+        namespace = local-infra-ns;
+        name = "knative";
+        labels = {
+          "authenticated" = "false";
+        };
+      };
+      spec = {
+        selector = {
+          app = "kube-registry-proxy-kube-registry-proxy";
+        };
+        ports = [{
+          name = "http";
+          port = 80;
+        }];
+      };
+    };
+  };
+
+  # Check this -> https://kubernetes.io/docs/concepts/services-networking/service/#externalname
+  # https://github.com/triggermesh/knative-local-registry/blob/master/sysadmin/nodes-etc-hosts-update.yaml
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;

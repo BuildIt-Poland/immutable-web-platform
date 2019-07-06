@@ -60,9 +60,10 @@ rec {
           --insecure-policy \
           copy \
           docker-archive://${docker-image} \
-          docker://${env-config.docker.registry}/${docker-image.imageName}:${docker-image.imageTag} \
+          docker://localhost:32001/${docker-image.imageName}:${docker-image.imageTag} \
           --dest-tls-verify=false
       '') cluster.images);
+          # docker://${env-config.docker.registry}/${docker-image.imageName}:${docker-image.imageTag} \
 
   push-to-docker-registry = writeScriptBin "push-to-docker-registry"
     (lib.concatMapStrings 

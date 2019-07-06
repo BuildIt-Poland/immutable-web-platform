@@ -76,7 +76,8 @@ mkShell {
   PROJECT_NAME = env-config.projectName;
 
   # known issue: when starting clean cluster expose-brigade is run to early
-  
+
+  # TODO bootstrap can be easly faster -> check rbac and roles only when running new cluster
   shellHook= ''
     ${log.message "Hey sailor!"}
     ${log.info "If you need any help, run 'get-help'"}

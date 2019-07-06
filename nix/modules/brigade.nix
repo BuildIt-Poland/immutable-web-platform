@@ -89,8 +89,8 @@ in
         provisioner = "kubernetes.io/host-path";
       };
     };
-
-    kubernetes.api.rolebindings = 
+    
+    kubernetes.api.clusterrolebindings = 
       let
         admin = "brigade-admin-privileges";
       in

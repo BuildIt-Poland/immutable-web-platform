@@ -52,6 +52,13 @@ rec {
     sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
   };
 
+  kube-registry-proxy = helm.fetch {
+    chart = "kube-registry-proxy";
+    version = "0.3.1";
+    repo = "http://storage.googleapis.com/kubernetes-charts-incubator";
+    sha256 = "04vnmyfqvddiw1n63sab4as7apcxq9gx0hrkv8p2w1b6q12hjwhd";
+  };
+
   knative-serving = yaml-to-json {
     name = "knative-serving";
     version = "0.6.1";
