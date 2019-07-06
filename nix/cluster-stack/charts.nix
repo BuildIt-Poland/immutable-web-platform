@@ -46,6 +46,23 @@ rec {
     sha256 = "0x7nas78jj517znx448wsgzin70nzd91j7961zk9lnmjha5jxa0m";
   };
 
+  docker-registry = helm.fetch {
+    chart = "stable/docker-registry";
+    version = "1.8.0";
+    sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
+  };
+
+  docker-registry-json = helm.chart2json {
+    namespace = "local-infra";
+    name = "docker-registry";
+    chart = docker-registry;
+  };
+
+  docker-registry-yaml = toYAML (k8s.mkHashedList { 
+    items = 
+      (lib.importJSON docker-registry-json);
+  });
+
   knative-serving = yaml-to-json {
     name = "knative-serving";
     version = "0.6.1";

@@ -29,6 +29,9 @@ rec {
   # INFO why waits -> https://github.com/knative/serving/issues/2195
   # TODO this should be in k8s-resources - too many places with charts and jsons
   # ${apply-resources charts.istio-cni-yaml}
+
+  # TODO
+  # ${apply-resources charts.docker-registry-yaml}
   apply-istio-crd = writeScript "apply-istio-crd" ''
     ${apply-resources charts.istio-init-yaml}
     ${wait-for "job" "complete"}
@@ -54,12 +57,12 @@ rec {
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
     (lib.concatMapStrings 
       (docker-image: ''
-        ${log.important "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}/${docker-image.imageTag}"}
+        ${log.important "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}:${docker-image.imageTag}"}
         ${pkgs.skopeo}/bin/skopeo \
           --insecure-policy \
           copy \
           docker-archive://${docker-image} \
-          docker://localhost:32001/${docker-image.imageName}/${docker-image.imageTag} \
+          docker://localhost:32001/${docker-image.imageName}:${docker-image.imageTag} \
           --dest-tls-verify=false
       '') cluster.images);
 

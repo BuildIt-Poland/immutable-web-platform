@@ -35,7 +35,12 @@ in
             };
           };
           spec = {
-            containers = [{
+            containers = 
+            let
+              image = config.docker.images.express-app;
+            in
+            [{
+              # image = "${image.registry}/${image.name}:${image.tag}";
               image = config.docker.images.express-app.path;
 
               imagePullPolicy = env-config.imagePullPolicy;

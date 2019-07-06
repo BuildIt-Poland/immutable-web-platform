@@ -15,7 +15,7 @@ let
 in
 # INFO: this image is required to embed custom scripts
 pkgs.dockerTools.buildImage ({
-  name = "brigade-worker";
+  name = "${env-config.docker.namespace}/brigade-worker";
 
   fromImage = base-docker;
 

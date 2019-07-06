@@ -66,11 +66,10 @@ rec {
   docker = rec {
     # stil so so, if defined for brigade worker it is trying to hit http ...
     local-registry-port = 5000;
-
+    namespace = if is-dev then "dev.local" else "dev.${env}";
     registry = 
       if is-dev
-      
-        then "172.17.0.3:5000"
+        then "localhost:32001"
         # then "http://registry.container-registry.svc.cluster.local:${toString local-registry-port}"
         else "docker.io/gatehub";
 

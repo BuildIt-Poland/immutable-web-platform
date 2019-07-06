@@ -10,6 +10,7 @@ mkDerivation rec {
     sha256 = "0cn6wr8adyr4x8gm2w5w0zw7dvhxlybwn50kcjqaxdck0jvfacgd";
   };
 
+  # TODO should be in helm chart
   port = 32001;
 
   phases = ["installPhase" "patchPhase"];
