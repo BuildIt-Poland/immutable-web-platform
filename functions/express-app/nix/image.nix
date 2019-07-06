@@ -10,7 +10,7 @@ let
   # TODO take from env-config -> and use other tag than latest to avoid imagePullPolicy to Always
 in
 pkgs.dockerTools.buildLayeredImage ({
-  name = fn-config.label;
+  name = fn-config.docker-label;
 
   contents = [ 
     pkgs.nodejs-slim-11_x

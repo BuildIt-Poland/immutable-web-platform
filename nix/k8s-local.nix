@@ -65,8 +65,6 @@ rec {
   cluster-config-yaml = kubenix.lib.toYAML cluster-config;
   # --config ${cluster-config-yaml}
 
-  # WHY: https://github.com/windmilleng/kind-local#why
-  # + able to bump kind to 0.4.0
   setup-registry = pkgs.writeScript "setup-registry" ''
     source ${export-kubeconfig}/bin/export-kubeconfig
 

@@ -1,6 +1,8 @@
 ### Purpose
-Yet another story about `kubernetes` and declarative approach to infrastructure. Fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and works like a idempotent function which builds full infrastructure.
-It assumes full testing ability of infrastructure as well as on application level following `gitops` way realized by `brigade.js`.
+Yet another story about `kubernetes` and declarative approach to infrastructure. 
+In a nut shell, this is an idempotent function which builds whole infrastructure.
+In more details ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
+provide full testing ability of infrastructure as well as on application level following `gitops` way realized by `brigade.js` and `argo cd`.
 
 ### Inspiration part
 * [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)
@@ -8,6 +10,7 @@ It assumes full testing ability of infrastructure as well as on application leve
 * [some why`s around nix](https://www.youtube.com/watch?v=YbUPdv03ciI)
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
 * [brigade & virtual-kubelet](https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/)
+* [argo cd](https://argoproj.github.io/argo-cd/)
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
