@@ -5,3 +5,17 @@
   # + able to bump kind to 0.4.0
 
 update: actually `kube-registry-proxy` allows to skip `path` (above) on `kind` and give possibility to point to whatever registry is out there
+
+update 2: acutally above does not work with `knative` - required is to have url ending with `.local`, like `dev.local`
+
+required changes to kind:
+```
+# apt-get update
+# apt-get install vim
+# vim /etc/containerd/config.toml
+# systemctl restart containerd.service
+# systemctl restart kubelet.service - unnecessary?
+
+# preload is not necessary!!!
+# crictl pull dev.local/dev/express-app:dev-build
+```

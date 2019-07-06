@@ -7,6 +7,7 @@
   node-development-tools
 }:
 let
+  append-local-docker-registry-to-kind-nodes = pkgs.callPackage ./patch/kind.nix {};
   # INFO to filter out grep from ps
   getGrepPhrase = phrase:
     let
@@ -68,31 +69,17 @@ rec {
     ${wait-for ({selector= "app=${registry-service.service}";} // registry-service)}
     ${port-forward (registry-service // registry-ports)}
   '';
-  # --config ${cluster-config-yaml}
+
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
     ${log.message "Creating cluster"}
-    ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName}
+    ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
     ${log.message "Checking existence of cluster ..."}
+    ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
     ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
   '';
-
-  # [plugins.cri.registry.mirrors."dev.local"]
-  #  endpoint = ["http://host.docker.internal:32001"]
-
-  # test.insecure-registry.io
-  # apt-get update
-  # apt-get install vim
-  # vim /etc/containerd/config.toml
-  # systemctl restart containerd.service
-  # systemctl restart kubelet.service - unnecessary?
-
-  # preload is not necessary!!!
-  # crictl pull dev.local/dev/express-app:dev-build
-
-  # docker exec future-is-comming-control-plane systemctl restart kubelet.service
 
   get-port = {
     service,
