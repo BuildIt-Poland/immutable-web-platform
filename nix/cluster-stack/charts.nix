@@ -26,7 +26,6 @@ rec {
     sha256 = "00vk1ywnkxihp3gqfkn7j641lgx353dkl7gbfsbkanc8rzdjbs5j";
     rev = "bc7889c4898d75921fdc46186731e9d934236861";
     path = "charts/brigade-bitbucket-gateway";
-    rev = "bc7889c4898d75921fdc46186731e9d934236861";
   };
 
   istio = helm.fetch {
