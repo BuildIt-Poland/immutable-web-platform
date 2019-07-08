@@ -8,42 +8,20 @@ const { NixJob, extractSecret, saveSecrets, buildNixExpression } = require('brig
 // git clone https://bitbucket.org/da20076774/k8s-infra-descriptors
 // echo ${secrets.gitUser}
 // echo "${secrets.gitToken}"
+const escapePath = (d) => `[\"${d}\"]`
+const toSopsPath = (path) => path.split('.').map(escapePath).join('')
+
+// pass="${extractSecret('bitbucket.pass')}"
 const _hubCredentials = secrets => `
 echo "test"
 echo "extracting secrets"
-user="${extractSecret('bitbucket.user')}"
-pass="${extractSecret('bitbucket.pass')}"
+user=$(echo $SECRETS | sops --input-type json -d --extract '${toSopsPath('bitbucket.user')}' -d /dev/stdin)
+pass=$(echo $SECRETS | sops --input-type json -d --extract '${toSopsPath('bitbucket.pass')}' -d /dev/stdin)
+echo "$(${extractSecret('bitbucket.user')})"
 echo $pass
 echo $user
-git clone git@bitbucket.org:da20076774/k8s-infra-descriptors.git
-git clone https://$user:$pass@bitbucket.org/user/repo.git
+git clone https://$user:$pass@bitbucket.org/da20076774/k8s-infra-descriptors.git
 `;
-
-// const _hubConfig = (email, name) => `
-// hub config --global credential.https://github.com.helper /usr/local/bin/hub-credential-helper
-// hub config --global hub.protocol https
-// hub config --global user.email "${email}"
-// hub config --global user.name "${name}"
-// `;
-
-// const _pushCommit = (cloneURL, buildID) => `
-// hub remote add origin ${cloneURL}
-// hub push origin update-deployment-${buildID}
-// `;
-
-// const _pullRequest = (image, buildID) => `
-// hub pull-request -F- <<EOF
-// Update hello world REST API
-// This commit updates the deployment container image to:
-//   ${image}
-// Build ID:
-//   ${buildID}
-// EOF
-// `;
-
-// _commitImage(image, buildID),
-// _pushCommit(project.repo.cloneURL, buildID),
-// _pullRequest(image, buildID)
 
 const createJob = (name, secrets) =>
   new NixJob(name)
