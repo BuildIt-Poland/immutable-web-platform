@@ -150,8 +150,8 @@ in
         secrets = {
           awsAccessKey = aws-credentials.aws_access_key_id;
           awsSecretKey = aws-credentials.aws_secret_access_key;
-          git-token = ssh-keys.bitbucket.priv;
-          git-user = "damian.baar@wipro.com";
+          gitToken = ssh-keys.bitbucket.priv;
+          gitUser = "damian.baar@wipro.com";
           awsRegion = aws-credentials.region;
           sopsSecrets = builtins.readFile env-config.secrets;
           cacheBucket = env-config.s3.worker-cache;

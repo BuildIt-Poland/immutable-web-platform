@@ -1,5 +1,5 @@
 
-{ linux-pkgs, env-config }:
+{ linux-pkgs, env-config,writeScriptBin }:
 let
   pkgs = linux-pkgs;
 

@@ -1,4 +1,4 @@
-{ linux-pkgs, env-config, callPackage }:
+{ linux-pkgs, env-config, callPackage, writeScriptBin }:
 let
   pkgs = linux-pkgs;
 
@@ -28,8 +28,12 @@ pkgs.dockerTools.buildImage ({
     Cmd = [ 
       "yarn run test" 
     ];
+    Env = [ 
+      "GIT_SSH=${gitssh}"
+      "GIT_ASKPASS=${askpass}"
+    ];
     WorkingDir = "/home/src";
   };
 
-  contents = [ ];
+  contents = [];
 } // env-config.docker.tag)

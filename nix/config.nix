@@ -50,6 +50,10 @@ rec {
       };
   };
 
+  repositories = {
+    infra-yaml = "git@bitbucket.org:da20076774/k8s-infra-descriptors.git";
+  };
+
   secrets = "${rootFolder}/secrets.json";
 
   kubernetes = {
@@ -111,7 +115,7 @@ rec {
           "You have to provide brigade shared secret to listen the repo hooks")
 
         (lib.mkIf 
-          (!(builtins.pathExists ssh-keys.bitbucket.priv))
+          (!(ssh-keys.bitbucket.priv != ""))
           "Bitbucket key does not exists") 
       ]
     );
