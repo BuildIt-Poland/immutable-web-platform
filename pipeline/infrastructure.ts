@@ -1,7 +1,7 @@
 const { events, Job, Group } = require("brigadier")
 const { NixJob, saveSecrets, buildNixExpression } = require('brigade-extension')
 
-process.env.BRIGADE_COMMIT_REF = "local-docker-registry"
+process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
 
 // https://github.com/github/hub
 

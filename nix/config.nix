@@ -16,6 +16,15 @@ rec {
     env;
 
   aws-credentials = 
+    if (env == "brigade" || !builtins.pathExists ~/.aws/credentials)
+    then
+      # TODO will be exported as env vars
+      {
+        awsAccessKey = "";
+        awsSecretKey = "";
+        awsRegion = "";
+      }
+    else
     let
       aws = aws-profiles.default; # TODO add ability to change profile
     in
