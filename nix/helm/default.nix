@@ -28,7 +28,4 @@ in
     mkdir -p $out
     cp -av $src/${path}/* $out
   '';
-  # outputHashMode = "recursive";
-  # outputHashAlgo = "sha256";
-  # outputHash = sha256;
 }
