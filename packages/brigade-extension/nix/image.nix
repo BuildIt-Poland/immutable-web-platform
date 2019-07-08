@@ -28,10 +28,7 @@ pkgs.dockerTools.buildImage ({
     Cmd = [ 
       "yarn run test" 
     ];
-    Env = [ 
-      "GIT_SSH=${gitssh}"
-      "GIT_ASKPASS=${askpass}"
-    ];
+    Env = [];
     WorkingDir = "/home/src";
   };
 
