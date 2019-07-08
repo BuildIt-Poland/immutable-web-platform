@@ -15,12 +15,12 @@ in
   sha256,
   rev,
   version ? null
-}: stdenvNoCC.mkDerivation {
+}: stdenv.mkDerivation {
   inherit version;
 
   name = "${cleanName chart}-${if version == null then "dev" else version}";
 
-  src = pkgs.fetchGit {
+  src = pkgs.fetchgit {
     inherit url sha256 rev;
   };
 
