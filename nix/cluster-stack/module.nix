@@ -54,6 +54,7 @@ in
       };
   };
 
+  # as kind has an alias this is not required - super cool!
   # kubernetes.helm.instances.kube-registry-proxy = {
   #   namespace = "${local-infra-ns}";
   #   chart = charts.kube-registry-proxy;
