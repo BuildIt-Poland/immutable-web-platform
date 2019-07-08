@@ -1,16 +1,14 @@
 # worker shell
 # IMPORTANT: nix is lazy so we can require whole ./nix folder and reuse the scripts - awesome isn't it?
 {
-  pkgs ? (import ../nix { 
-    system = "x86_64-linux"; 
-  });
+  pkgs ? (import ../nix {})
 }:
 let
   testScript2 = pkgs.writeScript "test-script" ''
     echo '{"foo": 0}' | ${pkgs.jq}/bin/jq .
     echo "hello test script"
-    cat ${pkgs.k8s-cluster-operations.resouces.yaml.cluster} 
-    cat ${pkgs.k8s-cluster-operations.resouces.yaml.functions} 
+    cat ${pkgs.k8s-cluster-operations.resources.yaml.cluster} 
+    cat ${pkgs.k8s-cluster-operations.resources.yaml.functions} 
   '';
 
   testScript = pkgs.stdenv.mkDerivation {
