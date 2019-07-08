@@ -1,7 +1,7 @@
 # worker shell
 # IMPORTANT: nix is lazy so we can require whole ./nix folder and reuse the scripts - awesome isn't it?
 {
-  pkgs ? (import ../nix {})
+  pkgs ? (import ../nix {env = "brigade";})
 }:
 let
   testScript2 = pkgs.writeScript "test-script" ''
