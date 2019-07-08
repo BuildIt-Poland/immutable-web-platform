@@ -8,7 +8,7 @@ rec {
       ./module.nix
       # https://github.com/xtruder/kubenix/blob/kubenix-2.0/modules/docker.nix#L37
       { 
-        docker.registry.url = env-config.docker.knative.registry; 
+        docker.registry.url = env-config.docker.registry; 
       }
     ] ++ kubenix-modules;
 

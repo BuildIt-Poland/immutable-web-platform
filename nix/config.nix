@@ -63,17 +63,7 @@ rec {
 
   # TODO change this ifs to mkIf (if dev)
   docker = rec {
-    knative = {
-      registry = 
-        if is-dev 
-          # then "knative.local-infra.svc.cluster.local" 
-          then "dev.local" 
-          else "";
-    };
-
     local-registry = {
-      host = "localhost:5555";
-      clusterPort = 80;
       exposedPort = 32001;
     };
 
@@ -81,8 +71,7 @@ rec {
 
     registry = 
       if is-dev
-        # then "${local-registry.host}:${toString local-registry.exposedPort}"
-        then "localhost"
+        then "dev.local"
         else "docker.io/gatehub";
 
     destination = "docker://damianbaar"; # skopeo path transport://repo
