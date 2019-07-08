@@ -7,3 +7,6 @@
 > you need to run remote worker since most likely you are on darwin
 
 > solution: run `source run-linux-worker.sh`
+
+* if your cluster is dying it seems that you have not sufficient resources for docker
+> solution: https://bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative/issues/1/required-docker-resources-for-local

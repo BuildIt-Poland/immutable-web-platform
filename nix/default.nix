@@ -2,6 +2,7 @@
   sources ? import ./sources.nix,
   brigadeSharedSecret ? "", # it would be good to display warning related to that
   env ? "dev", # TODO env should be more descriptive, sth like { target: "ec2|local", env: "dev|prod", experimental: "true|false" }
+  region ? null,
   system ? null
 }:
 let
@@ -75,9 +76,11 @@ let
 
       aws-profiles = super.callPackage ./helpers/get-aws-credentials.nix {};
 
-      inherit brigadeSharedSecret;
-      inherit rootFolder;
-      inherit env;
+      inherit 
+        brigadeSharedSecret 
+        rootFolder 
+        region
+        env;
     };
   };
 

@@ -13,6 +13,7 @@ in
   path, 
   url, 
   sha256,
+  rev,
   version ? null
 }: stdenvNoCC.mkDerivation {
   inherit version;
@@ -20,8 +21,7 @@ in
   name = "${cleanName chart}-${if version == null then "dev" else version}";
 
   src = pkgs.fetchgit {
-    inherit url;
-    inherit sha256;
+    inherit url sha256 rev;
   };
 
   buildCommand = ''
