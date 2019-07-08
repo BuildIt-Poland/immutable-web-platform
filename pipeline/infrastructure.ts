@@ -1,19 +1,22 @@
 const { events, Job, Group } = require("brigadier")
-const { NixJob, saveSecrets, buildNixExpression } = require('brigade-extension')
+const { NixJob, extractSecret, saveSecrets, buildNixExpression } = require('brigade-extension')
 
-process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
+// process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
 
 // https://github.com/github/hub
 
+// git clone https://bitbucket.org/da20076774/k8s-infra-descriptors
+// echo ${secrets.gitUser}
+// echo "${secrets.gitToken}"
 const _hubCredentials = secrets => `
-echo "USER"
-echo ${secrets["git-user"]}
-cat << EOF > $HOME/.config/hub
-github.com:
-  - protocol: https
-    user: ${secrets["git-user"]}
-    oauth_token: ${secrets["git-token"]}
-EOF
+echo "test"
+echo "extracting secrets"
+user="${extractSecret('bitbucket.user')}"
+pass="${extractSecret('bitbucket.pass')}"
+echo $pass
+echo $user
+git clone git@bitbucket.org:da20076774/k8s-infra-descriptors.git
+git clone https://$user:$pass@bitbucket.org/user/repo.git
 `;
 
 // const _hubConfig = (email, name) => `

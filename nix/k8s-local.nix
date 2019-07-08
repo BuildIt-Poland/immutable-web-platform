@@ -79,7 +79,6 @@ rec {
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
     ${log.message "Checking existence of cluster ..."}
     ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
-    ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
   '';
 
   get-port = {

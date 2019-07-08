@@ -13,7 +13,11 @@ type WorkerSecrets = {
   sopsSecrets: {
     docker: {
       user: string
-      apss: string
+      pass: string
+    },
+    bitbucket: {
+      user: string
+      pass: string
     }
   }
 }
