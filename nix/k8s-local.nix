@@ -73,12 +73,13 @@ rec {
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
     ${log.message "Creating cluster"}
     ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
+    ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
     ${log.message "Checking existence of cluster ..."}
-    ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
     ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
+    ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
   '';
 
   get-port = {
@@ -134,7 +135,7 @@ rec {
     registry = env-config.docker.local-registry;
   in
   {
-    from = "echo ${toString registry.clusterPort}"; # get-port ({ type = "port"; } // registry-service);
+    from = get-port ({ type = "port"; } // registry-service);
     to = "echo ${toString registry.exposedPort}"; # get-port ({ type = "nodePort"; } // registry-service);
   };
 
