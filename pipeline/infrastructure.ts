@@ -5,20 +5,24 @@ process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
 
 // https://github.com/github/hub
 
-// const _hubCredentials = secrets => `
-// cat << EOF > $HOME/.config/hub
-// github.com:
-//   - protocol: https
-//     user: ${secrets.GITHUB_USERNAME}
-//     oauth_token: ${secrets.GITHUB_TOKEN}
-// EOF
-// `;
+const _hubCredentials = secrets => `
+echo "USER"
+echo ${secrets["git-user"]}
+cat << EOF > $HOME/.config/hub
+github.com:
+  - protocol: https
+    user: ${secrets["git-user"]}
+    oauth_token: ${secrets["git-token"]}
+EOF
+`;
+
 // const _hubConfig = (email, name) => `
 // hub config --global credential.https://github.com.helper /usr/local/bin/hub-credential-helper
 // hub config --global hub.protocol https
 // hub config --global user.email "${email}"
 // hub config --global user.name "${name}"
 // `;
+
 // const _pushCommit = (cloneURL, buildID) => `
 // hub remote add origin ${cloneURL}
 // hub push origin update-deployment-${buildID}
@@ -38,7 +42,7 @@ process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
 // _pushCommit(project.repo.cloneURL, buildID),
 // _pullRequest(image, buildID)
 
-const createJob = (name) =>
+const createJob = (name, secrets) =>
   new NixJob(name)
     .withExtraParams({
       streamLogs: true,
@@ -46,7 +50,9 @@ const createJob = (name) =>
       shell: 'bash',
       serviceAccount: "brigade-worker"
     })
+    .withSecrets(secrets)
     .withTasks([
+      _hubCredentials(secrets),
       `cd /src/pipeline`,
       saveSecrets('secrets.json'),
       `cat secrets.json`,
@@ -56,8 +62,8 @@ const createJob = (name) =>
     ])
 
 events.on("exec", (event, project) => {
-  let test = createJob("test")
-    .withSecrets(project.secrets)
+  let test = createJob("test", project.secrets)
+  // .withSecrets(project.secrets)
 
   test.run()
 })

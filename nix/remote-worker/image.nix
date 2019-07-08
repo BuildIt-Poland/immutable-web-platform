@@ -31,6 +31,7 @@ pkgs.dockerTools.buildImage ({
     pkgs.jq
     pkgs.sops
     pkgs.kubectl
+    pkgs.git
   ];
 
   config.Cmd = [ "${pkgs.bashInteractive}/bin/bash" ];
