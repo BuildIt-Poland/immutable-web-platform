@@ -36,10 +36,16 @@ rec {
     ${wait-for "crd" "established"}
   '';
 
+  resources = {
+    yaml = {
+      cluster= cluster.k8s-cluster-resources;
+      functions = cluster.k8s-functions-resources;
+    };
+  };
+
   # TODO enable flag - print resources
   apply-functions-to-cluster = writeScriptBin "apply-functions-to-cluster" ''
     ${log.important "Applying functions helm charts"}
-    cat ${cluster.k8s-functions-resources} > resources/function-resources.yaml
     ${apply-resources cluster.k8s-functions-resources}
   '';
 
@@ -47,8 +53,6 @@ rec {
     ${log.important "Applying cluster helm charts"}
 
     ${apply-istio-crd}
-
-    cat ${cluster.k8s-cluster-resources} > resources/cluster-resources.yaml
     ${apply-resources cluster.k8s-cluster-resources}
   '';
 
