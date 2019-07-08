@@ -134,7 +134,7 @@ in
         vcsSidecar = "brigadecore/git-sidecar:latest";
         sharedSecret = env-config.brigade.sharedSecret;
         defaultScript = builtins.readFile env-config.brigade.pipeline; 
-        sshKey = builtins.readFile ssh-keys.bitbucket.priv;
+        sshKey = ssh-keys.bitbucket.priv;
         workerCommand = "yarn build-start";
         worker = {
           registry = env-config.docker.registry;

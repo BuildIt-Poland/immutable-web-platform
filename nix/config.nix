@@ -39,10 +39,15 @@ rec {
   gitignore = nix-gitignore.gitignoreSourcePure [ "${rootFolder}/.gitignore" ];
 
   ssh-keys = {
-    bitbucket = {
-      pub = toString ~/.ssh/bitbucket_webhook.pub;
-      priv = toString ~/.ssh/bitbucket_webhook;
-    };
+    bitbucket = 
+    if builtins.pathExists ~/.ssh/bitbucket_webhook
+      then {
+        pub = builtins.readFile toString ~/.ssh/bitbucket_webhook.pub;
+        priv = builtins.readFile ~/.ssh/bitbucket_webhook;
+      } else {
+        pub = "";
+        priv = "";
+      };
   };
 
   secrets = "${rootFolder}/secrets.json";
