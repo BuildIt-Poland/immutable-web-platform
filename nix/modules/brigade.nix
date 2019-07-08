@@ -39,23 +39,23 @@ in
       chart = charts.brigade;
     };
 
-    # kubernetes.helm.instances.brigade-bitbucket-gateway = {
-    #   namespace = "${brigade-ns}";
-    #   name = "brigade-bitbucket-gateway";
-    #   chart = charts.brigade-bitbucket;
-    #   values = {
-    #     rbac = {
-    #       enabled = true;
-    #     };
-    #     bitbucket = {
-    #       name = "brigade-bitbucket-gateway";
-    #       service = {
-    #         name = "service";
-    #         type = "NodePort";
-    #       };
-    #     };
-    #   };
-    # };
+    kubernetes.helm.instances.brigade-bitbucket-gateway = {
+      namespace = "${brigade-ns}";
+      name = "brigade-bitbucket-gateway";
+      chart = charts.brigade-bitbucket;
+      values = {
+        rbac = {
+          enabled = true;
+        };
+        bitbucket = {
+          name = "brigade-bitbucket-gateway";
+          service = {
+            name = "service";
+            type = "NodePort";
+          };
+        };
+      };
+    };
 
     kubernetes.api.storageclasses = {
       build-storage = {
