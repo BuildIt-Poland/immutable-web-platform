@@ -20,9 +20,10 @@ rec {
     then
       # TODO will be exported as env vars
       {
-        awsAccessKey = "";
-        awsSecretKey = "";
-        awsRegion = "";
+
+        aws_access_key_id = "";
+        aws_secret_access_key = "";
+        region = "";
       }
     else
     let

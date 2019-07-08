@@ -20,7 +20,7 @@ in
 
   name = "${cleanName chart}-${if version == null then "dev" else version}";
 
-  src = pkgs.fetchgit {
+  src = pkgs.fetchGit {
     inherit url sha256 rev;
   };
 
