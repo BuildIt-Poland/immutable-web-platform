@@ -20,6 +20,8 @@ let
     echo "To expose brigade gateway for BitBucket events, run '${pkgs.k8s-local.expose-brigade-gateway.name}'"
     echo "To make gateway accessible from outside, run '${pkgs.k8s-local.create-localtunnel-for-brigade.name}'"
   '';
+
+  applyResources = updateResources || fresh;
 in
 with pkgs;
 mkShell {
@@ -94,19 +96,26 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
-    apply-cluster-stack
-    wait-for-docker-registry
+    ${if applyResources
+        then ''
+          apply-cluster-stack
+          wait-for-docker-registry
+        '' else ""}
 
     ${if uploadDockerImages 
-         then "push-docker-images-to-local-cluster" else ""}
+      then "push-docker-images-to-local-cluster" else ""}
 
-    apply-functions-to-cluster
+    ${if applyResources
+      then ''
+        apply-functions-to-cluster
 
-    source export-ports
+        source export-ports
 
-    wait-for-istio-ingress
-    add-knative-label-to-istio
-    expose-istio-ingress
+        wait-for-istio-ingress
+        add-knative-label-to-istio
+        expose-istio-ingress
+      '' else ""
+    }
 
     get-help
   '';

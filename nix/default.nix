@@ -47,11 +47,9 @@ let
   # building on darwin in linux in one run
   application = self: super: rec {
     linux-pkgs = 
-      if builtins.currentSystem == "x86_64-darwin"
-        then (import sources.nixpkgs ({ 
-          system = "x86_64-linux"; 
-        } // { inherit overlays; }))
-        else super.pkgs;
+      import sources.nixpkgs ({ 
+        system = "x86_64-linux"; 
+      } // { inherit overlays; });
 
     remote-worker = super.callPackage ./remote-worker {};
     application = super.callPackage ./functions.nix {};
