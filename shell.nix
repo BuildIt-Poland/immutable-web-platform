@@ -8,7 +8,7 @@
   config ? "",
   # TODO --arg config '{brigade.enable = true}'
   ...
-}@args:
+}:
 let
   pkgs = (import ./nix {
     inherit 
@@ -17,12 +17,6 @@ let
   }).pkgs;
 
   # TODO make it better at least concatString
-  get-help = pkgs.writeScriptBin "get-help" ''
-    echo "You've got in shell some extra spells under your hand ..."
-    echo "-- Brigade integration --"
-    echo "To expose brigade gateway for BitBucket events, run '${pkgs.k8s-local.expose-brigade-gateway.name}'"
-    echo "To make gateway accessible from outside, run '${pkgs.k8s-local.create-localtunnel-for-brigade.name}'"
-  '';
 
   applyResources = updateResources || fresh;
 
@@ -76,12 +70,8 @@ mkShell {
     sops
 
     # cluster scripts
-    k8s-local.delete-local-cluster
-    k8s-local.create-local-cluster-if-not-exists
     k8s-local.expose-istio-ingress
     # k8s-local.add-knative-label-to-istio
-    k8s-local.wait-for-docker-registry
-
     # waits
     k8s-local.wait-for-istio-ingress
     k8s-local.wait-for-brigade-ingress
@@ -91,22 +81,13 @@ mkShell {
     k8s-local.expose-brigade-gateway
     k8s-local.expose-grafana
     k8s-local.expose-weave-scope
-    k8s-local.create-localtunnel-for-brigade
 
     # exports
     k8s-local.export-kubeconfig
     k8s-local.export-ports
 
-    # overridings
-    k8s-local.curl-with-resolve
-
     # helm
-    k8s-cluster-operations.apply-cluster-stack
-    k8s-cluster-operations.apply-functions-to-cluster
     k8s-cluster-operations.push-docker-images-to-local-cluster
-
-    # help
-    get-help
   ] ++ moduleConfig.packages;
 
   PROJECT_NAME = env-config.projectName;
@@ -119,7 +100,7 @@ mkShell {
 
     ${lib.concatMapStrings log.warn warnings}
     ${lib.concatMapStrings log.error errors}
-    echo ${config.test.test}
+
     ${log.message "Hey sailor!"}
     ${log.info "If you need any help, run 'get-help'"}
 
