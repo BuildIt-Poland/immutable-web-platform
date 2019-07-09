@@ -30,7 +30,8 @@ let
     };
   };
 
-  shellHook = (pkgs.modules.bootstrap mkConfig).shellHook;
+  moduleConfig = (pkgs.modules.bootstrap mkConfig).config;
+  shellHook = moduleConfig.shellHook;
 in
 with pkgs;
 mkShell {
