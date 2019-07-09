@@ -5,6 +5,9 @@
   autoExposePorts ? false,
   uploadDockerImages ? false,
   region ? null,
+  config ? "",
+  # TODO --arg config '{brigade.enable = true}'
+  ...
 }@args:
 let
   pkgs = (import ./nix {
@@ -23,15 +26,33 @@ let
 
   applyResources = updateResources || fresh;
 
-  mkConfig = {config,...}: {
-    config.kubernetes = {
-      resources.apply = updateResources;
-      cluster.fresh-instance = fresh;
+  mkConfig = {config, ...}: {
+    config = {
+      environment = "local";
+
+      docker = {
+        enable-registry = true;
+        upload-images = ["functions" "cluster"];
+      };
+
+      brigade = {
+        enable = true;
+        secret-key = brigadeSharedSecret;
+      };
+
+      kubernetes = {
+        resources.apply = updateResources;
+        cluster.fresh-instance = fresh;
+      };
     };
   };
 
   moduleConfig = (pkgs.modules.bootstrap mkConfig).config;
+
   shellHook = moduleConfig.shellHook;
+  packages = moduleConfig.packages;
+  warnings = moduleConfig.warnings;
+  errors = moduleConfig.errors;
 in
 with pkgs;
 mkShell {
@@ -58,7 +79,7 @@ mkShell {
     k8s-local.delete-local-cluster
     k8s-local.create-local-cluster-if-not-exists
     k8s-local.expose-istio-ingress
-    k8s-local.add-knative-label-to-istio
+    # k8s-local.add-knative-label-to-istio
     k8s-local.wait-for-docker-registry
 
     # waits
@@ -86,7 +107,7 @@ mkShell {
 
     # help
     get-help
-  ];
+  ] ++ moduleConfig.packages;
 
   PROJECT_NAME = env-config.projectName;
 
@@ -96,11 +117,13 @@ mkShell {
   shellHook= ''
     ${toString shellHook}
 
+    ${lib.concatMapStrings log.warn warnings}
+    ${lib.concatMapStrings log.error errors}
+    echo ${config.test.test}
     ${log.message "Hey sailor!"}
     ${log.info "If you need any help, run 'get-help'"}
 
     ${env-config.info.printWarnings}
-    ${env-config.info.printInfos}
 
     ${if fresh 
          then "delete-local-cluster" else ""}
@@ -124,13 +147,13 @@ mkShell {
         source export-ports
 
         wait-for-istio-ingress
-        add-knative-label-to-istio
         expose-istio-ingress
       '' else ""
     }
 
     get-help
   '';
+  # add-knative-label-to-istio
   # wait-for-brigade-ingress
   # expose-brigade-gateway
 }

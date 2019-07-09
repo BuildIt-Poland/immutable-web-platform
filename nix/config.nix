@@ -111,23 +111,11 @@ rec {
     warnings = lib.dischargeProperties (
       lib.mkMerge [
         (lib.mkIf 
-          (brigadeSharedSecret == "") 
-          "You have to provide brigade shared secret to listen the repo hooks")
-
-        (lib.mkIf 
           (!(ssh-keys.bitbucket.priv != ""))
           "Bitbucket key does not exists") 
       ]
     );
 
-    infos = lib.dischargeProperties (
-      lib.mkMerge [
-        (lib.mkIf 
-          (is-dev) 
-          "You are in dev mode")
-      ]
-    );
     printWarnings = lib.concatMapStrings log.warn warnings;
-    printInfos = lib.concatMapStrings log.info infos;
   };
 }

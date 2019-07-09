@@ -1,4 +1,4 @@
-{ lib }:
+{ lib, pkgs }:
 {
   # INFO: i.e. config => ({config,...}: { config.kubernetes.resources.apply = true; })
   bootstrap =
@@ -8,5 +8,8 @@
           ./bootstrap-module.nix
           config 
         ];
+        args = {
+          inherit pkgs;
+        };
       });
 }
