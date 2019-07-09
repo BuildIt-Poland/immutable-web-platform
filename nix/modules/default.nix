@@ -5,8 +5,8 @@
     config:
       (lib.evalModules {
         modules = [
-          ./shell-module.nix
+          ./bootstrap-module.nix
           config 
         ];
-      }).config;
+      });
 }
