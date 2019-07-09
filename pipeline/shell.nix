@@ -7,9 +7,11 @@ let
   testScript2 = pkgs.writeScript "test-script" ''
     echo '{"foo": 0}' | ${pkgs.jq}/bin/jq .
     echo "hello test script"
-    cat ${pkgs.k8s-cluster-operations.resources.yaml.cluster} 
-    cat ${pkgs.k8s-cluster-operations.resources.yaml.functions} 
+    echo $SECRETS
+    echo "-->test"
   '';
+    # cat ${pkgs.k8s-cluster-operations.resources.yaml.cluster} 
+    # cat ${pkgs.k8s-cluster-operations.resources.yaml.functions} 
 
   testScript = pkgs.stdenv.mkDerivation {
     name = "test-script";
@@ -20,8 +22,6 @@ let
     nativeBuildInputs = [];
     installPhase = ''
       mkdir -p $out/bin
-      echo $SECRETS
-      echo "-->test"
       cp ${testScript2} $out/bin/${testScript2.name}
     '';
   };
