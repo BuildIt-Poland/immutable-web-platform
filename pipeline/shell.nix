@@ -17,8 +17,11 @@ let
     phases = ["installPhase"];
     buildInputs = [];
     preferLocalBuild = true;
+    nativeBuildInputs = [];
     installPhase = ''
       mkdir -p $out/bin
+      echo $SECRETS
+      echo "-->test"
       cp ${testScript2} $out/bin/${testScript2.name}
     '';
   };

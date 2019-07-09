@@ -32,6 +32,7 @@ pkgs.dockerTools.buildImage ({
     pkgs.sops
     pkgs.kubectl
     pkgs.git
+    # in case of github -> hub (https://github.com/github/hub)
   ];
 
   config.Cmd = [ "${pkgs.bashInteractive}/bin/bash" ];
