@@ -56,16 +56,17 @@ let
     cluster = super.callPackage ./cluster-stack {};
     charts = super.callPackage ./cluster-stack/charts.nix {};
     k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
+    modules = super.callPackage ./modules {};
     inherit sources;
   };
 
   kubenix-modules = self: super: rec {
     kubenix-modules = [
-      ./modules/knative-serve.nix
+      ./kubenix-modules/knative-serve.nix
     ];
     kubenix-infra-modules = [
-      ./modules/monitoring.nix
-      ./modules/brigade.nix
+      ./kubenix-modules/monitoring.nix
+      ./kubenix-modules/brigade.nix
     ];
   };
 

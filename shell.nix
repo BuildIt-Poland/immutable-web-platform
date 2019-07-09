@@ -22,6 +22,15 @@ let
   '';
 
   applyResources = updateResources || fresh;
+
+  mkConfig = {config,...}: {
+    config.kubernetes = {
+      resources.apply = updateResources;
+      cluster.fresh-instance = fresh;
+    };
+  };
+
+  shellHook = (pkgs.modules.bootstrap mkConfig).shellHook;
 in
 with pkgs;
 mkShell {
@@ -84,6 +93,8 @@ mkShell {
 
   # TODO bootstrap can be easly faster -> check rbac and roles only when running new cluster
   shellHook= ''
+    ${toString shellHook}
+
     ${log.message "Hey sailor!"}
     ${log.info "If you need any help, run 'get-help'"}
 
