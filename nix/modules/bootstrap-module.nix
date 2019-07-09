@@ -2,6 +2,13 @@
 with lib;
 let
   cfg = config;
+
+  get-help = pkgs.writeScriptBin "get-help" ''
+    echo "You've got in shell some extra spells under your hand ..."
+    echo "-- Brigade integration --"
+    echo "To expose brigade gateway for BitBucket events, run '${pkgs.k8s-local.expose-brigade-gateway.name}'"
+    echo "To make gateway accessible from outside, run '${pkgs.k8s-local.create-localtunnel-for-brigade.name}'"
+  '';
 in
 {
   options.kubernetes.cluster = {
@@ -61,8 +68,21 @@ in
   # k8s-cluster-operations.push-docker-images-to-local-cluster
   config = mkMerge [
     (mkIf true {
+      packages = [
+        get-help
+      ];
       shellHook = ''
-        ${pkgs.log.important "Your environemnt is: ${config.environment}"}
+        ${pkgs.log.important "Your environment is: ${config.environment}"}
+      '';
+    })
+
+    (mkIf (cfg.environment == "local") {
+      packages = [
+        pkgs.k8s-local.curl-with-resolve
+        pkgs.k8s-local.create-local-cluster-if-not-exists
+      ];
+      shellHook = ''
+        ${pkgs.log.message "Checking existence of local cluster"}
       '';
     })
 
@@ -71,7 +91,6 @@ in
 
       packages = [
         pkgs.k8s-local.delete-local-cluster
-        pkgs.k8s-local.create-local-cluster-if-not-exists
       ];
 
       shellHook = ''
@@ -80,9 +99,14 @@ in
     })
 
     (mkIf cfg.brigade.enable {
+      packages = [
+        pkgs.k8s-local.create-localtunnel-for-brigade
+      ];
+
       shellHook = ''
         ${pkgs.log.message "Running integration with brigade"}
       '';
+
       warnings = mkIf (cfg.brigade.secret-key == "") [
         "You have to provide brigade shared secret to listen the repo hooks"
       ];
