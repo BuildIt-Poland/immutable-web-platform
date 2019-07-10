@@ -59,13 +59,36 @@ rec {
         }];
       }
       { role = "worker"; 
-        extraPortMappings = [{
-          containerPort = 80;
-          hostPort = 80;
-          listenAddress: "127.0.0.1" # Optional, defaults to "0.0.0.0"}
-        }]
+        # TESTING
+        extraPortMappings = [
+          # istio - virtual services
+          {
+            containerPort = 15300;
+            hostPort = 15300;
+            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
+          }
+          {
+            containerPort = 15301;
+            hostPort = 15301;
+            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
+          }
+        ];
       }
-      { role = "worker"; }
+      { role = "worker"; 
+        extraPortMappings = [
+          # istio - virtual services
+          {
+            containerPort = 15300;
+            hostPort = 31300;
+            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
+          }
+          {
+            containerPort = 15301;
+            hostPort = 31301;
+            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
+          }
+        ];
+      }
     ];
   };
 
