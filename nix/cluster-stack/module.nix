@@ -8,13 +8,12 @@
   ...
 }: 
 let
-  # charts = callPackage ./charts.nix {};
-
   namespace = env-config.kubernetes.namespace;
 
   local-infra-ns = namespace.infra;
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
+  argo-ns = namespace.argo;
   functions-ns = namespace.functions;
   knative-monitoring-ns = namespace.knative-monitoring;
 
@@ -34,6 +33,7 @@ in
 
   kubernetes.api.namespaces."${local-infra-ns}"= {};
   kubernetes.api.namespaces."${istio-ns}"= {};
+  kubernetes.api.namespaces."${argo-ns}"= {};
   kubernetes.api.namespaces."${functions-ns}"= {
     metadata = {
       labels = {
@@ -54,20 +54,11 @@ in
       };
   };
 
-  # as kind has an alias this is not required - super cool!
-  # kubernetes.helm.instances.kube-registry-proxy = {
-  #   namespace = "${local-infra-ns}";
-  #   chart = charts.kube-registry-proxy;
-  #   values = {
-  #     registry.host = "docker-registry.local-infra.svc.cluster.local";
-  #     registry.port = env-config.docker.local-registry.clusterPort;
-  #     # hostPort
-  #     # hostIp
-  #   };
-  # };
+  kubernetes.helm.instances.argo-cd = {
+    namespace = "${argo-ns}";
+    chart = charts.argo-cd;
+  };
 
-  # Check this -> https://kubernetes.io/docs/concepts/services-networking/service/#externalname
-  # https://github.com/triggermesh/knative-local-registry/blob/master/sysadmin/nodes-etc-hosts-update.yaml
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
@@ -113,4 +104,16 @@ in
 
   # default [ "CustomResourceDefinition" "Namespace" ]
   # kubernetes.resourceOrder = []
+
+  # DOCKER PROXY REGISTRY - ingress would be handy
+  # kubernetes.helm.instances.kube-registry-proxy = {
+  #   namespace = "${local-infra-ns}";
+  #   chart = charts.kube-registry-proxy;
+  #   values = {
+  #     registry.host = "docker-registry.local-infra.svc.cluster.local";
+  #     registry.port = env-config.docker.local-registry.clusterPort;
+  #     # hostPort
+  #     # hostIp
+  #   };
+  # };
 }

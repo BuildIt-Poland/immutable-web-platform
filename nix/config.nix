@@ -65,6 +65,7 @@ rec {
       istio = "istio-system";
       knative-monitoring = "knative-monitoring";
       knative-serving = "knative-serving";
+      argo = "argo";
     };
   };
 

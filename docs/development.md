@@ -1,6 +1,6 @@
 ## How to
 ### Running clean cluster
-* `nix-shell --arg fresh true --arg uploadDockerImages true`
+* `nix-shell --arg uploadDockerImages true --arg fresh true --arg updateResources true`
 
 > These ... below are already integrated with nix-shell! in case of local environment cluster is provisioned automatically, you can rerun using `push-docker-images-to-local-cluster`
 
