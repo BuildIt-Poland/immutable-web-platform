@@ -1,0 +1,1 @@
+* [startup scripts](https://gist.github.com/CMCDragonkai/42bd028478d8183162ea7d9b69cd5e31)

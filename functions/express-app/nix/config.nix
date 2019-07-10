@@ -2,20 +2,12 @@
 rec {
   port = 8080;
   label = "express-app";
+  docker-label = "${env-config.docker.namespace}/${label}";
 
   cpu = 
     if env-config.is-dev 
       then "100m" 
       else "1000m";
-
-  # https://github.com/knative/serving/blob/6e58358927c4d111b2f39ae1e7c22a8b8cd459aa/config/config-controller.yaml#L28
-  docker-tag-for-knative = "dev.local";
-
-  image-name-for-docker-when-dev = 
-    "${docker-tag-for-knative}/${label}";
-
-  image-name-for-knative-service-when-dev = 
-    "${docker-tag-for-knative}/${label}:${env-config.docker.tag.tag}"; # required by knative
 
   env = [{
     name = "TARGET";

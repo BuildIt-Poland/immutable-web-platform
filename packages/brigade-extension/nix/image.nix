@@ -1,4 +1,4 @@
-{ linux-pkgs, env-config, callPackage }:
+{ linux-pkgs, env-config, callPackage, writeScriptBin }:
 let
   pkgs = linux-pkgs;
 
@@ -15,7 +15,7 @@ let
 in
 # INFO: this image is required to embed custom scripts
 pkgs.dockerTools.buildImage ({
-  name = "brigade-worker";
+  name = "${env-config.docker.namespace}/brigade-worker";
 
   fromImage = base-docker;
 
@@ -28,8 +28,9 @@ pkgs.dockerTools.buildImage ({
     Cmd = [ 
       "yarn run test" 
     ];
+    Env = [];
     WorkingDir = "/home/src";
   };
 
-  contents = [ ];
+  contents = [];
 } // env-config.docker.tag)

@@ -3,20 +3,50 @@
   brigadeSharedSecret ? "", # take from bitbucket -> webhooks X-Hook-UUID
   updateResources ? false, # kubernetes resource,
   autoExposePorts ? false,
-  uploadDockerImages ? false
-}@args:
+  uploadDockerImages ? false,
+  region ? null,
+  config ? "",
+  # TODO --arg config '{brigade.enable = true}'
+  ...
+}:
 let
   pkgs = (import ./nix {
-    inherit brigadeSharedSecret;
+    inherit 
+      brigadeSharedSecret 
+      region;
   }).pkgs;
 
   # TODO make it better at least concatString
-  get-help = pkgs.writeScriptBin "get-help" ''
-    echo "You've got in shell some extra spells under your hand ..."
-    echo "-- Brigade integration --"
-    echo "To expose brigade gateway for BitBucket events, run '${pkgs.k8s-local.expose-brigade-gateway.name}'"
-    echo "To make gateway accessible from outside, run '${pkgs.k8s-local.create-localtunnel-for-brigade.name}'"
-  '';
+
+  applyResources = updateResources || fresh;
+
+  mkConfig = {config, ...}: {
+    config = {
+      environment = "local";
+
+      docker = {
+        enable-registry = true;
+        upload-images = ["functions" "cluster"];
+      };
+
+      brigade = {
+        enable = true;
+        secret-key = brigadeSharedSecret;
+      };
+
+      kubernetes = {
+        resources.apply = updateResources;
+        cluster.fresh-instance = fresh;
+      };
+    };
+  };
+
+  moduleConfig = (pkgs.modules.bootstrap mkConfig).config;
+
+  shellHook = moduleConfig.shellHook;
+  packages = moduleConfig.packages;
+  warnings = moduleConfig.warnings;
+  errors = moduleConfig.errors;
 in
 with pkgs;
 mkShell {
@@ -24,6 +54,7 @@ mkShell {
     # js
     nodejs
     yarn2nix.yarn
+    argocd
 
     # tools
     kind
@@ -39,12 +70,10 @@ mkShell {
     # secrets
     sops
 
+    # THIS things will dissapear soon
     # cluster scripts
-    k8s-local.delete-local-cluster
-    k8s-local.create-local-cluster-if-not-exists
     k8s-local.expose-istio-ingress
     k8s-local.add-knative-label-to-istio
-
     # waits
     k8s-local.wait-for-istio-ingress
     k8s-local.wait-for-brigade-ingress
@@ -52,36 +81,30 @@ mkShell {
     # ingress & tunnels
     k8s-local.expose-istio-ingress
     k8s-local.expose-brigade-gateway
-    k8s-local.expose-grafana
-    k8s-local.expose-weave-scope
-    k8s-local.create-localtunnel-for-brigade
 
     # exports
     k8s-local.export-kubeconfig
     k8s-local.export-ports
 
-    # overridings
-    k8s-local.curl-with-resolve
-
     # helm
-    k8s-cluster-operations.apply-cluster-stack
-    k8s-cluster-operations.apply-functions-to-cluster
     k8s-cluster-operations.push-docker-images-to-local-cluster
-
-    # help
-    get-help
-  ];
+  ] ++ moduleConfig.packages;
 
   PROJECT_NAME = env-config.projectName;
 
   # known issue: when starting clean cluster expose-brigade is run to early
-  
+
+  # TODO bootstrap can be easly faster -> check rbac and roles only when running new cluster
   shellHook= ''
+    ${toString shellHook}
+
+    ${lib.concatMapStrings log.warn warnings}
+    ${lib.concatMapStrings log.error errors}
+
     ${log.message "Hey sailor!"}
     ${log.info "If you need any help, run 'get-help'"}
 
     ${env-config.info.printWarnings}
-    ${env-config.info.printInfos}
 
     ${if fresh 
          then "delete-local-cluster" else ""}
@@ -89,18 +112,25 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
-    ${if uploadDockerImages 
-         then "push-docker-images-to-local-cluster" else ""}
+    ${if applyResources
+        then ''
+          apply-cluster-stack
+          wait-for-docker-registry
+        '' else ""}
 
-    apply-cluster-stack
-    apply-functions-to-cluster
+    ${if uploadDockerImages 
+      then "push-docker-images-to-local-cluster" else ""}
+
+    ${if applyResources
+      then ''
+        apply-functions-to-cluster
+        wait-for-istio-ingress
+        expose-istio-ingress
+      '' else ""
+    }
 
     source export-ports
-
-    wait-for-istio-ingress
     add-knative-label-to-istio
-    expose-istio-ingress
-
     get-help
   '';
   # wait-for-brigade-ingress

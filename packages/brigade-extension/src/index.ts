@@ -13,7 +13,11 @@ type WorkerSecrets = {
   sopsSecrets: {
     docker: {
       user: string
-      apss: string
+      pass: string
+    },
+    bitbucket: {
+      user: string
+      pass: string
     }
   }
 }
@@ -34,12 +38,12 @@ export const saveSecrets = (fileName: string = 'secrets-encrypted.json') => [
 ]
 
 // https://github.com/mozilla/sops#45extract-a-sub-part-of-a-document-tree
-const escapePath = (d: string) => `["${d}"]`
+const escapePath = (d) => `[\"${d}\"]`
 const toSopsPath = (path: string) => path.split('.').map(escapePath).join('')
 
 // i.e. extractSecret('docker.pass')
 export const extractSecret = (path: string) =>
-  `$(echo $SECRETS | sops  --input-type json -d --extract ${toSopsPath(path)})`
+  `echo $SECRETS | sops --input-type json -d --extract '${toSopsPath(path)}' -d /dev/stdin`
 
 export const buildNixExpression =
   (file: string, attribute: string, extraArgs: string = '') =>

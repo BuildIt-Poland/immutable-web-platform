@@ -7,6 +7,7 @@
   node-development-tools
 }:
 let
+  append-local-docker-registry-to-kind-nodes = pkgs.callPackage ./patch/kind.nix {};
   # INFO to filter out grep from ps
   getGrepPhrase = phrase:
     let
@@ -21,6 +22,7 @@ let
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
 
+  # TODO should be in config
   brigade-service = {
     service = "brigade-bitbucket-gateway-brigade-bitbucket-gateway"; # INFO chart is so so and does not hanle name well ... investigate
     namespace = brigade-ns;
@@ -29,6 +31,11 @@ let
   istio-service = {
     service = "istio-ingressgateway";
     namespace = istio-ns;
+  };
+
+  registry-service = {
+    service = "docker-registry";
+    namespace = local-infra-ns;
   };
 
   localtunnel = "${node-development-tools}/bin/lt";
@@ -42,14 +49,43 @@ rec {
   cluster-config = {
     kind = "Cluster";
     apiVersion = "kind.sigs.k8s.io/v1alpha3";
-    nodes = [
+    nodes = 
+    let
+      ports = [
+        # monitoring
+        # grafana
+        {
+          containerPort = 31300;
+          hostPort = 31300;
+        }
+        # weavescope
+        {
+          containerPort = 31301;
+          hostPort = 31301;
+        }
+        # zipkin
+        {
+          containerPort = 31302;
+          hostPort = 31302;
+        }
+        # argocd
+        {
+          containerPort = 31200;
+          hostPort = 31200;
+        }
+        # TODO make the same with istio and remove custom curl! super awesome!
+        # and then we can skip port-forwarding!
+      ];
+    in
+    [
       { 
         role = "control-plane"; 
         extraMounts = [{
-          containerPath = "/kind-source";
+          containerPath = "/project";
           hostPath = toString ./.;
           readOnly = true;
         }];
+        extraPortMappings = ports;
       }
       { role = "worker"; }
       { role = "worker"; }
@@ -58,9 +94,15 @@ rec {
 
   cluster-config-yaml = kubenix.lib.toYAML cluster-config;
 
+  wait-for-docker-registry = pkgs.writeScriptBin "wait-for-docker-registry" ''
+    ${wait-for ({selector= "app=${registry-service.service}";} // registry-service)}
+    ${port-forward (registry-service // registry-ports)}
+  '';
+
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
     ${log.message "Creating cluster"}
     ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
+    ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
@@ -101,7 +143,7 @@ rec {
   wait-for = {
     service,
     namespace,
-    selector,
+    selector ? "",
     condition ? "condition=Ready",
     resource ? "pod",
     timeout ? 300,
@@ -112,9 +154,18 @@ rec {
       ${pkgs.kubectl}/bin/kubectl wait \
         --namespace ${namespace} \
         --for=${condition} ${resource} \
-        --selector '${selector}' \
+        ${if selector != "" then "--selector '${selector}'" else ""} \
         --timeout=${toString timeout}s
   '';
+
+  registry-ports = 
+  let
+    registry = env-config.docker.local-registry;
+  in
+  {
+    from = get-port ({ type = "port"; } // registry-service);
+    to = "echo ${toString registry.exposedPort}"; # get-port ({ type = "nodePort"; } // registry-service);
+  };
 
   brigade-ports = {
     from = get-port ({ type = "port"; } // brigade-service);
@@ -144,18 +195,6 @@ rec {
     ${port-forward (brigade-service // brigade-ports)}
   '';
 
-  # TODO make this more robust
-  expose-grafana = pkgs.writeScriptBin "expose-grafana" ''
-    ${pkgs.kubectl}/bin/kubectl port-forward --namespace knative-monitoring \
-      $(${pkgs.kubectl}/bin/kubectl get pods --namespace knative-monitoring \
-      --selector=app=grafana --output=jsonpath="{.items..metadata.name}") \
-      3001:3000
-  '';
-
-  expose-weave-scope = pkgs.writeScriptBin "expose-weave-scope" ''
-    ${pkgs.kubectl}/bin/kubectl port-forward --namespace weave svc/weave-scope-app 3002:80
-  '';
-
   # helpful flag ... --print-requests 
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
     ${log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}
@@ -172,6 +211,7 @@ rec {
   };
 
   # https://github.com/cppforlife/knctl/blob/master/docs/cmd/knctl_ingress_list.md
+  # if not ... Error: Expected to find at least one ingress address
   add-knative-label-to-istio = pkgs.writeScriptBin "add-knative-label-to-istio" ''
     ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace ${istio-ns} -p '${builtins.toJSON knative-label-patch}'
   '';
@@ -185,18 +225,6 @@ rec {
   export-ports = pkgs.writeScriptBin "export-ports" ''
     export KUBE_NODE_PORT=$(${istio-ports.to})
   '';
-
-  deploy-to-kind = {config, image}: 
-    pkgs.writeScriptBin "deploy-to-kind" ''
-      ${log.message "Loading the ${pkgs.docker}/bin/docker image inside the kind docker container ..."}
-
-      kind load image-archive ${image}
-
-      ${log.important "Applying the configuration ..."}
-
-      cat ${config} | ${pkgs.jq}/bin/jq "."
-      cat ${config} | ${pkgs.kubectl}/bin/kubectl apply -f -
-    '';
 
   # about makeWrapper https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh#L13
   # about resolve https://curl.haxx.se/docs/manpage.html
