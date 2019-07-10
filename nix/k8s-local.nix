@@ -66,6 +66,7 @@ rec {
           hostPort = 31302;
         }
         # TODO make the same with istio and remove custom curl! super awesome!
+        # and then we can skip port-forwarding!
       ];
     in
     [
@@ -215,18 +216,6 @@ rec {
   export-ports = pkgs.writeScriptBin "export-ports" ''
     export KUBE_NODE_PORT=$(${istio-ports.to})
   '';
-
-  deploy-to-kind = {config, image}: 
-    pkgs.writeScriptBin "deploy-to-kind" ''
-      ${log.message "Loading the ${pkgs.docker}/bin/docker image inside the kind docker container ..."}
-
-      kind load image-archive ${image}
-
-      ${log.important "Applying the configuration ..."}
-
-      cat ${config} | ${pkgs.jq}/bin/jq "."
-      cat ${config} | ${pkgs.kubectl}/bin/kubectl apply -f -
-    '';
 
   # about makeWrapper https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh#L13
   # about resolve https://curl.haxx.se/docs/manpage.html

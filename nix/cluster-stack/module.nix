@@ -54,6 +54,10 @@ in
       };
   };
 
+  # TODO
+  # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
+  # create repo
+  # create application
   kubernetes.helm.instances.argo-cd = {
     namespace = "${argo-ns}";
     chart = charts.argo-cd;
