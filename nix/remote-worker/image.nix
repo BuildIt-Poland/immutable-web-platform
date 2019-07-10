@@ -31,6 +31,7 @@ pkgs.dockerTools.buildImage ({
     pkgs.jq
     pkgs.sops
     pkgs.kubectl
+    pkgs.curl
     pkgs.git
     # in case of github -> hub (https://github.com/github/hub)
   ];

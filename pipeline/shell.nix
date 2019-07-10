@@ -13,8 +13,8 @@ let
   #######
 
   bitbucket-pr-payload = {
-    title = "Merge some branches";
-    description =  "Test PR";
+    title = "Kubernetes update";
+    description =  "CI build";
     source.branch.name = "$branch";
     source.repository.full_name = "$user/${repo-name}";
     destination.branch.name = "master";
@@ -49,7 +49,7 @@ let
 
   commit-descriptors = writeScript "commit-descriptors" ''
     git add -A
-    git commit -m "Applying resources for release: ${pkgs.env-config.version}"
+    git commit -m "Applying resources for release: ${pkgs.env-config.version}, build id: $BUILD_ID"
   '';
 
   push-branch = writeScript "push-branch" ''
