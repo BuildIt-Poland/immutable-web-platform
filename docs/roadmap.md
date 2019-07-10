@@ -4,6 +4,7 @@
 * align ec2 deployment to `machine.json` descriptor
 * run example tests agains artifact in brigade
 * watch github hooks when approving the pull request
+* portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
 
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 
