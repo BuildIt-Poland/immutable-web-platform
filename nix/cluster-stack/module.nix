@@ -58,11 +58,13 @@ in
   # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
   # create repo
   # create application
+  # there is a cli - a bit regret that this is not a kubernetes resource
   kubernetes.helm.instances.argo-cd = {
     namespace = "${argo-ns}";
     chart = charts.argo-cd;
   };
 
+  # TODO expose port 80 as some static value to provide it to kind
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
