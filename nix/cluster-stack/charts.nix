@@ -60,15 +60,6 @@ rec {
     sha256 = "04vnmyfqvddiw1n63sab4as7apcxq9gx0hrkv8p2w1b6q12hjwhd";
   };
 
-  knative-serving = yaml-to-json {
-    name = "knative-serving";
-    version = "0.6.1";
-    src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.6.1/serving.yaml;
-      sha256="0y9h2mw1f2rbhmv2qfsz2m2cppa1s725i9hni5105s3js07h0r0i";
-    };
-  };
-
   # https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
   argo-cd = helm.fetch {
     chart = "argo-cd";
@@ -85,6 +76,16 @@ rec {
     repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
     sha256 = "1vdsxrz4gis5za519p0zjmd9zjckjaa34pdssbn9lis19x20ki7v";
   };
+
+  preload = [
+    istio-init
+    istio
+    brigade
+    brigade-project
+    brigade-bitbucket
+    weave-scope
+    docker-registry 
+  ];
 
   istio-init-json = helm.chart2json {
     name = "istio-init";
