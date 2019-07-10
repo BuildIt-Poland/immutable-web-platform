@@ -26,7 +26,7 @@ let
     kind = kind;
     description = "";
   };
-  monitoring-gateway = config.kubernetes.monitoring.gateway;
+  virtual-services = config.kubernetes.virtual-services.gateway;
 in
 {
   imports = with kubenix.modules; [ helm k8s docker istio ];
@@ -62,6 +62,9 @@ in
   kubernetes.helm.instances.argo-cd = {
     namespace = "${argo-ns}";
     chart = charts.argo-cd;
+    # values ={
+    #   config.repositories = {};
+    # };
   };
 
   # TODO expose port 80 as some static value to provide it to kind
@@ -80,7 +83,7 @@ in
           };
         };
 
-        inherit monitoring-gateway;
+        inherit virtual-services;
       };
 
       istio_cni.enabled = true;

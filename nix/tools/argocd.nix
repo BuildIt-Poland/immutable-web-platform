@@ -1,18 +1,18 @@
 { pkgs, writeShellScript }:
 with pkgs.stdenv;
 let
-  version = "0.4.0";
-  bin-name = "kind";
+  version = "1.1.0-rc5";
+  bin-name = "argocd";
   os = if isDarwin then "darwin" else "linux";
 in
 mkDerivation rec {
   inherit version;
 
-  name = "kind";
+  name = "argocd";
 
   src = pkgs.fetchurl {
-    url = "https://github.com/kubernetes-sigs/kind/releases/download/v${version}/kind-${os}-amd64";
-    sha256 = "1lyjx6vzdmiickncj01bfc8959w8jkq8d6hkcbydqcki4231hgq2";
+    url = "https://github.com/argoproj/argo-cd/releases/download/v${version}/argocd-${os}-amd64";
+    sha256 = "06qyh7xqa981f7vypsv3pkz3i6jx2irhvchz8nfni224kms3j858"; # sha for linux will be different
   };
 
   buildInputs = [ ];

@@ -54,6 +54,7 @@ mkShell {
     # js
     nodejs
     yarn2nix.yarn
+    argocd
 
     # tools
     kind
@@ -69,9 +70,10 @@ mkShell {
     # secrets
     sops
 
+    # THIS things will dissapear soon
     # cluster scripts
     k8s-local.expose-istio-ingress
-    # k8s-local.add-knative-label-to-istio
+    k8s-local.add-knative-label-to-istio
     # waits
     k8s-local.wait-for-istio-ingress
     k8s-local.wait-for-brigade-ingress
@@ -79,8 +81,6 @@ mkShell {
     # ingress & tunnels
     k8s-local.expose-istio-ingress
     k8s-local.expose-brigade-gateway
-    k8s-local.expose-grafana
-    k8s-local.expose-weave-scope
 
     # exports
     k8s-local.export-kubeconfig
@@ -124,17 +124,15 @@ mkShell {
     ${if applyResources
       then ''
         apply-functions-to-cluster
-
-        source export-ports
-
         wait-for-istio-ingress
         expose-istio-ingress
       '' else ""
     }
 
+    source export-ports
+    add-knative-label-to-istio
     get-help
   '';
-  # add-knative-label-to-istio
   # wait-for-brigade-ingress
   # expose-brigade-gateway
 }
