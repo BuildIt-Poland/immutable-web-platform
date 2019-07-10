@@ -5,6 +5,7 @@
 * run example tests agains artifact in brigade
 * watch github hooks when approving the pull request
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
+* introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.)
 
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 

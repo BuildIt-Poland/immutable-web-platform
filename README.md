@@ -49,6 +49,7 @@ provide full testing ability of infrastructure as well as on application level f
 * [`nix & kubernetes`](https://rzetterberg.github.io/kubernetes-nixos.html)
 
 ### Docs
+* [How gitops work](/docs/gitops.md)
 * [How brigade work](/docs/brigade.md)
 * [How cache is handled](/docs/cache.md)
 * [How to debug](/docs/debugging.md)
@@ -63,6 +64,7 @@ provide full testing ability of infrastructure as well as on application level f
 * [Cluster monitoring](/docs/monitoring.md)
 * [Some good reads](/docs/reads.md)
 * [`nix-darwin` and `remote-builders`](/docs/linux-darwin-builds.md)
+* [Build `go` package](/docs/building-go-packages.md)
 
 ### How to start
 

@@ -28,8 +28,6 @@ rec {
 
   # INFO why waits -> https://github.com/knative/serving/issues/2195
   # TODO this should be in k8s-resources - too many places with charts and jsons
-  # ${apply-resources charts.istio-cni-yaml}
-
   apply-istio-crd = writeScript "apply-istio-crd" ''
     ${apply-resources charts.istio-init-yaml}
     ${wait-for "job" "complete"}

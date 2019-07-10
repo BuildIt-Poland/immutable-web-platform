@@ -10,7 +10,10 @@ let
   namespace = env-config.kubernetes.namespace;
   istio-ns = namespace.istio;
   knative-monitoring-ns = namespace.knative-monitoring;
+  argo-ns = namespace.argo;
 in
+# TODO create similar module for gitops
+# TODO argocd sth is not correct here - investigate
 # TODO add enabled true/false
 {
   imports = with kubenix.modules; [ 
@@ -19,17 +22,17 @@ in
     istio
   ];
 
-  options.kubernetes.monitoring = {
+  options.kubernetes.virtual-services = {
     gateway = lib.mkOption {};
   };
 
   config = {
     # values: https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml
-    kubernetes.monitoring.gateway = {
+    kubernetes.virtual-services.gateway = {
       enabled = true;
       labels = {
-        app = "monitoring-gateway";
-        istio = "monitoring-ingressgateway";
+        app = "virtual-services";
+        istio = "virtual-services-gateway";
       };
       type = "NodePort";
       ports = [{
@@ -47,7 +50,13 @@ in
         targetPort = 15302;
         nodePort = 31302;
         name = "zipkin-port";
-      } ];
+      } {
+        port = 15200;
+        targetPort = 15200;
+        nodePort = 31200;
+        name = "argocd-port";
+      } 
+      ];
     };
 
     kubernetes.helm.instances.weave-scope = {
@@ -65,13 +74,13 @@ in
     };
 
     kubernetes.api."networking.istio.io"."v1alpha3" = {
-      Gateway."grafana-gateway" = {
+      Gateway."virtual-services-gateway" = {
         # BUG: this metadata should be taken from name
         metadata = {
-          name = "grafana-gateway";
+          name = "virtual-services-gateway";
         };
         spec = {
-          selector.istio = "monitoring-ingressgateway";
+          selector.istio = "virtual-services-gateway";
           servers = [{
             port = {
               number = 15301;
@@ -93,26 +102,36 @@ in
               protocol = "HTTP2";
             };
             hosts = ["*"];
+          } {
+            port = {
+              number = 15200;
+              name = "http2-argocd";
+              protocol = "HTTP2";
+            };
+            hosts = ["*"];
           }];
         };
       };
-      DestinationRule.grafana = {
+      VirtualService.cluster-services = {
         metadata = {
-          name = "destination-rule-grafana";
-        };
-        spec = {
-          host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
-          trafficPolicy.tls.mode = "DISABLE";
-        };
-      };
-      VirtualService.grafana = {
-        metadata = {
-          name = "virtualservice-grafana";
+          name = "virtual-service";
         };
         spec = {
           hosts = ["*"];
-          gateways = ["grafana-gateway"];
+          gateways = ["virtual-services-gateway"];
           http = [
+          # MONITORING 15300+
+          {
+            match = [
+              { port = 15300; }
+            ];
+            route = [{
+              destination = {
+                host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
+                port.number = 30802; # take this port from somewhere - create ports map
+              };
+            }];
+          } 
           {
             match = [
               { port = 15301; }
@@ -135,14 +154,16 @@ in
               };
             }];
           }
+
+          # GITOPS 15200
           {
             match = [
-              { port = 15300; }
+              { port = 15200; }
             ];
             route = [{
               destination = {
-                host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
-                port.number = 30802; # take this port from somewhere - create ports map
+                host = "argocd-server.${argo-ns}.svc.cluster.local";
+                port.number = 443;
               };
             }];
           } 

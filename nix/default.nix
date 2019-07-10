@@ -41,6 +41,11 @@ let
     node-development-tools = super.callPackage "${nodePackages}/development-tools/nix" {};
     brigade-extension = super.callPackage "${nodePackages}/brigade-extension/nix" {};
     remote-state = super.callPackage "${nodePackages}/remote-state/nix" {};
+
+    # gitops
+    # THIS is correct way however need some final touches to make this right
+    # argocd = super.callPackage ./gitops/argocd {};
+    argocd = super.callPackage ./tools/argocd.nix {};
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
@@ -65,7 +70,7 @@ let
       ./kubenix-modules/knative-serve.nix
     ];
     kubenix-infra-modules = [
-      ./kubenix-modules/monitoring.nix
+      ./kubenix-modules/virtual-services.nix
       ./kubenix-modules/brigade.nix
     ];
   };

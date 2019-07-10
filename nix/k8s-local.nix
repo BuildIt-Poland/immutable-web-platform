@@ -53,17 +53,25 @@ rec {
     let
       ports = [
         # monitoring
+        # grafana
         {
           containerPort = 31300;
           hostPort = 31300;
         }
+        # weavescope
         {
           containerPort = 31301;
           hostPort = 31301;
         }
+        # zipkin
         {
           containerPort = 31302;
           hostPort = 31302;
+        }
+        # argocd
+        {
+          containerPort = 31200;
+          hostPort = 31200;
         }
         # TODO make the same with istio and remove custom curl! super awesome!
         # and then we can skip port-forwarding!
@@ -203,6 +211,7 @@ rec {
   };
 
   # https://github.com/cppforlife/knctl/blob/master/docs/cmd/knctl_ingress_list.md
+  # if not ... Error: Expected to find at least one ingress address
   add-knative-label-to-istio = pkgs.writeScriptBin "add-knative-label-to-istio" ''
     ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace ${istio-ns} -p '${builtins.toJSON knative-label-patch}'
   '';
