@@ -13,6 +13,9 @@ const createJob = (name) =>
       shell: 'bash',
       serviceAccount: "brigade-worker"
     })
+    .withEnvVars({
+      MY_ENV_VAR: "test"
+    })
     .withTasks([
       `cd /src/pipeline`,
       buildNixExpression('shell.nix', 'make-pr-with-descriptors'),

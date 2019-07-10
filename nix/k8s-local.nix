@@ -58,7 +58,13 @@ rec {
           readOnly = true;
         }];
       }
-      { role = "worker"; }
+      { role = "worker"; 
+        extraPortMappings = [{
+          containerPort = 80;
+          hostPort = 80;
+          listenAddress: "127.0.0.1" # Optional, defaults to "0.0.0.0"}
+        }]
+      }
       { role = "worker"; }
     ];
   };
