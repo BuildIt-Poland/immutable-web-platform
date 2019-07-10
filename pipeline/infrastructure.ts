@@ -25,7 +25,7 @@ events.on("exec", (event, project) => {
     createJob("test")
       .withSecrets(project.secrets)
       .withEnvVars({
-        BUILD_ID: `"${event.buildID}"` || "missing-build-id",
+        BUILD_ID: event.buildID || "missing-build-id",
         EVENT: JSON.stringify(event)
       })
 

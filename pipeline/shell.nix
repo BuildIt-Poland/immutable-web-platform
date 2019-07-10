@@ -5,6 +5,7 @@
 }:
 with pkgs;
 let
+  descriptors = k8s-cluster-operations.resources.yaml;
   repo-name = "k8s-infra-descriptors";
 
   #######
@@ -42,8 +43,8 @@ let
   '';
 
   copy-resources = writeScript "copy-resources" ''
-    cat ${pkgs.k8s-cluster-operations.resources.yaml.cluster} > cluster.yaml
-    cat ${pkgs.k8s-cluster-operations.resources.yaml.functions} > resources.yaml
+    cat ${descriptors.cluster} > cluster.yaml
+    cat ${descriptors.functions} > resources.yaml
   '';
 
   commit-descriptors = writeScript "commit-descriptors" ''
@@ -107,11 +108,9 @@ let
     name = "make-pr-with-descriptors";
     src = ./.;
     phases = ["installPhase"];
-    buildInputs = [];
+    buildInputs = [] ++ charts.preload;
     preferLocalBuild = true;
-    nativeBuildInputs = [
-      pkgs.git pkgs.sops
-      ];
+    nativeBuildInputs = [];
     installPhase = ''
       mkdir -p $out/bin
       cp ${push-descriptors-to-git} $out/bin/${push-descriptors-to-git.name}
