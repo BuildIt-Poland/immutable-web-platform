@@ -61,11 +61,13 @@ rec {
   };
 
   # https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
-  argo-cd = helm.fetch {
-    chart = "argo-cd";
-    repo = "https://brigadecore.github.io/charts";
-    version = "0.2.2";
-    sha256 = "0i5i3h346dz4a771zkgjpbx4hbyf7r6zfhvqhvfjv234dha4fj50";
+  argo-cd = chart-from-git {
+    # chart = "argo-cd";
+    # version = "0.2.2";
+    url = "https://github.com/argoproj/argo-helm";
+    path = "charts/argo-cd";
+    rev = "6e108f3aae4d5fa5788640f8bd8b3407e1425c13";
+    sha256 = "0gsx75fcm4zinw1mqkpzs7vsivm7y52bfjhkc5mxfad61r725gr4";
   };
 
   # BOOTSTRAP
@@ -77,6 +79,7 @@ rec {
     sha256 = "1vdsxrz4gis5za519p0zjmd9zjckjaa34pdssbn9lis19x20ki7v";
   };
 
+  # TODO propagete this idea wider
   preload = [
     istio-init
     istio
@@ -85,6 +88,7 @@ rec {
     brigade-bitbucket
     weave-scope
     docker-registry 
+    argo-cd
   ];
 
   istio-init-json = helm.chart2json {

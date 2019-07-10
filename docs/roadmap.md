@@ -5,7 +5,7 @@
 * run example tests agains artifact in brigade
 * watch github hooks when approving the pull request
 
-* refactoring -> create `kubectl-helpers`
+* refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 
 ## priorities
 * improve docs - wip

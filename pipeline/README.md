@@ -12,3 +12,6 @@
 
 ### Testing worker script
 * `BUILD_ID=local-build nix-shell -A shell --run make-pr-with-descriptors`
+
+### Repo with infra
+* https://bitbucket.org/damian_baar/k8s-infra-descriptors

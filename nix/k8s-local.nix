@@ -49,7 +49,26 @@ rec {
   cluster-config = {
     kind = "Cluster";
     apiVersion = "kind.sigs.k8s.io/v1alpha3";
-    nodes = [
+    nodes = 
+    let
+      ports = [
+        # monitoring
+        {
+          containerPort = 31300;
+          hostPort = 31300;
+        }
+        {
+          containerPort = 31301;
+          hostPort = 31301;
+        }
+        {
+          containerPort = 31302;
+          hostPort = 31302;
+        }
+        # TODO make the same with istio and remove custom curl! super awesome!
+      ];
+    in
+    [
       { 
         role = "control-plane"; 
         extraMounts = [{
@@ -57,38 +76,10 @@ rec {
           hostPath = toString ./.;
           readOnly = true;
         }];
+        extraPortMappings = ports;
       }
-      { role = "worker"; 
-        # TESTING
-        extraPortMappings = [
-          # istio - virtual services
-          {
-            containerPort = 15300;
-            hostPort = 15300;
-            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
-          }
-          {
-            containerPort = 15301;
-            hostPort = 15301;
-            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
-          }
-        ];
-      }
-      { role = "worker"; 
-        extraPortMappings = [
-          # istio - virtual services
-          {
-            containerPort = 15300;
-            hostPort = 31300;
-            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
-          }
-          {
-            containerPort = 15301;
-            hostPort = 31301;
-            # listenAddress = "127.0.0.1"; # Optional, defaults to "0.0.0.0"}
-          }
-        ];
-      }
+      { role = "worker"; }
+      { role = "worker"; }
     ];
   };
 
@@ -193,18 +184,6 @@ rec {
 
   expose-brigade-gateway = pkgs.writeScriptBin "expose-brigade-gateway" ''
     ${port-forward (brigade-service // brigade-ports)}
-  '';
-
-  # TODO make this more robust
-  expose-grafana = pkgs.writeScriptBin "expose-grafana" ''
-    ${pkgs.kubectl}/bin/kubectl port-forward --namespace knative-monitoring \
-      $(${pkgs.kubectl}/bin/kubectl get pods --namespace knative-monitoring \
-      --selector=app=grafana --output=jsonpath="{.items..metadata.name}") \
-      3001:3000
-  '';
-
-  expose-weave-scope = pkgs.writeScriptBin "expose-weave-scope" ''
-    ${pkgs.kubectl}/bin/kubectl port-forward --namespace istio-system svc/weave-scope-app 3002:80
   '';
 
   # helpful flag ... --print-requests 
