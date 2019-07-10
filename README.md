@@ -1,33 +1,35 @@
 ### Purpose
-Yet another story about `kubernetes` and declarative approach to infrastructure ... in nutshell. 
+Yet another story about `kubernetes` and declarative approach to infrastructure. \
 ... being more verbose ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
 provide full testing ability of infrastructure as well as on application level following `gitops` way realized by `brigade.js` and `argo cd`.
 
 ### Inspiration part
-* [kubernetes in nix](https://www.youtube.com/watch?v=XgZWbrBLP4I)
 * [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
 * [some why`s around nix](https://www.youtube.com/watch?v=YbUPdv03ciI)
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
 * [brigade & virtual-kubelet](https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/)
+* [gitops](https://www.weave.works/blog/gitops-operations-by-pull-request)
 * [argo cd](https://argoproj.github.io/argo-cd/)
+* [nix familly features](https://www.youtube.com/watch?v=D5Gq2wkRXpU)
+* [nix and some why`s](https://www.youtube.com/watch?v=XgZWbrBLP4I)
 
 ### What is super hot!
 * `helm charts` without `helm` and `tiller`
-* scale to `0` with `knative & istio`, scale based on concurrency level
-* fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs` and `nixOS`
+* scale to `0` with `knative & istio`, scale based on concurrency level or resources level
+* fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
 * `nix` in charge of building and pushing docker images to `docker repository`
 * full composability of components and configs
 * full determinism of results
+* all parts of project are sharable - `nix` is everywhere, in `local` env, `ci worker` or at `system` level - all scripts and libraries can be used in every context
 * incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
 * diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
 * distributed build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
-* `nixops` is provisioning based upon `declarative` nix file
-* I can share all `nix` code across everything and don't worry about copying any `bash` scripts
+* `nixops` is provisioning `ec2` or `virtualbox` instances based upon `declarative` nix file
 * custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docs](/packages/remote-state/README.md))
-* gitops
-* monitoring tools
-* local docker registry
+* gitops - infrastructure and applications described as generated from `nix` `yamls` and stored in `git`
+* monitoring tools with predefined dashboards
+* local docker registry - can be used in `s3` or any other storage
 
 ### People are doing it already ...
 * [step towards future configuration infrastructure management nix](https://container-solutions.com/step-towards-future-configuration-infrastructure-management-nix/)
@@ -74,6 +76,15 @@ provide full testing ability of infrastructure as well as on application level f
 * run `nix-shell` - if you encounter any issues check [docs](/docs/)
 
 #### Monitoring
+* `grafana`
 ![grafana](https://bitbucket.org/repo/6zKBnz9/images/1943034243-Screenshot%202019-06-19%20at%2013.45.21.png)
+
+* `weavescope`
 ![weavescope](https://bitbucket.org/repo/6zKBnz9/images/3906895708-Screenshot%202019-06-19%20at%2013.45.55.png)
+
+* `zipkin`
+![zipkin](https://bitbucket.org/repo/6zKBnz9/images/573168924-Screenshot%202019-07-10%20at%2013.30.58.png)
+
+#### Gitops
+* `argo cd`
 ![gitops](https://bitbucket.org/repo/6zKBnz9/images/1558410695-Screenshot%202019-07-10%20at%2010.38.17.png)
