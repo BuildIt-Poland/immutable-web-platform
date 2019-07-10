@@ -86,10 +86,9 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
     .withTasks([
-      // _hubCredentials(),
       `cd /src/pipeline`,
-      buildNixExpression('shell.nix', 'testScript'),
-      `./result/bin/test-script`,
+      buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
+      `./result/bin/make-pr-with-descriptors`,
       // `kubectl get pods -A`
     ])
 
