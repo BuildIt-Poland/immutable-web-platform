@@ -17,7 +17,7 @@ const createJob = (name) =>
       `cd /src/pipeline`,
       buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
       `./result/bin/make-pr-with-descriptors`,
-      // `kubectl get pods -A`
+      `kubectl get pods -A`
     ])
 
 events.on("exec", (event, project) => {
@@ -25,7 +25,8 @@ events.on("exec", (event, project) => {
     createJob("test")
       .withSecrets(project.secrets)
       .withEnvVars({
-        BUILD_ID: event.buildID || "missing-build-id"
+        BUILD_ID: `"${event.buildID}"` || "missing-build-id",
+        EVENT: JSON.stringify(event)
       })
 
   test.run()

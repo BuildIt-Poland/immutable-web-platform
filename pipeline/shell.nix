@@ -6,7 +6,6 @@
 with pkgs;
 let
   repo-name = "k8s-infra-descriptors";
-  descriptors = pkgs.k8s-cluster-operations.resources.yaml;
 
   #######
   # GIT
@@ -43,8 +42,8 @@ let
   '';
 
   copy-resources = writeScript "copy-resources" ''
-    cat ${descriptors.cluster} > cluster.yaml
-    cat ${descriptors.functions} > resources.yaml
+    cat ${pkgs.k8s-cluster-operations.resources.yaml.cluster} > cluster.yaml
+    cat ${pkgs.k8s-cluster-operations.resources.yaml.functions} > resources.yaml
   '';
 
   commit-descriptors = writeScript "commit-descriptors" ''
@@ -94,8 +93,6 @@ let
     pass=$(${extractSecret ["bitbucket" "pass"]})
     branch="build-$BUILD_ID"
 
-    printenv
-
     ${clone-repo} $user $pass $branch
     cd $branch
     ${create-pr-branch} $branch
@@ -110,10 +107,7 @@ let
     name = "make-pr-with-descriptors";
     src = ./.;
     phases = ["installPhase"];
-    buildInputs = [
-      descriptors.cluster
-      descriptors.functions
-    ];
+    buildInputs = [];
     preferLocalBuild = true;
     nativeBuildInputs = [
       pkgs.git pkgs.sops
