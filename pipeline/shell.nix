@@ -9,6 +9,10 @@ let
   branch-name = "build-${build-id}";
   repo-name = "k8s-infra-descriptors";
 
+  #######
+  # GIT
+  #######
+
   bitbucket-pr-payload = {
     title = "Merge some branches";
     description =  "Test PR";
@@ -17,7 +21,11 @@ let
     destination.branch.name = "master";
   };
 
-  clone-repo = writeScriptBin "clone-repo" ''
+  clone-repo = writeScript "clone-repo" ''
+    user=$1
+    pass=$2
+    branch=$3
+
     git clone https://$user:$pass@bitbucket.org/$user/${repo-name}.git $branch
   '';
 
@@ -27,6 +35,7 @@ let
   '';
 
   create-pr-branch = writeScript "create-pr-branch" ''
+    branch=$1
     git checkout -b $branch
   '';
 
@@ -39,26 +48,31 @@ let
     cat ${pkgs.k8s-cluster-operations.resources.yaml.functions} > resources.yaml
   '';
 
-  create-branch-with-descriptors = writeScript "create-branch-with-descriptors" ''
-    ${copy-resources}
+  commit-descriptors = writeScript "commit-descriptors" ''
     git add -A
-    git commit -m "Applying resources for release: ${pkgs.env-config.version}, build: $BRIGADE_BUILD_ID"
-
-    ${show-changes-diff}
+    git commit -m "Applying resources for release: ${pkgs.env-config.version}"
   '';
 
   push-branch = writeScript "push-branch" ''
-    git push --set-upstream origin ${branch-name}
+    branch=$1
+    git push --set-upstream origin $branch
     git push
   '';
 
   make-pr = writeScript "make-pr" ''
+    user=$1
+    pass=$2
+    branch=$3
+
+    payload=$(echo '${builtins.toJSON bitbucket-pr-payload}' \
+             | sed -e 's/$user/'"$user"'/g' -e 's/$branch/'"$branch"'/g')
+
     curl \
       -X POST \
       -H "Content-Type: application/json" \
       -u $user:$pass \
       https://bitbucket.org/api/2.0/repositories/$user/${repo-name}/pullrequests \
-      -d '${builtins.toJSON bitbucket-pr-payload}'
+      -d "$payload"
   '';
   
   #######
@@ -74,43 +88,46 @@ let
 
   repo = "k8s-infra-descriptors";
 
-  # TODO change test-scripts to more meaningfull name ...
-  push-descriptors-to-git = pkgs.writeScript "test-script" ''
+  push-descriptors-to-git = pkgs.writeScript "make-pr-with-descriptors" ''
     ${setup-git} 
 
     user=$(${extractSecret ["bitbucket" "user"]})
     pass=$(${extractSecret ["bitbucket" "pass"]})
-    branch=${build-id}
+    branch="${branch-name}"
 
-    ${clone-repo}
-    cd ${branch-name}
-    ${create-branch-with-descriptors}
-    ${push-branch}
-    ${make-pr}
+    ${clone-repo} $user $pass $branch
+    cd $branch
+    ${create-pr-branch} $branch
+    ${copy-resources}
+    ${commit-descriptors}
+    ${push-branch} $branch
+    ${show-changes-diff}
+    ${make-pr} $user $pass $branch
   '';
 
-  testScript = pkgs.stdenv.mkDerivation {
-    name = "test-script";
+  make-pr-with-descriptors = pkgs.stdenv.mkDerivation {
+    name = "make-pr-with-descriptors";
     src = ./.;
     phases = ["installPhase"];
     buildInputs = [];
     preferLocalBuild = true;
-    nativeBuildInputs = [];
+    nativeBuildInputs = [pkgs.git pkgs.sops];
     installPhase = ''
       mkdir -p $out/bin
       cp ${push-descriptors-to-git} $out/bin/${push-descriptors-to-git.name}
     '';
   };
+
 in
 with pkgs; 
 { 
-  inherit testScript;
+  inherit make-pr-with-descriptors;
 
   shell = mkShell {
     SECRETS = builtins.readFile ../secrets.json;
 
     buildInputs = [
-      testScript
+      make-pr-with-descriptors
     ];
 
     shellHook= ''
