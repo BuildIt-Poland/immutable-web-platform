@@ -3,20 +3,20 @@
   env-config, 
   pkgs, 
   kubenix, 
+  charts,
   callPackage, 
-  brigade-extension,
-  remote-worker,
   ...
 }: 
 let
-  charts = callPackage ./charts.nix {};
-
   namespace = env-config.kubernetes.namespace;
 
   local-infra-ns = namespace.infra;
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
+  argo-ns = namespace.argo;
   functions-ns = namespace.functions;
+  knative-monitoring-ns = namespace.knative-monitoring;
+
   ssh-keys = env-config.ssh-keys;
   aws-credentials = env-config.aws-credentials;
 
@@ -26,16 +26,14 @@ let
     kind = kind;
     description = "";
   };
+  virtual-services = config.kubernetes.virtual-services.gateway;
 in
 {
   imports = with kubenix.modules; [ helm k8s docker istio ];
 
-  docker.images.brigade-worker.image = remote-worker.docker-image;
-  docker.images.brigade-extension.image = brigade-extension.docker-image;
-
   kubernetes.api.namespaces."${local-infra-ns}"= {};
-  kubernetes.api.namespaces."${brigade-ns}"= {};
   kubernetes.api.namespaces."${istio-ns}"= {};
+  kubernetes.api.namespaces."${argo-ns}"= {};
   kubernetes.api.namespaces."${functions-ns}"= {
     metadata = {
       labels = {
@@ -44,14 +42,32 @@ in
     };
   };
 
-  # default [ "CustomResourceDefinition" "Namespace" ]
-  # kubernetes.resourceOrder = []
-
-  kubernetes.helm.instances.brigade = {
-    namespace = "${brigade-ns}";
-    chart = charts.brigade;
+  kubernetes.helm.instances.docker-registry = {
+    namespace = "${local-infra-ns}";
+    chart = charts.docker-registry;
+    values = 
+      let
+        registry = env-config.docker.local-registry;
+      in
+      {
+        service.type = "ClusterIP";
+      };
   };
 
+  # TODO
+  # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
+  # create repo
+  # create application
+  # there is a cli - a bit regret that this is not a kubernetes resource
+  kubernetes.helm.instances.argo-cd = {
+    namespace = "${argo-ns}";
+    chart = charts.argo-cd;
+    # values ={
+    #   config.repositories = {};
+    # };
+  };
+
+  # TODO expose port 80 as some static value to provide it to kind
   kubernetes.helm.instances.istio = {
     namespace = "${istio-ns}";
     chart = charts.istio;
@@ -66,10 +82,16 @@ in
             memory="256Mi";
           };
         };
+
+        inherit virtual-services;
       };
+
+      istio_cni.enabled = true;
       mixer.policy.enabled = true;
       mixer.telemetry.enabled = true;
       mixer.adapters.prometheus.enabled = false;
+      # https://github.com/istio/istio/issues/7675#issuecomment-415447894
+      mixer.adapters.useAdapterCRDs = false;
       grafana.enabled = false;
       pilot.autoscaleMin = 2;
       pilot.traceSampling = 100;
@@ -89,97 +111,18 @@ in
     (create-istio-cr "handler")
   ];
 
-  kubernetes.helm.instances.brigade-bitbucket-gateway = {
-    namespace = "${brigade-ns}";
-    name = "brigade-bitbucket-gateway";
-    chart = charts.brigade-bitbucket;
-    values = {
-      rbac = {
-        enabled = true;
-      };
-      bitbucket = {
-        name = "brigade-bitbucket-gateway";
-        service = {
-          name = "service";
-          type = "NodePort";
-        };
-      };
-    };
-  };
+  # default [ "CustomResourceDefinition" "Namespace" ]
+  # kubernetes.resourceOrder = []
 
-  kubernetes.api.storageclasses = {
-    build-storage = {
-      metadata = {
-        namespace = brigade-ns;
-        name = "build-storage";
-        annotations = {
-          "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
-        };
-        labels = {
-          "addonmanager.kubernetes.io/mode" = "EnsureExists";
-          # exec
-        };
-      };
-      reclaimPolicy = "Retain";
-      provisioner = "kubernetes.io/host-path";
-    };
-
-    cache-storage = {
-      metadata = {
-        namespace = brigade-ns;
-        name = "cache-storage";
-        annotations = {
-          "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
-        };
-        labels = {
-          "addonmanager.kubernetes.io/mode" = "EnsureExists";
-        };
-      };
-      reclaimPolicy = "Retain";
-      provisioner = "kubernetes.io/host-path";
-    };
-  };
-
-  # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
-  kubernetes.helm.instances.brigade-project = 
-  let
-    cfg = config.docker.images;
-    extension = cfg.brigade-extension;
-    worker = cfg.brigade-worker;
-  in
-  {
-    namespace = "${brigade-ns}";
-    name = "brigade-project";
-    chart = charts.brigade-project;
-    values = {
-      project = env-config.brigade.project-name;
-      repository = env-config.brigade.project-name; # repository.location is too long # TODO check if it would work with gateway now ...
-      # repository = env-config.repository.location;
-      cloneURL = env-config.repository.git;
-      vcsSidecar = "brigadecore/git-sidecar:latest";
-      sharedSecret = env-config.brigade.sharedSecret;
-      defaultScript = builtins.readFile env-config.brigade.pipeline; 
-      sshKey = builtins.readFile ssh-keys.bitbucket.priv;
-      workerCommand = "yarn build-start";
-      worker = {
-        registry = if env-config.is-dev then "" else env-config.docker.registry;
-        name = extension.name;
-        tag = extension.tag;
-        # actually should be never but it seems that they are applying to this policy to sidecar as well
-        pullPolicy = "IfNotPresent"; 
-      };
-      kubernetes = {
-        cacheStorageClass = "cache-storage";
-        buildStorageClass = "build-storage";
-      };
-      secrets = {
-        awsAccessKey = aws-credentials.aws_access_key_id;
-        awsSecretKey = aws-credentials.aws_secret_access_key;
-        awsRegion = aws-credentials.region;
-        sopsSecrets = builtins.readFile env-config.secrets;
-        cacheBucket = env-config.s3.worker-cache;
-        workerDockerImage = "${worker.path}";
-      };
-    };
-  };
+  # DOCKER PROXY REGISTRY - ingress would be handy
+  # kubernetes.helm.instances.kube-registry-proxy = {
+  #   namespace = "${local-infra-ns}";
+  #   chart = charts.kube-registry-proxy;
+  #   values = {
+  #     registry.host = "docker-registry.local-infra.svc.cluster.local";
+  #     registry.port = env-config.docker.local-registry.clusterPort;
+  #     # hostPort
+  #     # hostIp
+  #   };
+  # };
 }

@@ -6,6 +6,7 @@
   callPackage, 
   ...
 }: 
+# TODO this part is not enabled
 let
   remote-worker = callPackage ./image.nix {};
 in

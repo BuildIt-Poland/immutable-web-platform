@@ -3,6 +3,7 @@
   env,
   brigadeSharedSecret,
   aws-profiles,
+  region ? null,
   log,
   nix-gitignore,
   lib
@@ -14,7 +15,23 @@ rec {
     rootFolder 
     env;
 
-  aws-credentials = aws-profiles.default; # default aws profile
+  aws-credentials = 
+    if (env == "brigade" || !builtins.pathExists ~/.aws/credentials)
+    then
+      # TODO will be exported as env vars
+      {
+
+        aws_access_key_id = "";
+        aws_secret_access_key = "";
+        region = "";
+      }
+    else
+    let
+      aws = aws-profiles.default; # TODO add ability to change profile
+    in
+      if (builtins.hasAttr "region" aws)
+        then aws
+        else aws // { region = if region != null then region else "eu-west-2"; };
 
   # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
@@ -22,10 +39,19 @@ rec {
   gitignore = nix-gitignore.gitignoreSourcePure [ "${rootFolder}/.gitignore" ];
 
   ssh-keys = {
-    bitbucket = {
-      pub = toString ~/.ssh/bitbucket_webhook.pub;
-      priv = toString ~/.ssh/bitbucket_webhook;
-    };
+    bitbucket = 
+    if builtins.pathExists ~/.ssh/bitbucket_webhook
+      then {
+        pub = builtins.readFile toString ~/.ssh/bitbucket_webhook.pub;
+        priv = builtins.readFile ~/.ssh/bitbucket_webhook;
+      } else {
+        pub = "";
+        priv = "";
+      };
+  };
+
+  repositories = {
+    infra-yaml = "git@bitbucket.org:da20076774/k8s-infra-descriptors.git";
   };
 
   secrets = "${rootFolder}/secrets.json";
@@ -37,11 +63,13 @@ rec {
       infra = "local-infra";
       brigade = "brigade";
       istio = "istio-system";
+      knative-monitoring = "knative-monitoring";
+      knative-serving = "knative-serving";
+      argo = "argocd";
     };
   };
 
-  # TODO apply to all pods
-  imagePullPolicy = if is-dev then "Never" else "IfNotPresent";
+  imagePullPolicy = "IfNotPresent";
 
   is-dev = env == "dev";
 
@@ -60,12 +88,17 @@ rec {
     pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
   };
 
-  docker = {
-    # stil so so, if defined for brigade worker it is trying to hit http ...
+  # TODO change this ifs to mkIf (if dev)
+  docker = rec {
+    local-registry = {
+      exposedPort = 32001;
+    };
+
+    namespace = env;
+
     registry = 
       if is-dev
-        then ""
-        # then "dev.local"
+        then "dev.local"
         else "docker.io/gatehub";
 
     destination = "docker://damianbaar"; # skopeo path transport://repo
@@ -79,19 +112,11 @@ rec {
     warnings = lib.dischargeProperties (
       lib.mkMerge [
         (lib.mkIf 
-          (brigadeSharedSecret == "") 
-          "You have to provide brigade shared secret to listen the repo hooks")
+          (!(ssh-keys.bitbucket.priv != ""))
+          "Bitbucket key does not exists") 
       ]
     );
 
-    infos = lib.dischargeProperties (
-      lib.mkMerge [
-        (lib.mkIf 
-          (is-dev) 
-          "You are in dev mode")
-      ]
-    );
     printWarnings = lib.concatMapStrings log.warn warnings;
-    printInfos = lib.concatMapStrings log.info infos;
   };
 }

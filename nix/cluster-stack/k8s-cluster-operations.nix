@@ -5,6 +5,7 @@
   callPackage,
   writeScript,
   writeScriptBin,
+  charts,
   cluster,
   log,
   kubenix,
@@ -20,17 +21,27 @@ rec {
     cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply -f -
   '';
 
+  # TODO create kubectl-helpers - DRY!
   wait-for = resource: condition: writeScript "wait-for-condition" ''
     ${pkgs.kubectl}/bin/kubectl wait ${resource} --for condition=${condition} --all --timeout=300s
   '';
 
   # INFO why waits -> https://github.com/knative/serving/issues/2195
+  # TODO this should be in k8s-resources - too many places with charts and jsons
   apply-istio-crd = writeScript "apply-istio-crd" ''
-    ${apply-resources cluster.charts.istio-init-yaml}
+    ${apply-resources charts.istio-init-yaml}
     ${wait-for "job" "complete"}
     ${wait-for "crd" "established"}
   '';
 
+  resources = {
+    yaml = {
+      cluster= cluster.k8s-cluster-resources;
+      functions = cluster.k8s-functions-resources;
+    };
+  };
+
+  # TODO enable flag - print resources
   apply-functions-to-cluster = writeScriptBin "apply-functions-to-cluster" ''
     ${log.important "Applying functions helm charts"}
     ${apply-resources cluster.k8s-functions-resources}
@@ -46,8 +57,13 @@ rec {
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
     (lib.concatMapStrings 
       (docker-image: ''
-        ${log.important "Pushing docker image to local cluster: ${docker-image}"}
-        ${pkgs.kind}/bin/kind load image-archive --name ${env-config.projectName} ${docker-image}
+        ${log.important "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}:${docker-image.imageTag}"}
+        ${pkgs.skopeo}/bin/skopeo \
+          --insecure-policy \
+          copy \
+          docker-archive://${docker-image} \
+          docker://localhost:${toString env-config.docker.local-registry.exposedPort}/${docker-image.imageName}:${docker-image.imageTag} \
+          --dest-tls-verify=false
       '') cluster.images);
 
   push-to-docker-registry = writeScriptBin "push-to-docker-registry"

@@ -20,3 +20,38 @@
 > when attaching service via `systemd` and if it using `nix-build` as it is with `arion` then sourcing bashrc from `/etc/bashrc` is necessary - need to raise an issue agains that
 > running `docker-container` within `container` - [no chance](https://github.com/NixOS/nixpkgs/issues/28659) - trying with `rkt` - getting loop ...
 > when using containers - if container does not work, it tell us that this container has to be restarted (ping to check is enough) - checking how to do autorestart without `--force-reboot` flag
+
+#### Reverse proxy
+#### istio virtual service
+- forwarding traffic with `virtualservice` to host works good, but if something is serving frontend then there is a problem - example `grafana` even when `GF_SERVER_ROOT_URL` forwarding does not work well
+
+#### nginx-ingress
+- require extra work to spin up services in different namespaces
+
+# grafana behind proxy: https://github.com/grafana/grafana/issues/16613
+https://github.com/istio/istio/issues/9247
+https://github.com/grafana/grafana/issues/16613
+knative has a bit outdated grafana - recent versions allow to https://github.com/grafana/grafana/pull/17048 
+
+# kind an local-proxy
+### kind and localrepo
+- it is a bit slow to push docker images to kind, besides version greater than 0.2.1 does not allow to upload images build from `nix/docker on mac` since `crs` showing invalid `tgz header`
+- with custom repo, upload is done by docker and recognize uploaded layers - it is faster
+  # WHY: https://github.com/windmilleng/kind-local#why
+  # + able to bump kind to 0.4.0
+
+update: actually `kube-registry-proxy` allows to skip `path` (above) on `kind` and give possibility to point to whatever registry is out there
+
+update 2: acutally above does not work with `knative` - required is to have url ending with `.local`, like `dev.local`
+
+required changes to kind:
+```
+# apt-get update
+# apt-get install vim
+# vim /etc/containerd/config.toml
+# systemctl restart containerd.service
+# systemctl restart kubelet.service - unnecessary?
+
+# preload is not necessary!!!
+# crictl pull dev.local/dev/express-app:dev-build
+```

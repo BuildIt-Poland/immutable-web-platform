@@ -6,7 +6,7 @@ rec {
     version = "0.6.1";
     src = pkgs.fetchurl {
       url = https://github.com/knative/serving/releases/download/v0.6.1/serving.yaml;
-      sha256="0y9h2mw1f2rbhmv2qfsz2m2cppa1s725i9hni5105s3js07h0r0i";
+      sha256="1kd8znb7b45rka5cykqmmryavpg6sljhz3fxkvzr0p1fyrnbvfxv";
     };
   };
   
@@ -40,23 +40,6 @@ rec {
     };
   };
 
-  weavescope = 
-    pkgs.stdenv.mkDerivation {
-      name = "waveworks-scope";
-      phases = ["installPhase"];
-      installPhase = ''
-        curl -L "https://cloud.weave.works/k8s/scope.yaml?k8s-version=$(kubectl version | base64 | tr -d '\n')" > file.yaml
-        remarshal -i file.yaml -if yaml -of json | jq '.items' > $out
-      '';
-      nativeBuildInputs = [
-        pkgs.curl 
-        pkgs.kubectl 
-        pkgs.cacert 
-        pkgs.remarshal 
-        pkgs.jq
-      ];
-    };
-
   scaling-dashboard = (builtins.readFile ../grafana/knative-scaling.json);
   monitoring-dashboard-fix = 
     let
@@ -75,8 +58,8 @@ rec {
       knative-serving
       # INFO - I'm overriding it as dashboard has to be fixed
       # knative-monitoring
+
       knative-e2e-request-tracing
-      weavescope
     ];
     overridings = monitoring-dashboard-fix;
   in
