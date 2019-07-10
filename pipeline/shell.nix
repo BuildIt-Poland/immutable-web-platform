@@ -5,8 +5,6 @@
 }:
 with pkgs;
 let
-  build-id = "$BRIGADE_BUILD_NAME";
-  branch-name = "build-${build-id}";
   repo-name = "k8s-infra-descriptors";
 
   #######
@@ -93,7 +91,9 @@ let
 
     user=$(${extractSecret ["bitbucket" "user"]})
     pass=$(${extractSecret ["bitbucket" "pass"]})
-    branch="${branch-name}"
+    branch="build-$BRIGADE_BUILD_NAME"
+
+    printenv
 
     ${clone-repo} $user $pass $branch
     cd $branch
