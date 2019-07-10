@@ -11,4 +11,4 @@
 * `nix-shell -A shell`
 
 ### Testing worker script
-* `BRIGADE_BUILD_NAME=local-build nix-shell -A shell --run make-pr-with-descriptors`
+* `BUILD_ID=local-build nix-shell -A shell --run make-pr-with-descriptors`
