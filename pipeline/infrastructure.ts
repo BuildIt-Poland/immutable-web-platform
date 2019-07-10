@@ -13,9 +13,6 @@ const createJob = (name) =>
       shell: 'bash',
       serviceAccount: "brigade-worker"
     })
-    .withEnvVars({
-      MY_ENV_VAR: "test"
-    })
     .withTasks([
       `cd /src/pipeline`,
       buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
@@ -27,6 +24,9 @@ events.on("exec", (event, project) => {
   let test =
     createJob("test")
       .withSecrets(project.secrets)
+      .withEnvVars({
+        BUILD_ID: event.buildID || "missing-build-id"
+      })
 
   test.run()
 })
