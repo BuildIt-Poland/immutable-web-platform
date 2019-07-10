@@ -2,7 +2,7 @@ const { events, Job, Group } = require("brigadier")
 const { NixJob, extractSecret, saveSecrets, buildNixExpression } = require('brigade-extension')
 
 process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
-
+console.log('@@@', process.env)
 // https://github.com/github/hub
 
 // git clone https://bitbucket.org/da20076774/k8s-infra-descriptors
@@ -86,7 +86,7 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
     .withTasks([
-      _hubCredentials(),
+      // _hubCredentials(),
       `cd /src/pipeline`,
       buildNixExpression('shell.nix', 'testScript'),
       `./result/bin/test-script`,
