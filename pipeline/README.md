@@ -9,3 +9,6 @@
 
 ### Testing shell
 * `nix-shell -A shell`
+
+### Testing worker script
+* `nix-shell -A shell --run test-script`
