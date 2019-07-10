@@ -1,7 +1,6 @@
 ### Purpose
-Yet another story about `kubernetes` and declarative approach to infrastructure. 
-In a nut shell, this is an idempotent function which builds whole infrastructure.
-In more details ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
+Yet another story about `kubernetes` and declarative approach to infrastructure ... in nutshell. 
+... being more verbose ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
 provide full testing ability of infrastructure as well as on application level following `gitops` way realized by `brigade.js` and `argo cd`.
 
 ### Inspiration part
@@ -11,13 +10,6 @@ provide full testing ability of infrastructure as well as on application level f
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
 * [brigade & virtual-kubelet](https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/)
 * [argo cd](https://argoproj.github.io/argo-cd/)
-
-### Goal
-* deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
-* spin up `distributed build cache` - to make building and provisioning super fast
-* spin up `brigade.js` to not using any `CI` solution - architecture should be event driven
-* spin up `k8s cluster` on `ec2` not `eks` - just to try alternative solution which has less assumptions from vendor
-* make infrastructure testable, ...[more](https://nixos.org/nixos/manual/index.html#sec-nixos-tests)
 
 ### What is super hot!
 * `helm charts` without `helm` and `tiller`
@@ -29,11 +21,13 @@ provide full testing ability of infrastructure as well as on application level f
 * full determinism of results
 * incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
 * diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
-* distrbuted build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
+* distributed build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
 * `nixops` is provisioning based upon `declarative` nix file
 * I can share all `nix` code across everything and don't worry about copying any `bash` scripts
 * custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docs](/packages/remote-state/README.md))
+* gitops
 * monitoring tools
+* local docker registry
 
 ### People are doing it already ...
 * [step towards future configuration infrastructure management nix](https://container-solutions.com/step-towards-future-configuration-infrastructure-management-nix/)

@@ -2,12 +2,8 @@
 * populate docker registry or nixos docker repository
 * make diffing of resources possible
 * align ec2 deployment to `machine.json` descriptor
-* create repository for infra code
 * run example tests agains artifact in brigade
-* setup brigade (serviceaccount) to be able to operate on kubernetes cluster (partially done - custom binding is there)
-* forward `kubenix` results to brigade workers
 * watch github hooks when approving the pull request
-* use private docker registry for local development - to make things faster (kind 0.3 > does not play well with images from os x) (wip)
 
 * refactoring -> create `kubectl-helpers`
 
@@ -38,3 +34,14 @@
 ### DONE
 * apply scripts from local shell to `nixos` cluster - done
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
+* setup brigade (serviceaccount) to be able to operate on kubernetes cluster (partially done - custom binding is there)
+* use private docker registry for local development - to make things faster (kind 0.3 > does not play well with images from os x) (wip)
+* forward `kubenix` results to brigade workers
+* create repository for infra code
+
+### Goal
+* deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
+* spin up `distributed build cache` - to make building and provisioning super fast
+* spin up `brigade.js` to not using any `CI` solution - architecture should be event driven
+* spin up `k8s cluster` on `ec2` not `eks` - just to try alternative solution which has less assumptions from vendor
+* make infrastructure testable, ...[more](https://nixos.org/nixos/manual/index.html#sec-nixos-tests)
