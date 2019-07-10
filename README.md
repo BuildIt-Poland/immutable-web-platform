@@ -6,13 +6,11 @@ provide full testing ability of infrastructure as well as on application level f
 
 ### Inspiration part
 * [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
-* [some why`s around nix](https://www.youtube.com/watch?v=YbUPdv03ciI)
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
 * [brigade & virtual-kubelet](https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/)
 * [gitops](https://www.weave.works/blog/gitops-operations-by-pull-request)
 * [argo cd](https://argoproj.github.io/argo-cd/)
-* [nix familly features](https://www.youtube.com/watch?v=D5Gq2wkRXpU)
-* [nix and some why`s](https://www.youtube.com/watch?v=XgZWbrBLP4I)
+* `nix` - [ecosystem](https://www.youtube.com/watch?v=YbUPdv03ciI), [features overview](https://www.youtube.com/watch?v=D5Gq2wkRXpU), [kubernetes](https://www.youtube.com/watch?v=XgZWbrBLP4I)
 
 ### What is super hot!
 * `helm charts` without `helm` and `tiller`
