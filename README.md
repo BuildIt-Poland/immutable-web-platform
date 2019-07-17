@@ -30,6 +30,11 @@ provide full testing ability of infrastructure as well as on application level f
 * monitoring tools with predefined dashboards
 * local docker registry - can be used in `s3` or any other storage
 
+### Running locally
+* download [`nixpkgs`](https://nixos.org/nix/download.html)
+* clone this repo
+* run `./run-shell-with-worker.sh`
+
 ### How to connect the dots
 * interactive [mode](https://miro.com/app/board/o9J_kxbrjxg=/)
 ![architecture](https://bitbucket.org/repo/6zKBnz9/images/83180719-nix-k8s-knative%20%284%29.jpg)
