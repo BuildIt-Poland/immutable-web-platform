@@ -6,6 +6,7 @@
 * watch github hooks when approving the pull request
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
 * introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.) - move argo to separate resource to avoid chicken egg problem
+- create argo startup scripts
 
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 
@@ -40,6 +41,7 @@
 * use private docker registry for local development - to make things faster (kind 0.3 > does not play well with images from os x) (wip)
 * forward `kubenix` results to brigade workers
 * create repository for infra code
+* architecture diagram v0.0.1
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good
