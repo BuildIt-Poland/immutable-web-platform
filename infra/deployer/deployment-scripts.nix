@@ -57,7 +57,7 @@ let
 
       deploy = writeScriptBin "ops-deploy-${name}" ''
         ${create}/bin/${create.name}
-        ${nixops}/bin/nixops deploy -d ${name} --kill-obsolete
+        ${nixops}/bin/nixops deploy -d ${name} --kill-obsolete --allow-reboot
       '';
 
       # copy-contents = writeScriptBin "ops-folder-sync-${name}" ''
