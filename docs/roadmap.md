@@ -7,6 +7,7 @@
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
 * introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.) - move argo to separate resource to avoid chicken egg problem
 - create argo startup scripts
+- define argo waves - order of deployment
 
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 

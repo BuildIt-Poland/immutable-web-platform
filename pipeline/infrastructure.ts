@@ -2,7 +2,7 @@ const { events, Job, Group } = require("brigadier")
 const { NixJob, extractSecret, saveSecrets, buildNixExpression } = require('brigade-extension')
 
 // TODO think how it can be automated to avoid defining it here
-process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
+// process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
 
 // saveSecrets('secrets.json'),
 // `cat secrets.json`,
