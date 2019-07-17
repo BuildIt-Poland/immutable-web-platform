@@ -30,6 +30,9 @@ provide full testing ability of infrastructure as well as on application level f
 * monitoring tools with predefined dashboards
 * local docker registry - can be used in `s3` or any other storage
 
+### How to connect the dots
+![architecture](https://bitbucket.org/repo/6zKBnz9/images/83180719-nix-k8s-knative%20%284%29.jpg)
+
 ### People are doing it already ...
 * [step towards future configuration infrastructure management nix](https://container-solutions.com/step-towards-future-configuration-infrastructure-management-nix/)
 * [how we use nix at iohk](https://iohk.io/blog/how-we-use-nix-at-iohk/)
@@ -85,5 +88,6 @@ provide full testing ability of infrastructure as well as on application level f
 ![zipkin](https://bitbucket.org/repo/6zKBnz9/images/573168924-Screenshot%202019-07-10%20at%2013.30.58.png)
 
 #### Gitops
+* [ifra repo](https://bitbucket.org/damian_baar/k8s-infra-descriptors/src/master/)
 * `argo cd`
 ![gitops](https://bitbucket.org/repo/6zKBnz9/images/1558410695-Screenshot%202019-07-10%20at%2010.38.17.png)
