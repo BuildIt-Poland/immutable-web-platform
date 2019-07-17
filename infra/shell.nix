@@ -30,6 +30,7 @@ mkShell {
   buildInputs = [
     # nixops wrapper
     nixops
+    nodejs
 
     # remote state locker
     remote-state-cli
@@ -43,11 +44,13 @@ mkShell {
 
   PROJECT_NAME = env-config.projectName;
 
+  # THIS NODE_PATH is a hack - wrap npx and export PATH there - npx does not take into account $PATH
   shellHook = ''
     ${if !local 
       then "export NIXOPS_STATE=${paths.state-sql}" 
       else ""}
 
+    export NODE_PATH="$NODE_PATH:${remote-state-aws-infra.node_modules}"
     export NIX_PATH="$NIX_PATH:$(pwd)"
     echo "You are now entering the remote deployer ... have fun!"
   '';
