@@ -59,7 +59,7 @@ rec {
       # INFO - I'm overriding it as dashboard has to be fixed
       # knative-monitoring
 
-      knative-e2e-request-tracing
+      # knative-e2e-request-tracing
     ];
     overridings = monitoring-dashboard-fix;
   in

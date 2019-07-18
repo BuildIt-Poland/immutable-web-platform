@@ -18,6 +18,7 @@ with kubenix.lib;
 rec {
 
   apply-resources = resources: writeScript "apply-resources" ''
+    ${log.important "Applying resources ${resources}"}
     cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply -f -
   '';
 
@@ -26,9 +27,19 @@ rec {
     ${pkgs.kubectl}/bin/kubectl wait ${resource} --for condition=${condition} --all --timeout=300s
   '';
 
+  save-resources = 
+    let
+      loc = env-config.resources.yaml.location;
+    in
+      writeScriptBin "save-resources" ''
+        ${log.important "Saving yamls to: $PWD${loc}"}
+        cat ${resources.yaml.cluster} > $PWD${loc}/cluster.yaml
+        cat ${resources.yaml.functions} > $PWD${loc}/functions.yaml
+      '';
+
   # INFO why waits -> https://github.com/knative/serving/issues/2195
   # TODO this should be in k8s-resources - too many places with charts and jsons
-  apply-istio-crd = writeScript "apply-istio-crd" ''
+  apply-istio-crd = writeScriptBin "apply-istio-crd" ''
     ${apply-resources charts.istio-init-yaml}
     ${wait-for "job" "complete"}
     ${wait-for "crd" "established"}
@@ -50,7 +61,6 @@ rec {
   apply-cluster-stack = writeScriptBin "apply-cluster-stack" ''
     ${log.important "Applying cluster helm charts"}
 
-    ${apply-istio-crd}
     ${apply-resources cluster.k8s-cluster-resources}
   '';
 
