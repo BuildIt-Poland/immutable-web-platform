@@ -4,7 +4,9 @@
 # 1. forward 
 kubectl port-forward svc/argocd-server -n argocd 32000:443 > /dev/null &
 
-# 2. passoword -> 
+# kubectl port-forward svc/argocd-server -n argocd 32000:443 --stderrthreshold=0  > /dev/null 2>&1 &
+
+# 2. password patch -> 
 kubectl patch secret -n argocd argocd-secret \
  -p '{"stringData": { "admin.password": "'$(htpasswd -bnBC 10 "" admin | tr -d ':\n')'"}}'
 
@@ -17,8 +19,13 @@ ARGO_USER=$(cat secrets.json| sops  --input-type json -d --extract '["bitbucket"
 argocd repo add https://bitbucket.org/damian_baar/k8s-infra-descriptors --username $ARGO_USER --password $ARGO_PASS
 
 # 5. add project
+# TODO add prune
 argocd app create future-is-comming \
   --repo https://bitbucket.org/damian_baar/k8s-infra-descriptors \
   --path '.' \
   --dest-server https://kubernetes.default.svc \
-  --dest-namespace '*'
+  --dest-namespace 'default' # check this - is not happy for rbac
+
+
+# argocd app sync $PROJECT_NAME --local ./resources
+# argocd app diff $PROJECT_NAME --local ./resources

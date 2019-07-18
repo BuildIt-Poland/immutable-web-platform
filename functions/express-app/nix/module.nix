@@ -58,9 +58,6 @@ in
     };
   };
 
-  kubernetes.api.namespaces."${namespaces.functions}" = {};
-  kubernetes.api.namespaces."${namespaces.infra}" = {};
-
   # TODO
   # kubernetes.helm.instances.mongodb = {
   #   namespace = "${namespaces.infra}";

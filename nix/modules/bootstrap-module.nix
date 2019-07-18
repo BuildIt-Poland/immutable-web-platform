@@ -80,9 +80,11 @@ in
       packages = [
         pkgs.k8s-local.curl-with-resolve
         pkgs.k8s-local.create-local-cluster-if-not-exists
+        pkgs.k8s-cluster-operations.save-resources
       ];
       shellHook = ''
         ${pkgs.log.message "Checking existence of local cluster"}
+        save-resources
       '';
     })
 

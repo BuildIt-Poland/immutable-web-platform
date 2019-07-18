@@ -88,6 +88,12 @@ rec {
     pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
   };
 
+  resources = {
+    yaml = {
+      location = "/resources";
+    };
+  };
+
   # TODO change this ifs to mkIf (if dev)
   docker = rec {
     local-registry = {

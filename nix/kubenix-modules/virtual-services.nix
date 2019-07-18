@@ -35,12 +35,14 @@ in
         istio = "virtual-services-gateway";
       };
       type = "NodePort";
-      ports = [{
+      ports = [
+        {
         port = 15300;
         targetPort = 15300;
         nodePort = 31300;
         name = "grafana-port";
-      } {
+      } 
+      {
         port = 15301;
         targetPort = 15301;
         nodePort = 31301;
@@ -50,7 +52,8 @@ in
         targetPort = 15302;
         nodePort = 31302;
         name = "zipkin-port";
-      } {
+      } 
+      {
         port = 15200;
         targetPort = 15200;
         nodePort = 31200;
@@ -106,9 +109,18 @@ in
             port = {
               number = 15200;
               name = "http2-argocd";
-              protocol = "HTTP2";
+              protocol = "HTTPS";
             };
-            hosts = ["*"];
+            tls = {
+              mode = "SIMPLE";
+              privateKey = "/etc/istio/ingressgateway-certs/tls.key";
+              serverCertificate = "/etc/istio/ingressgateway-certs/tls.crt";
+            };
+            hosts = [
+              "*"
+              "localhost"
+              "kind.cluster"
+            ];
           }];
         };
       };
@@ -117,8 +129,30 @@ in
           name = "virtual-service";
         };
         spec = {
-          hosts = ["*"];
+          hosts = [
+            "kind.cluster"
+            "*"
+          ];
           gateways = ["virtual-services-gateway"];
+          tls = [
+            # GITOPS 15200
+            {
+              match = [
+                { 
+                  port = 443; 
+                  sniHosts = [
+                    "kind.cluster"
+                  ];
+                }
+              ];
+              route = [{
+                destination = {
+                  host = "argocd-server.${argo-ns}.svc.cluster.local";
+                  port.number = 443;
+                };
+              }];
+            } 
+          ];
           http = [
           # MONITORING 15300+
           {
@@ -154,8 +188,6 @@ in
               };
             }];
           }
-
-          # GITOPS 15200
           {
             match = [
               { port = 15200; }
@@ -166,7 +198,7 @@ in
                 port.number = 443;
               };
             }];
-          } 
+          }
           ];
         };
       };

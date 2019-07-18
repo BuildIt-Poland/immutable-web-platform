@@ -88,6 +88,7 @@ mkShell {
 
     # helm
     k8s-cluster-operations.push-docker-images-to-local-cluster
+    k8s-cluster-operations.apply-istio-crd
   ] ++ moduleConfig.packages;
 
   PROJECT_NAME = env-config.projectName;
@@ -111,6 +112,9 @@ mkShell {
 
     create-local-cluster-if-not-exists
     source export-kubeconfig
+
+    ${if fresh 
+         then "apply-istio-crd" else ""}
 
     ${if applyResources
         then ''

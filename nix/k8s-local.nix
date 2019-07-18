@@ -68,13 +68,15 @@ rec {
           containerPort = 31302;
           hostPort = 31302;
         }
-        # argocd
+        # argocd TODO!!
         {
           containerPort = 31200;
           hostPort = 31200;
         }
         # TODO make the same with istio and remove custom curl! super awesome!
         # and then we can skip port-forwarding!
+        # port-forward service/docker-registry --namespace local-infra 32001:5000
+        # port-forward service/istio-ingressgateway --namespace istio-system 31380:80
       ];
     in
     [
