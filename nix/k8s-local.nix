@@ -68,7 +68,7 @@ rec {
           containerPort = 31302;
           hostPort = 31302;
         }
-        # argocd TODO!!
+        # argocd 
         {
           containerPort = 31200;
           hostPort = 31200;
