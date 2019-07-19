@@ -72,35 +72,35 @@ in
   # create repo
   # create application
   # there is a cli - a bit regret that this is not a kubernetes resource
-  # kubernetes.helm.instances.argo-cd = {
-  #   namespace = "${argo-ns}";
-  #   chart = charts.argo-cd;
-  #   values ={
-  #     # config.repositories = {};
-  #     # ingress = {
-  #     #   enabled = true;
-  #     #   path = "/";
-  #     #   annotations = {
-  #     #     "kubernetes.io/ingress.class" = "istio";
-  #     #   };
-  #     #   hosts = [
-  #     #     "localhost"
-  #     #     # "argocd.example.com"
-  #     #   ];
-  #     # };
-  #     config = {
-  #       # https://argoproj.github.io/argo-cd/user-guide/diffing/#application-level-configuration
-  #       # https://github.com/argoproj/argo-helm/blob/master/charts/argo-cd/values.yaml#L127
-  #       # resourceCustomizations = {
-  #       #   ignoreDifferences = [{
-  #       #     jsonPointers = [
-  #       #       "metadata/labels/kubenix/hash"
-  #       #     ];
-  #       #   }];
-  #       # };
-  #     };
-  #   };
-  # };
+  kubernetes.helm.instances.argo-cd = {
+    namespace = "${argo-ns}";
+    chart = charts.argo-cd;
+    values ={
+      # config.repositories = {};
+      # ingress = {
+      #   enabled = true;
+      #   path = "/";
+      #   annotations = {
+      #     "kubernetes.io/ingress.class" = "istio";
+      #   };
+      #   hosts = [
+      #     "localhost"
+      #     # "argocd.example.com"
+      #   ];
+      # };
+      config = {
+        # https://argoproj.github.io/argo-cd/user-guide/diffing/#application-level-configuration
+        # https://github.com/argoproj/argo-helm/blob/master/charts/argo-cd/values.yaml#L127
+        # resourceCustomizations = {
+        #   ignoreDifferences = [{
+        #     jsonPointers = [
+        #       "metadata/labels/kubenix/hash"
+        #     ];
+        #   }];
+        # };
+      };
+    };
+  };
 
   # https://github.com/helm/charts/tree/master/stable/cert-manager#installing-the-chart
 
@@ -159,7 +159,9 @@ in
       };
       global = {
         controlPlaneSecurityEnabled = false;
-        mtls.enabled = true;
+        # Default setting for service-to-service mtls. Can be set explicitly using
+        # destination rules or service annotations.
+        mtls.enabled = false;
         sds = {
           enabled = true;
           udsPath = "unix:/var/run/sds/uds_path";
