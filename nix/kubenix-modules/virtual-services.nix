@@ -105,23 +105,26 @@ in
               protocol = "HTTP2";
             };
             hosts = ["*"];
-          } {
+          } 
+          {
             port = {
               number = 15200;
               name = "http2-argocd";
               protocol = "HTTPS";
             };
             tls = {
+              credentialName = "ingress-cert";
               mode = "SIMPLE";
-              privateKey = "/etc/istio/ingressgateway-certs/tls.key";
-              serverCertificate = "/etc/istio/ingressgateway-certs/tls.crt";
+              privateKey = "sds";
+              serverCertificate = "sds";
             };
-            hosts = [
-              "*"
-              "localhost"
-              "kind.cluster"
+            hosts = [ 
+              "*" 
+              # INFO
+              # Error from server: admission webhook "pilot.validation.istio.io" denied the request: configuration is invalid: short names (non FQDN) are not allowed
             ];
-          }];
+          }
+          ];
         };
       };
       VirtualService.cluster-services = {
@@ -130,29 +133,9 @@ in
         };
         spec = {
           hosts = [
-            "kind.cluster"
             "*"
           ];
           gateways = ["virtual-services-gateway"];
-          tls = [
-            # GITOPS 15200
-            {
-              match = [
-                { 
-                  port = 443; 
-                  sniHosts = [
-                    "kind.cluster"
-                  ];
-                }
-              ];
-              route = [{
-                destination = {
-                  host = "argocd-server.${argo-ns}.svc.cluster.local";
-                  port.number = 443;
-                };
-              }];
-            } 
-          ];
           http = [
           # MONITORING 15300+
           {

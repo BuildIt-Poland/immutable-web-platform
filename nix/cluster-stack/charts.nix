@@ -53,6 +53,13 @@ rec {
     sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
   };
 
+  cert-manager = helm.fetch {
+    chart = "cert-manager";
+    version = "0.8.1";
+    sha256 = "1c7y2q2rp1b4jmmblkbgvr8p25i7jsq8dya2qjr0sg158kcji3f2";
+    repo = "https://charts.jetstack.io";
+  };
+
   kube-registry-proxy = helm.fetch {
     chart = "kube-registry-proxy";
     version = "0.3.1";
