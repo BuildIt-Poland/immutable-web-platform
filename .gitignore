@@ -10,6 +10,5 @@ yarn-error.*
 cdk.out/*
 .temp
 temp.*
-resources/*.yaml
 temp/
 /.gtm/
