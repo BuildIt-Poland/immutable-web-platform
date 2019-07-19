@@ -30,6 +30,16 @@ in
     # values: https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml
     kubernetes.virtual-services.gateway = {
       enabled = true;
+      # https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml#L15
+      # TODO define limits
+      sds = {
+        enabled = true;
+        image = "node-agent-k8s";
+        requests = {
+          cpu = "100m";
+          memory = "128Mi";
+        };
+      };
       labels = {
         app = "virtual-services";
         istio = "virtual-services-gateway";
