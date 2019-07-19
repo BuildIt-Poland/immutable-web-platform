@@ -33,6 +33,7 @@ let
     knctl = super.callPackage ./tools/knctl.nix {}; # knative
     kubectl-repl = super.callPackage ./tools/kubectl-repl.nix {}; 
     hey = super.callPackage ./tools/hey.nix {}; 
+    istioctl = super.callPackage ./tools/istioctl.nix {}; 
     chart-from-git = super.callPackage ./helm {};
     k8s-local = super.callPackage ./k8s-local.nix {};
 

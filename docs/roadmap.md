@@ -5,6 +5,7 @@
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
 * create argo startup scripts
 * figure out better invalidation -> nix is doing a hash from directory, so move baking the image to some other place
+* integrate `istioctl` - create derivation
 
 ## TODO
 * populate docker registry or nixos docker repository

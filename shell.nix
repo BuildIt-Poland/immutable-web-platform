@@ -66,6 +66,7 @@ mkShell {
     node-development-tools
     kubernetes-helm
     hey
+    istioctl
 
     # secrets
     sops
@@ -88,7 +89,7 @@ mkShell {
 
     # helm
     k8s-cluster-operations.push-docker-images-to-local-cluster
-    k8s-cluster-operations.apply-istio-crd
+    k8s-cluster-operations.apply-cluster-crd
   ] ++ moduleConfig.packages;
 
   PROJECT_NAME = env-config.projectName;
@@ -113,8 +114,7 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
-    ${if fresh 
-         then "apply-istio-crd" else ""}
+    apply-cluster-crd
 
     ${if applyResources
         then ''
@@ -139,4 +139,6 @@ mkShell {
   '';
   # wait-for-brigade-ingress
   # expose-brigade-gateway
+    # ${if fresh 
+    #      then "apply-cluster-crd" else ""}
 }

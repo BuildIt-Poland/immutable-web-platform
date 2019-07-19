@@ -1,4 +1,4 @@
-{stdenv, lib, pkgs, kubenix, yaml-to-json}:
+{stdenv, lib, pkgs, kubenix, yaml-to-json, charts}:
 rec {
 
   knative-serving = yaml-to-json {
@@ -58,8 +58,7 @@ rec {
       knative-serving
       # INFO - I'm overriding it as dashboard has to be fixed
       # knative-monitoring
-
-      # knative-e2e-request-tracing
+      knative-e2e-request-tracing
     ];
     overridings = monitoring-dashboard-fix;
   in
@@ -67,4 +66,25 @@ rec {
       lib.concat
       overridings
       (builtins.map lib.importJSON jsons));
+
+  # core crd
+  cert-manager-crd = yaml-to-json {
+    name = "cert-manager-crd";
+    version = "0.8.1";
+    src = pkgs.fetchurl {
+      url = https://raw.githubusercontent.com/jetstack/cert-manager/release-0.8/deploy/manifests/00-crds.yaml;
+      sha256 = "1a1sgh32x4ysf1mkdw4x8j5jj7xdcqcmw9a7h5qfpkl2yvn0cl18";
+    };
+  };
+
+  cluster-crd = with kubenix.lib; toYAML (k8s.mkHashedList { 
+    items = 
+      (lib.foldl 
+        lib.concat
+        []
+        (builtins.map lib.importJSON [
+          charts.istio-init-json 
+          cert-manager-crd
+        ]));
+  });
 }

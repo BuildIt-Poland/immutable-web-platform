@@ -27,32 +27,39 @@ rec {
     ${pkgs.kubectl}/bin/kubectl wait ${resource} --for condition=${condition} --all --timeout=300s
   '';
 
+  # TODO Save istio init and other crd as well
   save-resources = 
     let
       loc = env-config.resources.yaml.location;
     in
       writeScriptBin "save-resources" ''
         ${log.important "Saving yamls to: $PWD${loc}"}
+        cat ${resources.yaml.crd} > $PWD${loc}/crd.yaml
         cat ${resources.yaml.cluster} > $PWD${loc}/cluster.yaml
         cat ${resources.yaml.functions} > $PWD${loc}/functions.yaml
       '';
 
   # INFO why waits -> https://github.com/knative/serving/issues/2195
   # TODO this should be in k8s-resources - too many places with charts and jsons
-  apply-istio-crd = writeScriptBin "apply-istio-crd" ''
-    ${apply-resources charts.istio-init-yaml}
+  # TODO there should be something global like init crd
+    # ${apply-resources charts.istio-init-yaml}
+  apply-cluster-crd = writeScriptBin "apply-cluster-crd" ''
+    ${apply-resources resources.yaml.crd}
     ${wait-for "job" "complete"}
     ${wait-for "crd" "established"}
   '';
 
   resources = {
     yaml = {
+      crd = k8s-resources.cluster-crd;
       cluster= cluster.k8s-cluster-resources;
       functions = cluster.k8s-functions-resources;
     };
   };
 
   # TODO enable flag - print resources
+  # TODO https://raw.githubusercontent.com/jetstack/cert-manager/release-0.9/deploy/manifests/00-crds.yaml
+
   apply-functions-to-cluster = writeScriptBin "apply-functions-to-cluster" ''
     ${log.important "Applying functions helm charts"}
     ${apply-resources cluster.k8s-functions-resources}
@@ -60,7 +67,6 @@ rec {
 
   apply-cluster-stack = writeScriptBin "apply-cluster-stack" ''
     ${log.important "Applying cluster helm charts"}
-
     ${apply-resources cluster.k8s-cluster-resources}
   '';
 
