@@ -31,12 +31,13 @@ rec {
   save-resources = 
     let
       loc = env-config.resources.yaml.location;
+      drop-hash = ''sed -e '/kubenix\/hash/d' '';
     in
       writeScriptBin "save-resources" ''
         ${log.important "Saving yamls to: $PWD${loc}"}
-        cat ${resources.yaml.crd} > $PWD${loc}/crd.yaml
-        cat ${resources.yaml.cluster} > $PWD${loc}/cluster.yaml
-        cat ${resources.yaml.functions} > $PWD${loc}/functions.yaml
+        cat ${resources.yaml.crd} | ${drop-hash} > $PWD${loc}/crd.yaml
+        cat ${resources.yaml.cluster} | ${drop-hash} > $PWD${loc}/cluster.yaml
+        cat ${resources.yaml.functions} | ${drop-hash} > $PWD${loc}/functions.yaml
       '';
 
   # INFO why waits -> https://github.com/knative/serving/issues/2195
