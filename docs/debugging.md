@@ -7,3 +7,5 @@
 
 #### Istio
 * https://istio.io/docs/ops/traffic-management/proxy-cmd/
+* kubectl -n istio-system exec -it -c istio-proxy virtual-services-b558c6f4d-rdrgn bash
+* curl localhost:15000/help

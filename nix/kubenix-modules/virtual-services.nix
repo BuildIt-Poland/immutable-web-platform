@@ -32,14 +32,14 @@ in
       enabled = true;
       # https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml#L15
       # TODO define limits
-      sds = {
-        enabled = true;
-        image = "node-agent-k8s";
-        requests = {
-          cpu = "100m";
-          memory = "128Mi";
-        };
-      };
+      # sds = {
+      #   enabled = true;
+      #   image = "node-agent-k8s";
+      #   requests = {
+      #     cpu = "100m";
+      #     memory = "128Mi";
+      #   };
+      # };
       labels = {
         app = "virtual-services";
         istio = "virtual-services-gateway";
@@ -97,22 +97,22 @@ in
           servers = [{
             port = {
               number = 15301;
-              name = "http2-weavescope";
-              protocol = "HTTP2";
+              name = "http-weavescope";
+              protocol = "HTTP";
             };
             hosts = ["*"];
           } {
             port = {
               number = 15300;
-              name = "http2-grafana";
-              protocol = "HTTP2";
+              name = "http-grafana";
+              protocol = "HTTP";
             };
             hosts = ["*"];
           } {
             port = {
               number = 15302;
-              name = "http2-zipkin";
-              protocol = "HTTP2";
+              name = "http-zipkin";
+              protocol = "HTTP";
             };
             hosts = ["*"];
           } 
@@ -123,13 +123,14 @@ in
               protocol = "HTTPS";
             };
             tls = {
-              credentialName = "ingress-cert";
-              mode = "SIMPLE";
-              privateKey = "sds";
-              serverCertificate = "sds";
+              # credentialName = "ingress-cert";
+              mode = "PASSTHROUGH";
+              # privateKey = "sds";
+              # serverCertificate = "sds";
             };
             hosts = [ 
-              "*" 
+              "*"
+              # "127.0.0.1.xip.io" 
               # INFO
               # Error from server: admission webhook "pilot.validation.istio.io" denied the request: configuration is invalid: short names (non FQDN) are not allowed
             ];
@@ -146,6 +147,24 @@ in
             "*"
           ];
           gateways = ["virtual-services-gateway"];
+          tls = [{
+            match = [
+              { 
+                port = 15200; 
+                sni_hosts = [
+                  "localhost"
+                  "kind.local"
+                  "*"
+                ];
+              }
+            ];
+            route = [{
+              destination = {
+                host = "argocd-server.${argo-ns}.svc.cluster.local";
+                port.number = 443;
+              };
+            }];
+          }];
           http = [
           # MONITORING 15300+
           {
@@ -181,17 +200,17 @@ in
               };
             }];
           }
-          {
-            match = [
-              { port = 15200; }
-            ];
-            route = [{
-              destination = {
-                host = "argocd-server.${argo-ns}.svc.cluster.local";
-                port.number = 443;
-              };
-            }];
-          }
+          # {
+          #   match = [
+          #     { port = 15200; }
+          #   ];
+          #   route = [{
+          #     destination = {
+          #       host = "argocd-server.${argo-ns}.svc.cluster.local";
+          #       port.number = 443;
+          #     };
+          #   }];
+          # }
           ];
         };
       };
