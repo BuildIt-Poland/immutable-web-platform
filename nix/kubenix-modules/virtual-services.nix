@@ -123,16 +123,10 @@ in
               protocol = "HTTPS";
             };
             tls = {
-              # credentialName = "ingress-cert";
               mode = "PASSTHROUGH";
-              # privateKey = "sds";
-              # serverCertificate = "sds";
             };
             hosts = [ 
               "*"
-              # "127.0.0.1.xip.io" 
-              # INFO
-              # Error from server: admission webhook "pilot.validation.istio.io" denied the request: configuration is invalid: short names (non FQDN) are not allowed
             ];
           }
           ];
