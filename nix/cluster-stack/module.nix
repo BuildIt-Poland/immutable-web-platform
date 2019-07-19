@@ -122,6 +122,7 @@ in
     values = {
       gateways = {
         istio-ingressgateway = {
+          sds.enabled = true;
           type = "NodePort";
           autoscaleMin = 1;
           autoscaleMax = 1;

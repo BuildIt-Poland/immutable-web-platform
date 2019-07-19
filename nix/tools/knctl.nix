@@ -1,5 +1,6 @@
 { pkgs, writeShellScript }:
 with pkgs.stdenv;
+assert isDarwin; # sha for linux will be different
 let
   version = "0.3.0";
   # TODO this hashes are not ok for linux variant - build from source!

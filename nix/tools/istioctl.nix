@@ -1,8 +1,9 @@
 { pkgs, writeShellScript }:
 with pkgs.stdenv;
+assert isDarwin; # sha for linux will be different
 let
   version = "1.1.9";
-  os = if isDarwin then "osx" else "linux";
+  os = "osx";
 in
 mkDerivation rec {
   inherit version;
@@ -13,6 +14,8 @@ mkDerivation rec {
     url = "https://github.com/istio/istio/releases/download/${version}/istio-${version}-${os}.tar.gz";
     sha256 = "13l7l9ykh7la5qca7nxmv8gm8g30xvjak3q62ib3yxq4q2jl1p6c"; # sha for linux will be different
   };
+
+  system = "mysystem";
 
   buildInputs = [ ];
   phases = ["installPhase" "patchPhase"];
