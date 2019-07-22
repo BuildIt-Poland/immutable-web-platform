@@ -69,9 +69,10 @@ rec {
     };
   };
 
-  imagePullPolicy = "IfNotPresent";
 
   is-dev = env == "dev";
+
+  imagePullPolicy = if is-dev then "Never" else "IfNotPresent";
 
   s3 = {
     worker-cache = "${projectName}-worker-binary-store";
@@ -100,11 +101,14 @@ rec {
       exposedPort = 32001;
     };
 
-    namespace = env;
+    namespace = 
+      if is-dev 
+        then "${env}.local" 
+        else env;
 
     registry = 
       if is-dev
-        then "dev.local"
+        then ""
         else "docker.io/gatehub";
 
     destination = "docker://damianbaar"; # skopeo path transport://repo

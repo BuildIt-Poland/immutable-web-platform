@@ -74,14 +74,16 @@ rec {
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
     (lib.concatMapStrings 
       (docker-image: ''
+        eval $(minikube docker-env -p ${env-config.projectName})
         ${log.important "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}:${docker-image.imageTag}"}
-        ${pkgs.skopeo}/bin/skopeo \
-          --insecure-policy \
-          copy \
-          docker-archive://${docker-image} \
-          docker://localhost:${toString env-config.docker.local-registry.exposedPort}/${docker-image.imageName}:${docker-image.imageTag} \
-          --dest-tls-verify=false
+        ${pkgs.docker}/bin/docker load -i ${docker-image}
       '') cluster.images);
+        # ${pkgs.skopeo}/bin/skopeo \
+        #   --insecure-policy \
+        #   copy \
+        #   docker-archive://${docker-image} \
+        #   docker://localhost:${toString env-config.docker.local-registry.exposedPort}/${docker-image.imageName}:${docker-image.imageTag} \
+        #   --dest-tls-verify=false
 
   push-to-docker-registry = writeScriptBin "push-to-docker-registry"
     (lib.concatMapStrings 

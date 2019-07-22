@@ -37,6 +37,7 @@ in
           spec = {
             containers = [{
               image = config.docker.images.express-app.path;
+
               imagePullPolicy = env-config.imagePullPolicy;
               env = fn-config.env;
               livenessProbe = {

@@ -43,8 +43,9 @@ in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
     ${log.message "Deleting cluster"}
-    ${pkgs.kind}/bin/kind delete cluster --name ${env-config.projectName} || true
+    minikube -p ${env-config.projectName} delete
   '';
+    # ${pkgs.kind}/bin/kind delete cluster --name ${env-config.projectName} || true
 
   cluster-config = {
     kind = "Cluster";
@@ -96,20 +97,41 @@ rec {
 
   cluster-config-yaml = kubenix.lib.toYAML cluster-config;
 
+  # minikube: error: unable to forward port because pod is not running. Current status=Pending
+  # double check that
   wait-for-docker-registry = pkgs.writeScriptBin "wait-for-docker-registry" ''
     ${wait-for ({selector= "app=${registry-service.service}";} // registry-service)}
     ${port-forward (registry-service // registry-ports)}
   '';
+  # same with istio: error: unable to forward port because pod is not running. Current status=Pending
 
+  # hyperkit is suggested by minikube
+  # brew install docker-machine-driver-hyperkit - check if there is a nixpkgs for that
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
     ${log.message "Creating cluster"}
-    ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
-    ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
+    minikube start -p ${env-config.projectName} \
+      --cpus 6 \
+      --memory 16400 \
+      --kubernetes-version=v1.15.0 \
+      --vm-driver=hyperkit \
+      --bootstrapper=kubeadm \
+      --insecure-registry "10.0.0.0/24"
+  '';
+  # ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
+  # ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
+
+  check-if-already-started = pkgs.writeScript "check-if-minikube-started" ''
+    echo $(minikube status -p ${env-config.projectName} --format {{.Kubelet}} | wc -c)
   '';
 
+  # ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
     ${log.message "Checking existence of cluster ..."}
-    ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
+    isRunning=$(${check-if-already-started})
+    if [ $isRunning = "0" ]; then
+      echo "Running minikube"
+      ${create-local-cluster}
+    fi 
   '';
 
   get-port = {
@@ -214,12 +236,13 @@ rec {
 
   # https://github.com/cppforlife/knctl/blob/master/docs/cmd/knctl_ingress_list.md
   # if not ... Error: Expected to find at least one ingress address
-  add-knative-label-to-istio = pkgs.writeScriptBin "add-knative-label-to-istio" ''
-    ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace ${istio-ns} -p '${builtins.toJSON knative-label-patch}'
-  '';
+  # add-knative-label-to-istio = pkgs.writeScriptBin "add-knative-label-to-istio" ''
+  #   ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace ${istio-ns} -p '${builtins.toJSON knative-label-patch}'
+  # '';
 
+  # INFO in case of minikube this is not necessary
+  # export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
   export-kubeconfig = pkgs.writeScriptBin "export-kubeconfig" ''
-    export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
     export BRIGADE_NAMESPACE=${brigade-service.namespace}
     export BRIGADE_PROJECT=${env-config.brigade.project-name}
   '';
@@ -230,15 +253,15 @@ rec {
 
   # about makeWrapper https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/setup-hooks/make-wrapper.sh#L13
   # about resolve https://curl.haxx.se/docs/manpage.html
-  curl-with-resolve = pkgs.stdenv.mkDerivation rec {
-    name = "curl-with-localhost";
-    version = "0.0.3";
-    buildInputs = [pkgs.makeWrapper pkgs.curl];
-    phases = ["installPhase"];
-    installPhase = ''
-      mkdir -p $out/bin
-      makeWrapper ${pkgs.curl}/bin/curl $out/bin/curl \
-        --add-flags "--resolve ${env-config.projectName}-control-plane:\$KUBE_NODE_PORT:127.0.0.1"
-    '';
-  };
+  # curl-with-resolve = pkgs.stdenv.mkDerivation rec {
+  #   name = "curl-with-localhost";
+  #   version = "0.0.3";
+  #   buildInputs = [pkgs.makeWrapper pkgs.curl];
+  #   phases = ["installPhase"];
+  #   installPhase = ''
+  #     mkdir -p $out/bin
+  #     makeWrapper ${pkgs.curl}/bin/curl $out/bin/curl \
+  #       --add-flags "--resolve ${env-config.projectName}-control-plane:\$KUBE_NODE_PORT:127.0.0.1"
+  #   '';
+  # };
 }

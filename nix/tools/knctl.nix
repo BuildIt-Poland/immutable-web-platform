@@ -2,11 +2,11 @@
 with pkgs.stdenv;
 assert isDarwin; # sha for linux will be different
 let
-  version = "0.3.0";
+  version = "0.2.0";
   # TODO this hashes are not ok for linux variant - build from source!
   getSource = {version, os}: pkgs.fetchurl {
-    url = "https://github.com/cppforlife/knctl/releases/download/v${version}/knctl-${os}-amd64";
-    sha256 = "1fchz6c58mzrh6ly2c5lncpcmsyk9j9ljc9qsqrwpwyvixg0fbrq";
+    url = "https://github.com/knative/client/releases/download/v${version}/kn-${os}-amd64";
+    sha256 = "0q4yk20xq7wv9fcw7hdmgksvhg2g4bl49hjqqaidxihlcbajh87r";
   };
 in
 mkDerivation rec {
@@ -18,11 +18,15 @@ mkDerivation rec {
       then getSource {inherit version; os = "darwin";}
       else getSource {inherit version; os = "linux";};
 
-  buildInputs = [ pkgs.k8s-local.curl-with-resolve ];
   phases = ["installPhase"];
   installPhase = ''
     mkdir -p $out/bin
-    cp $src $out/bin/knctl
-    chmod +x $out/bin/knctl
+    KN=$out/bin/kn
+
+    cp $src $KN
+    chmod +x $KN
+
+    mkdir -p $out/etc/bash_completion.d/
+    $KN completion > $out/etc/bash_completion.d/kn-completion.bash
   '';
 }
