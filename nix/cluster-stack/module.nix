@@ -55,17 +55,17 @@ in
     };
   };
 
-  kubernetes.helm.instances.docker-registry = {
-    namespace = "${local-infra-ns}";
-    chart = charts.docker-registry;
-    values = 
-      let
-        registry = env-config.docker.local-registry;
-      in
-      {
-        service.type = "ClusterIP";
-      };
-  };
+  # kubernetes.helm.instances.docker-registry = {
+  #   namespace = "${local-infra-ns}";
+  #   chart = charts.docker-registry;
+  #   values = 
+  #     let
+  #       registry = env-config.docker.local-registry;
+  #     in
+  #     {
+  #       service.type = "ClusterIP";
+  #     };
+  # };
 
   # TODO
   # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
@@ -84,7 +84,8 @@ in
       #     "kubernetes.io/ingress.class" = "istio";
       #   };
       #   hosts = [
-      #     "localhost"
+      #     # "localhost"
+      #     "myminikube.info"
       #     # "argocd.example.com"
       #   ];
       # };
@@ -123,7 +124,7 @@ in
       gateways = {
         istio-ingressgateway = {
           sds.enabled = true;
-          type = "NodePort";
+          type = "LoadBalancer";
           autoscaleMin = 1;
           autoscaleMax = 1;
           resources.requests = {
@@ -148,27 +149,27 @@ in
       # tracing.enabled = true;
       # tracing.provider = "zipkin";
       # https://raw.githubusercontent.com/istio/istio/release-1.2/install/kubernetes/helm/istio/values-istio-sds-auth.yaml
-      nodeagent = {
-        enabled =  true;
-        image =  "node-agent-k8s";
-        env = {
-          CA_PROVIDER =  "Citadel";
-          CA_ADDR =  "istio-citadel:8060";
-          VALID_TOKEN = true;
-        };
-      };
+      # nodeagent = {
+      #   enabled =  true;
+      #   image =  "node-agent-k8s";
+      #   env = {
+      #     CA_PROVIDER =  "Citadel";
+      #     CA_ADDR =  "istio-citadel:8060";
+      #     VALID_TOKEN = true;
+      #   };
+      # };
       global = {
-        controlPlaneSecurityEnabled = false;
+        # controlPlaneSecurityEnabled = false;
         # Default setting for service-to-service mtls. Can be set explicitly using
         # destination rules or service annotations.
-        mtls.enabled = false;
-        sds = {
-          enabled = true;
-          udsPath = "unix:/var/run/sds/uds_path";
-          useNormalJwt = true;
-        };
-        k8sIngress.enabled = true;
-        k8sIngress.enableHttps = true;
+        # mtls.enabled = false;
+        # sds = {
+        #   enabled = true;
+        #   udsPath = "unix:/var/run/sds/uds_path";
+        #   useNormalJwt = true;
+        # };
+        # k8sIngress.enabled = true;
+        # k8sIngress.enableHttps = true;
         disablePolicyChecks = true;
         proxy.autoInject = "disabled";
         sidecarInjectorWebhook.enabled = true;

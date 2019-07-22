@@ -67,6 +67,7 @@ mkShell {
     kubernetes-helm
     hey
     istioctl
+    # minikube
 
     # secrets
     sops
@@ -74,7 +75,7 @@ mkShell {
     # THIS things will dissapear soon
     # cluster scripts
     k8s-local.expose-istio-ingress
-    k8s-local.add-knative-label-to-istio
+    # k8s-local.add-knative-label-to-istio
     # waits
     k8s-local.wait-for-istio-ingress
     k8s-local.wait-for-brigade-ingress
@@ -119,7 +120,6 @@ mkShell {
     ${if applyResources
         then ''
           apply-cluster-stack
-          wait-for-docker-registry
         '' else ""}
 
     ${if uploadDockerImages 
@@ -128,15 +128,15 @@ mkShell {
     ${if applyResources
       then ''
         apply-functions-to-cluster
-        wait-for-istio-ingress
-        expose-istio-ingress
       '' else ""
     }
 
     source export-ports
-    add-knative-label-to-istio
     get-help
   '';
+  # wait-for-istio-ingress
+  # expose-istio-ingress
+  # add-knative-label-to-istio
   # wait-for-brigade-ingress
   # expose-brigade-gateway
     # ${if fresh 

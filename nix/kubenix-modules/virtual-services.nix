@@ -44,7 +44,7 @@ in
         app = "virtual-services";
         istio = "virtual-services-gateway";
       };
-      type = "NodePort";
+      type = "LoadBalancer";
       ports = [
         {
         port = 15300;
