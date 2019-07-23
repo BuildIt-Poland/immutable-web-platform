@@ -141,7 +141,7 @@ in
       mixer.telemetry.enabled = true;
       mixer.adapters.prometheus.enabled = false;
       # https://github.com/istio/istio/issues/7675#issuecomment-415447894
-      mixer.adapters.useAdapterCRDs = false;
+      mixer.adapters.useAdapterCRDs = true;
       grafana.enabled = false;
       pilot.autoscaleMin = 2;
       pilot.traceSampling = 100;
@@ -149,31 +149,31 @@ in
       # tracing.enabled = true;
       # tracing.provider = "zipkin";
       # https://raw.githubusercontent.com/istio/istio/release-1.2/install/kubernetes/helm/istio/values-istio-sds-auth.yaml
-      # nodeagent = {
-      #   enabled =  true;
-      #   image =  "node-agent-k8s";
-      #   env = {
-      #     CA_PROVIDER =  "Citadel";
-      #     CA_ADDR =  "istio-citadel:8060";
-      #     VALID_TOKEN = true;
-      #   };
-      # };
+      nodeagent = {
+        enabled =  true;
+        image =  "node-agent-k8s";
+        env = {
+          CA_PROVIDER =  "Citadel";
+          CA_ADDR =  "istio-citadel:8060";
+          VALID_TOKEN = true;
+        };
+      };
       global = {
-        # controlPlaneSecurityEnabled = false;
+        controlPlaneSecurityEnabled = false;
         # Default setting for service-to-service mtls. Can be set explicitly using
         # destination rules or service annotations.
-        # mtls.enabled = false;
-        # sds = {
-        #   enabled = true;
-        #   udsPath = "unix:/var/run/sds/uds_path";
-        #   useNormalJwt = true;
-        # };
-        # k8sIngress.enabled = true;
-        # k8sIngress.enableHttps = true;
-        disablePolicyChecks = true;
+        mtls.enabled = true;
+        sds = {
+          enabled = true;
+          udsPath = "unix:/var/run/sds/uds_path";
+          useNormalJwt = true;
+        };
+        k8sIngress.enabled = true;
+        k8sIngress.enableHttps = true;
+        disablePolicyChecks = false; # true?
         proxy.autoInject = "disabled";
         sidecarInjectorWebhook.enabled = true;
-        sidecarInjectorWebhook.enableNamespacesByDefault = true;
+        sidecarInjectorWebhook.enableNamespacesByDefault = false;
       };
     };
   };
@@ -193,6 +193,7 @@ in
     (create-istio-cr "kubernetes")
     (create-istio-cr "rule")
     (create-istio-cr "handler")
+    (create-istio-cr "instance")
   ];
 
   # default [ ]
