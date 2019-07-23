@@ -12,3 +12,4 @@ cdk.out/*
 temp.*
 temp/
 /.gtm/
+cdk.out
