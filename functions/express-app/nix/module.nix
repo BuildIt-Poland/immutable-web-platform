@@ -26,6 +26,7 @@ in
       spec = {
         template = {
           metadata = {
+            # app = env-config.projectName;
             # https://github.com/knative/docs/blob/master/docs/serving/samples/autoscale-go/README.md
             annotations = {
               "autoscaling.knative.dev/class" = "kpa.autoscaling.knative.dev";

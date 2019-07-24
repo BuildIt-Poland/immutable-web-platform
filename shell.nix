@@ -75,7 +75,7 @@ mkShell {
     # THIS things will dissapear soon
     # cluster scripts
     k8s-local.expose-istio-ingress
-    # k8s-local.add-knative-label-to-istio
+    k8s-local.add-knative-label-to-istio
     # waits
     k8s-local.wait-for-istio-ingress
     k8s-local.wait-for-brigade-ingress
@@ -131,12 +131,12 @@ mkShell {
       '' else ""
     }
 
+    add-knative-label-to-istio
     source export-ports
     get-help
   '';
   # wait-for-istio-ingress
   # expose-istio-ingress
-  # add-knative-label-to-istio
   # wait-for-brigade-ingress
   # expose-brigade-gateway
     # ${if fresh 

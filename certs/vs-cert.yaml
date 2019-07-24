@@ -9,12 +9,12 @@ spec:
   issuerRef:
     name: letsencrypt-staging
     kind: ClusterIssuer
-  commonName: kind.local
+  commonName: dev.cluster
   dnsNames:
-  - kind.local
+  - dev.cluster
   acme:
     config:
     - http01:
         ingressClass: istio
       domains:
-      - kind.local
+      - dev.cluster
