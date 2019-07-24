@@ -1920,7 +1920,7 @@ items:
       app: istio-ingressgateway
       istio: ingressgateway
       release: istio
-    type: NodePort
+    type: LoadBalancer
 - apiVersion: v1
   kind: Service
   metadata:

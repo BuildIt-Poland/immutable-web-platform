@@ -8,17 +8,17 @@
   ];
 
   # https://github.com/knative/docs/blob/master/docs/serving/using-a-custom-domain.md#apply-from-a-file
-  # kubernetes.api.configmaps = {
-  #   knative-domain = {
-  #     metadata = {
-  #       name = "config-domain";
-  #       namespace = "knative-serving";
-  #     };
-  #     data = {
-  #       "dev.cluster" = "";
-  #     };
-  #   };
-  # };
+  kubernetes.api.configmaps = {
+    knative-domain = {
+      metadata = {
+        name = "config-domain";
+        namespace = "knative-serving";
+      };
+      data = {
+        "dev.cluster" = "";
+      };
+    };
+  };
 
   kubernetes.customResources = [
     {

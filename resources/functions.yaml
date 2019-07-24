@@ -7113,5 +7113,14 @@ items:
           resources:
             requests:
               cpu: 100m
+- apiVersion: v1
+  data:
+    dev.cluster: ''
+  kind: ConfigMap
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: config-domain
+    namespace: knative-serving
 kind: List
 labels:

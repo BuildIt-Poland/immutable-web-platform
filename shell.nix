@@ -75,7 +75,7 @@ mkShell {
     # THIS things will dissapear soon
     # cluster scripts
     k8s-local.expose-istio-ingress
-    k8s-local.add-knative-label-to-istio
+    # k8s-local.add-knative-label-to-istio
     # waits
     k8s-local.wait-for-istio-ingress
     k8s-local.wait-for-brigade-ingress
@@ -115,7 +115,8 @@ mkShell {
     create-local-cluster-if-not-exists
     source export-kubeconfig
 
-    apply-cluster-crd
+    ${if fresh 
+      then "apply-cluster-crd" else ""}
 
     ${if applyResources
         then ''
@@ -131,14 +132,12 @@ mkShell {
       '' else ""
     }
 
-    add-knative-label-to-istio
     source export-ports
     get-help
   '';
+    # add-knative-label-to-istio
   # wait-for-istio-ingress
   # expose-istio-ingress
   # wait-for-brigade-ingress
   # expose-brigade-gateway
-    # ${if fresh 
-    #      then "apply-cluster-crd" else ""}
 }

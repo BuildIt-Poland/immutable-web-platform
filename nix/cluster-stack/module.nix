@@ -124,7 +124,7 @@ in
       gateways = {
         istio-ingressgateway = {
           # sds.enabled = true;
-          type = "NodePort";
+          type = "LoadBalancer";
           autoscaleMin = 1;
           autoscaleMax = 1;
           resources.requests = {
