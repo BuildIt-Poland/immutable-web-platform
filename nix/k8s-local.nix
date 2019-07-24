@@ -115,7 +115,8 @@ rec {
       --kubernetes-version=v1.15.0 \
       --vm-driver=hyperkit \
       --bootstrapper=kubeadm \
-      --insecure-registry "10.0.0.0/24"
+      --insecure-registry "10.0.0.0/24" \
+      --extra-config=apiserver.enable-admission-plugins="LimitRanger,NamespaceExists,NamespaceLifecycle,ResourceQuota,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook"
   '';
   # ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
   # ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
@@ -236,9 +237,9 @@ rec {
 
   # https://github.com/cppforlife/knctl/blob/master/docs/cmd/knctl_ingress_list.md
   # if not ... Error: Expected to find at least one ingress address
-  # add-knative-label-to-istio = pkgs.writeScriptBin "add-knative-label-to-istio" ''
-  #   ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace ${istio-ns} -p '${builtins.toJSON knative-label-patch}'
-  # '';
+  add-knative-label-to-istio = pkgs.writeScriptBin "add-knative-label-to-istio" ''
+    ${pkgs.kubectl}/bin/kubectl patch service istio-ingressgateway --namespace ${istio-ns} -p '${builtins.toJSON knative-label-patch}'
+  '';
 
   # INFO in case of minikube this is not necessary
   # export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})

@@ -9,10 +9,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - localhost
+    - dev.cluster
     secretName: letsencrypt-staging
   rules:
-  - host: localhost
+  - host: dev.cluster
     http:
       paths:
       - backend:

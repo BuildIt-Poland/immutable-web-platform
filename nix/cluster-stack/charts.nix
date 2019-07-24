@@ -30,9 +30,9 @@ rec {
 
   istio = helm.fetch {
     chart = "istio";
-    version = "1.2.1";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.2.1/charts";
-    sha256 = "1w1yk2hz42q4iii2j22hb921sgnlw03iw48kpmgqn3b3ibbbwf0m";
+    version = "1.1.9";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
+    sha256 = "1ly6nd4y9shvx166pbpm8gmh0r1pn00d5y4arxvxb5rqbsdknzjh";
   };
 
   nginx-ingress = helm.fetch {
@@ -78,12 +78,11 @@ rec {
   };
 
   # BOOTSTRAP
-
   istio-init = helm.fetch {
     chart = "istio-init";
-    version = "1.2.1";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.2.1/charts";
-    sha256 = "029bwi9p11x54lz0ik2cbny51hbmsavjyzk0m22a2wkjjvc0i3sr";
+    version = "1.1.9";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
+    sha256 = "1vdsxrz4gis5za519p0zjmd9zjckjaa34pdssbn9lis19x20ki7v";
   };
 
   # TODO propagete this idea wider

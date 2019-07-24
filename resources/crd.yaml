@@ -124,34 +124,230 @@ items:
       \    kind: attributemanifest\n    plural: attributemanifests\n    singular:\
       \ attributemanifest\n    categories:\n    - istio-io\n    - policy-istio-io\n\
       \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
-      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: rbacconfigs.rbac.istio.io\n\
-      \  labels:\n    app: mixer\n    package: istio.io.mixer\n    istio: rbac\n \
-      \   chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
-      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: rbac.istio.io\n  names:\n\
-      \    kind: RbacConfig\n    plural: rbacconfigs\n    singular: rbacconfig\n \
-      \   categories:\n    - istio-io\n    - rbac-istio-io\n  scope: Namespaced\n\
-      \  version: v1alpha1\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
-      metadata:\n  name: serviceroles.rbac.istio.io\n  labels:\n    app: mixer\n \
-      \   package: istio.io.mixer\n    istio: rbac\n    chart: istio\n    heritage:\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: bypasses.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: bypass\n    istio: mixer-adapter\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: bypass\n    plural: bypasses\n    singular: bypass\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: circonuses.config.istio.io\n  labels:\n    app: mixer\n \
+      \   package: circonus\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
       \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
-      : keep\nspec:\n  group: rbac.istio.io\n  names:\n    kind: ServiceRole\n   \
-      \ plural: serviceroles\n    singular: servicerole\n    categories:\n    - istio-io\n\
-      \    - rbac-istio-io\n  scope: Namespaced\n  version: v1alpha1\n---\nkind: CustomResourceDefinition\n\
-      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: servicerolebindings.rbac.istio.io\n\
-      \  labels:\n    app: mixer\n    package: istio.io.mixer\n    istio: rbac\n \
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: circonus\n    plural:\
+      \ circonuses\n    singular: circonus\n    categories:\n    - istio-io\n    -\
+      \ policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: deniers.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: denier\n    istio: mixer-adapter\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: denier\n    plural: deniers\n    singular: denier\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: fluentds.config.istio.io\n  labels:\n    app: mixer\n   \
+      \ package: fluentd\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: fluentd\n    plural:\
+      \ fluentds\n    singular: fluentd\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: kubernetesenvs.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: kubernetesenv\n    istio: mixer-adapter\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: kubernetesenv\n    plural: kubernetesenvs\n    singular: kubernetesenv\n\
+      \    categories:\n    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha2\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: listcheckers.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: listchecker\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: listchecker\n \
+      \   plural: listcheckers\n    singular: listchecker\n    categories:\n    -\
+      \ istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: memquotas.config.istio.io\n  labels:\n    app: mixer\n  \
+      \  package: memquota\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: memquota\n    plural:\
+      \ memquotas\n    singular: memquota\n    categories:\n    - istio-io\n    -\
+      \ policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: noops.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: noop\n    istio: mixer-adapter\n  \
+      \  chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: noop\n    plural: noops\n    singular: noop\n    categories:\n  \
+      \  - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: opas.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ opa\n    istio: mixer-adapter\n    chart: istio\n    heritage: Tiller\n  \
+      \  release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\nspec:\n\
+      \  group: config.istio.io\n  names:\n    kind: opa\n    plural: opas\n    singular:\
+      \ opa\n    categories:\n    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha2\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: prometheuses.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: prometheus\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: prometheus\n  \
+      \  plural: prometheuses\n    singular: prometheus\n    categories:\n    - istio-io\n\
+      \    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind:\
+      \ CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n\
+      \  name: rbacs.config.istio.io\n  labels:\n    app: mixer\n    package: rbac\n\
+      \    istio: mixer-adapter\n    chart: istio\n    heritage: Tiller\n    release:\
+      \ istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\nspec:\n  group:\
+      \ config.istio.io\n  names:\n    kind: rbac\n    plural: rbacs\n    singular:\
+      \ rbac\n    categories:\n    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha2\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: redisquotas.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: redisquota\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: redisquota\n  \
+      \  plural: redisquotas\n    singular: redisquota\n  scope: Namespaced\n  version:\
+      \ v1alpha2\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: signalfxs.config.istio.io\n  labels:\n    app: mixer\n  \
+      \  package: signalfx\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: signalfx\n    plural:\
+      \ signalfxs\n    singular: signalfx\n    categories:\n    - istio-io\n    -\
+      \ policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: solarwindses.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: solarwinds\n    istio: mixer-adapter\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: solarwinds\n    plural: solarwindses\n    singular: solarwinds\n\
+      \    categories:\n    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha2\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: stackdrivers.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: stackdriver\n    istio: mixer-adapter\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: stackdriver\n \
+      \   plural: stackdrivers\n    singular: stackdriver\n    categories:\n    -\
+      \ istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: statsds.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ statsd\n    istio: mixer-adapter\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: config.istio.io\n  names:\n    kind: statsd\n    plural: statsds\n\
+      \    singular: statsd\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: stdios.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: stdio\n    istio: mixer-adapter\n \
       \   chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
-      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: rbac.istio.io\n  names:\n\
-      \    kind: ServiceRoleBinding\n    plural: servicerolebindings\n    singular:\
-      \ servicerolebinding\n    categories:\n    - istio-io\n    - rbac-istio-io\n\
-      \  scope: Namespaced\n  version: v1alpha1\n  additionalPrinterColumns:\n  -\
-      \ JSONPath: .spec.roleRef.name\n    description: The name of the ServiceRole\
-      \ object being referenced\n    name: Reference\n    type: string\n  - JSONPath:\
-      \ .metadata.creationTimestamp\n    description: |-\n      CreationTimestamp\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: stdio\n    plural: stdios\n    singular: stdio\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: apikeys.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ apikey\n    istio: mixer-instance\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: config.istio.io\n  names:\n    kind: apikey\n    plural: apikeys\n\
+      \    singular: apikey\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: authorizations.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: authorization\n    istio: mixer-instance\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: authorization\n    plural: authorizations\n    singular: authorization\n\
+      \    categories:\n    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha2\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: checknothings.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: checknothing\n    istio: mixer-instance\n    chart: istio\n  \
+      \  heritage: Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: checknothing\n\
+      \    plural: checknothings\n    singular: checknothing\n    categories:\n  \
+      \  - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: kuberneteses.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: adapter.template.kubernetes\n    istio: mixer-instance\n    chart:\
+      \ istio\n    heritage: Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: kubernetes\n  \
+      \  plural: kuberneteses\n    singular: kubernetes\n    categories:\n    - istio-io\n\
+      \    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind:\
+      \ CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n\
+      \  name: listentries.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ listentry\n    istio: mixer-instance\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: config.istio.io\n  names:\n    kind: listentry\n    plural:\
+      \ listentries\n    singular: listentry\n    categories:\n    - istio-io\n  \
+      \  - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: logentries.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: logentry\n    istio: mixer-instance\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: logentry\n    plural: logentries\n    singular: logentry\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      \  additionalPrinterColumns:\n  - JSONPath: .spec.severity\n    description:\
+      \ The importance of the log entry\n    name: Severity\n    type: string\n  -\
+      \ JSONPath: .spec.timestamp\n    description: The time value for the log entry\n\
+      \    name: Timestamp\n    type: string\n  - JSONPath: .spec.monitored_resource_type\n\
+      \    description: Optional expression to compute the type of the monitored resource\
+      \ this log entry is being recorded on\n    name: Res Type\n    type: string\n\
+      \  - JSONPath: .metadata.creationTimestamp\n    description: |-\n      CreationTimestamp\
       \ is a timestamp representing the server time when this object was created.\
       \ It is not guaranteed to be set in happens-before order across separate operations.\
       \ Clients may not set this value. It is represented in RFC3339 form and is in\
       \ UTC.\n\n      Populated by the system. Read-only. Null for lists. More info:\
       \ https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata\n\
+      \    name: Age\n    type: date\n---\nkind: CustomResourceDefinition\napiVersion:\
+      \ apiextensions.k8s.io/v1beta1\nmetadata:\n  name: edges.config.istio.io\n \
+      \ labels:\n    app: mixer\n    package: edge\n    istio: mixer-instance\n  \
+      \  chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: edge\n    plural: edges\n    singular: edge\n    categories:\n  \
+      \  - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: metrics.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ metric\n    istio: mixer-instance\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: config.istio.io\n  names:\n    kind: metric\n    plural: metrics\n\
+      \    singular: metric\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: quotas.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: quota\n    istio: mixer-instance\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: quota\n    plural: quotas\n    singular: quota\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: reportnothings.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: reportnothing\n    istio: mixer-instance\n    chart: istio\n \
+      \   heritage: Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: reportnothing\n\
+      \    plural: reportnothings\n    singular: reportnothing\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: tracespans.config.istio.io\n  labels:\n    app: mixer\n \
+      \   package: tracespan\n    istio: mixer-instance\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: tracespan\n   \
+      \ plural: tracespans\n    singular: tracespan\n    categories:\n    - istio-io\n\
+      \    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind:\
+      \ CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n\
+      \  name: rbacconfigs.rbac.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ istio.io.mixer\n    istio: rbac\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: rbac.istio.io\n  names:\n    kind: RbacConfig\n    plural: rbacconfigs\n\
+      \    singular: rbacconfig\n    categories:\n    - istio-io\n    - rbac-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha1\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: serviceroles.rbac.istio.io\n\
+      \  labels:\n    app: mixer\n    package: istio.io.mixer\n    istio: rbac\n \
+      \   chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: rbac.istio.io\n  names:\n\
+      \    kind: ServiceRole\n    plural: serviceroles\n    singular: servicerole\n\
+      \    categories:\n    - istio-io\n    - rbac-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha1\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: servicerolebindings.rbac.istio.io\n  labels:\n    app: mixer\n\
+      \    package: istio.io.mixer\n    istio: rbac\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: rbac.istio.io\n  names:\n    kind: ServiceRoleBinding\n\
+      \    plural: servicerolebindings\n    singular: servicerolebinding\n    categories:\n\
+      \    - istio-io\n    - rbac-istio-io\n  scope: Namespaced\n  version: v1alpha1\n\
+      \  additionalPrinterColumns:\n  - JSONPath: .spec.roleRef.name\n    description:\
+      \ The name of the ServiceRole object being referenced\n    name: Reference\n\
+      \    type: string\n  - JSONPath: .metadata.creationTimestamp\n    description:\
+      \ |-\n      CreationTimestamp is a timestamp representing the server time when\
+      \ this object was created. It is not guaranteed to be set in happens-before\
+      \ order across separate operations. Clients may not set this value. It is represented\
+      \ in RFC3339 form and is in UTC.\n\n      Populated by the system. Read-only.\
+      \ Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata\n\
       \    name: Age\n    type: date\n---\nkind: CustomResourceDefinition\napiVersion:\
       \ apiextensions.k8s.io/v1beta1\nmetadata:\n  name: adapters.config.istio.io\n\
       \  labels:\n    app: mixer\n    package: adapter\n    istio: mixer-adapter\n\
@@ -186,31 +382,34 @@ items:
     namespace: default
 - apiVersion: v1
   data:
-    crd-11.yaml: "apiVersion: apiextensions.k8s.io/v1beta1\nkind: CustomResourceDefinition\n\
-      metadata:\n  name: sidecars.networking.istio.io\n  labels:\n    app: istio-pilot\n\
-      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
-      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: networking.istio.io\n\
+    crd-11.yaml: "kind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: cloudwatches.config.istio.io\n  labels:\n    app: mixer\n\
+      \    package: cloudwatch\n    istio: mixer-adapter\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: cloudwatch\n  \
+      \  plural: cloudwatches\n    singular: cloudwatch\n    categories:\n    - istio-io\n\
+      \    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind:\
+      \ CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n\
+      \  name: dogstatsds.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ dogstatsd\n    istio: mixer-adapter\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: dogstatsd\n   \
+      \ plural: dogstatsds\n    singular: dogstatsd\n    categories:\n    - istio-io\n\
+      \    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\napiVersion:\
+      \ apiextensions.k8s.io/v1beta1\nkind: CustomResourceDefinition\nmetadata:\n\
+      \  name: sidecars.networking.istio.io\n  labels:\n    app: istio-pilot\n   \
+      \ chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n \
+      \   \"helm.sh/resource-policy\": keep\nspec:\n  group: networking.istio.io\n\
       \  names:\n    kind: Sidecar\n    plural: sidecars\n    singular: sidecar\n\
       \    categories:\n    - istio-io\n    - networking-istio-io\n  scope: Namespaced\n\
-      \  version: v1alpha3\n---"
+      \  version: v1alpha3\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: zipkins.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ zipkin\n    istio: mixer-adapter\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: zipkin\n    plural:\
+      \ zipkins\n    singular: zipkin\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---"
   kind: ConfigMap
   metadata:
     labels:
     name: istio-crd-11
-    namespace: default
-- apiVersion: v1
-  data:
-    crd-12.yaml: "kind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
-      metadata:\n  name: authorizationpolicies.rbac.istio.io\n  labels:\n    app:\
-      \ istio-pilot\n    istio: rbac\n    heritage: Tiller\n    release: istio\nspec:\n\
-      \  group: rbac.istio.io\n  names:\n    kind: AuthorizationPolicy\n    plural:\
-      \ authorizationpolicies\n    singular: authorizationpolicy\n    categories:\n\
-      \      - istio-io\n      - rbac-istio-io\n  scope: Namespaced\n  version: v1alpha1\n\
-      ---"
-  kind: ConfigMap
-  metadata:
-    labels:
-    name: istio-crd-12
     namespace: default
 - apiVersion: v1
   kind: ServiceAccount
@@ -225,9 +424,18 @@ items:
   metadata:
     labels:
       app: istio-init
-      istio: init
+      istio: istio-init
     name: istio-init-default
   rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    verbs:
+    - get
+    - list
+    - create
+    - watch
   - apiGroups:
     - apiextensions.k8s.io
     resources:
@@ -271,7 +479,7 @@ items:
           - apply
           - -f
           - /etc/istio/crd-10/crd-10.yaml
-          image: docker.io/istio/kubectl:1.2.1
+          image: docker.io/istio/kubectl:1.1.9
           imagePullPolicy: IfNotPresent
           name: istio-init-crd-10
           volumeMounts:
@@ -302,7 +510,7 @@ items:
           - apply
           - -f
           - /etc/istio/crd-11/crd-11.yaml
-          image: docker.io/istio/kubectl:1.2.1
+          image: docker.io/istio/kubectl:1.1.9
           imagePullPolicy: IfNotPresent
           name: istio-init-crd-11
           volumeMounts:
@@ -315,37 +523,6 @@ items:
         - configMap:
             name: istio-crd-11
           name: crd-11
-- apiVersion: batch/v1
-  kind: Job
-  metadata:
-    labels:
-    name: istio-init-crd-12
-    namespace: default
-  spec:
-    template:
-      metadata:
-        annotations:
-          sidecar.istio.io/inject: 'false'
-      spec:
-        containers:
-        - command:
-          - kubectl
-          - apply
-          - -f
-          - /etc/istio/crd-12/crd-12.yaml
-          image: docker.io/istio/kubectl:1.2.1
-          imagePullPolicy: IfNotPresent
-          name: istio-init-crd-12
-          volumeMounts:
-          - mountPath: /etc/istio/crd-12
-            name: crd-12
-            readOnly: true
-        restartPolicy: OnFailure
-        serviceAccountName: istio-init-service-account
-        volumes:
-        - configMap:
-            name: istio-crd-12
-          name: crd-12
 - apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
