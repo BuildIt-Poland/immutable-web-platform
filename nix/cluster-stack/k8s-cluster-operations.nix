@@ -1,15 +1,12 @@
 {
   pkgs, 
   env-config, 
-  callPackage,
   writeScript,
   writeScriptBin,
   cluster,
   log,
-  kubenix,
   lib
 }:
-with kubenix.lib;
 with cluster;
 rec {
 

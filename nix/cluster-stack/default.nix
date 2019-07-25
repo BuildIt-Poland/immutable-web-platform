@@ -24,11 +24,7 @@ let
   };
 in
 rec {
-  config = callPackage ./config.nix {
-    inherit pkgs;
-  };
-
-  cluster-images = config.docker.export;
+  config = callPackage ./config.nix {};
 
   k8s-cluster-crd = helm.jsons-to-yaml (
     cluster-crd-json
@@ -48,5 +44,7 @@ rec {
     functions = k8s-functions-resources;
   };
 
-  images = (lib.flatten application.function-images) ++ cluster-images;
+  images = 
+     (lib.flatten application.function-images)
+  ++ config.docker.export;
 }
