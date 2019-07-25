@@ -5,17 +5,13 @@ let
     inherit pkgs;
    };
   fn-config = callPackage ./config.nix {};
-
-  # as we are pusing to kind local cluster we don't want to create new image each time
-  # TODO take from env-config -> and use other tag than latest to avoid imagePullPolicy to Always
 in
 pkgs.dockerTools.buildLayeredImage ({
   name = fn-config.docker-label;
+  maxLayers = 120;
 
   contents = [ 
     pkgs.nodejs-slim-11_x
-    pkgs.bash
-    pkgs.coreutils
     express-app # application
   ];
 

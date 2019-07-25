@@ -5,6 +5,7 @@
   aws-profiles,
   region ? null,
   log,
+  hash ? "",
   nix-gitignore,
   lib
 }:
@@ -103,7 +104,7 @@ rec {
 
     namespace = 
       if is-dev 
-        then "${env}.local" 
+        then "${env}.local" # for skaffold
         else env;
 
     registry = 
@@ -114,7 +115,7 @@ rec {
     destination = "docker://damianbaar"; # skopeo path transport://repo
 
     tag = if is-dev
-      then { tag = "dev-build"; }
+      then { tag = if hash != "" then hash else "dev-build"; }
       else { tag = version; };
   };
 

@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config;
 
+  # TODO get packages and traverse it's names
   get-help = pkgs.writeScriptBin "get-help" ''
     echo "You've got in shell some extra spells under your hand ..."
     echo "-- Brigade integration --"
@@ -78,7 +79,6 @@ in
 
     (mkIf (cfg.environment == "local") {
       packages = [
-        # pkgs.k8s-local.curl-with-resolve
         pkgs.k8s-local.create-local-cluster-if-not-exists
         pkgs.k8s-cluster-operations.save-resources
       ];
@@ -89,8 +89,6 @@ in
     })
 
     (mkIf cfg.kubernetes.cluster.fresh-instance {
-      warnings = ["Test warning"];
-
       packages = [
         pkgs.k8s-local.delete-local-cluster
       ];
@@ -112,16 +110,6 @@ in
       warnings = mkIf (cfg.brigade.secret-key == "") [
         "You have to provide brigade shared secret to listen the repo hooks"
       ];
-    })
-
-    (mkIf cfg.docker.enable-registry {
-      packages = [
-        pkgs.k8s-local.wait-for-docker-registry
-      ];
-
-      shellHook = ''
-        ${pkgs.log.message "Enabling docker registry"}
-      '';
     })
 
     (mkIf cfg.kubernetes.resources.apply {

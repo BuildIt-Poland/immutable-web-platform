@@ -25,7 +25,6 @@ let
       environment = "local";
 
       docker = {
-        enable-registry = true;
         upload-images = ["functions" "cluster"];
       };
 
@@ -67,26 +66,23 @@ mkShell {
     kubernetes-helm
     hey
     istioctl
-    # minikube
+    skaffold
+    minikube
+    # bazel
 
     # secrets
     sops
 
-    # THIS things will dissapear soon
-    # cluster scripts
-    k8s-local.expose-istio-ingress
-    # k8s-local.add-knative-label-to-istio
     # waits
-    k8s-local.wait-for-istio-ingress
-    k8s-local.wait-for-brigade-ingress
+    # k8s-local.wait-for-brigade-ingress
 
     # ingress & tunnels
-    k8s-local.expose-istio-ingress
+    # k8s-local.expose-istio-ingress
     k8s-local.expose-brigade-gateway
 
     # exports
-    k8s-local.export-kubeconfig
-    k8s-local.export-ports
+    k8s-local.setup-env-vars
+    # k8s-local.export-ports
 
     # helm
     k8s-cluster-operations.push-docker-images-to-local-cluster
@@ -113,7 +109,7 @@ mkShell {
          then "delete-local-cluster" else ""}
 
     create-local-cluster-if-not-exists
-    source export-kubeconfig
+    source setup-env-vars
 
     ${if fresh 
       then "apply-cluster-crd" else ""}
@@ -132,7 +128,6 @@ mkShell {
       '' else ""
     }
 
-    source export-ports
     get-help
   '';
     # add-knative-label-to-istio

@@ -14,8 +14,8 @@ rec {
     name = "knative-crd";
     version = "0.7.1";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.7.1/serving-beta-cdrs.yaml;
-      sha256="177aq85d8933p9rby10v2g72sgs2a60q675qr1im55f1acf19llz";
+      url = https://github.com/knative/serving/releases/download/v0.7.1/serving-beta-crds.yaml;
+      sha256="13ns3sc857qqipjdfdbjgcaj1sfkyspbv9dwvdw7jp91rlr73qrf";
     };
   };
   
@@ -65,15 +65,14 @@ rec {
   let
     jsons = [
       knative-serving
+      knative-monitoring
       # INFO - I'm overriding it as dashboard has to be fixed
-      # knative-monitoring
       # knative-e2e-request-tracing - monitoring include zipkin and argo is shouting about duplicate resources
     ];
-    overridings = monitoring-dashboard-fix;
+    overridings = []; #monitoring-dashboard-fix;
   in
     (lib.foldl 
       lib.concat
-      # [] # overridings
       overridings
       ((builtins.map lib.importJSON jsons)));
 
@@ -95,6 +94,7 @@ rec {
         (builtins.map lib.importJSON [
           charts.istio-init-json 
           cert-manager-crd
+          knative-crd
         ]));
   });
 }

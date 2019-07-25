@@ -145,9 +145,6 @@ in
       grafana.enabled = false;
       pilot.autoscaleMin = 2;
       pilot.traceSampling = 100;
-      # TODO: knative define in own zipkin setup - check and think how to merge these definition to avoid warning in argo
-      # tracing.enabled = true;
-      # tracing.provider = "zipkin";
       # https://raw.githubusercontent.com/istio/istio/release-1.2/install/kubernetes/helm/istio/values-istio-sds-auth.yaml
       # nodeagent = {
       #   enabled =  true;

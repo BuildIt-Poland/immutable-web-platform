@@ -1,7 +1,6 @@
 ## Today
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
 * generate resources to file and check --local --watch `argocd app diff my-app` -> `argocd app diff $PROJECT_NAME --local ./resources`
-* argo ingress to avoid issue with https
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
 * create argo startup scripts
 * figure out better invalidation -> nix is doing a hash from directory, so move baking the image to some other place
@@ -50,6 +49,7 @@
 * create repository for infra code
 * architecture diagram v0.0.1
 * make diffing of resources possible - argo is doing that
+* argo ingress to avoid issue with https - passhtrough from istio
 
 ### Goal
 * deploy `https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/` - I need to have something to work with `knative` as a project sounds good

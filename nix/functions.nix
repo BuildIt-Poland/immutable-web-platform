@@ -4,7 +4,7 @@ let
   function-packages = 
     find-files-in-folder 
       "/functions" 
-      "nix/default.nix";
+      "/nix/default.nix";
 
   functions = 
     builtins.mapAttrs 

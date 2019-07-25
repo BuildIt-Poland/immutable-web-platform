@@ -7,9 +7,10 @@ app.get("/", (req, res) => {
   const target = process.env.TARGET || "World!!!!"
   const delay = process.env.DELAY || 1000
   setTimeout(() => {
-    res.send(`Hello ${target}!`)
+    res.send(`Hello ${target}! yay!!!`)
   }, delay)
 })
+
 
 // https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#define-a-liveness-http-request
 app.get("/healthz", (req, res) => {
