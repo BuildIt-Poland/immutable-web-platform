@@ -12,6 +12,8 @@ pkgs.dockerTools.buildLayeredImage ({
 
   contents = [ 
     pkgs.nodejs-slim-11_x
+    pkgs.coreutils
+    pkgs.bash
     express-app # application
   ];
 

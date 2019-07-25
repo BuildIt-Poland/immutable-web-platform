@@ -82,6 +82,8 @@ mkShell {
 
     # exports
     k8s-local.setup-env-vars
+    k8s-local.minikube-wrapper
+    k8s-local.skaffold-build
     # k8s-local.export-ports
 
     # helm

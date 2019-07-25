@@ -29,26 +29,6 @@ rec {
     };
   };
 
-  knative-monitoring-metrics = yaml-to-json {
-    name = "knative-monitoring-metrics";
-    version = "0.7.1";
-    src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.7.1/monitoring-metrics-prometheus.yaml;
-      sha256="17rpma5rlbn0ng6jpcm04zmcc8pyhmn473yxplq1ci45jaxg8jya";
-    };
-  };
-
-  # TODO local should be in mem - prod with elastic
-  #  error: unable to recognize no matches for kind "Jaeger" in version "jaegertracing.io/v1"
-  knative-e2e-request-tracing = yaml-to-json {
-    name = "knative-e2e-request-tracing";
-    version = "0.7.1";
-    src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.7.1/monitoring-tracing-zipkin-in-mem.yaml;
-      sha256="09dcdw22qbsfz7yy6c22k8a8jh8pg3rj4pr1j5a2vjr66dd2anaa";
-    };
-  };
-
   scaling-dashboard = (builtins.readFile ../grafana/knative-scaling.json);
   monitoring-dashboard-fix = 
     let
@@ -66,10 +46,8 @@ rec {
     jsons = [
       knative-serving
       knative-monitoring
-      # INFO - I'm overriding it as dashboard has to be fixed
-      # knative-e2e-request-tracing - monitoring include zipkin and argo is shouting about duplicate resources
     ];
-    overridings = []; #monitoring-dashboard-fix;
+    overridings = [];
   in
     (lib.foldl 
       lib.concat

@@ -26,20 +26,6 @@ let
         sha256 = "1h495w4ygb3vmxdq91z81n10h6vy299kqsw7cbxr048s6n9yvbns";
       };
     });
-
-    # minikube = super.minikube.overrideAttrs (old: rec { 
-    #   version = "1.2.0";
-    #   # kubernetesVersion = "1.15.0";
-    #   pname   = "minikube";
-    #   name    = "${pname}-${version}";
-    #   subPackages = old.subPackages ++ ["github.com/blang/semver"];
-    #   src = super.fetchFromGitHub {
-    #     owner  = "kubernetes";
-    #     repo   = "minikube";
-    #     rev    = "v${version}";
-    #     sha256 = "0l9znrp49877cp1bkwx84c8lv282ga5a946rjbxi8gznkf3kwaw7";
-    #   };
-    # });
   };
 
   tools = self: super: rec {

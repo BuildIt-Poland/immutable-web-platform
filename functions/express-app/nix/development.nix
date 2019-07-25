@@ -2,7 +2,7 @@
   hash ? "",
   pkgs ? (import ../../../nix {
     # ugly as **** - fix this
-    hash = builtins.elemAt (builtins.tail (builtins.split ":" hash)) 1;
+    hash = if hash != "" then builtins.elemAt (builtins.tail (builtins.split ":" hash)) 1 else "";
   })
 }:
 let
