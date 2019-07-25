@@ -72,20 +72,6 @@ in
       ];
     };
 
-    kubernetes.helm.instances.weave-scope = {
-      name = "weave-scope";
-      chart = charts.weave-scope;
-      namespace = "${istio-ns}";
-      values = {
-        global = {
-          service = {
-            port = 80;
-            name = "weave-scope-app";
-          };
-        };
-      };
-    };
-
     kubernetes.api."networking.istio.io"."v1alpha3" = {
       Gateway."virtual-services-gateway" = {
         # BUG: this metadata should be taken from name
@@ -194,17 +180,6 @@ in
               };
             }];
           }
-          # {
-          #   match = [
-          #     { port = 15200; }
-          #   ];
-          #   route = [{
-          #     destination = {
-          #       host = "argocd-server.${argo-ns}.svc.cluster.local";
-          #       port.number = 443;
-          #     };
-          #   }];
-          # }
           ];
         };
       };

@@ -26,6 +26,22 @@ let
         sha256 = "1h495w4ygb3vmxdq91z81n10h6vy299kqsw7cbxr048s6n9yvbns";
       };
     });
+
+    kubenix = 
+      let
+        kube = (super.callPackage sources.kubenix {});
+        extra-modules = import ./kubenix-modules;
+        kubenix = super.lib.recursiveUpdate 
+          kube   
+          ({ 
+            modules = extra-modules;
+            # INFO: wrapping function and injecting extended kubenix module version
+            evalModules = {...}@args: kube.evalModules (args // {
+              specialArgs = {inherit kubenix;};
+            });
+          });
+      in
+        kubenix;
   };
 
   tools = self: super: rec {
@@ -42,7 +58,6 @@ let
     brigadeterm = super.callPackage ./tools/brigadeterm.nix {};
 
     # K8S
-    kubenix = super.callPackage sources.kubenix {};
     knctl = super.callPackage ./tools/knctl.nix {}; # knative
     kubectl-repl = super.callPackage ./tools/kubectl-repl.nix {}; 
     hey = super.callPackage ./tools/hey.nix {}; 
@@ -73,20 +88,10 @@ let
     remote-worker = super.callPackage ./remote-worker {};
     application = super.callPackage ./functions.nix {};
     cluster = super.callPackage ./cluster-stack {};
-    charts = super.callPackage ./cluster-stack/charts.nix {};
+    k8s-resources = super.callPackage ./k8s-resources {};
     k8s-cluster-operations = super.callPackage ./cluster-stack/k8s-cluster-operations.nix {};
     modules = super.callPackage ./modules {};
     inherit sources;
-  };
-
-  kubenix-modules = self: super: rec {
-    kubenix-modules = [
-      ./kubenix-modules/knative-serve.nix
-    ];
-    kubenix-infra-modules = [
-      ./kubenix-modules/virtual-services.nix
-      ./kubenix-modules/brigade.nix
-    ];
   };
 
   config = self: super: rec {
@@ -107,7 +112,6 @@ let
     overridings
     tools
     config
-    kubenix-modules
     application
   ];
   args = 

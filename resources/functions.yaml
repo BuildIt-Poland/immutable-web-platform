@@ -7220,6 +7220,14 @@ items:
       serving.knative.dev/release: v0.7.1
     name: fluentd-ds
     namespace: knative-monitoring
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
+      istio-injection: enabled
+      kubenix/project-name: kubenix
+    name: functions
+    namespace: default
 - apiVersion: serving.knative.dev/v1alpha1
   kind: Service
   metadata:

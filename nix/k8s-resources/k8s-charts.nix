@@ -69,12 +69,10 @@ rec {
 
   # https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
   argo-cd = chart-from-git {
-    # chart = "argo-cd";
-    # version = "0.2.2";
     url = "https://github.com/argoproj/argo-helm";
     path = "charts/argo-cd";
-    rev = "6e108f3aae4d5fa5788640f8bd8b3407e1425c13";
-    sha256 = "0gsx75fcm4zinw1mqkpzs7vsivm7y52bfjhkc5mxfad61r725gr4";
+    rev = "c7b415b6341b9db6c57e3d378e2d98ec493bfbe5";
+    sha256 = "0llvh6x04pglv3m7frc7a0xbchkfz9zkg2kj0msnisjbs2x2c1dn";
   };
 
   # BOOTSTRAP
@@ -101,9 +99,4 @@ rec {
     name = "istio-init";
     chart = istio-init;
   };
-
-  istio-init-yaml = toYAML (k8s.mkHashedList { 
-    items = 
-      (lib.importJSON istio-init-json);
-  });
 }

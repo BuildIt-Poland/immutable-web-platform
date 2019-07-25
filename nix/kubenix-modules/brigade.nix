@@ -3,7 +3,7 @@
   config, 
   lib, 
   kubenix, 
-  charts,
+  k8s-resources,
   env-config, 
   brigade-extension,
   remote-worker,
@@ -36,13 +36,13 @@ in
 
     kubernetes.helm.instances.brigade = {
       namespace = "${brigade-ns}";
-      chart = charts.brigade;
+      chart = k8s-resources.brigade;
     };
 
     kubernetes.helm.instances.brigade-bitbucket-gateway = {
       namespace = "${brigade-ns}";
       name = "brigade-bitbucket-gateway";
-      chart = charts.brigade-bitbucket;
+      chart = k8s-resources.brigade-bitbucket;
       values = {
         rbac = {
           enabled = true;
@@ -115,7 +115,7 @@ in
       };
     # kubernetes.api.clusterrole = {};
 
-    # https://github.com/brigadecore/charts/blob/master/charts/brigade-project/values.yaml
+    # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
     kubernetes.helm.instances.brigade-project = 
     let
       cfg = config.docker.images;
@@ -125,7 +125,7 @@ in
     {
       namespace = "${brigade-ns}";
       name = "brigade-project";
-      chart = charts.brigade-project;
+      chart = k8s-resources.brigade-project;
       values = {
         project = env-config.brigade.project-name;
         repository = env-config.brigade.project-name; # repository.location is too long # TODO check if it would work with gateway now ...
