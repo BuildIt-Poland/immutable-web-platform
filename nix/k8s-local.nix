@@ -43,61 +43,9 @@ in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
     ${log.message "Deleting cluster"}
-    minikube -p ${env-config.projectName} delete
+    ${pkgs.minikube}/bin/minikube -p ${env-config.projectName} delete
   '';
-    # ${pkgs.kind}/bin/kind delete cluster --name ${env-config.projectName} || true
 
-  cluster-config = {
-    kind = "Cluster";
-    apiVersion = "kind.sigs.k8s.io/v1alpha3";
-    nodes = 
-    let
-      ports = [
-        # monitoring
-        # grafana
-        {
-          containerPort = 31300;
-          hostPort = 31300;
-        }
-        # weavescope
-        {
-          containerPort = 31301;
-          hostPort = 31301;
-        }
-        # zipkin
-        {
-          containerPort = 31302;
-          hostPort = 31302;
-        }
-        # argocd 
-        {
-          containerPort = 31200;
-          hostPort = 31200;
-        }
-        # TODO make the same with istio and remove custom curl! super awesome!
-        # and then we can skip port-forwarding!
-        # port-forward service/docker-registry --namespace local-infra 32001:5000
-        # port-forward service/istio-ingressgateway --namespace istio-system 31380:80
-      ];
-    in
-    [
-      { 
-        role = "control-plane"; 
-        extraMounts = [{
-          containerPath = "/project";
-          hostPath = toString ./.;
-          readOnly = true;
-        }];
-        extraPortMappings = ports;
-      }
-      { role = "worker"; }
-      { role = "worker"; }
-    ];
-  };
-
-  cluster-config-yaml = kubenix.lib.toYAML cluster-config;
-
-  # hyperkit is suggested by minikube
   # brew install docker-machine-driver-hyperkit - check if there is a nixpkgs for that
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
     ${log.message "Creating cluster"}
@@ -110,14 +58,11 @@ rec {
       --insecure-registry "10.0.0.0/24" \
       --extra-config=apiserver.enable-admission-plugins="LimitRanger,NamespaceExists,NamespaceLifecycle,ResourceQuota,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook"
   '';
-  # ${pkgs.kind}/bin/kind create cluster --name ${env-config.projectName} --config ${cluster-config-yaml}
-  # ${append-local-docker-registry-to-kind-nodes}/bin/append-local-docker-registry
 
   check-if-already-started = pkgs.writeScript "check-if-minikube-started" ''
     echo $(${pkgs.minikube}/bin/minikube status -p ${env-config.projectName} --format {{.Kubelet}} | wc -c)
   '';
 
-  # ${pkgs.kind}/bin/kind get clusters | grep ${env-config.projectName} || ${create-local-cluster}
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
     ${log.message "Checking existence of cluster ..."}
     isRunning=$(${check-if-already-started})
@@ -207,7 +152,7 @@ rec {
     HASH="--argstr hash $IMAGES"
 
     ${pkgs.nix}/bin/nix build $BUILDER docker $HASH --out-link $DIR/docker-image
-    docker load -i $DIR/docker-image
+    ${pkgs.docker}/bin/docker load -i $DIR/docker-image
 
     ${pkgs.nix}/bin/nix build $BUILDER yaml $HASH --out-link $DIR/k8s-resource.yaml
   '';

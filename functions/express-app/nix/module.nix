@@ -11,8 +11,8 @@ in
 {
   imports = with kubenix.modules; [ 
     k8s 
-    docker 
-    # helm 
+    docker-registry
+    knative-serve
   ];
 
   docker.images.express-app.image = express-app;
@@ -56,6 +56,19 @@ in
             }];
           };
         };
+      };
+    };
+  };
+
+  # https://github.com/knative/docs/blob/master/docs/serving/using-a-custom-domain.md#apply-from-a-file
+  kubernetes.api.configmaps = {
+    knative-domain = {
+      metadata = {
+        name = "config-domain";
+        namespace = "knative-serving";
+      };
+      data = {
+        "dev.cluster" = "";
       };
     };
   };

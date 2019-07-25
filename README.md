@@ -13,22 +13,24 @@ provide full testing ability of infrastructure as well as on application level f
 * `nix` - [ecosystem](https://www.youtube.com/watch?v=YbUPdv03ciI), [features overview](https://www.youtube.com/watch?v=D5Gq2wkRXpU), [kubernetes](https://www.youtube.com/watch?v=XgZWbrBLP4I)
 
 ### What is super hot!
-* `helm charts` without `helm` and `tiller`
+* development with [`skaffold`](https://github.com/GoogleContainerTools/skaffold)
+* gitops - infrastructure and applications described as generated from `nix` `yamls` and stored in `git`
+* full determinism of results
+* monitoring tools with predefined dashboards
 * scale to `0` with `knative & istio`, scale based on concurrency level or resources level
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
+
+### ... and more
+* `helm charts` without `helm` and `tiller`
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
 * `nix` in charge of building and pushing docker images to `docker repository`
 * full composability of components and configs
-* full determinism of results
 * all parts of project are sharable - `nix` is everywhere, in `local` env, `ci worker` or at `system` level - all scripts and libraries can be used in every context
 * incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
 * diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
 * distributed build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
 * `nixops` is provisioning `ec2` or `virtualbox` instances based upon `declarative` nix file
 * custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docs](/packages/remote-state/README.md))
-* gitops - infrastructure and applications described as generated from `nix` `yamls` and stored in `git`
-* monitoring tools with predefined dashboards
-* local docker registry - can be used in `s3` or any other storage
 
 ### Running locally
 * download [`nixpkgs`](https://nixos.org/nix/download.html)

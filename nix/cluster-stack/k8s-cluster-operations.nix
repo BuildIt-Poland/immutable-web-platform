@@ -5,15 +5,12 @@
   callPackage,
   writeScript,
   writeScriptBin,
-  charts,
   cluster,
   log,
   kubenix,
+  k8s-resources,
   lib
 }:
-let
-  k8s-resources = callPackage ./k8s-resources.nix {};
-in
 with kubenix.lib;
 rec {
 

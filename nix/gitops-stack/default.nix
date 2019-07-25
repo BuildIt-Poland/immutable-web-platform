@@ -8,15 +8,17 @@
   application,
   log,
   kubenix,
-  k8s-resources,
   lib
 }:
 with kubenix.lib;
+let
+  extra-k8s-resources = callPackage ./k8s-resources.nix {};
+in
 rec {
   config = callPackage ./config.nix {
     inherit pkgs;
   };
-
+  inherit extra-k8s-resources;
   cluster-images = config.docker.export;
 
   k8s-cluster-resources = toYAML (k8s.mkHashedList { 
@@ -29,7 +31,7 @@ rec {
   k8s-functions-resources = toYAML (k8s.mkHashedList { 
     # TODO make a helper to take all functions
     items = 
-        k8s-resources.knative-stack
+        extra-k8s-resources.knative-stack
         ++ application.functions.express-app.config.kubernetes.objects;
   });
 

@@ -1,4 +1,4 @@
-{stdenv, lib, pkgs, kubenix, yaml-to-json, charts}:
+{stdenv, lib, pkgs, kubenix, yaml-to-json, k8s-resources}:
 rec {
 
   knative-serving = yaml-to-json {
@@ -29,18 +29,6 @@ rec {
     };
   };
 
-  scaling-dashboard = (builtins.readFile ../grafana/knative-scaling.json);
-  monitoring-dashboard-fix = 
-    let
-      src = lib.importJSON knative-monitoring;
-      remapDashboard = builtins.map (
-        x: if (lib.hasAttrByPath ["data" "scaling-dashboard.json"] x)
-          then (x // ({ data."scaling-dashboard.json" = ''${scaling-dashboard}'';}))
-          else x
-      );
-    in 
-      remapDashboard src;
-
   knative-stack = 
   let
     jsons = [
@@ -70,7 +58,7 @@ rec {
         lib.concat
         []
         (builtins.map lib.importJSON [
-          charts.istio-init-json 
+          k8s-resources.istio-init-json 
           cert-manager-crd
           knative-crd
         ]));
