@@ -3,16 +3,43 @@
   brigadeSharedSecret ? "", # it would be good to display warning related to that
   env ? "dev", # TODO env should be more descriptive, sth like { target: "ec2|local", env: "dev|prod", experimental: "true|false" }
   region ? null,
-  system ? null
+  system ? null,
+  hash ? ""
 }:
 let
   rootFolder = ../.;
   nodePackages = "${rootFolder}/packages";
 
   overridings = self: super: rec {
-    # INFO recent update of kind in nixpgs does not work on darwin
-    # INFO version 0.3.0 returns invalid tar.gz header
     kind = (super.callPackage ./tools/kind.nix {});
+
+    # INFO when calling skaffold - showing incorrect version
+    # https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/tools/skaffold/default.nix#L14
+    skaffold = super.skaffold.overrideAttrs (oldAttrs: rec {
+      version = "0.34.0";
+      name = "skaffold-${version}";
+      rev = "ffd0608298e38df00795660ca45d566b4f94fab0";
+      src = super.fetchFromGitHub {
+        inherit rev;
+        owner = "GoogleContainerTools";
+        repo = "skaffold";
+        sha256 = "1h495w4ygb3vmxdq91z81n10h6vy299kqsw7cbxr048s6n9yvbns";
+      };
+    });
+
+    # minikube = super.minikube.overrideAttrs (old: rec { 
+    #   version = "1.2.0";
+    #   # kubernetesVersion = "1.15.0";
+    #   pname   = "minikube";
+    #   name    = "${pname}-${version}";
+    #   subPackages = old.subPackages ++ ["github.com/blang/semver"];
+    #   src = super.fetchFromGitHub {
+    #     owner  = "kubernetes";
+    #     repo   = "minikube";
+    #     rev    = "v${version}";
+    #     sha256 = "0l9znrp49877cp1bkwx84c8lv282ga5a946rjbxi8gznkf3kwaw7";
+    #   };
+    # });
   };
 
   tools = self: super: rec {
@@ -85,6 +112,7 @@ let
         brigadeSharedSecret 
         rootFolder 
         region
+        hash
         env;
     };
   };
