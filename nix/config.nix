@@ -34,7 +34,6 @@ rec {
         then aws
         else aws // { region = if region != null then region else "eu-west-2"; };
 
-  # knative-serve = import ./modules/knative-serve.nix;
   projectName = "future-is-comming";
   version = "0.0.1";
   gitignore = nix-gitignore.gitignoreSourcePure [ "${rootFolder}/.gitignore" ];
