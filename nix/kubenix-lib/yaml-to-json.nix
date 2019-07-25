@@ -1,4 +1,5 @@
-{stdenv, lib, pkgs}:
+{lib, pkgs, ...}:
+with pkgs;
 {src, name, version}:
   stdenv.mkDerivation {
     inherit name version src;

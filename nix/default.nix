@@ -31,10 +31,12 @@ let
       let
         kube = (super.callPackage sources.kubenix {});
         extra-modules = import ./kubenix-modules;
+        extra-lib = super.callPackage ./kubenix-lib {};
         kubenix = super.lib.recursiveUpdate 
           kube   
           ({ 
             modules = extra-modules;
+            lib = extra-lib;
             # INFO: wrapping function and injecting extended kubenix module version
             evalModules = {...}@args: kube.evalModules (args // {
               specialArgs = {inherit kubenix;};
@@ -51,7 +53,6 @@ let
     # Helpers
     find-files-in-folder = (super.callPackage ./helpers/find-files-in-folder.nix {}) rootFolder;
     log = super.callPackage ./helpers/log.nix {};
-    yaml-to-json = super.callPackage ./helpers/yaml-to-json.nix {};
 
     # Brigade
     brigade = super.callPackage ./tools/brigade.nix {};
@@ -62,7 +63,6 @@ let
     kubectl-repl = super.callPackage ./tools/kubectl-repl.nix {}; 
     hey = super.callPackage ./tools/hey.nix {}; 
     istioctl = super.callPackage ./tools/istioctl.nix {}; 
-    chart-from-git = super.callPackage ./helm {};
     k8s-local = super.callPackage ./k8s-local.nix {};
 
     # NodeJS packages
