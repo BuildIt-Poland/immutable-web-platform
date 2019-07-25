@@ -184,17 +184,31 @@ rec {
     ${port-forward (brigade-service // brigade-ports)}
   '';
 
+  minikube-wrapper = pkgs.writeScriptBin "mk" ''
+    ${pkgs.minikube}/bin/minikube $* -p ${env-config.projectName}
+  '';
+
   # helpful flag ... --print-requests 
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
     ${log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}
     ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${env-config.projectName}"
   '';
 
-  # INFO in case of minikube this is not necessary
-  # export KUBECONFIG=$(${pkgs.kind}/bin/kind get kubeconfig-path --name=${env-config.projectName})
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
     export BRIGADE_NAMESPACE=${brigade-service.namespace}
     export BRIGADE_PROJECT=${env-config.brigade.project-name}
     eval $(${pkgs.minikube}/bin/minikube docker-env -p future-is-comming)
+  '';
+
+  skaffold-build = pkgs.writeScriptBin "skaffold-build" ''
+    #!/bin/bash
+    DIR=$(pwd)/result
+    BUILDER="-f ./nix/development.nix"
+    HASH="--argstr hash $IMAGES"
+
+    ${pkgs.nix}/bin/nix build $BUILDER docker $HASH --out-link $DIR/docker-image
+    docker load -i $DIR/docker-image
+
+    ${pkgs.nix}/bin/nix build $BUILDER yaml $HASH --out-link $DIR/k8s-resource.yaml
   '';
 }
