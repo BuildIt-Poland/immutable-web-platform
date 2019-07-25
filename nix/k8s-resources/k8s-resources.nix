@@ -1,7 +1,9 @@
-{stdenv, lib, pkgs, kubenix, yaml-to-json, k8s-resources}:
+{lib, pkgs, kubenix, k8s-resources}:
+with pkgs;
+with kubenix.lib;
 rec {
 
-  knative-serving = yaml-to-json {
+  knative-serving-json = helm.yaml-to-json {
     name = "knative-serving";
     version = "0.7.1";
     src = pkgs.fetchurl {
@@ -10,7 +12,7 @@ rec {
     };
   };
 
-  knative-crd = yaml-to-json {
+  knative-crd-json = helm.yaml-to-json {
     name = "knative-crd";
     version = "0.7.1";
     src = pkgs.fetchurl {
@@ -19,8 +21,7 @@ rec {
     };
   };
   
-  # https://github.com/knative/serving/pull/4096/files
-  knative-monitoring = yaml-to-json {
+  knative-monitoring-json = helm.yaml-to-json {
     name = "knative-monitoring";
     version = "0.7.1";
     src = pkgs.fetchurl {
@@ -29,21 +30,8 @@ rec {
     };
   };
 
-  knative-stack = 
-  let
-    jsons = [
-      knative-serving
-      knative-monitoring
-    ];
-    overridings = [];
-  in
-    (lib.foldl 
-      lib.concat
-      overridings
-      ((builtins.map lib.importJSON jsons)));
-
   # core crd
-  cert-manager-crd = yaml-to-json {
+  cert-manager-crd-json = helm.yaml-to-json {
     name = "cert-manager-crd";
     version = "0.8.1";
     src = pkgs.fetchurl {
@@ -52,15 +40,4 @@ rec {
     };
   };
 
-  cluster-crd = with kubenix.lib; toYAML (k8s.mkHashedList { 
-    items = 
-      (lib.foldl 
-        lib.concat
-        []
-        (builtins.map lib.importJSON [
-          k8s-resources.istio-init-json 
-          cert-manager-crd
-          knative-crd
-        ]));
-  });
 }

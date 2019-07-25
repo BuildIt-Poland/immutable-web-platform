@@ -1,10 +1,9 @@
 {
-  kubenix,
   pkgs,
   lib,
-  stdenv,
-  stdenvNoCC
+  ...
 }:
+with pkgs;
 let
   cleanName = name: lib.replaceStrings ["/"] ["-"] name;
 in
