@@ -11,9 +11,9 @@ pkgs.dockerTools.buildLayeredImage ({
   maxLayers = 120;
 
   contents = [ 
+    # pkgs.coreutils
+    # pkgs.bash
     pkgs.nodejs-slim-11_x
-    pkgs.coreutils
-    pkgs.bash
     express-app # application
   ];
 

@@ -8,6 +8,7 @@ build:
   artifacts:
     - image: dev.local/express-app
       custom:
+        # script is located in /nix/k8s-local.nix
         buildCommand: skaffold-build
         dependencies:
           paths:
