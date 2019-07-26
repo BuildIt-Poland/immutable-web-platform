@@ -141,7 +141,7 @@ rec {
     ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${projectName}"
   '';
 
-    # export BRIGADE_PROJECT=${env-config.brigade.project-name}
+  # export BRIGADE_PROJECT=${env-config.brigade.project-name}
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
     export BRIGADE_NAMESPACE=${brigade-service.namespace}
     eval $(${pkgs.minikube}/bin/minikube docker-env -p future-is-comming)
@@ -151,7 +151,7 @@ rec {
     #!/bin/bash
     DIR=$(pwd)/result
     BUILDER="-f ./nix/development.nix"
-    HASH="--argstr hash $IMAGES"
+    HASH="--argstr tag $IMAGES"
 
     ${pkgs.nix}/bin/nix build $BUILDER docker $HASH --out-link $DIR/docker-image
     ${pkgs.docker}/bin/docker load -i $DIR/docker-image

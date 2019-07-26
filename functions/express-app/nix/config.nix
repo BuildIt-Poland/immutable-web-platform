@@ -1,11 +1,11 @@
-{env-config}: 
+{project-config}: 
 rec {
   port = 8080;
   label = "express-app";
-  docker-label = "${env-config.docker.namespace}/${label}";
+  docker-label = "${project-config.docker.namespace}/${label}";
 
   cpu = 
-    if env-config.is-dev 
+    if project-config.environment.isLocal
       then "100m" 
       else "1000m";
 

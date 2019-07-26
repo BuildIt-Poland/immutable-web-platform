@@ -12,8 +12,11 @@ rec {
   ];
 
   options.kubernetes = {
-
     cluster = {
+      /*
+      * Whether should start clean cluster
+      * ability to override by --arg kubernetes '{clean= false;}'
+      */
       clean = mkOption {
         default = true;
       };
@@ -116,7 +119,6 @@ rec {
         ];
 
         shellHook = ''
-          ${log.message "Checking existence of local cluster"}
           save-resources
         '';
       })
@@ -130,6 +132,7 @@ rec {
           istioctl
           skaffold
           minikube
+          k8s-operations.local.skaffold-build
         ];
       })
     ]);

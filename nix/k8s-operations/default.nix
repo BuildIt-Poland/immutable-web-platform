@@ -8,16 +8,13 @@
   log,
   lib
 }:
-let
-  env-config = project-config.project;
-in
 with cluster;
 rec {
 
   local = callPackage ./local.nix {};
 
   apply-resources = resources: writeScript "apply-resources" ''
-    ${log.important "Applying resources ${resources}"}
+    ${log.info "Applying resources ${resources}"}
     cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply -f -
   '';
 
@@ -31,7 +28,7 @@ rec {
       drop-hash = ''sed -e '/kubenix\/hash/d' '';
     in
       writeScriptBin "save-resources" ''
-        ${log.important "Saving yamls to: ${loc}"}
+        ${log.info "Saving yamls to: ${loc}"}
         cat ${resources.crd} | ${drop-hash} > ${loc}/crd.yaml
         cat ${resources.cluster} | ${drop-hash} > ${loc}/cluster.yaml
         cat ${resources.functions} | ${drop-hash} > ${loc}/functions.yaml
@@ -44,20 +41,20 @@ rec {
   '';
 
   apply-functions-to-cluster = writeScriptBin "apply-functions-to-cluster" ''
-    ${log.important "Applying functions helm charts"}
+    ${log.info "Applying functions helm charts"}
     ${apply-resources resources.functions}
   '';
 
   apply-cluster-stack = writeScriptBin "apply-cluster-stack" ''
-    ${log.important "Applying cluster helm charts"}
+    ${log.info "Applying cluster helm charts"}
     ${apply-resources resources.cluster}
   '';
 
   push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
     (lib.concatMapStrings 
       (docker-image: ''
-        eval $(minikube docker-env -p ${env-config.projectName})
-        ${log.important "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}:${docker-image.imageTag}"}
+        eval $(minikube docker-env -p ${project-config.project.name})
+        ${log.info "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}:${docker-image.imageTag}"}
         ${pkgs.docker}/bin/docker load -i ${docker-image}
       '') cluster.images);
 
@@ -66,7 +63,7 @@ rec {
       (docker-images: ''
         ${docker.copyDockerImages { 
           images = docker-images; 
-          dest = env-config.docker.destination;
+          dest = project-config.docker.destination;
         }}/bin/copy-docker-images
       '') cluster.images);
 }

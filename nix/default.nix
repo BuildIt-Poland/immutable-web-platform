@@ -1,32 +1,41 @@
 { 
   sources ? import ./sources.nix,
   system ? null,
-  inputs ? null,
-  project-config ? null
+  inputs ? {}
 }:
 let
 
   passthrough = self: super: rec {
-    inherit project-config;
     gitignore = super.nix-gitignore.gitignoreSourcePure [ ".gitignore" ];
+    make-defaults = super.callPackage ./config/defaults.nix {};
     rootFolder = toString ../.;
-  };
 
-  # this part is soooo insane! don't know if it is valid ... but works o.O
-  # building on darwin in linux in one run
-  application = self: super: rec {
+    # this part is soooo insane! don't know if it is valid ... but works o.O
+    # building on darwin in linux in one run
     linux-pkgs = 
       import sources.nixpkgs ({ 
         system = "x86_64-linux"; 
       } // { inherit overlays; });
 
-    # application = super.callPackage ./functions.nix {};
+    project-config = (super.shell-modules.eval {
+      modules = [./config/local-env.nix];
+      args = { 
+        inputs = make-defaults inputs; 
+        pkgs = super.pkgs;
+      };
+    }).config;
+  };
+
+  application = self: super: rec {
+
+    application = super.callPackage ./faas {};
     cluster = super.callPackage ./cluster-stack {};
 
     k8s-resources = super.callPackage ./k8s-resources {};
     k8s-operations = super.callPackage ./k8s-operations {};
 
     inherit sources;
+    inherit inputs;
   };
 
   overlays = [

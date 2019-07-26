@@ -1,13 +1,14 @@
 { 
   config, 
+  pkgs,
   lib, 
   kubenix, 
-  k8s-resources,
-  env-config, 
+  k8s-resources ? pkgs.k8s-resources,
+  project-config,
   ... 
 }:
 let
-  namespace = env-config.kubernetes.namespace;
+  namespace = project-config.kubernetes.namespace;
   argo-ns = namespace.argo;
 in
 {

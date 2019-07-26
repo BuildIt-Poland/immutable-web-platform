@@ -28,10 +28,11 @@ with pkgs.lib;
     };
 
     docker = {
-      upload-images = ["functions" "cluster"];
+      upload-images-type = ["functions" "cluster"];
+      upload = inputs.docker.upload;
       namespace = "dev.local";
       registry = "";
-      tag = makeDefault inputs.docker.hash "dev-build";
+      tag = makeDefault inputs.docker.tag "dev-build";
     };
 
     aws = {
@@ -39,6 +40,9 @@ with pkgs.lib;
       location = {
         credentials = ~/.aws/credentials;
         config = ~/.aws/config;
+      };
+      s3-buckets = {
+        worker-cache = "${config.project.name}-worker-binary-store";
       };
     };
 
@@ -48,7 +52,7 @@ with pkgs.lib;
     };
 
     git-secrets = {
-      location = "$PWD/secrets.json";
+      location = ../../secrets.json;
     };
 
     kubernetes = {

@@ -1,25 +1,27 @@
 
 { 
   config, 
+  pkgs,
   lib, 
   kubenix, 
   k8s-resources,
-  env-config, 
-  brigade-extension,
-  remote-worker,
+  project-config, 
   ... 
 }:
 let
-  namespace = env-config.kubernetes.namespace;
+  cfg = config;
 
-  local-infra-ns = namespace.infra;
+  customization = project-config.brigade.customization;
+  brigade-extension = customization.extension;
+  remote-worker = customization.remote-worker;
+
+  namespace = project-config.kubernetes.namespace;
+
   brigade-ns = namespace.brigade;
-  istio-ns = namespace.istio;
-  functions-ns = namespace.functions;
-  knative-monitoring-ns = namespace.knative-monitoring;
 
-  ssh-keys = env-config.ssh-keys;
-  aws-credentials = env-config.aws-credentials;
+  project-template = pkgs.callPackage ./template/brigade-project.nix {
+    inherit config;
+  };
 in
 # TODO add enabled true/false
 {
@@ -116,55 +118,54 @@ in
     # kubernetes.api.clusterrole = {};
 
     # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
-    # # brigade = {
-    # #   project-name = "embracing-nix-docker-k8s-helm-knative";
-    # #   pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
-    # # };
-    # s3 = {
-    #   worker-cache = "${projectName}-worker-binary-store";
-    # };
-    kubernetes.helm.instances.brigade-project = 
-    let
-      cfg = config.docker.images;
-      extension = cfg.brigade-extension;
-      worker = cfg.brigade-worker;
-    in
-    {
-      namespace = "${brigade-ns}";
-      name = "brigade-project";
-      chart = k8s-resources.brigade-project;
-      values = {
-        project = env-config.brigade.project-name;
-        repository = env-config.brigade.project-name; # repository.location is too long # TODO check if it would work with gateway now ...
-        # repository = env-config.repository.location;
-        cloneURL = env-config.repository.git;
-        vcsSidecar = "brigadecore/git-sidecar:latest";
-        sharedSecret = env-config.brigade.sharedSecret;
-        defaultScript = builtins.readFile env-config.brigade.pipeline; 
-        sshKey = ssh-keys.bitbucket.priv;
-        workerCommand = "yarn build-start";
-        worker = {
-          registry = env-config.docker.registry;
-          name = extension.name;
-          tag = extension.tag;
-          # actually should be never but it seems that they are applying to this policy to sidecar as well
-          pullPolicy = "IfNotPresent"; 
-        };
-        kubernetes = {
-          cacheStorageClass = "cache-storage";
-          buildStorageClass = "build-storage";
-        };
-        secrets = {
-          awsAccessKey = aws-credentials.aws_access_key_id;
-          awsSecretKey = aws-credentials.aws_secret_access_key;
-          gitToken = ssh-keys.bitbucket.priv;
-          gitUser = "damian.baar@wipro.com";
-          awsRegion = aws-credentials.region;
-          sopsSecrets = builtins.readFile env-config.secrets;
-          cacheBucket = env-config.s3.worker-cache;
-          workerDockerImage = worker.path;
-        };
-      };
+    kubernetes.helm.instances.brigade-project = project-template {
+      project-name = "embracing-nix-docker-k8s-helm-knative";
+      pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
+      clone-url = project-config.project.repositories.code-repository;
     };
+
+    # kubernetes.helm.instances.brigade-project = 
+    # let
+    #   cfg = config.docker.images;
+    #   extension = cfg.brigade-extension;
+    #   worker = cfg.brigade-worker;
+    # in
+    # {
+    #   namespace = "${brigade-ns}";
+    #   name = "brigade-project";
+    #   chart = k8s-resources.brigade-project;
+    #   values = {
+    #     project = project-config.brigade.project-name;
+    #     repository = project-config.brigade.project-name; # repository.location is too long # TODO check if it would work with gateway now ...
+    #     # repository = project-config.repository.location;
+    #     cloneURL = project-config.project.repositories.code-repository;
+    #     vcsSidecar = "brigadecore/git-sidecar:latest";
+    #     sharedSecret = project-config.brigade.secret-key;
+    #     defaultScript = builtins.readFile project-config.brigade.pipeline; 
+    #     sshKey = bitbucket.ssh-keys.priv;
+    #     workerCommand = "yarn build-start";
+    #     worker = {
+    #       registry = cfg.docker.registry.url;
+    #       name = extension.name;
+    #       tag = extension.tag;
+    #       # actually should be never but it seems that they are applying to this policy to sidecar as well
+    #       pullPolicy = "IfNotPresent"; 
+    #     };
+    #     kubernetes = {
+    #       cacheStorageClass = "cache-storage";
+    #       buildStorageClass = "build-storage";
+    #     };
+    #     secrets = {
+    #       awsAccessKey = aws.access-key-id;
+    #       awsSecretKey = aws.secret-access-key;
+    #       gitToken = bitbucket.ssh-keys.priv;
+    #       gitUser = project-config.project.author-email;
+    #       awsRegion = aws.region;
+    #       sopsSecrets = builtins.readFile project-config.git-secrets.location;
+    #       cacheBucket = aws.s3-buckets.worker-cache;
+    #       workerDockerImage = worker.path;
+    #     };
+    #   };
+    # };
   };
 }

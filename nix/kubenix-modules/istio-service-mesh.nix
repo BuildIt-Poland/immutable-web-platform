@@ -3,11 +3,11 @@
   lib, 
   kubenix, 
   k8s-resources,
-  env-config, 
+  project-config, 
   ... 
 }:
 let
-  namespace = env-config.kubernetes.namespace;
+  namespace = project-config.kubernetes.namespace;
   istio-ns = namespace.istio;
 
   virtual-services-gateway = config.kubernetes.virtual-services.gateway;

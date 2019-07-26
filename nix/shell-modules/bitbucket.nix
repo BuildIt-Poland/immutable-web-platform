@@ -30,8 +30,8 @@ rec {
       checks = ["Enabling bitbucket module"];
     }
     (mkIf ssh-exists {
-      bitbucket.ssh-keys.pub = builtins.readFile "${cfg.ssh-keys.location}.pub";
-      bitbucket.ssh-keys.priv = builtins.readFile "${cfg.ssh-keys.location}";
+      bitbucket.ssh-keys.pub = builtins.readFile "${cfg.bitbucket.ssh-keys.location}.pub";
+      bitbucket.ssh-keys.priv = builtins.readFile "${cfg.bitbucket.ssh-keys.location}";
     })
 
     (mkIf (!ssh-exists) {

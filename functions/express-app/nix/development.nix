@@ -1,14 +1,15 @@
 {
-  hash ? "",
+  tag ? "",
   pkgs ? (import ../../../nix {
-    # ugly as **** - fix this
-    hash = if hash != "" then builtins.elemAt (builtins.tail (builtins.split ":" hash)) 1 else "";
+    inputs.docker.tag = 
+      pkgs.lib.last 
+        (pkgs.lib.splitString ":" tag);
   })
 }:
 let
   express-app = pkgs.application.functions.express-app;
 in
 {
-  docker = builtins.elemAt express-app.images 0;
+  docker = pkgs.lib.head express-app.images;
   yaml = express-app.yaml;
 }

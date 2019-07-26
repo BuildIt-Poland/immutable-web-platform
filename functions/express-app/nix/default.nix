@@ -1,18 +1,21 @@
-{ pkgs, kubenix, callPackage, writeScriptBin, lib, docker }@args:
+{ 
+  pkgs, 
+  kubenix, 
+  callPackage, 
+  writeScriptBin, 
+  lib, 
+  docker,
+  project-config
+}@args:
 with kubenix.lib;
 rec {
   package = callPackage ./package.nix {};
 
   config = (kubenix.evalModules {
     inherit args;
-
-    modules = [
-      ./module.nix
-    ];
-
+    module = ./module.nix;
   }).config;
 
   images = config.docker.export;
-  result = k8s.mkHashedList { items = config.kubernetes.objects; };
-  yaml = toYAML result;
+  yaml = helm.jsons-to-yaml config.kubernetes.objects;
 }
