@@ -40,10 +40,10 @@ with pkgs;
 mkShell {
   buildInputs = [ ] ++ config.packages;
   shellHook= ''
-    ${toString shellHook}
-
     ${lib.concatMapStrings log.warn warnings}
     ${lib.concatMapStrings log.error errors}
+
+    ${toString shellHook}
   '';
   #   # js
   #   nodejs
