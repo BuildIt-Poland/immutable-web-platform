@@ -1,5 +1,5 @@
 
-{ linux-pkgs, env-config,writeScriptBin }:
+{ linux-pkgs, project-config,writeScriptBin }:
 let
   pkgs = linux-pkgs;
 
@@ -22,7 +22,7 @@ in
 # INFO: to avoid extending path like below, investigate
 # pkgs.dockerTools.buildImageWithNixDb
 pkgs.dockerTools.buildImage ({
-  name = "${env-config.docker.namespace}/remote-worker";
+  name = "${project-config.docker.namespace}/remote-worker";
 
   fromImage = worker;
 
@@ -44,4 +44,4 @@ pkgs.dockerTools.buildImage ({
       "NIX_PATH=nixpkgs=/root/.nix-defexpr/nixpkgs"
       "NIX_SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"
     ];
-} // env-config.docker.tag)
+} // { tag = project-config.docker.tag; })

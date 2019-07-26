@@ -10,9 +10,13 @@ rec {
       default = true;
     };
 
-    upload-images = lib.mkOption {
+    upload-images-type = lib.mkOption {
       default = [];
       type = enum ["functions" "cluster"];
+    };
+
+    upload = lib.mkOption {
+      default = false;
     };
 
     namespace = mkOption {
@@ -37,8 +41,13 @@ rec {
     ({
       packages = with pkgs; [
         docker
+      ];
+    })
+    (mkIf cfg.docker.upload {
+      packages = with pkgs; [
         k8s-operations.push-docker-images-to-local-cluster
       ];
+
       actions.queue = [{ 
         priority = cfg.actions.priority.crd; 
         action = ''

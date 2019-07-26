@@ -11,9 +11,19 @@ in
 with lib;
 rec {
 
+  imports = [
+    ./project-configuration.nix
+  ];
+
   options.aws = {
     enabled = mkOption {
       default = true;
+    };
+
+    s3-buckets = {
+      worker-cache = mkOption {
+        default = true;
+      };
     };
 
     location = {

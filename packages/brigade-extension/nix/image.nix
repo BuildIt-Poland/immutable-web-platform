@@ -1,4 +1,4 @@
-{ linux-pkgs, env-config, callPackage, writeScriptBin }:
+{ linux-pkgs, project-config, callPackage, writeScriptBin }:
 let
   pkgs = linux-pkgs;
 
@@ -15,7 +15,7 @@ let
 in
 # INFO: this image is required to embed custom scripts
 pkgs.dockerTools.buildImage ({
-  name = "${env-config.docker.namespace}/brigade-worker";
+  name = "${project-config.docker.namespace}/brigade-worker";
 
   fromImage = base-docker;
 
@@ -33,4 +33,4 @@ pkgs.dockerTools.buildImage ({
   };
 
   contents = [];
-} // env-config.docker.tag)
+} // { tag = project-config.docker.tag; })

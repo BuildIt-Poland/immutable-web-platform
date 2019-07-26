@@ -4,12 +4,12 @@
 # https://github.com/knative/docs/blob/master/docs/serving/using-auto-tls.md
 { 
   config, 
-  env-config, 
+  project-config, 
   kubenix, 
   ... 
 }:
 let
-  namespace = env-config.kubernetes.namespace;
+  namespace = project-config.kubernetes.namespace;
   functions-ns = namespace.functions;
   knative-monitoring-ns = namespace.knative-monitoring;
 in

@@ -7,8 +7,8 @@ app.get("/", (req, res) => {
   const target = process.env.TARGET || "World!!!!"
   const delay = process.env.DELAY || 1000
   setTimeout(() => {
-    console.log(`Sending response for ${target}`)
-    res.send(`Hello ${target}! yay!!!`)
+    console.log(`Sending response for ${target} - cool!`)
+    res.send(`Hello ${target}! yay!!! hey skaffold!`)
   }, delay)
 })
 

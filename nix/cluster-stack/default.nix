@@ -1,7 +1,7 @@
 {
   pkgs, 
   callPackage,
-  # application,
+  application,
   kubenix,
   k8s-resources,
   lib
@@ -36,8 +36,7 @@ rec {
 
   k8s-functions-resources = helm.jsons-to-yaml 
     (knative-stack-json
-    # ++ application.functions.express-app.config.kubernetes.objects);
-    );
+    ++ application.functions.express-app.config.kubernetes.objects);
 
   resources = {
     crd = k8s-cluster-crd;
@@ -46,7 +45,6 @@ rec {
   };
 
   images = 
-     [];
-    #  (lib.flatten application.function-images)
-  # ++ config.docker.export;
+    (lib.flatten application.function-images)
+    ++ config.docker.export;
 }

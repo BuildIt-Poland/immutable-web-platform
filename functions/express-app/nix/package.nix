@@ -1,10 +1,6 @@
-{ pkgs, env-config }:
-let
-  src = env-config.gitignore ../.;
-in
+{ pkgs, gitignore }:
 pkgs.yarn2nix.mkYarnPackage rec {
-  inherit src;
-
+  src = gitignore ../.;
   name = "express-node";
   packageJson = ../package.json;
   yarnLock = ../yarn.lock;

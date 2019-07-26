@@ -1,5 +1,5 @@
 {
-  docker-registry = ./docker.nix;
+  docker-registry = ./docker-registry.nix;
   argocd = ./argocd.nix;
   virtual-services = ./virtual-services.nix;
   brigade = ./brigade.nix;

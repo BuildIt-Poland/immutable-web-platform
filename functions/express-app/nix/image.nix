@@ -1,4 +1,4 @@
-{ linux-pkgs, env-config, callPackage }:
+{ linux-pkgs, project-config, callPackage }:
 let
   pkgs = linux-pkgs;
   express-app = callPackage ./package.nix {
@@ -25,4 +25,4 @@ pkgs.dockerTools.buildLayeredImage ({
       "${toString fn-config.port}/tcp" = {};
     };
   };
-} // env-config.docker.tag)
+} // {tag = project-config.docker.tag;})

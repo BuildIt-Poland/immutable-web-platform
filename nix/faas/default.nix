@@ -19,6 +19,5 @@ let
 in
 rec {
   inherit function-images;
-  inherit scripts;
   inherit functions;
 }
