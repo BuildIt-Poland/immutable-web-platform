@@ -4,8 +4,6 @@ let
 in
 with pkgs;
 with lib;
-# TODO think about priorities of tasks
-# sort shell hooks based on priorities and do a concat
 rec {
 
   imports = [

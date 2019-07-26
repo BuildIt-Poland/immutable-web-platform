@@ -6,6 +6,7 @@
     kubernetes
     docker
     brigade
+    bitbucket
   ];
 
   config = {
@@ -27,6 +28,10 @@
       resources.apply = inputs.kubernetes.update;
       cluster.clean = inputs.kubernetes.clean;
       imagePullPolicy = "Never";
+    };
+
+    bitbucket = {
+      ssh-keys.location = ~/.ssh/bitbucket_webhook;
     };
   };
 }
