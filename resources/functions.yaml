@@ -7220,52 +7220,5 @@ items:
       serving.knative.dev/release: v0.7.1
     name: fluentd-ds
     namespace: knative-monitoring
-- apiVersion: v1
-  kind: Namespace
-  metadata:
-    labels:
-      istio-injection: enabled
-      kubenix/project-name: kubenix
-    name: functions
-    namespace: default
-- apiVersion: serving.knative.dev/v1alpha1
-  kind: Service
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: express-app
-    namespace: functions
-  spec:
-    template:
-      metadata:
-        annotations:
-          autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
-          autoscaling.knative.dev/maxScale: '100'
-          autoscaling.knative.dev/metric: concurrency
-          autoscaling.knative.dev/target: '5'
-      spec:
-        containers:
-        - env:
-          - name: TARGET
-            value: Node.js Sample v1
-          image: dev.local/express-app:dev-build
-          imagePullPolicy: Never
-          livenessProbe:
-            httpGet:
-              path: /healthz
-            initialDelaySeconds: 3
-            periodSeconds: 3
-          resources:
-            requests:
-              cpu: 100m
-- apiVersion: v1
-  data:
-    dev.cluster: ''
-  kind: ConfigMap
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: config-domain
-    namespace: knative-serving
 kind: List
 labels:

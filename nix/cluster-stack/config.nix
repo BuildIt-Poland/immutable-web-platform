@@ -1,10 +1,8 @@
 { 
-  env-config, 
+  config, 
   kubenix, 
   pkgs, 
-  callPackage, 
-  brigade-extension, 
-  remote-worker, 
+  project-config,
   k8s-resources,
   ...
 }@args:

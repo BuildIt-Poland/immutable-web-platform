@@ -1,4 +1,4 @@
-{ pkgs, env-config, kubenix, callPackage, writeScriptBin, lib, docker }@args:
+{ pkgs, kubenix, callPackage, writeScriptBin, lib, docker }@args:
 with kubenix.lib;
 rec {
   package = callPackage ./package.nix {};

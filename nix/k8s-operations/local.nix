@@ -1,12 +1,14 @@
 { 
   pkgs, 
   lib, 
-  env-config, 
+  project-config, 
   kubenix,
   log,
   node-development-tools
 }:
 let
+  projectName = project-config.project.name;
+
   append-local-docker-registry-to-kind-nodes = pkgs.callPackage ./patch/kind.nix {};
   # INFO to filter out grep from ps
   getGrepPhrase = phrase:
@@ -17,7 +19,7 @@ let
     in
       "${grepPhrase}${grepPhraseRest}";
 
-  namespace = env-config.kubernetes.namespace;
+  namespace = project-config.kubernetes.namespace;
   local-infra-ns = namespace.infra;
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
@@ -43,13 +45,13 @@ in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
     ${log.message "Deleting cluster"}
-    ${pkgs.minikube}/bin/minikube -p ${env-config.projectName} delete
+    ${pkgs.minikube}/bin/minikube -p ${projectName} delete
   '';
 
   # brew install docker-machine-driver-hyperkit - check if there is a nixpkgs for that
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
     ${log.message "Creating cluster"}
-    minikube start -p ${env-config.projectName} \
+    minikube start -p ${projectName} \
       --cpus 6 \
       --memory 16400 \
       --kubernetes-version=v1.14.2 \
@@ -60,7 +62,7 @@ rec {
   '';
 
   check-if-already-started = pkgs.writeScript "check-if-minikube-started" ''
-    echo $(${pkgs.minikube}/bin/minikube status -p ${env-config.projectName} --format {{.Kubelet}} | wc -c)
+    echo $(${pkgs.minikube}/bin/minikube status -p ${projectName} --format {{.Kubelet}} | wc -c)
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
@@ -130,18 +132,18 @@ rec {
   '';
 
   minikube-wrapper = pkgs.writeScriptBin "mk" ''
-    ${pkgs.minikube}/bin/minikube $* -p ${env-config.projectName}
+    ${pkgs.minikube}/bin/minikube $* -p ${projectName}
   '';
 
   # helpful flag ... --print-requests 
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
     ${log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}
-    ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${env-config.projectName}"
+    ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${projectName}"
   '';
 
+    # export BRIGADE_PROJECT=${env-config.brigade.project-name}
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
     export BRIGADE_NAMESPACE=${brigade-service.namespace}
-    export BRIGADE_PROJECT=${env-config.brigade.project-name}
     eval $(${pkgs.minikube}/bin/minikube docker-env -p future-is-comming)
   '';
 
