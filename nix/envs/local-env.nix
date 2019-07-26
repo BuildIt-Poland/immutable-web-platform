@@ -26,6 +26,7 @@
     kubernetes = {
       resources.apply = inputs.kubernetes.update;
       cluster.clean = inputs.kubernetes.clean;
+      imagePullPolicy = "Never";
     };
   };
 }
