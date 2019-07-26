@@ -1,15 +1,15 @@
 { 
   sources ? import ./sources.nix,
   system ? null,
-  inputs,
-  project-config 
+  inputs ? null,
+  project-config ? null
 }:
 let
-  rootFolder = ../.;
 
   passthrough = self: super: rec {
     inherit project-config;
     gitignore = super.nix-gitignore.gitignoreSourcePure [ ".gitignore" ];
+    rootFolder = toString ../.;
   };
 
   # this part is soooo insane! don't know if it is valid ... but works o.O
@@ -31,11 +31,10 @@ let
 
   overlays = [
     (import ./overlays/overridings.nix {inherit sources;})
-    passthrough
     (import ./overlays/tools.nix {inherit sources;})
     (import ./overlays/kubenix.nix {inherit sources;})
     (import ./overlays/shell-modules.nix {inherit sources;})
-    # config
+    passthrough
     application
   ];
   args = 

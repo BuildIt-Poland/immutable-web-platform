@@ -33,10 +33,18 @@ rec {
   };
 
   config = mkIf cfg.docker.enabled (mkMerge [
+    { checks = ["Enabling docker module"]; }
     ({
       packages = with pkgs; [
         docker
+        k8s-operations.push-docker-images-to-local-cluster
       ];
+      actions.queue = [{ 
+        priority = cfg.actions.priority.crd; 
+        action = ''
+          push-docker-images-to-local-cluster
+        '';
+      }];
     })
   ]);
 }

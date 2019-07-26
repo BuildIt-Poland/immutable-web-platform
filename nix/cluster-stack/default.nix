@@ -46,7 +46,7 @@ rec {
   };
 
   images = 
-     []
+     [];
     #  (lib.flatten application.function-images)
-  ++ config.docker.export;
+  # ++ config.docker.export;
 }

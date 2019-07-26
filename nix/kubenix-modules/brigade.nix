@@ -116,6 +116,13 @@ in
     # kubernetes.api.clusterrole = {};
 
     # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
+    # # brigade = {
+    # #   project-name = "embracing-nix-docker-k8s-helm-knative";
+    # #   pipeline = "${rootFolder}/pipeline/infrastructure.ts"; 
+    # # };
+    # s3 = {
+    #   worker-cache = "${projectName}-worker-binary-store";
+    # };
     kubernetes.helm.instances.brigade-project = 
     let
       cfg = config.docker.images;

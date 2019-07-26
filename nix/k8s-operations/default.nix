@@ -27,7 +27,7 @@ rec {
 
   save-resources = 
     let
-      loc = project-config.project.resources.yaml.location;
+      loc = project-config.project.resources.yaml.folder;
       drop-hash = ''sed -e '/kubenix\/hash/d' '';
     in
       writeScriptBin "save-resources" ''

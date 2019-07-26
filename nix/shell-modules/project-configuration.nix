@@ -6,25 +6,28 @@ with lib;
 rec {
   options.project = {
     name = mkOption {
-      default = "future-is-comming";
+      default = "";
     };
 
     version = mkOption {
-      default = "0.0.1";
+      default = "";
     };
 
-    resources.yaml.location = mkOption {
-      default = "$PWD/resources";
+    author-email = mkOption {
+      default = "";
     };
 
-    repositories = mkOption {
-      default = {
-        infra-k8s-yaml = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
+    resources.yaml.folder = mkOption {
+      default = "";
+    };
+
+    repositories = {
+      k8s-resources = mkOption {
+        default = "";
       };
-      # repository = {
-      #   location = "bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative"; # this name cannot be longer than 64
-      #   git = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
-      # };
+      code-repository = mkOption {
+        default = "";
+      };
     };
   };
 }

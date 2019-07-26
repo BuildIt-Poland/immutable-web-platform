@@ -1,37 +1,91 @@
 {config, pkgs, lib, inputs, ...}:
 let
   cfg = config;
+
+  credentials-location = cfg.aws.location.credentials;
+  config-location = cfg.aws.location.config;
+
+  credentials-exists = builtins.pathExists credentials-location;
+  config-exists = builtins.pathExists config-location;
 in
 with lib;
 rec {
 
-  #     aws-profiles = super.callPackage ./lib/get-aws-credentials.nix {};
-  options.aws = mkOption {
-    default = rec {
-    aws-credentials = {};
-  #   if (env == "brigade" || !builtins.pathExists ~/.aws/credentials)
-  #   then
-  #     # TODO will be exported as env vars
-  #     {
+  options.aws = {
+    enabled = mkOption {
+      default = true;
+    };
 
-  #       aws_access_key_id = "";
-  #       aws_secret_access_key = "";
-  #       region = "";
-  #     }
-  #   else
-  #   let
-  #     aws = aws-profiles.default; # TODO add ability to change profile
-  #   in
-  #     if (builtins.hasAttr "region" aws)
-  #       then aws
-  #       else aws // { region = if region != null then region else "eu-west-2"; };
+    location = {
+      credentials = mkOption {
+        default = ~/.aws/credentials;
+        type = types.path;
+      };
+      config = mkOption {
+        default = ~/.aws/config;
+        type = types.path;
+      };
+    };
+
+    profile = mkOption {
+      default = "default";
+      type = types.string;
+    };
+
+    access-key = mkOption {
+      default = "";
+    };
+
+    secret-key = mkOption {
+      default = "";
+    };
+
+    region = mkOption {
+      default = "";
+      type = types.string;
     };
   };
 
   config = mkIf cfg.aws.enabled (mkMerge [
     ({
-      packages = with pkgs; [
-        
+      checks = ["Enabling AWS config module"];
+
+      packages = [
+        pkgs.awscli
+      ];
+    })
+
+    (mkIf credentials-exists 
+      (let
+        ini = (pkgs.lib.parseINI credentials-location);
+        profile = builtins.getAttr cfg.aws.profile ini;
+      in
+      {
+        aws.access-key = profile.aws_access_key_id;
+        aws.secret-key = profile.aws_secret_access_key;
+      }))
+
+    (mkIf config-exists 
+      (let
+        ini = (pkgs.lib.parseINI config-location);
+        profile = builtins.getAttr cfg.aws.profile ini;
+      in
+      {
+        infos = [
+          "Setting AWS region as ${profile.region}"
+        ];
+        aws.region = profile.region;
+      }))
+
+    (mkIf (!credentials-exists) {
+      warnings = [
+        "There is no AWS credentials - run aws configure or provide access key and secret key to config"
+      ];
+    })
+
+    (mkIf (!config-exists) {
+      warnings = [
+        "AWS Config is missing, using default region: ${cfg.aws.region}"
       ];
     })
   ]);

@@ -59,6 +59,7 @@ rec {
 
   config = 
     mkIf cfg.kubernetes.enabled (mkMerge [
+      { checks = ["Enabling kubernetes module"]; }
       ({
         packages = [
           kubectl
@@ -68,12 +69,25 @@ rec {
       (mkIf cfg.kubernetes.cluster.clean {
         packages = [
           k8s-operations.local.delete-local-cluster
+          k8s-operations.local.create-local-cluster-if-not-exists
+          k8s-operations.local.setup-env-vars
+          k8s-operations.apply-cluster-crd
         ];
 
         actions.queue = [
           { priority = cfg.actions.priority.cluster; 
             action = ''
               delete-local-cluster
+            '';
+          }
+          { priority = cfg.actions.priority.cluster; 
+            action = ''
+              create-local-cluster-if-not-exists
+            '';
+          }
+          { priority = cfg.actions.priority.crd; 
+            action = ''
+              apply-cluster-crd
             '';
           }
         ];
@@ -83,16 +97,15 @@ rec {
         packages = [
           k8s-operations.apply-cluster-stack
           k8s-operations.apply-functions-to-cluster
-          k8s-operations.local.create-local-cluster-if-not-exists
           k8s-operations.local.setup-env-vars
         ];
 
         actions.queue = [{ 
-          priority = cfg.actions.priority.cluster; 
+          priority = cfg.actions.priority.resources; 
           action = ''
-            create-local-cluster-if-not-exists
             source setup-env-vars
             apply-cluster-stack
+            apply-functions-to-cluster
           '';
         }];
       })
