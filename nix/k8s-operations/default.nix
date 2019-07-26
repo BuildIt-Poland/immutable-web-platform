@@ -1,14 +1,20 @@
 {
   pkgs, 
-  env-config, 
   writeScript,
   writeScriptBin,
+  callPackage,
   cluster,
+  project-config,
   log,
   lib
 }:
+let
+  env-config = project-config.project;
+in
 with cluster;
 rec {
+
+  local = callPackage ./local.nix {};
 
   apply-resources = resources: writeScript "apply-resources" ''
     ${log.important "Applying resources ${resources}"}
@@ -21,14 +27,14 @@ rec {
 
   save-resources = 
     let
-      loc = env-config.resources.yaml.location;
+      loc = project-config.project.resources.yaml.location;
       drop-hash = ''sed -e '/kubenix\/hash/d' '';
     in
       writeScriptBin "save-resources" ''
-        ${log.important "Saving yamls to: $PWD${loc}"}
-        cat ${resources.crd} | ${drop-hash} > $PWD${loc}/crd.yaml
-        cat ${resources.cluster} | ${drop-hash} > $PWD${loc}/cluster.yaml
-        cat ${resources.functions} | ${drop-hash} > $PWD${loc}/functions.yaml
+        ${log.important "Saving yamls to: ${loc}"}
+        cat ${resources.crd} | ${drop-hash} > ${loc}/crd.yaml
+        cat ${resources.cluster} | ${drop-hash} > ${loc}/cluster.yaml
+        cat ${resources.functions} | ${drop-hash} > ${loc}/functions.yaml
       '';
 
   apply-cluster-crd = writeScriptBin "apply-cluster-crd" ''
