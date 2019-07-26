@@ -6,7 +6,7 @@
 }@inputs:
 let
   defaults = with pkgs; (lib.recursiveUpdate {
-    kubernetes = { clean = false; update = false; };
+    kubernetes = { clean = false; update = false; save = true; };
     brigade = { secret = ""; integration = false; };
     docker = { upload = ""; hash = ""; };
     aws = { region = ""; };
