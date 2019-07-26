@@ -1,7 +1,8 @@
 # this is a tiny helper to escape values from ini to toml format
 {lib}:
+file:
 let
-  credentials = builtins.readFile ~/.aws/credentials;
+  credentials = builtins.readFile file;
   stringArr = lib.splitString "\n" credentials;
 
   escapeValue = y:

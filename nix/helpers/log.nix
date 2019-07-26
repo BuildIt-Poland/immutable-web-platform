@@ -14,9 +14,11 @@ let
   to = "${from}[0m";
   wrap = color: str: "${from}${color}${str} ${to}";
 
-  warning = wrap yellow "WARNING:";
-  error = wrap red "ERROR:";
-  info = wrap cyan "INFO:";
+  warning = wrap yellow "⚠️";
+  error = wrap red "⛔️";
+  ok = wrap cyan "✔️";
+  info = wrap cyan "ℹ️️";
+  line = wrap cyan "  >";
   message = wrap magenta;
   important = wrap green;
 in
@@ -33,11 +35,23 @@ in
     printf "${info} ${str}\n"
   '';
 
+  ok = str: ''
+    printf "${ok} ${str}\n"
+  '';
+
+  line = str: ''
+    printf "${line} ${str}\n"
+  '';
+
+  header = str: ''
+    printf "[031m ${line} ${str}\n"
+  '';
+
   message = str: ''
-    printf "${message ("> " + str)}\n"
+    printf "${message ("> ") + str}\n"
   '';
 
   important = str: ''
-    printf "${important ("> " + str)}\n"
+    printf "${important ("❗️") + str}\n"
   '';
 }

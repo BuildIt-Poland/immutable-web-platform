@@ -26,7 +26,9 @@ rec {
     };
   };
 
-  config = mkIf cfg.bitbucket.enabled (mkMerge [
+  config = mkIf cfg.bitbucket.enabled (mkMerge [{
+      checks = ["Enabling bitbucket module"];
+    }
     (mkIf ssh-exists {
       bitbucket.ssh-keys.pub = builtins.readFile "${cfg.ssh-keys.location}.pub";
       bitbucket.ssh-keys.priv = builtins.readFile "${cfg.ssh-keys.location}";

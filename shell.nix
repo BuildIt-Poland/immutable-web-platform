@@ -2,13 +2,13 @@
   kubernetes ? null,
   brigade ? null,
   docker ? null,
-  aws ? {region = ""; },
+  aws ? null
 }@inputs:
 let
   defaults = with pkgs; (lib.recursiveUpdate {
     kubernetes = { clean = false; update = false; save = true; };
-    brigade = { secret = ""; integration = false; };
-    docker = { upload = ""; hash = ""; };
+    docker = { upload = true; hash = ""; };
+    brigade = { secret = ""; };
     aws = { region = ""; };
   } inputs);
 
@@ -17,34 +17,24 @@ let
     project-config = config;
   }).pkgs;
 
-  defaults' = 
-    with pkgs; 
-      lib.traceSeq 
-        defaults 
-        defaults;
-
   config = (pkgs.shell-modules.eval {
     modules = [./nix/envs/local-env.nix];
     args = {
       inherit pkgs;
-      inputs = defaults';
+      inputs = defaults;
     };
   }).config;
-
-  shellHook = config.shellHook;
-  packages = config.packages;
-  warnings = config.warnings;
-  errors = config.errors;
 in
 with pkgs;
 mkShell {
   buildInputs = [ ] ++ config.packages;
-  shellHook= ''
-    ${lib.concatMapStrings log.warn warnings}
-    ${lib.concatMapStrings log.error errors}
 
-    ${toString shellHook}
+  PROJECT_NAME = config.project.name;
+
+  shellHook= ''
+    ${toString config.shellHook}
   '';
+    # ${lib.concatMapStrings "\n" config.help}
   #   # js
   #   nodejs
   #   yarn2nix.yarn

@@ -7,4 +7,5 @@
   aws = ./aws.nix;
   brigade = ./brigade.nix;
   bitbucket = ./bitbucket.nix;
+  git-secrets = ./git-secrets.nix;
 }

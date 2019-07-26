@@ -12,6 +12,11 @@ rec {
   find-files-in-folder = (super.callPackage ../helpers/find-files-in-folder.nix {}) rootFolder;
   log = super.callPackage ../helpers/log.nix {};
 
+  lib = super.lib.recursiveUpdate super.lib {
+    makeDefault = import ../helpers/make-default.nix;
+    parseINI = super.callPackage ../helpers/parse-ini.nix {};
+  };
+
   # Brigade
   brigade = super.callPackage ../tools/brigade.nix {};
   brigadeterm = super.callPackage ../tools/brigadeterm.nix {};
