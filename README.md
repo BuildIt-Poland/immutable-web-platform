@@ -11,6 +11,7 @@ provide full testing ability of infrastructure as well as on application level f
 * [gitops](https://www.weave.works/blog/gitops-operations-by-pull-request)
 * [argo cd](https://argoproj.github.io/argo-cd/)
 * `nix` - [ecosystem](https://www.youtube.com/watch?v=YbUPdv03ciI), [features overview](https://www.youtube.com/watch?v=D5Gq2wkRXpU), [kubernetes](https://www.youtube.com/watch?v=XgZWbrBLP4I)
+* [nix - sales pitch](https://gist.github.com/joepie91/9fdaf8244b0a83afcce204e6da127c7d)
 
 ### What is super hot!
 * development with [`skaffold`](https://github.com/GoogleContainerTools/skaffold)

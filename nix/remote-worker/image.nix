@@ -10,14 +10,6 @@ let
     os = "linux";
     arch = "amd64";
   };
-
-  port = 5000;
-  serve-binary-store = {
-    Cmd = ["nix-serve -p ${toString port}"];
-    ExposedPorts = {
-      "${toString port}/tcp" = {};
-    };
-  };
 in
 # INFO: to avoid extending path like below, investigate
 # pkgs.dockerTools.buildImageWithNixDb

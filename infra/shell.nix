@@ -19,13 +19,14 @@ let
   };
 
   nixops = pkgs.callPackage ./deployer {
-    inherit paths;
+    inherit paths local;
   };
 
   deployment-scripts = pkgs.callPackage ./deployer/deployment-scripts.nix {
-    inherit nixops machines;
+    inherit nixops machines local;
   };
 in
+# TODO make modules as it is done for root/shell
 mkShell {
   buildInputs = [
     # nixops wrapper
@@ -39,10 +40,13 @@ mkShell {
     # deployment scripts
     (if !local 
       then (builtins.attrValues deployment-scripts.deploy-ec2)
-      else (builtins.attrValues deployment-scripts.deploy-vbox))
+      else (
+           builtins.attrValues deployment-scripts.deploy-vbox
+        ++ builtins.attrValues deployment-scripts.deploy-tester
+      ))
   ];
 
-  PROJECT_NAME = env-config.projectName;
+  PROJECT_NAME = project-config.project.name;
 
   # THIS NODE_PATH is a hack - wrap npx and export PATH there - npx does not take into account $PATH
   shellHook = ''

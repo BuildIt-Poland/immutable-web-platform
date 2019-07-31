@@ -1,6 +1,7 @@
 {
   pkgs,
-  paths
+  paths,
+  local
 }: 
 with pkgs;
 with remote-state.package;
@@ -31,8 +32,13 @@ let
       --from "${pkgs.nixops}/bin/nixops export --all"
   '';
 
+  # TODO make it better ...
+  # issue: when running ssh with nix shell as argument escaping should not be applied since is on remote machine
   nixops-wrapped = pkgs.writeScript "nixops" ''
-    ${pkgs.nixops}/bin/nixops $(${state-locker}/bin/locker rewrite-arguments --input "$*" --cwd $(pwd))
+    ${if local 
+      then ''${pkgs.nixops}/bin/nixops $*''
+      else ''${pkgs.nixops}/bin/nixops $(${state-locker}/bin/locker rewrite-arguments --input "$*" --cwd $(pwd))''
+    }
   '';
 in
   stdenv.mkDerivation {

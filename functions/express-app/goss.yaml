@@ -1,0 +1,28 @@
+http:
+  http://localhost:8080:
+    status: 200
+    allow-insecure: false
+    no-follow-redirects: false
+    timeout: 5000
+    body: ['Hello {{getEnv "TARGET" "World"}}!']
+
+command:
+  is-node-running:
+    exec: ps -eo args | grep node
+    exit-status: 0
+    stdout:
+    - /node/
+    stderr: []
+    timeout: 1000
+
+  node-version:
+    exit-status: 0
+    exec: "node --version" 
+    stdout:
+    - v12.7.0
+    stderr: []
+    timeout: 10000
+
+kernel-param:
+  kernel.ostype:
+    value: Linux

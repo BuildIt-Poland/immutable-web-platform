@@ -9,7 +9,7 @@ in
   options.environment = {
     type = with types; mkOption {
       default = "local";
-      type = enum ["local" "nixos" "brigade"];
+      type = enum ["local" "nixos" "brigade" "ec2"];
     };
     isLocal = mkOption {
       default = true;

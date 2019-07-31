@@ -13,7 +13,7 @@ with pkgs.lib;
   ];
 
   config = {
-    environment.type = "local";
+    environment.type = inputs.environment.type;
 
     # TODO move to defaults
     project = {

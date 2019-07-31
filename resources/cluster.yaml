@@ -64,6 +64,14 @@ items:
   kind: Namespace
   metadata:
     labels:
+      istio-injection: enabled
+      kubenix/project-name: kubenix
+    name: functions
+    namespace: default
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
       kubenix/project-name: kubenix
     name: istio-system
     namespace: default
@@ -1503,7 +1511,7 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: weave-scope
-    name: weave-scope-ui-test-unfq8
+    name: weave-scope-ui-test-dsmoe
     namespace: istio-system
   spec:
     containers:
@@ -1593,7 +1601,7 @@ items:
     kubernetes.buildStorageClass: build-storage
     kubernetes.cacheStorageClass: cache-storage
     repository: embracing-nix-docker-k8s-helm-knative
-    secrets: '{"awsRegion":"eu-west-1eu-west-2","cacheBucket":"future-is-comming-worker-binary-store","gitToken":"-----BEGIN
+    secrets: '{"awsRegion":"eu-west-2eu-west-2","cacheBucket":"future-is-comming-worker-binary-store","gitToken":"-----BEGIN
       OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABFwAAAAdzc2gtcn\nNhAAAAAwEAAQAAAQEA9Gky510zB4Lezg/OwGiGgLL/r2ZT1EbDefW9jbeCplTZnjmOgiS6\naq3GMyfmBmH5/LmnYUwP3iaILA7S+8fGmHnDBr03t5vBxFo800FXdTzXHeKqckmCR8sBhX\niGmzjHo43i6WMjDCt6vDJ3Oa9LHKdHCq4EW1SChksEdk/LmECMzyLMaQ2cQtc6RxpGT0xR\n42geoSY+bOE/T/ZH/hXz7fIz8f+gAVOSZmZBhvGV1YEFvvWbcc0MlNu+N/5AKfqwGFQwlc\np92qjN809I3RQNJ7GDlzzQUOPt4mnX2i2PJA5WFWD7gMpqHZbiG0rieQEdJcl/DvLjIX9/\nXALNK/F8tQAAA+B7BTx9ewU8fQAAAAdzc2gtcnNhAAABAQD0aTLnXTMHgt7OD87AaIaAsv\n+vZlPURsN59b2Nt4KmVNmeOY6CJLpqrcYzJ+YGYfn8uadhTA/eJogsDtL7x8aYecMGvTe3\nm8HEWjzTQVd1PNcd4qpySYJHywGFeIabOMejjeLpYyMMK3q8Mnc5r0scp0cKrgRbVIKGSw\nR2T8uYQIzPIsxpDZxC1zpHGkZPTFHjaB6hJj5s4T9P9kf+FfPt8jPx/6ABU5JmZkGG8ZXV\ngQW+9ZtxzQyU2743/kAp+rAYVDCVyn3aqM3zT0jdFA0nsYOXPNBQ4+3iadfaLY8kDlYVYP\nuAymodluIbSuJ5AR0lyX8O8uMhf39cAs0r8Xy1AAAAAwEAAQAAAQAWPuD4N/5mB55Z6Qxr\nbNgZLLGi+FBW+N3f4uMO3A4TL5PjF+AFrmwdO5XXoCEKoa5MN2WpsG+dS6qHQA4qBoPn6u\nU6XsyMdKvNQF1a6Q6ZyCDYQoI7Br/J4wtPZ6nwxNk+5LIrhe9xsx9ns7wwTukqQXtw2Gfj\nHC0JJhjQ3/Bq+f+NS166LBCse5O15uXmY+kL3frGxLDtXIsl/uD06bk9Zc6pNFopwG3WVO\nuanKSaZmP/6C7bbIbouGagc3y0TJLu904QSBQHzOfaz9oaBQLryyMdn5GHZdtGFt86lI63\ncJr89jwY4ZBi9ClwvwXWZJZz0lzmwBRzDQQzSauh7tP9AAAAgHHxuD1mWEegr6tVOnCc4J\nwgANDbwhC8AuWP/6EuU0vJi1X3b/RFIlM/14BNPmo4R5JGEn+h8cwEhX+1lldM11iPyfeQ\nrUB9iSVKJEqPlNsV4FI7KUfPSW4lzW3Ev6taI+cK45zrpfyY4azpHd7+KoioLLvcCO5nWA\n2GYFKTMueqAAAAgQD9JOEE/7zgjORzz2cR7dg1sCciYJ1LKX76n5GzEOWuJjGows/zj7DU\naplMU03PNrwOSnTX0wGjZfNGbq3uuyHYAOtZrkAO9m+RUZWDg2VaqxEjg7rWFdy7naVhze\n1vyRzvTu/2QN6uISTccCbVqHl7SFIJ+BtY/ztBC0SC2F1WKwAAAIEA9ysY4MuEtl2SSh3O\nQDahaWrfiT7MV9DGdSmA6LWf76QADvBl56o3xIRqd02jCXup3mv0ZIh2E9qFGaH/MsGqOe\ntH1cNxA03CXxsxg1l2hXmppjZ/p0X/kju/pAkVc0IUiDng8g+RYeyK5agH6hOtO/Zoyqkw\nlXVVfDtKVPym6J8AAAAkZGFtaWFuYmFhckBEYW1pYW5zLU1hY0Jvb2stUHJvLmxvY2FsAQ\nIDBAUGBw==\n-----END
       OPENSSH PRIVATE KEY-----\n","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
       {\n\t\t\"user\": \"ENC[AES256_GCM,data:3nI/zKGnlDywP+g=,iv:+ZVqJvRrSf22cvRgSOVOe8smx1y6FwYRAoNxMPUMwfs=,tag:B/hSNsOGgVNVLlYt2S2DGQ==,type:str]\",\n\t\t\"pass\":

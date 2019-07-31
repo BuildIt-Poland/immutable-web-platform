@@ -5,15 +5,23 @@ let
     inherit pkgs;
    };
   fn-config = callPackage ./config.nix {};
+  base = pkgs.dockerTools.pullImage {
+    imageName = "mhart/alpine-node";
+    sha256 = "00nvrgp7s3c17ywhsanra1w3lrms0r8bfbd5zyg2jkq96bmbpiyf";
+    imageDigest = "sha256:66ef5938c6a8a8793741ac7049395ea52c25ee825f49baabf7e347d9b9b97abe";
+    os = "linux";
+    arch = "amd64";
+  };
 in
-pkgs.dockerTools.buildLayeredImage ({
+pkgs.dockerTools.buildImage ({
   name = fn-config.docker-label;
-  maxLayers = 120;
+  fromImage = base;
+  # maxLayers = 120;
 
   contents = [ 
     # pkgs.coreutils
     # pkgs.bash
-    pkgs.nodejs-slim-11_x
+    # pkgs.nodejs-slim-11_x
     express-app # application
   ];
 

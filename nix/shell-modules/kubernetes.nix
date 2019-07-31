@@ -13,12 +13,12 @@ rec {
 
   options.kubernetes = {
     cluster = {
-      /*
-      * Whether should start clean cluster
-      * ability to override by --arg kubernetes '{clean= false;}'
-      */
       clean = mkOption {
         default = true;
+        description = ''
+          Whether should start clean cluster
+          ability to override by --arg kubernetes '{clean= false;}'
+        '';
       };
     };
 
@@ -100,13 +100,11 @@ rec {
         packages = [
           k8s-operations.apply-cluster-stack
           k8s-operations.apply-functions-to-cluster
-          k8s-operations.local.setup-env-vars
         ];
 
         actions.queue = [{ 
           priority = cfg.actions.priority.resources; 
           action = ''
-            source setup-env-vars
             apply-cluster-stack
             apply-functions-to-cluster
           '';
@@ -132,8 +130,14 @@ rec {
           istioctl
           skaffold
           minikube
+          kail
+          kubectx
           k8s-operations.local.skaffold-build
+          k8s-operations.local.setup-env-vars
         ];
+        shellHook = ''
+          source setup-env-vars
+        '';
       })
     ]);
 }

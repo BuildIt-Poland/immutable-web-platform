@@ -18,14 +18,15 @@ in
     k8s 
   ];
 
+  # TODO skaffold is trying ro re
   config = {
-    kubernetes.api.namespaces."${functions-ns}"= {
-      metadata = {
-        labels = {
-          "istio-injection" = "enabled";
-        };
-      };
-    };
+    # kubernetes.api.namespaces."${functions-ns}"= {
+    #   metadata = {
+    #     labels = {
+    #       "istio-injection" = "enabled";
+    #     };
+    #   };
+    # };
 
     kubernetes.customResources = [
       {

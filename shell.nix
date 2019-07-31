@@ -1,4 +1,5 @@
 {
+  environment ? null,
   kubernetes ? null,
   brigade ? null,
   docker ? null,
@@ -11,6 +12,6 @@ with pkgs;
   mkShell {
     PROJECT_NAME = project-config.project.name;
 
-    buildInputs = project-config.packages;
+    buildInputs = [pkgs.terraform-with-plugins] ++ project-config.packages;
     shellHook= project-config.shellHook;
   }

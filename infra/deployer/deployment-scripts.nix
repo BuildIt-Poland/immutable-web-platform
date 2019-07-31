@@ -8,6 +8,7 @@
   writeScript, 
   writeScriptBin, 
   pkgs,
+  local,
   rsync,
   lib,
   machines
@@ -19,6 +20,7 @@ let
     inherit nixops machines;
   };
 
+  # TODO in case of local machines should not be considered!!!
   create-ssh-variants = let
     make-ssh = name: resource-name: 
       writeScriptBin "ops-ssh-to-${name}-${resource-name}" ''
@@ -76,5 +78,11 @@ in
     name = "local-deployment";
     configuration = "infra/deployment.nix";
     machine = "infra/targets/vbox-cluster.nix";
+  };
+
+  deploy-tester = deployment {
+    name = "infra-tester";
+    configuration = "tester/configuration.nix";
+    machine = "targets/tester.nix";
   };
 }

@@ -10,7 +10,7 @@ self: super: rec {
       inherit rev;
       owner = "GoogleContainerTools";
       repo = "skaffold";
-      sha256 = "1h495w4ygb3vmxdq91z81n10h6vy299kqsw7cbxr048s6n9yvbns";
+      sha256 = "1d7zfyjqi0qvsz82ngfs7wvsnz1h068qgavcp07842cypar2xwcl";
     };
   });
 }
