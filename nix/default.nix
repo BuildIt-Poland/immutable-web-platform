@@ -29,6 +29,10 @@ let
     inherit inputs;
   };
 
+  nix-tests = self: super: rec {
+    nix-test = super.callPackage ./testing.nix {};
+  };
+
   application = self: super: rec {
 
     application = super.callPackage ./faas {};
@@ -45,6 +49,7 @@ let
     (import ./overlays/shell-modules.nix {inherit sources;})
     passthrough
     application
+    nix-tests
   ];
   args = 
     { } 
