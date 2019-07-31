@@ -27,6 +27,9 @@ rec {
   hey = super.callPackage ../tools/hey.nix {}; 
   istioctl = super.callPackage ../tools/istioctl.nix {}; 
 
+  # docker
+  dgoss = super.callPackage ../tools/dgoss.nix {}; 
+
   # NodeJS packages
   node-development-tools = super.callPackage "${nodePackages}/development-tools/nix" {};
   # brigade-extension = super.callPackage "${nodePackages}/brigade-extension/nix" {};
@@ -38,4 +41,7 @@ rec {
   argocd = super.callPackage ../tools/argocd.nix {};
 
   yarn2nix = super.callPackage sources.yarn2nix {};
+
+  # INFO I need to have hibernate feature for aws
+  nixops = (import "${sources.nixops.outPath}/release.nix" {}).build.${super.system};
 }

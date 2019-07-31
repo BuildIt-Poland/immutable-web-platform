@@ -21,6 +21,18 @@
         "description": "Kubernetes resource builder using nix",
         "rev": "365cae024cd7b6e8050dfc238a3da9f1a4b14964"
     },
+    "nixops": {
+        "homepage": "https://nixos.org/nixops",
+        "url": "https://github.com/nixos/nixops/archive/5cc73e2c42271c143fb1a11d670c8f8ba78ecdec.tar.gz",
+        "owner": "nixos",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "nixops",
+        "type": "tarball",
+        "sha256": "1d2gk99igws5pavi7zkh652vcanl7nxp8nhxgd0g1dayd46bj1kp",
+        "description": "NixOps, the NixOS-based cloud deployment tool",
+        "rev": "5cc73e2c42271c143fb1a11d670c8f8ba78ecdec"
+    },
     "yarn2nix": {
         "url": "https://github.com/moretea/yarn2nix/archive/3cc020e384ce2a439813adb7a0cc772a034d90bb.tar.gz",
         "owner": "moretea",

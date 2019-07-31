@@ -10,3 +10,5 @@
 
 * if your cluster is dying it seems that you have not sufficient resources for docker
 > solution: https://bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative/issues/1/required-docker-resources-for-local
+
+* Error getting host status: state: docker-machine-driver-hyperkit needs to run with elevated permissions. > solution: Please run the following command, then try again: sudo chown root:wheel /nix/store/3l4b2dqvdrlbikmdd7xiawmbrwiqgz3j-minikube-1.0.1-bin/bin/docker-machine-driver-hyperkit && sudo chmod u+s /nix/store/3l4b2dqvdrlbikmdd7xiawmbrwiqgz3j-minikube-1.0.1-bin/bin/docker-machine-driver-hyperkit

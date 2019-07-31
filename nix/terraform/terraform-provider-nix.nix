@@ -5,13 +5,13 @@ buildGoModule rec {
   version = "0.2.0";
 
   src = fetchFromGitHub {
-    owner = "andrewchambers";
+    owner = "circuithub";
     repo = "terraform-provider-nix";
-    rev = "v${version}";
-    sha256 = "17nmnna56xlscajx94hqilcp0jjvcbg7l8awqgkl46m9sfrj3w2g";
+    rev = "f50411f38b5fca59c84df1c8a23edb0b53d14349";
+    sha256 = "0hj2fawm78jx0nl3inmzsdl5dyi34clmbm92jcf404f0yhpwwfp6";
   };
 
-  modSha256 = "1341fyxq900253l6j2rcazifsc4x8ncmz4smi5pwk38kbja65xli";
+  modSha256 = "1wnzyfsc470mnv8n2ymr4vs2x7x2macssyfzify5gk4vr9jjnc3v";
 
   subPackages = [ "." ];
 

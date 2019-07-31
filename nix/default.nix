@@ -18,12 +18,15 @@ let
       } // { inherit overlays; });
 
     project-config = (super.shell-modules.eval {
-      modules = [./config/local-env.nix];
+      modules = [./config/local-env.nix]; # this should be injected from external
       args = { 
         inputs = make-defaults inputs; 
         pkgs = super.pkgs;
       };
     }).config;
+
+    inherit sources;
+    inherit inputs;
   };
 
   application = self: super: rec {
@@ -33,9 +36,6 @@ let
 
     k8s-resources = super.callPackage ./k8s-resources {};
     k8s-operations = super.callPackage ./k8s-operations {};
-
-    inherit sources;
-    inherit inputs;
   };
 
   overlays = [

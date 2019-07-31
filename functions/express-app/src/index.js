@@ -8,7 +8,7 @@ app.get("/", (req, res) => {
   const delay = process.env.DELAY || 1000
   setTimeout(() => {
     console.log(`Sending response for ${target} - cool!`)
-    res.send(`Hello ${target}! yay!!! hey skaffold!`)
+    res.send(`Hello ${target}! yay!!! hey skaffold!!!`)
   }, delay)
 })
 

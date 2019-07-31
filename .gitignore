@@ -9,6 +9,7 @@ yarn-error.*
 *.nixops-shm
 *.nixops-wal
 cdk.out/*
+resources/brigade-aws-secret.yaml
 .temp
 temp.*
 temp/

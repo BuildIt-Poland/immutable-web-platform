@@ -1,5 +1,6 @@
 ## Today
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
+* export aws variables - do not keep them within secret
 * generate resources to file and check --local --watch `argocd app diff my-app` -> `argocd app diff $PROJECT_NAME --local ./resources`
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
 * create argo startup scripts

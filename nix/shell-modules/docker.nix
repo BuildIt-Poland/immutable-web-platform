@@ -41,6 +41,7 @@ rec {
     ({
       packages = with pkgs; [
         docker
+        dgoss
       ];
     })
     (mkIf cfg.docker.upload {
