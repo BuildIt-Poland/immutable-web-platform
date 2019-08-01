@@ -15,8 +15,4 @@
     weavescope
   ];
 
-  kubernetes.resourceOrder = [
-    "CustomResourceDefinition" 
-    "Namespace" 
-  ];
 }

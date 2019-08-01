@@ -25,10 +25,15 @@ in
     helm
     istio
     virtual-services
+    k8s-extension
   ];
 
   config = {
     kubernetes.api.namespaces."${istio-ns}"= {};
+
+    kubernetes.crd = [
+      k8s-resources.istio-init-json 
+    ];
 
     kubernetes.helm.instances.istio = 
     let

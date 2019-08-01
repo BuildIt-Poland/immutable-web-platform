@@ -7,6 +7,9 @@
   })
 }:
 let
+  # TODO 
+  # yaml: c.project-config.kubernetes.resources.generated.faas.yaml.objects
+  # docker-image: c.project-config.kubernetes.resources.generated.faas.images.express-app
   express-app = pkgs.application.functions.express-app;
 in
 rec {

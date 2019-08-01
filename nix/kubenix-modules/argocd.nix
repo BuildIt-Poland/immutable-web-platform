@@ -20,14 +20,6 @@ in
   config = {
     kubernetes.api.namespaces."${argo-ns}"= {};
 
-    kubernetes.api.namespaces."${namespace.functions}"= {
-      metadata = {
-        labels = {
-          "istio-injection" = "enabled";
-        };
-      };
-    };
-
     # TODO
     # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
     # there is a cli - a bit regret that this is not a kubernetes resource

@@ -8,16 +8,17 @@ let
 
   functions = 
     builtins.mapAttrs 
-      (x: y: callPackage y {}) 
+      (x: y: import y) 
       function-packages;
 
-  function-images = 
-    lib.foldl
-      lib.concatLists
-      (builtins.map (x: x.images) (builtins.attrValues functions))
-      [];
+  # function-images = 
+  #   lib.foldl
+  #     lib.concatLists
+  #     (builtins.map (x: x.images) (builtins.attrValues functions))
+  #     [];
 in
-rec {
-  inherit function-images;
-  inherit functions;
-}
+  functions
+# rec {
+#   inherit function-images;
+#   inherit functions;
+# }

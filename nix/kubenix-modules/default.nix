@@ -6,4 +6,7 @@
   istio-service-mesh = ./istio-service-mesh.nix;
   knative-serve = ./knative-serve.nix;
   weavescope = ./weavescope.nix;
+  k8s-extension = ./k8s-extension.nix;
+  knative = ./knative.nix;
+  knative-monitoring = ./knative-monitoring.nix;
 }

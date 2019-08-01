@@ -1,9 +1,10 @@
 # from: https://knative.dev/docs/serving/samples/hello-world/helloworld-nodejs/
 
-{config, lib, project-config, pkgs, kubenix, callPackage, ...}: 
+{config, lib, project-config, pkgs, kubenix, ...}: 
 let
-  express-app = callPackage ./image.nix {};
-  fn-config = callPackage ./config.nix {};
+  express-app = pkgs.callPackage ./image.nix {};
+  fn-config = pkgs.callPackage ./config.nix {};
+  package = pkgs.callPackage ./package.nix {};
 
   namespaces= project-config.kubernetes.namespace;
 in
@@ -12,7 +13,12 @@ in
     k8s 
     docker-registry
     knative-serve
+    k8s-extension
   ];
+
+  kubernetes.packages = {
+    inherit express-app;
+  };
 
   docker.images.express-app.image = express-app;
 
