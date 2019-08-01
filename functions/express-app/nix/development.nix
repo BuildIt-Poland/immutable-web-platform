@@ -22,7 +22,7 @@ rec {
     in
       pkgs.kaniko-build {
         inherit dockerfile;
-        imageName = "dev.local/express-app";
+        imageName = "dev_local/express-app";
         src = [./.];
         # extraContent = "";
       };

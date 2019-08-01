@@ -33,6 +33,9 @@ in
     queue = mkOption {
       default = [];
     };
+    list = mkOption {
+      default = "";
+    };
   };
 
   options.packages = with types; mkOption {
@@ -75,12 +78,16 @@ in
           get-help
         ];
 
-      shellHook = 
-        with pkgs;
+      actions.list = 
         let
           sorted-queue = sort (a: b: a.priority > b.priority) config.actions.queue;
           commands-queue = builtins.map (c: c.action) sorted-queue;
-          commands-string = concatStringsSep "\n" commands-queue;
+        in
+          concatStringsSep "\n" commands-queue;
+
+      shellHook = 
+        with pkgs;
+        let
           pretty-input = lib.generators.toINI {} inputs;
 
           header = ''
@@ -101,7 +108,7 @@ in
           ${lib.concatMapStrings log.warn config.warnings}
           ${lib.concatMapStrings log.error config.errors}
 
-          ${commands-string}
+          ${config.actions.list}
 
           ${footer}
         '';
