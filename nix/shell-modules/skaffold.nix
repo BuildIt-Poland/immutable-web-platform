@@ -1,7 +1,6 @@
 {config, pkgs, lib, inputs, ...}:
 let
   cfg = config;
-  [b] 
 in
 with lib;
 rec {

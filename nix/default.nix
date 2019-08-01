@@ -17,11 +17,15 @@ let
         system = "x86_64-linux"; 
       } // { inherit overlays; });
 
+    k8s-resources = super.callPackage ./k8s-resources {};
+
     project-config = (super.shell-modules.eval {
       modules = [./config/local-env.nix]; # this should be injected from external
       args = { 
         inputs = make-defaults inputs; 
         pkgs = super.pkgs;
+        kubenix = super.kubenix;
+        k8s-resources = k8s-resources;
       };
     }).config;
 
@@ -35,10 +39,9 @@ let
 
   application = self: super: rec {
 
-    application = super.callPackage ./faas {};
-    cluster = super.callPackage ./cluster-stack {};
+    # application = ./faas {};
+    # cluster = super.callPackage ./cluster-stack {};
 
-    k8s-resources = super.callPackage ./k8s-resources {};
     k8s-operations = super.callPackage ./k8s-operations {};
   };
 

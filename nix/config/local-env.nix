@@ -1,9 +1,10 @@
-{config, pkgs, shell-modules, inputs, ...}: 
+{config, pkgs, lib, kubenix, shell-modules, inputs, ...}: 
 with pkgs.lib;
 {
   imports = with shell-modules.modules; [
     project-configuration
     kubernetes
+    kubernetes-resources
     docker
     brigade
     bitbucket
@@ -56,9 +57,19 @@ with pkgs.lib;
     };
 
     kubernetes = {
-      resources.apply = inputs.kubernetes.update;
       cluster.clean = inputs.kubernetes.clean;
       imagePullPolicy = "Never";
+      resources = {
+        apply = inputs.kubernetes.update;
+        list = 
+          with kubenix.modules;
+          {
+            core          = [ istio-service-mesh knative ];
+            monitoring    = [ weavescope knative-monitoring ];
+            gitops        = [ argocd ];
+            ci            = [ brigade ];
+          } // (pkgs.callPackage ../faas {});
+      };
     };
 
     bitbucket = {

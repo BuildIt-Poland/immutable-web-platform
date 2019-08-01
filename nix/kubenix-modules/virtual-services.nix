@@ -21,7 +21,7 @@ in
     helm
     istio
   ];
-
+  # TODO should be gateways
   options.kubernetes.virtual-services = {
     gateway = lib.mkOption {};
   };
