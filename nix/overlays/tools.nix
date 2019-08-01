@@ -29,6 +29,7 @@ rec {
 
   # docker
   dgoss = super.callPackage ../tools/dgoss.nix {}; 
+  kaniko-build = super.callPackage ../builder/kaniko.nix {};
 
   # NodeJS packages
   node-development-tools = super.callPackage "${nodePackages}/development-tools/nix" {};

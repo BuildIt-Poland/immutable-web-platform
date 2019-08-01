@@ -55,3 +55,8 @@ required changes to kind:
 # preload is not necessary!!!
 # crictl pull dev.local/dev/express-app:dev-build
 ```
+droping kind to use minikube as is more mature and better for local development.
+
+### kvm
+* kvm is necessary to run nixos tests - there is no chance to run it on aws (except i3.metal) or locally on mac
+* packet.net integration to run kvm https://github.com/input-output-hk/nixops/commit/786258da019577b20f76fc3b1d261488e13882ee

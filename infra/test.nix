@@ -31,51 +31,19 @@ let
   test-scenario = local: {
     name = "test";
     nodes = { 
-      # registry = { ... }: {
-      #   services.dockerRegistry.enable = true;
-      #   virtualisation.docker.enable = true;
-      #   services.dockerRegistry.enableDelete = true;
-      #   services.dockerRegistry.port = 8080;
-      #   services.dockerRegistry.listenAddress = "0.0.0.0";
-      #   services.dockerRegistry.enableGarbageCollect = true;
-      #   networking.firewall.allowedTCPPorts = [ 8080 ];
-      #   virtualisation.docker.extraOptions = "--insecure-registry localhost:8080";
-      # };
-
       machine1 = { pkgs, ... }: { 
         imports = [
-          # <nixpkgs/nixos/modules/profiles/minimal.nix>
-          # <nixpkgs/nixos/modules/profiles/headless.nix>
+          <nixpkgs/nixos/modules/profiles/minimal.nix>
+          <nixpkgs/nixos/modules/profiles/headless.nix>
         ];
 
-        # virtualisation.dockerPreloader.images = if !local then [nginx express-app] else [];
+        virtualisation.dockerPreloader.images = if !local then [nginx] else [];
         # virtualisation.dockerPreloader.images = [nginx];
 
         environment.systemPackages = []; 
         virtualisation.rkt.enable = true;
+        nix.useSandbox = pkgs.lib.mkForce false;
 
-      systemd.services."docker-nginx" = 
-      let
-        serviceName = "test";
-      in
-      {
-        path = [pkgs.rkt];
-        description = "Hello rkt";
-        wantedBy = [ "multi-user.target" ];
-        serviceConfig = {
-          ExecStart = ''
-            ${pkgs.rkt}/bin/rkt run --insecure-options=image \
-              --port=80-tcp:8181 \
-              docker-image://${nginx} \
-              --name ${serviceName}
-          '';
-          ExecStop = ''
-            ${pkgs.rkt}/bin/rkt stop --force --name ${serviceName}
-          '';
-          KillMode = "mixed";
-          Restart = "always";
-        };
-      };
         # virtualisation.docker.extraOptions = "--insecure-registry registry:8080";
 
         # this is extremely slow and require kvm 
@@ -87,10 +55,10 @@ let
         #   ports = ["8282:8080"];
         # };
 
-        # docker-containers.nginx = {
-        #   image = "${nginx.imageName}";
-        #   ports = ["8181:80"];
-        # };
+        docker-containers.nginx = {
+          image = "${nginx.imageName}";
+          ports = ["8181:80"];
+        };
       }; 
       # machine2 = { ... }: { 
       #   imports = [
@@ -117,9 +85,7 @@ let
     testScript = ''
       startAll
 
-
       $machine1->waitForUnit("sockets.target");
-
       $machine1->waitForUnit("default.target");
       $machine1->waitForUnit("docker-nginx.service");
       $machine1->waitForOpenPort(8181);

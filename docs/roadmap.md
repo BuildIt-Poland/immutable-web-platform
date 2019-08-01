@@ -6,6 +6,7 @@
 * create argo startup scripts
 * figure out better invalidation -> nix is doing a hash from directory, so move baking the image to some other place
 * integrate `istioctl` - create derivation
+* each time dockerTools.buildImage is run even if contents won't change it is invoked - in case of development it is a bit painful
 
 ## TODO
 * populate docker registry or nixos docker repository
