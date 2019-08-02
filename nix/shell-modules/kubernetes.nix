@@ -132,9 +132,13 @@ rec {
           k8s-operations.local.skaffold-build
           k8s-operations.local.setup-env-vars
         ];
-        shellHook = ''
-          source setup-env-vars
-        '';
+        actions.queue = [
+          { priority = cfg.actions.priority.docker + 1; # before uploading docker images
+            action = ''
+              source setup-env-vars
+            '';
+          }
+        ];
       })
     ]);
 }

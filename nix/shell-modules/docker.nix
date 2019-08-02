@@ -36,6 +36,7 @@ rec {
     };
   };
 
+  # FIXME if local
   config = mkIf cfg.docker.enabled (mkMerge [
     { checks = ["Enabling docker module"]; }
     ({
@@ -50,7 +51,7 @@ rec {
       ];
 
       actions.queue = [{ 
-        priority = cfg.actions.priority.crd; 
+        priority = cfg.actions.priority.docker; 
         action = ''
           push-docker-images-to-docker-deamon
         '';
