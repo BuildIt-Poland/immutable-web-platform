@@ -5,7 +5,14 @@ let
   express-app = pkgs.callPackage ./image.nix {};
   fn-config = pkgs.callPackage ./config.nix {};
   package = pkgs.callPackage ./package.nix {};
-  tests = import ./test { inherit pkgs; };
+
+  tests = import ./test { 
+    inherit pkgs; 
+    docker = express-app;
+  };
+
+  # TODO move call-function 
+  scripts = import ./scripts { inherit pkgs; };
 
   namespaces= project-config.kubernetes.namespace;
 
