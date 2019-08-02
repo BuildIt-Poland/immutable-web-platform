@@ -60,19 +60,27 @@ with pkgs.lib;
       resources = {
         apply = inputs.kubernetes.update;
         list = 
+          let
+            functions = (import ./functions.nix { inherit pkgs; });
+
+            # FIXME: move me somehwere else
+            mkPriority = x: name: "${toString x}-${name}";
+            high-priority = mkPriority 0;
+            mid-priority = mkPriority 1;
+            low-priority = mkPriority 2;
+          in
           with kubenix.modules;
-          # maybe it should be done in a way like queue works
           {
-            istio         = [ istio-service-mesh ];
-            knative       = [ knative ];
-            monitoring    = [ weavescope knative-monitoring ];
-            gitops        = [ argocd ];
-            ci            = [ brigade ];
-          } // (import ./functions.nix { inherit pkgs; });
+            "${high-priority "istio"}"       = [ istio-service-mesh ];
+            "${mid-priority  "knative"}"     = [ knative ];
+            "${low-priority  "monitoring"}"  = [ weavescope knative-monitoring ];
+            "${low-priority  "gitops"}"      = [ argocd ];
+            "${low-priority  "ci"}"          = [ brigade ];
+          } // functions;
       };
 
       namespace = {
-        functions = "${config.environment.type}-functions";
+        functions = "functions";
       };
     };
 

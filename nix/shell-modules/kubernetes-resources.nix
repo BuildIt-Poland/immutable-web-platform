@@ -28,7 +28,7 @@ with lib;
               inherit kubenix k8s-resources;
               project-config = config;
             };
-            modules = lib.reverseList modules;
+            modules = modules;
           });
         # evaluate configs only once
         evaluated-modules = 
@@ -84,16 +84,27 @@ with lib;
                         then {"${name}" = evaluated.module.tests;}
                         else {};
 
-                  docker = 
-                    if builtins.hasAttr "docker" evaluated
-                      then evaluated.docker.images
-                      else {};
+                    docker = 
+                      if builtins.hasAttr "docker" evaluated
+                        then evaluated.docker.images
+                        else {};
+
+                    scripts = 
+                      if lib.hasAttrByPath ["module" "scripts"] evaluated
+                        then {"${name}" = evaluated.module.scripts;}
+                        else {};
                   }
                 )
               evaluated-modules;
           in
             (lib.foldl lib.recursiveUpdate {} (builtins.attrValues modules-content)) 
           // { kubernetes = kubernetes-resources; };
+        
+        packages = 
+          let
+            scripts = builtins.attrValues (cfg.modules.scripts);
+          in
+            lib.flatten scripts;
       })
     ]);
 }
