@@ -17,6 +17,10 @@ rec {
       default = "";
     };
 
+    hash = mkOption {
+      default = ""; 
+    };
+
     resources.yaml.folder = mkOption {
       default = "";
     };
@@ -29,5 +33,11 @@ rec {
         default = "";
       };
     };
+  };
+
+  config = {
+    project.hash = 
+      builtins.hashString "sha1" 
+        (builtins.toJSON cfg.kubernetes.resources);
   };
 }
