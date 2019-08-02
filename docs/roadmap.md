@@ -7,6 +7,7 @@
 * move nix stuff to module pattern
 * improve readability what is going on when starting cluster
 * think about detecting empty resources during generation - minor
+* think about getting rid of eval minikube docker-env
 ----
 * export aws variables - do not keep them within secret
 * generate resources to file and check --local --watch `argocd app diff my-app` -> `argocd app diff $PROJECT_NAME --local ./resources`

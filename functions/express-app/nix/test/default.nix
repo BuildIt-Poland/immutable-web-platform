@@ -1,3 +1,3 @@
-{pkgs, ...}: [
-  (pkgs.callPackage ./configuration-tests.nix {})
+{pkgs, docker, ...}: [
+  (pkgs.callPackage ./configuration-tests.nix { inherit docker; })
 ]

@@ -7,26 +7,10 @@
   })
 }:
 let
-  # TODO 
-  # yaml: c.project-config.kubernetes.resources.generated.faas.yaml.objects
-  # docker-image: c.project-config.kubernetes.resources.generated.faas.images.express-app
-  express-app = pkgs.application.functions.express-app;
+  modules = pkgs.project-config.modules;
+  docker = modules.docker.express-app;
+  yaml = modules.kubernetes.express-app.yaml.objects;
 in
 rec {
-  docker = pkgs.lib.head express-app.images;
-  yaml = express-app.yaml;
-
-  # just a test of alternative building
-  image = 
-    let
-      dockerfile = pkgs.writeText "Dockerfile" ''
-        FROM nginx
-      '';
-    in
-      pkgs.kaniko-build {
-        inherit dockerfile;
-        imageName = "dev_local/express-app";
-        src = [./.];
-        # extraContent = "";
-      };
+  inherit docker yaml;
 }

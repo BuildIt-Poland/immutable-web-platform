@@ -1,3 +1,18 @@
+/*
+  # EXAMPLE
+  image = 
+    let
+      dockerfile = pkgs.writeText "Dockerfile" ''
+        FROM nginx
+      '';
+    in
+      pkgs.kaniko-build {
+        inherit dockerfile;
+        imageName = "dev_local/express-app";
+        src = [./.];
+        # extraContent = "";
+      };
+*/
 {pkgs}:
 let
   safe-name = builtins.replaceStrings ["\/" "."] ["_" "_"];

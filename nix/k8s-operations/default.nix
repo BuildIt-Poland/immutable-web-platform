@@ -116,7 +116,7 @@ rec {
         '');
     in
       writeScriptBin "push-docker-images-to-docker-deamon" ''
-        eval $(minikube docker-env -p ${project-config.project.name})
+        eval $(${pkgs.minikube}/bin/minikube docker-env -p ${project-config.project.name})
         ${images}
       '';
 
