@@ -15,7 +15,7 @@ rec {
 
   apply-resources = resources: writeScript "apply-resources" ''
     ${log.info "Applying resources ${resources}"}
-    cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply -f -
+    cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply --record -f -
   '';
 
   wait-for = resource: condition: writeScript "wait-for-condition" ''
