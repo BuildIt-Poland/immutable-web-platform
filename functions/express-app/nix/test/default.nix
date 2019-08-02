@@ -1,3 +1,3 @@
-{...}:{
-  configuration-tests = {};
-}
+{pkgs, ...}: [
+  (pkgs.callPackage ./configuration-tests.nix {})
+]

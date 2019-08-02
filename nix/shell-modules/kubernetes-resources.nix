@@ -73,26 +73,17 @@ with lib;
             modules-content = 
               builtins.mapAttrs
                 (name: evaluated:
+                  let
+                    get-value = path: 
+                      if lib.hasAttrByPath path evaluated
+                        then lib.getAttrFromPath path evaluated
+                        else {};
+                  in
                   {
-                    packages = 
-                      if lib.hasAttrByPath ["module" "packages"] evaluated
-                        then evaluated.module.packages
-                        else {};
-
-                    tests = 
-                      if lib.hasAttrByPath ["module" "tests"] evaluated
-                        then {"${name}" = evaluated.module.tests;}
-                        else {};
-
-                    docker = 
-                      if builtins.hasAttr "docker" evaluated
-                        then evaluated.docker.images
-                        else {};
-
-                    scripts = 
-                      if lib.hasAttrByPath ["module" "scripts"] evaluated
-                        then {"${name}" = evaluated.module.scripts;}
-                        else {};
+                    packages = get-value ["module" "packages"];
+                    tests = get-value ["module" "tests"] ;
+                    scripts = get-value ["module" "scripts"];
+                    docker = get-value ["docker" "images"];
                   }
                 )
               evaluated-modules;
@@ -101,10 +92,13 @@ with lib;
           // { kubernetes = kubernetes-resources; };
         
         packages = 
-          let
-            scripts = builtins.attrValues (cfg.modules.scripts);
-          in
-            lib.flatten scripts;
+          with cfg.modules;
+            (tests ++ scripts);
+
+        test-run =
+          lib.concatMapStringsSep "\n" 
+            (test: "${test}/bin/${test.name}") 
+            cfg.modules.tests;
       })
     ]);
 }

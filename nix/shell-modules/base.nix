@@ -63,6 +63,10 @@ in
     default = [];
   };
 
+  options.test-run = with types; mkOption {
+    default = "";
+  };
+
   config = mkMerge [
     ({
       environment.isLocal = config.environment.type == "local";
@@ -98,6 +102,11 @@ in
             ${log.info "Your environment is: ${config.environment.type}"}
           '';
 
+          test-run = ''
+            ${log.important "Running module tests"}
+            ${config.test-run}
+          '';
+
           footer = ''
             echo "Run 'get-help' to get all available commands"
           '';
@@ -111,6 +120,7 @@ in
           ${lib.concatMapStrings log.error config.errors}
 
           ${config.actions.list}
+          ${test-run}
 
           ${footer}
         '';
