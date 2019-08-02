@@ -23,7 +23,13 @@ rec {
     static = mkOption {
       default = [];
     };
+  };
+
+  options.module = {
     packages = mkOption {
+      default = {};
+    };
+    tests = mkOption {
       default = {};
     };
   };

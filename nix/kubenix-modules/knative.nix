@@ -17,20 +17,20 @@ in
   ];
 
   config = {
-    kubernetes.api.namespaces."${functions-ns}"= {
-      metadata = {
-        labels = {
-          "istio-injection" = "enabled";
-        };
-      };
-    };
+    # kubernetes.api.namespaces."${functions-ns}"= {
+    #   metadata = {
+    #     labels = {
+    #       "istio-injection" = "enabled";
+    #     };
+    #   };
+    # };
 
-    kubernetes.crd = [
-      k8s-resources.knative-crd-json
-    ];
+    # kubernetes.crd = [
+    #   k8s-resources.knative-crd-json
+    # ];
 
-    kubernetes.static = [
-      k8s-resources.knative-serving-json
-    ];
+    # kubernetes.static = [
+    #   # k8s-resources.knative-serving-json
+    # ];
   };
 }

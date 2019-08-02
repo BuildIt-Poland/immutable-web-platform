@@ -7,6 +7,7 @@ with lib;
 
   imports = [
     ./kubernetes.nix
+    ./module-descriptor.nix
   ];
 
   options.kubernetes = {
@@ -14,64 +15,85 @@ with lib;
       list = mkOption {
         default = {};
       };
-      generated = mkOption {
-        default = {};
-      };
     };
   };
 
   config = 
     (mkMerge [
-      { checks = ["Enabling kubenix module"]; }
+      { checks = ["Enabling kubenix modules: ${builtins.attrNames config.kubernetes.resources.list}"]; }
+      (let
+        eval-kubenix = 
+          name: modules: (kubenix.evalModules {
+            args = {
+              inherit kubenix k8s-resources;
+              project-config = config;
+            };
+            inherit modules;
+          });
+        # evaluate configs only once
+        evaluated-modules = 
+          builtins.mapAttrs
+            (name: modules: 
+              with kubenix.lib;
+              (eval-kubenix name modules).config
+            )
+            config.kubernetes.resources.list;
+      in
       {
-        kubernetes.resources.generated = 
+        modules = 
           let
-            eval-kubenix = 
-              name: modules: (kubenix.evalModules {
-                args = {
-                  inherit kubenix k8s-resources;
-                  project-config = config;
-                };
-                inherit modules;
-              });
-
-            objects = 
+            kubernetes-resources = 
               builtins.mapAttrs
-                (name: modules: 
+                (name: evaluated: 
                   with kubenix.lib;
                   let
-                    evaluated = (eval-kubenix name modules).config;
                     static = 
                       if builtins.hasAttr "static" evaluated.kubernetes
                         then helm.concat-json { jsons = evaluated.kubernetes.static; }
                         else [];
                   in rec {
-                   crd = 
-                    if builtins.hasAttr "crd" evaluated.kubernetes
-                      then evaluated.kubernetes.crd 
-                      else [];
+                      crd = 
+                        if builtins.hasAttr "crd" evaluated.kubernetes
+                          then evaluated.kubernetes.crd 
+                          else [];
 
-                    images = 
-                      if builtins.hasAttr "docker" evaluated
-                        then evaluated.docker.images
+                        raw = evaluated;
+
+                        resources = 
+                          evaluated.kubernetes.objects ++ static;
+
+                        yaml = 
+                          {
+                            crd = helm.jsons-to-yaml (helm.concat-json { jsons = lib.reverseList crd; });
+                            objects = helm.jsons-to-yaml (lib.reverseList resources);
+                          };
+                      })
+                evaluated-modules;
+
+            modules-content = 
+              builtins.mapAttrs
+                (name: evaluated:
+                  {
+                    packages = 
+                      if lib.hasAttrByPath ["module" "packages"] evaluated
+                        then evaluated.module.packages
                         else {};
 
-                    raw = evaluated;
+                    tests = 
+                      if lib.hasAttrByPath ["module" "tests"] evaluated
+                        then {"${name}" = evaluated.module.tests;}
+                        else {};
 
-                    resources = 
-                      evaluated.kubernetes.objects ++
-                        helm.concat-json { jsons = static; };
-
-                    yaml = 
-                      {
-                        crd = helm.jsons-to-yaml (helm.concat-json { jsons = lib.reverseList crd; });
-                        objects = helm.jsons-to-yaml (lib.reverseList resources);
-                      };
+                  docker = 
+                    if builtins.hasAttr "docker" evaluated
+                      then evaluated.docker.images
+                      else {};
                   }
                 )
-                config.kubernetes.resources.list;
+              evaluated-modules;
           in
-            objects;
-      }
+            (lib.foldl lib.recursiveUpdate {} (builtins.attrValues modules-content)) 
+          // { kubernetes = kubernetes-resources; };
+      })
     ]);
 }
