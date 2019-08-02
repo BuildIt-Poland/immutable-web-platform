@@ -7,4 +7,5 @@ with pkgs;
       docker = { upload = false; tag = "dev-build"; };
       brigade = { secret = ""; };
       aws = { region = ""; };
+      tests = {enable = true;};
     } input

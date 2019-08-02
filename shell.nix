@@ -3,7 +3,8 @@
   kubernetes ? null,
   brigade ? null,
   docker ? null,
-  aws ? null
+  aws ? null,
+  tests ? null
 }@inputs:
 let
   pkgs = (import ./nix { inherit inputs; }).pkgs;
