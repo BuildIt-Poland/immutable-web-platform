@@ -63,8 +63,13 @@ in
     default = [];
   };
 
-  options.test-run = with types; mkOption {
-    default = "";
+  options.test = {
+    run = with types; mkOption {
+      default = "";
+    };
+    enable = mkOption {
+      default = true;
+    };
   };
 
   config = mkMerge [
@@ -102,11 +107,6 @@ in
             ${log.info "Your environment is: ${config.environment.type}"}
           '';
 
-          test-run = ''
-            ${log.important "Running module tests"}
-            ${config.test-run}
-          '';
-
           footer = ''
             echo "Run 'get-help' to get all available commands"
           '';
@@ -120,10 +120,15 @@ in
           ${lib.concatMapStrings log.error config.errors}
 
           ${config.actions.list}
-          ${test-run}
 
           ${footer}
         '';
+    })
+    (mkIf config.test.enable {
+      shellHook = ''
+        ${pkgs.log.important "Running module tests"}
+        ${config.test.run}
+      '';
     })
   ];
 }

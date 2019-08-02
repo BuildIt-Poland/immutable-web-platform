@@ -95,7 +95,7 @@ with lib;
           with cfg.modules;
             (tests ++ scripts);
 
-        test-run =
+        test.run =
           lib.concatMapStringsSep "\n" 
             (test: "${test}/bin/${test.name}") 
             cfg.modules.tests;

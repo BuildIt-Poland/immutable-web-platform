@@ -27,6 +27,8 @@ with pkgs.lib;
       };
     };
 
+    test.enable = inputs.tests.enable;
+
     docker = {
       upload-images-type = ["functions" "cluster"];
       upload = inputs.docker.upload;
