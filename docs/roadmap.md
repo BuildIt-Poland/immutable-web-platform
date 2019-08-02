@@ -1,5 +1,13 @@
 ## Today
+### in progress
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
+* introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.) - move argo to separate resource to avoid chicken egg problem
+* refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
+* introduce better control over granularity related to kubernetes resources
+* move nix stuff to module pattern
+* improve readability what is going on when starting cluster
+* think about detecting empty resources during generation - minor
+----
 * export aws variables - do not keep them within secret
 * generate resources to file and check --local --watch `argocd app diff my-app` -> `argocd app diff $PROJECT_NAME --local ./resources`
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
@@ -13,10 +21,7 @@
 * align ec2 deployment to `machine.json` descriptor
 * run example tests agains artifact in brigade
 * watch github hooks when approving the pull request
-* introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.) - move argo to separate resource to avoid chicken egg problem
 - define argo waves - order of deployment
-
-* refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 
 ## priorities
 * improve docs - wip

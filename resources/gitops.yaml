@@ -1,364 +1,160 @@
 apiVersion: v1
 items:
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: RoleBinding
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
   metadata:
+    annotations:
+      helm.sh/hook: crd-install
     labels:
-      app.kubernetes.io/component: server
-      app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-server
+      app.kubernetes.io/name: argo-cd
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: argocd-server
-    namespace: argocd
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: argocd-server
-  subjects:
-  - kind: ServiceAccount
-    name: argocd-server
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/component: dex-server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-dex-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-dex-server
-    namespace: argocd
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: argocd-dex-server
-  subjects:
-  - kind: ServiceAccount
-    name: argocd-dex-server
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/component: application-controller
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-application-controller
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-application-controller
-    namespace: argocd
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: argocd-application-controller
-  subjects:
-  - kind: ServiceAccount
-    name: argocd-application-controller
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: Role
-  metadata:
-    labels:
-      app.kubernetes.io/component: server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-server
-    namespace: argocd
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - secrets
-    - configmaps
-    verbs:
-    - create
-    - get
-    - list
-    - watch
-    - update
-    - patch
-    - delete
-  - apiGroups:
-    - argoproj.io
-    resources:
-    - applications
-    - appprojects
-    verbs:
-    - create
-    - get
-    - list
-    - watch
-    - update
-    - delete
-    - patch
-  - apiGroups:
-    - ''
-    resources:
-    - events
-    verbs:
-    - create
-    - list
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: Role
-  metadata:
-    labels:
-      app.kubernetes.io/component: dex-server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-dex-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-dex-server
-    namespace: argocd
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - secrets
-    - configmaps
-    verbs:
-    - get
-    - list
-    - watch
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: Role
-  metadata:
-    labels:
-      app.kubernetes.io/component: application-controller
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-application-controller
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-application-controller
-    namespace: argocd
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - secrets
-    - configmaps
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - argoproj.io
-    resources:
-    - applications
-    - appprojects
-    verbs:
-    - create
-    - get
-    - list
-    - watch
-    - update
-    - patch
-    - delete
-  - apiGroups:
-    - ''
-    resources:
-    - events
-    verbs:
-    - create
-    - list
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: ClusterRoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/component: server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-server
-    namespace: argocd
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: argocd-server
-  subjects:
-  - kind: ServiceAccount
-    name: argocd-server
-    namespace: argocd
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: ClusterRoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/component: application-controller
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-application-controller
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-application-controller
-    namespace: argocd
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: argocd-application-controller
-  subjects:
-  - kind: ServiceAccount
-    name: argocd-application-controller
-    namespace: argocd
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: ClusterRole
-  metadata:
-    labels:
-      app.kubernetes.io/component: server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-server
-    namespace: argocd
-  rules:
-  - apiGroups:
-    - '*'
-    resources:
-    - '*'
-    verbs:
-    - delete
-    - get
-    - patch
-  - apiGroups:
-    - ''
-    resources:
-    - events
-    verbs:
-    - list
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    - pods/log
-    verbs:
-    - get
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: ClusterRole
-  metadata:
-    labels:
-      app.kubernetes.io/component: application-controller
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-application-controller
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-application-controller
-    namespace: argocd
-  rules:
-  - apiGroups:
-    - '*'
-    resources:
-    - '*'
-    verbs:
-    - '*'
-  - nonResourceURLs:
-    - '*'
-    verbs:
-    - '*'
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/component: server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-server
-    namespace: argocd
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/component: dex-server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-dex-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-dex-server
-    namespace: argocd
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/component: application-controller
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-application-controller
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-application-controller
-    namespace: argocd
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-server
+    name: applications.argoproj.io
     namespace: argocd
   spec:
-    ports:
-    - name: https
-      port: 443
-      protocol: TCP
-      targetPort: 8080
-    - name: http
-      port: 80
-      protocol: TCP
-      targetPort: 8080
-    selector:
-      app.kubernetes.io/name: argo-cd-server
-- apiVersion: v1
-  kind: Service
+    group: argoproj.io
+    names:
+      kind: Application
+      plural: applications
+      shortNames:
+      - app
+      - apps
+    scope: Namespaced
+    version: v1alpha1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
   metadata:
+    annotations:
+      helm.sh/hook: crd-install
     labels:
-      app.kubernetes.io/component: repo-server
-      app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-repo-server
+      app.kubernetes.io/name: argo-cd
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: argocd-repo-server
+    name: appprojects.argoproj.io
     namespace: argocd
   spec:
-    ports:
-    - port: 8081
-      targetPort: 8081
-    selector:
-      app.kubernetes.io/name: argo-cd-repo-server
+    group: argoproj.io
+    names:
+      kind: AppProject
+      plural: appprojects
+      shortNames:
+      - appproj
+      - appprojs
+    scope: Namespaced
+    version: v1alpha1
 - apiVersion: v1
-  kind: Service
+  kind: Namespace
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: argocd
+    namespace: default
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-application-controller
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-application-controller
+    namespace: argocd
+  spec:
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: argo-cd-application-controller
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: application-controller
+          app.kubernetes.io/instance: argo-cd
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: argo-cd-application-controller
+          app.kubernetes.io/part-of: argo-cd
+          helm.sh/chart: argo-cd-0.2.2
+      spec:
+        containers:
+        - command:
+          - argocd-application-controller
+          - --status-processors
+          - '20'
+          - --operation-processors
+          - '10'
+          image: argoproj/argocd:v0.12.3
+          imagePullPolicy: Always
+          name: argocd-application-controller
+          ports:
+          - containerPort: 8082
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            tcpSocket:
+              port: 8082
+        serviceAccountName: argocd-application-controller
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/component: dex-server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-dex-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-dex-server
+    namespace: argocd
+  spec:
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: argo-cd-dex-server
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: dex-server
+          app.kubernetes.io/instance: argo-cd
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: argo-cd-dex-server
+          app.kubernetes.io/part-of: argo-cd
+          helm.sh/chart: argo-cd-0.2.2
+      spec:
+        containers:
+        - command:
+          - /shared/argocd-util
+          - rundex
+          image: quay.io/dexidp/dex:v2.12.0
+          imagePullPolicy: Always
+          name: dex
+          ports:
+          - containerPort: 5556
+          - containerPort: 5557
+          volumeMounts:
+          - mountPath: /shared
+            name: static-files
+        initContainers:
+        - command:
+          - cp
+          - /usr/local/bin/argocd-util
+          - /shared
+          image: argoproj/argocd:v0.12.3
+          imagePullPolicy: Always
+          name: copyutil
+          volumeMounts:
+          - mountPath: /shared
+            name: static-files
+        serviceAccountName: argocd-dex-server
+        volumes:
+        - emptyDir: {}
+          name: static-files
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     labels:
       app.kubernetes.io/component: redis
@@ -371,113 +167,72 @@ items:
     name: argocd-redis
     namespace: argocd
   spec:
-    ports:
-    - port: 6379
-      targetPort: 6379
     selector:
-      app.kubernetes.io/name: argo-cd-redis
-- apiVersion: v1
-  kind: Service
+      matchLabels:
+        app.kubernetes.io/name: argo-cd-redis
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: redis
+          app.kubernetes.io/instance: argo-cd
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: argo-cd-redis
+          app.kubernetes.io/part-of: argo-cd
+          helm.sh/chart: argo-cd-0.2.2
+      spec:
+        automountServiceAccountToken: false
+        containers:
+        - args:
+          - --save
+          - ''
+          - --appendonly
+          - 'no'
+          image: redis:5.0.3
+          imagePullPolicy: Always
+          name: redis
+          ports:
+          - containerPort: 6379
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     labels:
-      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/component: repo-server
       app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-metrics
+      app.kubernetes.io/name: argo-cd-repo-server
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: argocd-metrics
+    name: argocd-repo-server
     namespace: argocd
   spec:
-    ports:
-    - name: metrics
-      port: 8082
-      protocol: TCP
-      targetPort: 8082
     selector:
-      app.kubernetes.io/name: argo-cd-application-controller
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: dex-server
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-dex-server
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-dex-server
-    namespace: argocd
-  spec:
-    ports:
-    - name: http
-      port: 5556
-      protocol: TCP
-      targetPort: 5556
-    - name: grpc
-      port: 5557
-      protocol: TCP
-      targetPort: 5557
-    selector:
-      app.kubernetes.io/name: argo-cd-dex-server
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app.kubernetes.io/component: application-controller
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-application-controller
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-application-controller
-    namespace: argocd
-  spec:
-    ports:
-    - port: 8082
-      targetPort: 8082
-    selector:
-      app.kubernetes.io/name: argo-cd-application-controller
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    labels:
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-secret
-    namespace: argocd
-  type: Opaque
-- apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    labels:
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-rbac-cm
-    namespace: argocd
-- apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    labels:
-      app.kubernetes.io/instance: argo-cd
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd
-      app.kubernetes.io/part-of: argo-cd
-      helm.sh/chart: argo-cd-0.2.2
-      kubenix/project-name: kubenix
-    name: argocd-cm
-    namespace: argocd
+      matchLabels:
+        app.kubernetes.io/name: argo-cd-repo-server
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/component: repo-server
+          app.kubernetes.io/instance: argo-cd
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: argo-cd-repo-server
+          app.kubernetes.io/part-of: argo-cd
+          helm.sh/chart: argo-cd-0.2.2
+      spec:
+        automountServiceAccountToken: false
+        containers:
+        - command:
+          - argocd-repo-server
+          image: argoproj/argocd:v0.12.3
+          imagePullPolicy: Always
+          name: argocd-repo-server
+          ports:
+          - containerPort: 8081
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            tcpSocket:
+              port: 8081
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -540,143 +295,45 @@ items:
         volumes:
         - emptyDir: {}
           name: static-files
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: ConfigMap
   metadata:
     labels:
-      app.kubernetes.io/component: repo-server
       app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-repo-server
+      app.kubernetes.io/name: argo-cd
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: argocd-repo-server
+    name: argocd-cm
     namespace: argocd
-  spec:
-    selector:
-      matchLabels:
-        app.kubernetes.io/name: argo-cd-repo-server
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: repo-server
-          app.kubernetes.io/instance: argo-cd
-          app.kubernetes.io/managed-by: Tiller
-          app.kubernetes.io/name: argo-cd-repo-server
-          app.kubernetes.io/part-of: argo-cd
-          helm.sh/chart: argo-cd-0.2.2
-      spec:
-        automountServiceAccountToken: false
-        containers:
-        - command:
-          - argocd-repo-server
-          image: argoproj/argocd:v0.12.3
-          imagePullPolicy: Always
-          name: argocd-repo-server
-          ports:
-          - containerPort: 8081
-          readinessProbe:
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            tcpSocket:
-              port: 8081
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: ConfigMap
   metadata:
     labels:
-      app.kubernetes.io/component: redis
       app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-redis
+      app.kubernetes.io/name: argo-cd
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: argocd-redis
+    name: argocd-rbac-cm
     namespace: argocd
-  spec:
-    selector:
-      matchLabels:
-        app.kubernetes.io/name: argo-cd-redis
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: redis
-          app.kubernetes.io/instance: argo-cd
-          app.kubernetes.io/managed-by: Tiller
-          app.kubernetes.io/name: argo-cd-redis
-          app.kubernetes.io/part-of: argo-cd
-          helm.sh/chart: argo-cd-0.2.2
-      spec:
-        automountServiceAccountToken: false
-        containers:
-        - args:
-          - --save
-          - ''
-          - --appendonly
-          - 'no'
-          image: redis:5.0.3
-          imagePullPolicy: Always
-          name: redis
-          ports:
-          - containerPort: 6379
-- apiVersion: apps/v1
-  kind: Deployment
+- apiVersion: v1
+  kind: Secret
   metadata:
     labels:
-      app.kubernetes.io/component: dex-server
       app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd-dex-server
+      app.kubernetes.io/name: argo-cd
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: argocd-dex-server
+    name: argocd-secret
     namespace: argocd
-  spec:
-    selector:
-      matchLabels:
-        app.kubernetes.io/name: argo-cd-dex-server
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: dex-server
-          app.kubernetes.io/instance: argo-cd
-          app.kubernetes.io/managed-by: Tiller
-          app.kubernetes.io/name: argo-cd-dex-server
-          app.kubernetes.io/part-of: argo-cd
-          helm.sh/chart: argo-cd-0.2.2
-      spec:
-        containers:
-        - command:
-          - /shared/argocd-util
-          - rundex
-          image: quay.io/dexidp/dex:v2.12.0
-          imagePullPolicy: Always
-          name: dex
-          ports:
-          - containerPort: 5556
-          - containerPort: 5557
-          volumeMounts:
-          - mountPath: /shared
-            name: static-files
-        initContainers:
-        - command:
-          - cp
-          - /usr/local/bin/argocd-util
-          - /shared
-          image: argoproj/argocd:v0.12.3
-          imagePullPolicy: Always
-          name: copyutil
-          volumeMounts:
-          - mountPath: /shared
-            name: static-files
-        serviceAccountName: argocd-dex-server
-        volumes:
-        - emptyDir: {}
-          name: static-files
-- apiVersion: apps/v1
-  kind: Deployment
+  type: Opaque
+- apiVersion: v1
+  kind: Service
   metadata:
     labels:
       app.kubernetes.io/component: application-controller
@@ -689,89 +346,432 @@ items:
     name: argocd-application-controller
     namespace: argocd
   spec:
+    ports:
+    - port: 8082
+      targetPort: 8082
     selector:
-      matchLabels:
-        app.kubernetes.io/name: argo-cd-application-controller
-    template:
-      metadata:
-        labels:
-          app.kubernetes.io/component: application-controller
-          app.kubernetes.io/instance: argo-cd
-          app.kubernetes.io/managed-by: Tiller
-          app.kubernetes.io/name: argo-cd-application-controller
-          app.kubernetes.io/part-of: argo-cd
-          helm.sh/chart: argo-cd-0.2.2
-      spec:
-        containers:
-        - command:
-          - argocd-application-controller
-          - --status-processors
-          - '20'
-          - --operation-processors
-          - '10'
-          image: argoproj/argocd:v0.12.3
-          imagePullPolicy: Always
-          name: argocd-application-controller
-          ports:
-          - containerPort: 8082
-          readinessProbe:
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            tcpSocket:
-              port: 8082
-        serviceAccountName: argocd-application-controller
+      app.kubernetes.io/name: argo-cd-application-controller
 - apiVersion: v1
-  kind: Namespace
+  kind: Service
   metadata:
     labels:
-      kubenix/project-name: kubenix
-    name: argocd
-    namespace: default
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    annotations:
-      helm.sh/hook: crd-install
-    labels:
+      app.kubernetes.io/component: dex-server
+      app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd
+      app.kubernetes.io/name: argo-cd-dex-server
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: appprojects.argoproj.io
+    name: argocd-dex-server
     namespace: argocd
   spec:
-    group: argoproj.io
-    names:
-      kind: AppProject
-      plural: appprojects
-      shortNames:
-      - appproj
-      - appprojs
-    scope: Namespaced
-    version: v1alpha1
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
+    ports:
+    - name: http
+      port: 5556
+      protocol: TCP
+      targetPort: 5556
+    - name: grpc
+      port: 5557
+      protocol: TCP
+      targetPort: 5557
+    selector:
+      app.kubernetes.io/name: argo-cd-dex-server
+- apiVersion: v1
+  kind: Service
   metadata:
-    annotations:
-      helm.sh/hook: crd-install
     labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/instance: argo-cd
       app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: argo-cd
+      app.kubernetes.io/name: argo-cd-metrics
       app.kubernetes.io/part-of: argo-cd
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
-    name: applications.argoproj.io
+    name: argocd-metrics
     namespace: argocd
   spec:
-    group: argoproj.io
-    names:
-      kind: Application
-      plural: applications
-      shortNames:
-      - app
-      - apps
-    scope: Namespaced
-    version: v1alpha1
+    ports:
+    - name: metrics
+      port: 8082
+      protocol: TCP
+      targetPort: 8082
+    selector:
+      app.kubernetes.io/name: argo-cd-application-controller
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: redis
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-redis
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-redis
+    namespace: argocd
+  spec:
+    ports:
+    - port: 6379
+      targetPort: 6379
+    selector:
+      app.kubernetes.io/name: argo-cd-redis
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: repo-server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-repo-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-repo-server
+    namespace: argocd
+  spec:
+    ports:
+    - port: 8081
+      targetPort: 8081
+    selector:
+      app.kubernetes.io/name: argo-cd-repo-server
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-server
+    namespace: argocd
+  spec:
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 8080
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/name: argo-cd-server
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-application-controller
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-application-controller
+    namespace: argocd
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: dex-server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-dex-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-dex-server
+    namespace: argocd
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-server
+    namespace: argocd
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-application-controller
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-application-controller
+    namespace: argocd
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - nonResourceURLs:
+    - '*'
+    verbs:
+    - '*'
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-server
+    namespace: argocd
+  rules:
+  - apiGroups:
+    - '*'
+    resources:
+    - '*'
+    verbs:
+    - delete
+    - get
+    - patch
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    verbs:
+    - list
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - pods/log
+    verbs:
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-application-controller
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-application-controller
+    namespace: argocd
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: argocd-application-controller
+  subjects:
+  - kind: ServiceAccount
+    name: argocd-application-controller
+    namespace: argocd
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-server
+    namespace: argocd
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: argocd-server
+  subjects:
+  - kind: ServiceAccount
+    name: argocd-server
+    namespace: argocd
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-application-controller
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-application-controller
+    namespace: argocd
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - argoproj.io
+    resources:
+    - applications
+    - appprojects
+    verbs:
+    - create
+    - get
+    - list
+    - watch
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    verbs:
+    - create
+    - list
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: dex-server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-dex-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-dex-server
+    namespace: argocd
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-server
+    namespace: argocd
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    - configmaps
+    verbs:
+    - create
+    - get
+    - list
+    - watch
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - argoproj.io
+    resources:
+    - applications
+    - appprojects
+    verbs:
+    - create
+    - get
+    - list
+    - watch
+    - update
+    - delete
+    - patch
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    verbs:
+    - create
+    - list
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: application-controller
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-application-controller
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-application-controller
+    namespace: argocd
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: argocd-application-controller
+  subjects:
+  - kind: ServiceAccount
+    name: argocd-application-controller
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: dex-server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-dex-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-dex-server
+    namespace: argocd
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: argocd-dex-server
+  subjects:
+  - kind: ServiceAccount
+    name: argocd-dex-server
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: argo-cd
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: argo-cd-server
+      app.kubernetes.io/part-of: argo-cd
+      helm.sh/chart: argo-cd-0.2.2
+      kubenix/project-name: kubenix
+    name: argocd-server
+    namespace: argocd
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: argocd-server
+  subjects:
+  - kind: ServiceAccount
+    name: argocd-server
 kind: List
 labels:

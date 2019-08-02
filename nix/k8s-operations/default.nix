@@ -28,12 +28,11 @@ let
   };
 
   docker-images = resourceMap {
-    resources = project-config.modules;
-    path = ["docker"];
+    resources = project-config.modules.docker;
+    path = [];
   };
 in
 rec {
-
   local = callPackage ./local.nix {};
 
   kubectl-apply = resources: writeScript "apply-resources" ''
@@ -95,23 +94,21 @@ rec {
         ${resources}
       '';
 
-  # TODO use docker-images
   push-docker-images-to-local-cluster = 
     let
-      images = 
-        docker-images
-          (desc: ''
-            ${log.info "Pushing docker image, for ${desc.name} to local cluster: ${desc.docker-image}, ${desc.docker-image.imageName}:${desc.docker-image.imageTag}"}
-            ${pkgs.docker}/bin/docker load -i ${desc.docker-image}
+      images = docker-images (desc: 
+          let
+            docker = desc.value;
+          in
+          ''
+            ${log.info "Pushing docker image, for ${desc.name} to local cluster: ${docker.name}:${docker.tag}"}
+            ${pkgs.docker}/bin/docker load -i ${docker.image}
           '');
       in
       writeScriptBin "push-docker-images-to-local-cluster" ''
         eval $(minikube docker-env -p ${project-config.project.name})
         ${images}
       '';
-    # (lib.concatMapStrings 
-    #   (docker-image: ''
-    #   '') cluster.images);
 
   push-to-docker-registry = writeScriptBin "push-to-docker-registry" "";
     # (lib.concatMapStrings 
