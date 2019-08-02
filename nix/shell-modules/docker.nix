@@ -46,13 +46,13 @@ rec {
     })
     (mkIf cfg.docker.upload {
       packages = with pkgs; [
-        k8s-operations.push-docker-images-to-local-cluster
+        k8s-operations.push-docker-images-to-docker-deamon
       ];
 
       actions.queue = [{ 
         priority = cfg.actions.priority.crd; 
         action = ''
-          push-docker-images-to-local-cluster
+          push-docker-images-to-docker-deamon
         '';
       }];
     })

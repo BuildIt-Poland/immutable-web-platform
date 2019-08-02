@@ -6,7 +6,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: express-app
-    namespace: functions
+    namespace: local-functions
   spec:
     template:
       metadata:

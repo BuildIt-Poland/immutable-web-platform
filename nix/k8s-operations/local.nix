@@ -4,23 +4,14 @@
   project-config, 
   kubenix,
   log,
-  node-development-tools
+  node-development-tools,
+  helpers
 }:
+with helpers;
 let
   projectName = project-config.project.name;
 
-  append-local-docker-registry-to-kind-nodes = pkgs.callPackage ./patch/kind.nix {};
-  # INFO to filter out grep from ps
-  getGrepPhrase = phrase:
-    let
-      phraseLength = builtins.stringLength phrase;
-      grepPhrase = "[${builtins.substring 0 1 phrase}]";
-      grepPhraseRest = builtins.substring 1 phraseLength phrase;
-    in
-      "${grepPhrase}${grepPhraseRest}";
-
   namespace = project-config.kubernetes.namespace;
-  local-infra-ns = namespace.infra;
   brigade-ns = namespace.brigade;
   istio-ns = namespace.istio;
 
@@ -72,54 +63,6 @@ rec {
       echo "Running minikube"
       ${create-local-cluster}
     fi 
-  '';
-
-  get-port = {
-    service,
-    type ? "nodePort",
-    index ? 0,
-    port ? "",
-    namespace
-  }: pkgs.writeScript "get-port" ''
-    ${pkgs.kubectl}/bin/kubectl get svc ${service} \
-      --namespace ${namespace} \
-      --output 'jsonpath={.spec.ports[${if port != "" then "?(@.port==${port})" else toString index}].${type}}'
-  '';
-
-  port-forward = {
-    from,
-    to,
-    namespace,
-    resourceType ? "service",
-    service
-  }: 
-  pkgs.writeScript "port-forward-${namespace}-${service}" ''
-    ${log.message "Forwarding ports $(${from}):$(${to}) for ${service}"}
-
-    ps | grep "${getGrepPhrase service}" \
-      || ${pkgs.kubectl}/bin/kubectl \
-          port-forward ${resourceType}/${service} \
-          --namespace ${namespace} \
-          $(${toString to}):$(${toString from}) > /dev/null &
-  '';
-
-  # kubectl wait pod --for condition=ready --all -n brigade
-  wait-for = {
-    service,
-    namespace,
-    selector ? "",
-    condition ? "condition=Ready",
-    resource ? "pod",
-    timeout ? 300,
-  }:
-    pkgs.writeScript "wait-for-${namespace}-${service}" ''
-      ${log.message "Waiting for ${namespace}/${service}"}
-
-      ${pkgs.kubectl}/bin/kubectl wait \
-        --namespace ${namespace} \
-        --for=${condition} ${resource} \
-        ${if selector != "" then "--selector '${selector}'" else ""} \
-        --timeout=${toString timeout}s
   '';
 
   brigade-ports = {
