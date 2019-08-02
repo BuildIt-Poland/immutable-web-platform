@@ -30,7 +30,7 @@ rec {
       default = {};
     };
     tests = mkOption {
-      default = {};
+      default = [];
     };
     scripts = mkOption {
       default = [];
