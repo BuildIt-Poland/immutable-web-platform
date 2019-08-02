@@ -69,12 +69,10 @@ rec {
         ];
       })
 
-      (mkIf cfg.kubernetes.cluster.clean {
-        packages = [
-          k8s-operations.local.delete-local-cluster
-          k8s-operations.local.create-local-cluster-if-not-exists
-          k8s-operations.local.setup-env-vars
-          k8s-operations.apply-cluster-crd
+      (mkIf (cfg.kubernetes.cluster.clean && cfg.environment.isLocal) {
+        packages = with k8s-operations.local; [
+          delete-local-cluster
+          create-local-cluster-if-not-exists
         ];
 
         actions.queue = [
@@ -88,25 +86,28 @@ rec {
               create-local-cluster-if-not-exists
             '';
           }
+        ];
+      })
+
+      (mkIf cfg.kubernetes.cluster.clean {
+        packages = [ k8s-operations.apply-crd ];
+
+        actions.queue = [
           { priority = cfg.actions.priority.crd; 
             action = ''
-              apply-cluster-crd
+              apply-k8s-crd
             '';
           }
         ];
       })
 
       (mkIf cfg.kubernetes.resources.apply {
-        packages = [
-          k8s-operations.apply-cluster-stack
-          k8s-operations.apply-functions-to-cluster
-        ];
+        packages = [ k8s-operations.apply-resources ];
 
         actions.queue = [{ 
           priority = cfg.actions.priority.resources; 
           action = ''
-            apply-cluster-stack
-            apply-functions-to-cluster
+            apply-k8s-resources
           '';
         }];
       })
