@@ -28,7 +28,7 @@ with lib;
               inherit kubenix k8s-resources;
               project-config = config;
             };
-            inherit modules;
+            modules = lib.reverseList modules;
           });
         # evaluate configs only once
         evaluated-modules = 
@@ -64,8 +64,8 @@ with lib;
 
                         yaml = 
                           {
-                            crd = helm.jsons-to-yaml (helm.concat-json { jsons = lib.reverseList crd; });
-                            objects = helm.jsons-to-yaml (lib.reverseList resources);
+                            crd = helm.jsons-to-yaml (helm.concat-json { jsons = crd; });
+                            objects = helm.jsons-to-yaml (resources);
                           };
                       })
                 evaluated-modules;
