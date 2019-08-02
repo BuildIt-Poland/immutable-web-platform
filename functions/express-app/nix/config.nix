@@ -3,7 +3,7 @@ rec {
   port = 8080;
   label = "express-app";
   docker-label = "${project-config.docker.namespace}/${label}";
-
+  domain = "dev.cluster";
   cpu = 
     if project-config.environment.isLocal
       then "100m" 

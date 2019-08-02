@@ -8,6 +8,13 @@ let
   tests = import ./test { inherit pkgs; };
 
   namespaces= project-config.kubernetes.namespace;
+
+  # FIXME ingress port for isio - instead of 31380
+  call-function = 
+    (pkgs.writeScriptBin "call-express-app-function" ''
+      ${pkgs.curl}/bin/curl '-sS' '-H' 'Host: ${fn-config.label}.${namespaces.functions}.${fn-config.domain}' \
+        http://$(${pkgs.minikube}/bin/minikube ip -p ${project-config.project.name}):31380 -v
+    '');
 in
 {
   imports = with kubenix.modules; [ 
@@ -22,6 +29,10 @@ in
   };
 
   module.tests = tests;
+
+  module.scripts = [
+    call-function
+  ];
 
   docker.images.express-app.image = express-app;
 
@@ -76,7 +87,7 @@ in
         namespace = "knative-serving";
       };
       data = {
-        "dev.cluster" = "";
+        "${fn-config.domain}" = "";
       };
     };
   };

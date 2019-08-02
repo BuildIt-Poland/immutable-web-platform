@@ -22,5 +22,9 @@ with lib;
     docker = mkOption {
       default = {};
     };
+
+    scripts = mkOption {
+      default = {};
+    };
   };
 }

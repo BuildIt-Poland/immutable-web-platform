@@ -32,6 +32,9 @@ rec {
     tests = mkOption {
       default = {};
     };
+    scripts = mkOption {
+      default = [];
+    };
   };
 
   config = {
