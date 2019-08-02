@@ -16,7 +16,6 @@ with pkgs.lib;
   config = {
     environment.type = inputs.environment.type;
 
-    # TODO move to defaults
     project = {
       name = "future-is-comming";
       author-email = "damian.baar@wipro.com";
