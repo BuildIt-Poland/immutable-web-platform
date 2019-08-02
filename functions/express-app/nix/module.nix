@@ -5,6 +5,7 @@ let
   express-app = pkgs.callPackage ./image.nix {};
   fn-config = pkgs.callPackage ./config.nix {};
   package = pkgs.callPackage ./package.nix {};
+  tests = import ./test { inherit pkgs; };
 
   namespaces= project-config.kubernetes.namespace;
 in
@@ -16,9 +17,11 @@ in
     k8s-extension
   ];
 
-  kubernetes.packages = {
-    inherit express-app;
+  module.packages = {
+    express-app = package;
   };
+
+  module.tests = tests;
 
   docker.images.express-app.image = express-app;
 

@@ -68,7 +68,7 @@ with pkgs.lib;
             monitoring    = [ weavescope knative-monitoring ];
             gitops        = [ argocd ];
             ci            = [ brigade ];
-          } // (pkgs.callPackage ../faas {});
+          } // (import ./functions.nix { inherit pkgs; });
       };
     };
 
