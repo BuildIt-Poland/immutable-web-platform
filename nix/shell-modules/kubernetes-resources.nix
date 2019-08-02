@@ -20,7 +20,7 @@ with lib;
 
   config = 
     (mkMerge [
-      { checks = ["Enabling kubenix modules: ${builtins.attrNames config.kubernetes.resources.list}"]; }
+      { checks = ["Enabling kubenix modules: ${toString (builtins.attrNames config.kubernetes.resources.list)}"]; }
       (let
         eval-kubenix = 
           name: modules: (kubenix.evalModules {

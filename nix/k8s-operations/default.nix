@@ -3,17 +3,40 @@
   writeScript,
   writeScriptBin,
   callPackage,
-  cluster,
   project-config,
   log,
   lib
 }:
-with cluster;
+let
+  resourceMap = 
+    {resources, path}:
+    transformer:
+      let
+        k8s-crd = lib.mapAttrs (name: lib.getAttrFromPath path) resources;
+        name-value-pairs = builtins.attrValues (lib.mapAttrs lib.nameValuePair k8s-crd);
+      in
+        lib.concatMapStringsSep "\n" transformer name-value-pairs;
+
+  crds-command = resourceMap {
+    resources = project-config.modules.kubernetes;
+    path = ["yaml" "crd"];
+  };
+
+  resources-command = resourceMap {
+    resources = project-config.modules.kubernetes;
+    path = ["yaml" "objects"];
+  };
+
+  docker-images = resourceMap {
+    resources = project-config.modules;
+    path = ["docker"];
+  };
+in
 rec {
 
   local = callPackage ./local.nix {};
 
-  apply-resources = resources: writeScript "apply-resources" ''
+  kubectl-apply = resources: writeScript "apply-resources" ''
     ${log.info "Applying resources ${resources}"}
     cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply --record -f -
   '';
@@ -26,44 +49,76 @@ rec {
     let
       loc = project-config.project.resources.yaml.folder;
       drop-hash = ''sed -e '/kubenix\/hash/d' '';
+      crds = 
+        crds-command 
+          (desc: ''
+            ${log.info "Saving crd for ${desc.name}, to: ${loc}"}
+            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}.yaml
+          '');
+      resources =
+        resources-command 
+          (desc: ''
+            ${log.info "Saving resources for ${desc.name}, to: ${loc}"}
+            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}.yaml
+          '');
     in
       writeScriptBin "save-resources" ''
-        ${log.info "Saving yamls to: ${loc}"}
-        cat ${resources.crd} | ${drop-hash} > ${loc}/crd.yaml
-        cat ${resources.cluster} | ${drop-hash} > ${loc}/cluster.yaml
-        cat ${resources.functions} | ${drop-hash} > ${loc}/functions.yaml
+        ${crds}
+        ${resources}
       '';
 
-  apply-cluster-crd = writeScriptBin "apply-cluster-crd" ''
-    ${apply-resources resources.crd}
-    ${wait-for "job" "complete"}
-    ${wait-for "crd" "established"}
-  '';
+  apply-crd = 
+    let
+      crds = 
+        crds-command 
+          (desc: ''
+            ${log.info "Applying crd for ${desc.name}"}
+            ${kubectl-apply desc.value}
+          '');
+    in
+    writeScriptBin "apply-k8s-crd" ''
+      ${crds}
+      ${wait-for "job" "complete"}
+      ${wait-for "crd" "established"}
+    '';
 
-  apply-functions-to-cluster = writeScriptBin "apply-functions-to-cluster" ''
-    ${log.info "Applying functions helm charts"}
-    ${apply-resources resources.functions}
-  '';
+  apply-resources = 
+    let
+      resources = 
+        resources-command
+          (desc: ''
+            ${log.info "Applying kubernetes resources for ${desc.name}"}
+            ${kubectl-apply desc.value}
+          '');
+    in
+      writeScriptBin "apply-k8s-resources" ''
+        ${resources}
+      '';
 
-  apply-cluster-stack = writeScriptBin "apply-cluster-stack" ''
-    ${log.info "Applying cluster helm charts"}
-    ${apply-resources resources.cluster}
-  '';
-
-  push-docker-images-to-local-cluster = writeScriptBin "push-docker-images-to-local-cluster"
-    (lib.concatMapStrings 
-      (docker-image: ''
+  # TODO use docker-images
+  push-docker-images-to-local-cluster = 
+    let
+      images = 
+        docker-images
+          (desc: ''
+            ${log.info "Pushing docker image, for ${desc.name} to local cluster: ${desc.docker-image}, ${desc.docker-image.imageName}:${desc.docker-image.imageTag}"}
+            ${pkgs.docker}/bin/docker load -i ${desc.docker-image}
+          '');
+      in
+      writeScriptBin "push-docker-images-to-local-cluster" ''
         eval $(minikube docker-env -p ${project-config.project.name})
-        ${log.info "Pushing docker image to local cluster: ${docker-image}, ${docker-image.imageName}:${docker-image.imageTag}"}
-        ${pkgs.docker}/bin/docker load -i ${docker-image}
-      '') cluster.images);
+        ${images}
+      '';
+    # (lib.concatMapStrings 
+    #   (docker-image: ''
+    #   '') cluster.images);
 
-  push-to-docker-registry = writeScriptBin "push-to-docker-registry"
-    (lib.concatMapStrings 
-      (docker-images: ''
-        ${docker.copyDockerImages { 
-          images = docker-images; 
-          dest = project-config.docker.destination;
-        }}/bin/copy-docker-images
-      '') cluster.images);
+  push-to-docker-registry = writeScriptBin "push-to-docker-registry" "";
+    # (lib.concatMapStrings 
+    #   (docker-images: ''
+    #     ${docker.copyDockerImages { 
+    #       images = docker-images; 
+    #       dest = project-config.docker.destination;
+    #     }}/bin/copy-docker-images
+    #   '') cluster.images);
 }
