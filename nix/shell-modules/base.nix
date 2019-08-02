@@ -26,6 +26,7 @@ in
       default = {
         cluster = 300;
         crd = 200;
+        docker = 150;
         resources = 100;
         low = 0;
       };
