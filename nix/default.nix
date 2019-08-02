@@ -20,7 +20,7 @@ let
     k8s-resources = super.callPackage ./k8s-resources {};
 
     project-config = (super.shell-modules.eval {
-      modules = [./config/local-env.nix]; # this should be injected from external
+      modules = [./config/environment-setup.nix]; # this should be injected from external
       args = { 
         inputs = make-defaults inputs; 
         pkgs = super.pkgs;
