@@ -31,18 +31,14 @@ let
     resources = project-config.modules.docker;
     path = [];
   };
+
+  helpers = callPackage ./helpers.nix {};
+  local = callPackage ./local.nix { inherit helpers; };
 in
+with helpers;
 rec {
-  local = callPackage ./local.nix {};
-
-  kubectl-apply = resources: writeScript "apply-resources" ''
-    ${log.info "Applying resources ${resources}"}
-    cat ${resources} | ${pkgs.kubectl}/bin/kubectl apply --record -f -
-  '';
-
-  wait-for = resource: condition: writeScript "wait-for-condition" ''
-    ${pkgs.kubectl}/bin/kubectl wait ${resource} --for condition=${condition} --all --timeout=300s
-  '';
+  inherit local;
+  inherit helpers;
 
   save-resources = 
     let
@@ -52,13 +48,13 @@ rec {
         crds-command 
           (desc: ''
             ${log.info "Saving crd for ${desc.name}, to: ${loc}"}
-            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}.yaml
+            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}-crd.yaml
           '');
       resources =
         resources-command 
           (desc: ''
             ${log.info "Saving resources for ${desc.name}, to: ${loc}"}
-            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}.yaml
+            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}-resources.yaml
           '');
     in
       writeScriptBin "save-resources" ''
@@ -74,12 +70,26 @@ rec {
             ${log.info "Applying crd for ${desc.name}"}
             ${kubectl-apply desc.value}
           '');
+
+      wait-for-job = wait-for {
+        service = "job";
+        condition = "condition=complete";
+        resource = "job";
+        extraArgs = "--all";
+      };
+
+      wait-for-crd = wait-for {
+        service = "crd";
+        condition = "condition=established";
+        resource = "crd";
+        extraArgs = "--all";
+      };
     in
-    writeScriptBin "apply-k8s-crd" ''
-      ${crds}
-      ${wait-for "job" "complete"}
-      ${wait-for "crd" "established"}
-    '';
+      writeScriptBin "apply-k8s-crd" ''
+        ${crds}
+        ${wait-for-job}
+        ${wait-for-crd}
+      '';
 
   apply-resources = 
     let
@@ -94,28 +104,32 @@ rec {
         ${resources}
       '';
 
-  push-docker-images-to-local-cluster = 
+  push-docker-images-to-docker-deamon = 
     let
       images = docker-images (desc: 
-          let
-            docker = desc.value;
-          in
-          ''
-            ${log.info "Pushing docker image, for ${desc.name} to local cluster: ${docker.name}:${docker.tag}"}
-            ${pkgs.docker}/bin/docker load -i ${docker.image}
-          '');
-      in
-      writeScriptBin "push-docker-images-to-local-cluster" ''
+        let
+          docker = desc.value;
+        in
+        ''
+          ${log.info "Pushing docker image, for ${desc.name} to docker daemon: ${docker.name}:${docker.tag}"}
+          ${pkgs.docker}/bin/docker load -i ${docker.image}
+        '');
+    in
+      writeScriptBin "push-docker-images-to-docker-deamon" ''
         eval $(minikube docker-env -p ${project-config.project.name})
         ${images}
       '';
 
-  push-to-docker-registry = writeScriptBin "push-to-docker-registry" "";
-    # (lib.concatMapStrings 
-    #   (docker-images: ''
-    #     ${docker.copyDockerImages { 
-    #       images = docker-images; 
-    #       dest = project-config.docker.destination;
-    #     }}/bin/copy-docker-images
-    #   '') cluster.images);
+  push-to-docker-registry = 
+    let
+      images = docker-images (desc: 
+        let docker = desc.value; in ''
+          ${log.info "Pushing docker image, for ${desc.name} to ${project-config.docker.destination}: ${docker.name}:${docker.tag}"}
+          ${docker.copyDockerImages { 
+            images = singleton docker.image; 
+            dest = project-config.docker.destination;
+          }}/bin/copy-docker-images
+        '');
+    in 
+      writeScriptBin "push-to-docker-registry" images;
 }

@@ -7,8 +7,6 @@ with lib;
 rec {
 
   imports = [
-    ./project-configuration.nix
-    ./docker.nix 
   ];
 
   options.kubernetes = {
@@ -47,16 +45,14 @@ rec {
       default = "IfNotPresent";
     };
 
-    namespace = with types; mkOption {
-      default = {
-        functions = "functions";
-        infra = "local-infra";
-        brigade = "brigade";
-        istio = "istio-system";
-        knative-monitoring = "knative-monitoring";
-        knative-serving = "knative-serving";
-        argo = "argocd";
-      };
+    namespace = with types; {
+      functions = mkOption { default = "functions";};
+      infra = mkOption { default = "local-infra";};
+      brigade = mkOption { default = "brigade";};
+      istio = mkOption { default = "istio-system";};
+      knative-monitoring = mkOption { default = "knative-monitoring";};
+      knative-serving = mkOption { default = "knative-serving";};
+      argo = mkOption { default = "argocd";};
     };
   };
 

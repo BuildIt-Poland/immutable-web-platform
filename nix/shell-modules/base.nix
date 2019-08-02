@@ -88,10 +88,12 @@ in
       shellHook = 
         with pkgs;
         let
-          pretty-input = lib.generators.toINI {} inputs;
+          pretty-input = 
+            lib.generators.toINI {} 
+              (lib.filterAttrsRecursive (n: v: n != null) inputs);
 
           header = ''
-            ${log.info "Input configuration: \n ${pretty-input}"}
+            ${log.info "Configuration overridings: \n ${pretty-input}"}
             ${log.info "Nixpkgs version: ${version}"}
             ${log.info "Your environment is: ${config.environment.type}"}
           '';

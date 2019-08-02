@@ -36,7 +36,6 @@ with pkgs.lib;
     };
 
     aws = {
-      region = "eu-west-2";
       location = {
         credentials = ~/.aws/credentials;
         config = ~/.aws/config;
@@ -62,12 +61,18 @@ with pkgs.lib;
         apply = inputs.kubernetes.update;
         list = 
           with kubenix.modules;
+          # maybe it should be done in a way like queue works
           {
-            core          = [ istio-service-mesh knative ];
+            istio         = [ istio-service-mesh ];
+            knative       = [ knative ];
             monitoring    = [ weavescope knative-monitoring ];
             gitops        = [ argocd ];
             ci            = [ brigade ];
           } // (import ./functions.nix { inherit pkgs; });
+      };
+
+      namespace = {
+        functions = "${config.environment.type}-functions";
       };
     };
 
