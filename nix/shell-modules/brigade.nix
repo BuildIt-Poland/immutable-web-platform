@@ -17,11 +17,6 @@ rec {
 
     # TODO
     # projects = mkOption {
-      # project-template {
-      #   project-name = "embracing-nix-docker-k8s-helm-knative";
-      #   pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
-      #   clone-url = project-config.project.repositories.code-repository;
-      # };
     # };
 
     customization = {

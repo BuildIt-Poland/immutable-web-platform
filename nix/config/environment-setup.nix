@@ -50,6 +50,14 @@ with pkgs.lib;
     brigade = {
       enabled = true;
       secret-key = inputs.brigade.secret;
+      # FIXME
+      # projects = {
+      #   # project-template {
+      #   #   project-name = "embracing-nix-docker-k8s-helm-knative";
+      #   #   pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
+      #   #   clone-url = project-config.project.repositories.code-repository;
+      #   # };
+      # };
     };
 
     git-secrets = {

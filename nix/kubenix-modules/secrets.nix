@@ -48,6 +48,6 @@ in
     };
   };
 
-  # TODO sharedSecret (brigadeSharedSecret)
+  # TODO sharedSecret (brigadeSharedSecret) - included in secrets.json
   # TODO git clone key - sshKey
 }
