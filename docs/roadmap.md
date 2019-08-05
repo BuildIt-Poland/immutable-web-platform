@@ -1,9 +1,8 @@
 ## Today
 ### in progress
+* brigade setup -> running nix tests
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
-* introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.) - move argo to separate resource to avoid chicken egg problem
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
-* introduce better control over granularity related to kubernetes resources
 * move nix stuff to module pattern
 * improve readability what is going on when starting cluster
 * think about detecting empty resources during generation - minor
@@ -11,8 +10,10 @@
 * add skip flag for resources like secrets
 * add ability to handle secrets in similar manner as other kubenretes resources but with extra script
 * define brigade project within config/environement-setup rather that in brigade module
-* minikube and pvc and SC for brigade
 ----
+* introduce better control over granularity related to kubernetes resources
+* introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.) - move argo to separate resource to avoid chicken egg problem
+* minikube and pvc and SC for brigade
 * export aws variables - do not keep them within secret
 * generate resources to file and check --local --watch `argocd app diff my-app` -> `argocd app diff $PROJECT_NAME --local ./resources`
 * portmapping for monitoring is done, do the same for istio (port-forwarding will be unnecessary and all environment will have the same way of exposing external ports)
