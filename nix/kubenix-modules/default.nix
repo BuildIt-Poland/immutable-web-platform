@@ -9,4 +9,5 @@
   k8s-extension = ./k8s-extension.nix;
   knative = ./knative.nix;
   knative-monitoring = ./knative-monitoring.nix;
+  secrets = ./secrets.nix;
 }

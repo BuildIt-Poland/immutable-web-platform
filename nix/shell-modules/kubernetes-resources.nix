@@ -15,6 +15,20 @@ with lib;
       list = mkOption {
         default = {};
       };
+      getByName = mkOption {
+        default = x: null;
+      };
+      priority = 
+        let
+          mkPriority = x: name: "${toString x}-${name}";
+        in
+        mkOption {
+          default = {
+            high = mkPriority 0;
+            mid = mkPriority 1;
+            low = mkPriority 2;
+          };
+        };
     };
   };
 
@@ -74,22 +88,30 @@ with lib;
               builtins.mapAttrs
                 (name: evaluated:
                   let
-                    get-value = path: 
+                    get-value = path: fallback:
                       if lib.hasAttrByPath path evaluated
                         then lib.getAttrFromPath path evaluated
-                        else {};
+                        else fallback;
                   in
                   {
-                    packages = get-value ["module" "packages"];
-                    tests = get-value ["module" "tests"] ;
-                    scripts = get-value ["module" "scripts"];
-                    docker = get-value ["docker" "images"];
+                    packages = get-value ["module" "packages"] {};
+                    docker = get-value ["docker" "images"] {};
+                    tests = {"${name}" = get-value ["module" "tests"] [];};
+                    scripts = {"${name}" = get-value ["module" "scripts"] [];};
                   }
                 )
               evaluated-modules;
+            
+            merged = (lib.foldl lib.recursiveUpdate {} (builtins.attrValues modules-content));
+            flatten = x: lib.flatten (builtins.attrValues x);
+            # script and tests to array
+            combine-script-and-tests = lib.mapAttrs (name: v: 
+              if name == "scripts" then (flatten v)
+              else if name == "tests" then (flatten v)
+              else v
+            ) merged;
           in
-            (lib.foldl lib.recursiveUpdate {} (builtins.attrValues modules-content)) 
-          // { kubernetes = kubernetes-resources; };
+          combine-script-and-tests // { kubernetes = kubernetes-resources; };
         
         packages = 
           with cfg.modules;
@@ -99,6 +121,19 @@ with lib;
           lib.concatMapStringsSep "\n" 
             (test: "${test}/bin/${test.name}") 
             cfg.modules.tests;
+      })
+
+      ({
+        kubernetes.resources.getByName = 
+          let
+            modules = cfg.kubernetes.resources.list;
+            names = builtins.attrNames modules;
+            removePriority = x: lib.last (lib.splitString "-" x);
+            modulesArr = builtins.map (x: {"${removePriority x}"= "${x}";}) names;
+            modulesMap = lib.fold lib.mergeAttrs {} modulesArr;
+          in
+            byName:
+              lib.getAttr (lib.getAttr byName modulesMap) config.modules.kubernetes;
       })
     ]);
 }

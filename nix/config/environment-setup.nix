@@ -59,27 +59,25 @@ with pkgs.lib;
     kubernetes = {
       cluster.clean = inputs.kubernetes.clean;
       imagePullPolicy = "Never";
-      resources = {
-        apply = inputs.kubernetes.update;
-        list = 
-          let
-            functions = (import ./functions.nix { inherit pkgs; });
-
-            # FIXME: move me somehwere else
-            mkPriority = x: name: "${toString x}-${name}";
-            high-priority = mkPriority 0;
-            mid-priority = mkPriority 1;
-            low-priority = mkPriority 2;
-          in
-          with kubenix.modules;
-          {
-            "${high-priority "istio"}"       = [ istio-service-mesh ];
-            "${mid-priority  "knative"}"     = [ knative ];
-            "${low-priority  "monitoring"}"  = [ weavescope knative-monitoring ];
-            "${low-priority  "gitops"}"      = [ argocd ];
-            "${low-priority  "ci"}"          = [ brigade ];
+      resources = 
+        with kubenix.modules;
+        let
+          functions = (import ./functions.nix { inherit pkgs; });
+          resources = config.kubernetes.resources;
+          priority = resources.priority;
+          modules = {
+            "${priority.high "istio"}"       = [ istio-service-mesh ];
+            "${priority.mid  "knative"}"     = [ knative ];
+            "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
+            "${priority.low  "gitops"}"      = [ argocd ];
+            "${priority.low  "ci"}"          = [ brigade ];
+            "${priority.low  "secrets"}"     = [ secrets ];
           } // functions;
-      };
+          in
+          {
+            apply = inputs.kubernetes.update;
+            list = modules;
+          };
 
       namespace = {
         functions = "functions";

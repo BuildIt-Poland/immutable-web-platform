@@ -1,43 +1,41 @@
-
-apiVersion: v1
-kind: Secret
-metadata:
-  name: mysecret
-type: Opaque
-stringData:
-  config.yaml: |-
-    apiUrl: "https://my.api.com/api/v1"
-    username: {{username}}
-    password: {{password}}
-
 { 
   config, 
   pkgs,
   lib, 
   kubenix, 
-  k8s-resources ? pkgs.k8s-resources,
   project-config,
   ... 
 }:
 let
-  namespace = project-config.kubernetes.namespace;
-  argo-ns = namespace.argo;
+  save-aws-credentials-secret = 
+    let
+      # reference to self - with evaluated k8s resource
+      secret-ref = project-config.kubernetes.resources.getByName "secrets";
+    in
+    pkgs.writeScriptBin "save-aws-credentails-secret" ''
+      cat ${secret-ref.yaml.objects} 
+    '';
 in
 {
   imports = with kubenix.modules; [ 
     k8s
-    helm
+    k8s-extension
   ];
 
-  config = {
-    kubernetes.api.namespaces."${argo-ns}"= {};
+  module.scripts = [
+    save-aws-credentials-secret
+  ];
 
-    # TODO
-    # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
-    # there is a cli - a bit regret that this is not a kubernetes resource
-    kubernetes.helm.instances.argo-cd = {
-      namespace = "${argo-ns}";
-      chart = k8s-resources.argo-cd;
+  kubernetes.api.secrets = {
+    aws-credentials = {
+      metadata = {
+        name = "aws-secret";  
+      };
+      type = "Opaque";
+      data = {
+        access-key = "";
+        secret-key = "";
+      };
     };
   };
 }
