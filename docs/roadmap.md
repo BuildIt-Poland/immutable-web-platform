@@ -17,6 +17,10 @@
 * integrate `istioctl` - create derivation
 * each time dockerTools.buildImage is run even if contents won't change it is invoked - in case of development it is a bit painful
 
+----
+# try to setup local env with buildkit - much faster builds
+research -> https://gist.github.com/damianbaar/7194251de2b6f64af459ac861d34a323
+
 ## TODO
 * populate docker registry or nixos docker repository
 * align ec2 deployment to `machine.json` descriptor

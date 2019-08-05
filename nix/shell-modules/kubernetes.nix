@@ -133,7 +133,7 @@ rec {
           k8s-operations.local.setup-env-vars
         ];
         actions.queue = [
-          { priority = cfg.actions.priority.docker + 1; # before uploading docker images
+          { priority = cfg.actions.priority.docker + 1; # INFO before uploading docker images
             action = ''
               source setup-env-vars
             '';

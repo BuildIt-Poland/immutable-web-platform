@@ -1,3 +1,7 @@
+# https://github.com/knative/serving/blob/master/docs/spec/overview.md#revision
+# https://github.com/knative/serving/blob/master/docs/spec/spec.md 
+# https://github.com/knative/docs/blob/master/docs/serving/using-a-tls-cert.md
+# https://github.com/knative/docs/blob/master/docs/serving/using-auto-tls.md
 { 
   config, 
   lib, 
