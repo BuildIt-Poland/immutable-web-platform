@@ -7,13 +7,20 @@
   ... 
 }:
 let
-  save-aws-credentials-secret = 
+  namespace = project-config.kubernetes.namespace;
+  brigade-ns = namespace.brigade;
+
+  apply-aws-credentials-secret = 
     let
-      # reference to self - with evaluated k8s resource
+      # INFO reference to self - with evaluated k8s resource
       secret-ref = project-config.kubernetes.resources.getByName "secrets";
     in
-    pkgs.writeScriptBin "save-aws-credentails-secret" ''
-      cat ${secret-ref.yaml.objects} 
+    pkgs.writeScriptBin "apply-aws-credentails-secret" ''
+      ${pkgs.log.important "Creating AWS secret"}
+      AWS_KEY=$(aws configure get aws_access_key_id | base64)
+      AWS_SECRET=$(aws configure get aws_secret_access_key | base64)
+
+      eval "echo \"$(cat ${secret-ref.yaml.objects})\"" | ${pkgs.kubectl}/bin/kubectl apply -f -
     '';
 in
 {
@@ -22,20 +29,25 @@ in
     k8s-extension
   ];
 
-  module.scripts = [
-    save-aws-credentials-secret
+  # actually it gives a chance to avoid keeping sensitive data in descriptors
+  kubernetes.patches = [
+    apply-aws-credentials-secret
   ];
 
   kubernetes.api.secrets = {
     aws-credentials = {
       metadata = {
-        name = "aws-secret";  
+        namespace = brigade-ns;
+        name = "aws-credentials";  
       };
       type = "Opaque";
       data = {
-        access-key = "";
-        secret-key = "";
+        access_key = "$AWS_KEY";
+        secret_key = "$AWS_SECRET";
       };
     };
   };
+
+  # TODO sharedSecret (brigadeSharedSecret)
+  # TODO git clone key - sshKey
 }

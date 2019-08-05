@@ -17,11 +17,25 @@ rec {
   ];
 
   options.kubernetes = {
+    # FIXME
+    skip = mkOption {
+      default = false;
+      description = ''
+        Whether kubernetes resource should be automatically applied.
+      '';
+    };
+
     crd = mkOption {
       default = [];
     };
     static = mkOption {
       default = [];
+    };
+    patches = mkOption {
+      default = [];
+      description = ''
+        Patches agains defined kubernetes resources - try to customize with helm first.
+      '';
     };
   };
 

@@ -98,6 +98,7 @@ with lib;
                     docker = get-value ["docker" "images"] {};
                     tests = {"${name}" = get-value ["module" "tests"] [];};
                     scripts = {"${name}" = get-value ["module" "scripts"] [];};
+                    patches = {"${name}" = get-value ["kubernetes" "patches"] [];};
                   }
                 )
               evaluated-modules;
@@ -105,9 +106,11 @@ with lib;
             merged = (lib.foldl lib.recursiveUpdate {} (builtins.attrValues modules-content));
             flatten = x: lib.flatten (builtins.attrValues x);
             # script and tests to array
+            # FIXME ... no comment
             combine-script-and-tests = lib.mapAttrs (name: v: 
               if name == "scripts" then (flatten v)
               else if name == "tests" then (flatten v)
+              else if name == "patches" then (flatten v)
               else v
             ) merged;
           in
@@ -121,6 +124,11 @@ with lib;
           lib.concatMapStringsSep "\n" 
             (test: "${test}/bin/${test.name}") 
             cfg.modules.tests;
+
+        kubernetes.patches.run =
+          lib.concatMapStringsSep "\n" 
+            (patch: "${patch}/bin/${patch.name}") 
+            cfg.modules.patches;
       })
 
       ({

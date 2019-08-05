@@ -8,6 +8,10 @@
 * improve readability what is going on when starting cluster
 * think about detecting empty resources during generation - minor
 * think about getting rid of eval minikube docker-env
+* add skip flag for resources like secrets
+* add ability to handle secrets in similar manner as other kubenretes resources but with extra script
+* define brigade project within config/environement-setup rather that in brigade module
+* minikube and pvc and SC for brigade
 ----
 * export aws variables - do not keep them within secret
 * generate resources to file and check --local --watch `argocd app diff my-app` -> `argocd app diff $PROJECT_NAME --local ./resources`
