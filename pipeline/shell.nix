@@ -1,11 +1,19 @@
 # worker shell
 # IMPORTANT: nix is lazy so we can require whole ./nix folder and reuse the scripts - awesome isn't it?
 {
-  pkgs ? (import ../nix {env = "brigade";})
+  pkgs ? (import ../nix { 
+    inputs = {
+      environment.type = "brigade"; 
+      tests.enable = false;
+      kubernetes = {
+        save = false;
+        patches = false;
+      };
+    };
+  })
 }:
 with pkgs;
 let
-  descriptors = k8s-cluster-operations.resources.yaml;
   repo-name = "k8s-infra-descriptors";
 
   #######
@@ -42,14 +50,9 @@ let
     git request-pull master ./
   '';
 
-  copy-resources = writeScript "copy-resources" ''
-    cat ${descriptors.cluster} > cluster.yaml
-    cat ${descriptors.functions} > resources.yaml
-  '';
-
   commit-descriptors = writeScript "commit-descriptors" ''
     git add -A
-    git commit -m "Applying resources for release: ${pkgs.env-config.version}, build id: $BUILD_ID"
+    git commit -m "Applying resources for release: ${pkgs.project-config.project.version}, build id: $BUILD_ID"
   '';
 
   push-branch = writeScript "push-branch" ''
@@ -97,7 +100,9 @@ let
     ${clone-repo} $user $pass $branch
     cd $branch
     ${create-pr-branch} $branch
-    ${copy-resources}
+
+    mkdir -p resources
+    ${pkgs.k8s-operations.save-resources}/bin/save-resources
     ${commit-descriptors}
     ${push-branch} $branch
     ${show-changes-diff}
@@ -108,7 +113,7 @@ let
     name = "make-pr-with-descriptors";
     src = ./.;
     phases = ["installPhase"];
-    buildInputs = [] ++ charts.preload;
+    buildInputs = [];
     preferLocalBuild = true;
     nativeBuildInputs = [];
     installPhase = ''
@@ -124,13 +129,9 @@ with pkgs;
 
   shell = mkShell {
     SECRETS = builtins.readFile ../secrets.json;
+    PROJECT_NAME = project-config.project.name;
 
-    buildInputs = [
-      make-pr-with-descriptors
-    ];
-
-    shellHook= ''
-      echo "hey hey hey worker"
-    '';
+    buildInputs = [ make-pr-with-descriptors ] ++ project-config.packages;
+    shellHook= project-config.shellHook;
   };
 }

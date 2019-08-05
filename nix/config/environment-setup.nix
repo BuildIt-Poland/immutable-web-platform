@@ -58,6 +58,7 @@ with pkgs.lib;
 
     kubernetes = {
       cluster.clean = inputs.kubernetes.clean;
+      patches.enable = inputs.kubernetes.patches;
       imagePullPolicy = "Never";
       resources = 
         with kubenix.modules;
@@ -76,6 +77,7 @@ with pkgs.lib;
           in
           {
             apply = inputs.kubernetes.update;
+            save = inputs.kubernetes.save;
             list = modules;
           };
 
