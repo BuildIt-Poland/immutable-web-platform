@@ -7,8 +7,6 @@ process.env.BRIGADE_COMMIT_REF = "nix-modules-refactoring"
 // saveSecrets('secrets.json'),
 // `cat secrets.json`,
 
-
-// TODO add nix-tests ./run-tests
 const createJob = (name) =>
   new NixJob(name)
     .withExtraParams({
@@ -22,7 +20,7 @@ const createJob = (name) =>
       `echo "aws secret $AWS_SECRET_ACCESS_KEY"`,
       saveSecrets('secrets.json'),
       `cat secrets.json`,
-      `./src/run-tests.sh`,
+      `. /src/nix/run-tests.sh`,
       `cd /src/pipeline`,
       buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
     ])
