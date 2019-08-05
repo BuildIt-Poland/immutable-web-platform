@@ -6,8 +6,8 @@ import { Result } from '@brigadecore/brigadier/out/job'
 
 type WorkerSecrets = {
   workerDockerImage: string
-  awsAccessKey: string
-  awsSecretKey: string
+  // awsAccessKey: string
+  // awsSecretKey: string
   awsRegion: string
   cacheBucket: string
   sopsSecrets: {
@@ -67,6 +67,21 @@ export const copyToCache =
 type Tasks = (string | ((secrets: WorkerSecrets) => string[]))[]
 
 // investigate: https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L886
+
+export const AWS_ACCESS_KEY_ID = {
+  secretKeyRef: {
+    name: "aws-credentials",
+    key: "access_key"
+  }
+}
+
+export const AWS_SECRET_ACCESS_KEY = {
+  secretKeyRef: {
+    name: "aws-credentials",
+    key: "secret_key"
+  }
+}
+
 export class NixJob extends Job {
 
   secrets: Secrets
@@ -133,11 +148,11 @@ export class NixJob extends Job {
   }
 
   private getEnvVars() {
-    const { awsAccessKey, awsSecretKey, awsRegion, sopsSecrets } = this.secrets
+    const { awsRegion, sopsSecrets } = this.secrets
 
     return {
-      AWS_ACCESS_KEY_ID: awsAccessKey,
-      AWS_SECRET_ACCESS_KEY: awsSecretKey,
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
       AWS_DEFAULT_REGION: awsRegion,
       SECRETS: sopsSecrets,
       ...this.env,

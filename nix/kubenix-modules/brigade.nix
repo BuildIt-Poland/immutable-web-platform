@@ -22,6 +22,11 @@ let
   project-template = pkgs.callPackage ./template/brigade-project.nix {
     inherit config;
   };
+
+  sc-provisioner = 
+    if project-config.environment.isLocal
+      then "k8s.io/minikube-hostpath"
+      else "kubernetes.io/host-path";
 in
 # TODO add enabled true/false
 {
@@ -73,8 +78,8 @@ in
             # exec
           };
         };
-        reclaimPolicy = "Retain";
-        provisioner = "kubernetes.io/host-path";
+        # reclaimPolicy = "Retain";
+        provisioner = sc-provisioner;
       };
 
       cache-storage = {
@@ -88,8 +93,8 @@ in
             "addonmanager.kubernetes.io/mode" = "EnsureExists";
           };
         };
-        reclaimPolicy = "Retain";
-        provisioner = "kubernetes.io/host-path";
+        # reclaimPolicy = "Retain";
+        provisioner = sc-provisioner;
       };
     };
     
@@ -119,7 +124,9 @@ in
     # kubernetes.api.clusterrole = {};
 
     # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
+    # FIXME take from project-config
     kubernetes.helm.instances.brigade-project = project-template {
+      # FIXME add some ns here
       project-name = "embracing-nix-docker-k8s-helm-knative";
       pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
       clone-url = project-config.project.repositories.code-repository;

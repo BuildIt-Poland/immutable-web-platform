@@ -2,10 +2,13 @@ const { events, Job, Group } = require("brigadier")
 const { NixJob, extractSecret, saveSecrets, buildNixExpression } = require('brigade-extension')
 
 // TODO think how it can be automated to avoid defining it here
-// process.env.BRIGADE_COMMIT_REF = "brigade-resource-generation"
+process.env.BRIGADE_COMMIT_REF = "nix-modules-refactoring"
 
 // saveSecrets('secrets.json'),
 // `cat secrets.json`,
+
+
+// TODO add nix-tests ./run-tests
 const createJob = (name) =>
   new NixJob(name)
     .withExtraParams({
@@ -15,11 +18,15 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
     .withTasks([
+      `echo "aws key $AWS_ACCESS_KEY_ID"`,
+      `echo "aws secret $AWS_SECRET_ACCESS_KEY"`,
+      saveSecrets('secrets.json'),
+      `cat secrets.json`,
+      `./src/run-tests.sh`,
       `cd /src/pipeline`,
       buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
-      `./result/bin/make-pr-with-descriptors`,
-      `kubectl get pods -A`
     ])
+
 
 events.on("exec", (event, project) => {
   let test =
@@ -27,7 +34,7 @@ events.on("exec", (event, project) => {
       .withSecrets(project.secrets)
       .withEnvVars({
         BUILD_ID: event.buildID || "missing-build-id",
-        EVENT: JSON.stringify(event)
+        EVENT: JSON.stringify(event),
       })
 
   test.run()

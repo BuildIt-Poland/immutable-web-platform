@@ -14,3 +14,6 @@
 * Error getting host status: state: docker-machine-driver-hyperkit needs to run with elevated permissions. > solution: Please run the following command, then try again: sudo chown root:wheel /nix/store/3l4b2dqvdrlbikmdd7xiawmbrwiqgz3j-minikube-1.0.1-bin/bin/docker-machine-driver-hyperkit && sudo chmod u+s /nix/store/3l4b2dqvdrlbikmdd7xiawmbrwiqgz3j-minikube-1.0.1-bin/bin/docker-machine-driver-hyperkit
 
 * building with kaniko and nix on mac os require adding /nix to shared path in docker
+
+* brigade.js got stuck and getting pending status when `kubectl get pv -A`
+> minikube addons enable storage-provisioner -p $PROJECT_NAME

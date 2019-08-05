@@ -20,6 +20,18 @@ rec {
       };
     };
 
+    patches = {
+      run = with types; mkOption {
+        default = "";
+      };
+      enable = mkOption {
+        default = true;
+        description = ''
+          Kubernetes patches to be applied after resource creation
+        '';
+      };
+    };
+
     enabled = mkOption {
       default = true;
     };
@@ -95,6 +107,15 @@ rec {
             '';
           }
         ];
+      })
+
+      (mkIf cfg.kubernetes.patches.enable {
+        actions.queue = [{ 
+          priority = cfg.actions.priority.resources - 1; # after resources were applied
+          action = ''
+            ${cfg.kubernetes.patches.run}
+          '';
+        }];
       })
 
       (mkIf cfg.kubernetes.resources.apply {

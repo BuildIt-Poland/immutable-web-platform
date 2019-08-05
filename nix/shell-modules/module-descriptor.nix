@@ -12,15 +12,19 @@ with lib;
     };
 
     packages = mkOption {
-      default = {};
+      default = [];
     };
 
     tests = mkOption {
-      default = {};
+      default = [];
     };
 
     docker = mkOption {
       default = {};
+    };
+
+    patches = mkOption {
+      default = [];
     };
 
     scripts = mkOption {
