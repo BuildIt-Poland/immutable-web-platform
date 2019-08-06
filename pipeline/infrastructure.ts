@@ -8,11 +8,6 @@ process.env.BRIGADE_COMMIT_REF = "nix-modules-refactoring"
 // `cat secrets.json`,
 
 // TODO better would be to run shell instead of command -> nix-shell --command make-pr-with-descriptors
-const saveCredentials = `"
-[default]
-aws_access_key_id = $AWS_ACCESS_KEY_ID
-aws_secret_access_key = $AWS_SECRET_ACCESS_KEY
-"`
 const createJob = (name) =>
   new NixJob(name)
     .withExtraParams({
@@ -22,19 +17,16 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
     .withTasks([
-      // does not work - investigate
-      `echo $SECRETS > secrets.json`,
-      `cat secrets.json`,
-      `printenv`,
+      // not sure from \n comes from - check secret generation
+      `AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
+      `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,
       `cd /src`,
-      `aws s3 ls`,
-      // saveSecrets('secrets.json'),
-      // `cat secrets.json`,
-      // `cd /src`,
-      // `./nix/run-tests.sh`, // running nix tests
-      // `cd ./pipeline`,
-      // buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
-      // `./result/bin/make-pr-with-descriptors`,
+      saveSecrets('secrets.json'),
+      `cd /src`,
+      `./nix/run-tests.sh`, // running nix tests
+      `cd ./pipeline`,
+      buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
+      `./result/bin/make-pr-with-descriptors`,
     ])
 
 

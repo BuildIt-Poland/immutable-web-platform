@@ -25,7 +25,6 @@ pkgs.dockerTools.buildImage ({
     pkgs.kubectl
     pkgs.curl
     pkgs.git
-    pkgs.awscli
     # in case of github -> hub (https://github.com/github/hub)
   ];
 

@@ -97,9 +97,6 @@ let
     pass=$(${extractSecret ["bitbucket" "pass"]})
     branch="build-$BUILD_ID"
 
-    echo from secrets $user
-    echo from secrets $pass
-
     ${clone-repo} $user $pass $branch
     cd $branch
     ${create-pr-branch} $branch

@@ -14,7 +14,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
       role: vacuum
     name: brigade-brigade-vacuum
@@ -41,7 +41,7 @@ items:
                 value: '-1'
               - name: VACUUM_SKIP_RUNNING_BUILDS
                 value: 'false'
-              image: brigadecore/brigade-vacuum:v1.0.0
+              image: brigadecore/brigade-vacuum:v1.1.0
               imagePullPolicy: IfNotPresent
               name: brigade-vacuum
             restartPolicy: OnFailure
@@ -106,12 +106,11 @@ items:
       \n[default]\naws_access_key_id = $AWS_ACCESS_KEY_ID\naws_secret_access_key =\
       \ $AWS_SECRET_ACCESS_KEY\n\"`\nconst createJob = (name) =>\n  new NixJob(name)\n\
       \    .withExtraParams({\n      streamLogs: true,\n      privileged: true,\n\
-      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n  \
-      \  .withTasks([\n      // does not work - investigate\n      `echo $SECRETS\
-      \ > secrets.json`,\n      `cat secrets.json`,\n      `printenv`,\n      `cd\
-      \ /src`,\n      `aws s3 ls`,\n      // saveSecrets('secrets.json'),\n      //\
-      \ `cat secrets.json`,\n      // `cd /src`,\n      // `./nix/run-tests.sh`, //\
-      \ running nix tests\n      // `cd ./pipeline`,\n      // buildNixExpression('shell.nix',\
+      \      shell: 'bash',\n      // serviceAccount: \"brigade-worker\"\n    })\n\
+      \    .withTasks([\n      // does not work - investigat\n      `echo $AWS_ACCESS_KEY_ID`,\n\
+      \      `cd /src`,\n      `aws s3 ls`,\n      // saveSecrets('secrets.json'),\n\
+      \      // `cat secrets.json`,\n      // `cd /src`,\n      // `./nix/run-tests.sh`,\
+      \ // running nix tests\n      // `cd ./pipeline`,\n      // buildNixExpression('shell.nix',\
       \ 'make-pr-with-descriptors'),\n      // `./result/bin/make-pr-with-descriptors`,\n\
       \    ])\n\n\nevents.on(\"exec\", (event, project) => {\n  let test =\n    createJob(\"\
       test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
@@ -173,7 +172,7 @@ items:
     labels:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
       role: api
     name: brigade-brigade-api
@@ -226,7 +225,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-api
     namespace: brigade
@@ -237,7 +236,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-ctrl
     namespace: brigade
@@ -248,7 +247,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-vacuum
     namespace: brigade
@@ -259,7 +258,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-worker
     namespace: brigade
@@ -316,7 +315,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade-api
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
       role: api
     name: brigade-brigade-api
@@ -338,7 +337,7 @@ items:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          image: brigadecore/brigade-api:v1.0.0
+          image: brigadecore/brigade-api:v1.1.0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
@@ -359,7 +358,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade-ctrl
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
       role: controller
     name: brigade-brigade-ctrl
@@ -382,12 +381,12 @@ items:
               fieldRef:
                 fieldPath: metadata.namespace
           - name: BRIGADE_WORKER_IMAGE
-            value: brigadecore/brigade-worker:v1.0.0
+            value: brigadecore/brigade-worker:v1.1.0
           - name: BRIGADE_WORKER_PULL_POLICY
             value: IfNotPresent
           - name: BRIGADE_WORKER_SERVICE_ACCOUNT
             value: brigade-worker
-          image: brigadecore/brigade-controller:v1.0.0
+          image: brigadecore/brigade-controller:v1.1.0
           imagePullPolicy: IfNotPresent
           name: brigade
         serviceAccountName: brigade-brigade-ctrl
@@ -478,7 +477,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-api
     namespace: brigade
@@ -500,7 +499,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-ctrl
     namespace: brigade
@@ -526,7 +525,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-vacuum
     namespace: brigade
@@ -557,7 +556,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-wrk
     namespace: brigade
@@ -610,7 +609,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-api
     namespace: brigade
@@ -628,7 +627,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-ctrl
     namespace: brigade
@@ -646,7 +645,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-vacuum
     namespace: brigade
@@ -664,7 +663,7 @@ items:
       app.kubernetes.io/instance: brigade
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.0.0
+      helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-wrk
     namespace: brigade

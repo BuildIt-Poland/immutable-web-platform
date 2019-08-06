@@ -88,6 +88,8 @@ provide full testing ability of infrastructure as well as on application level f
 
 #### Example configuration
 ```nix
+# source ./nix/config/environment-setup.nix
+
 {config, pkgs, lib, kubenix, shell-modules, inputs, ...}: 
 with pkgs.lib;
 {
@@ -145,8 +147,7 @@ with pkgs.lib;
           project-name = "embracing-nix-docker-k8s-helm-knative";
           pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
           clone-url = config.project.repositories.code-repository;
-          # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
-          overridings = {};
+          ssh-key = config.bitbucket.ssh-keys.priv;
         };
       };
     };
@@ -165,6 +166,7 @@ with pkgs.lib;
           functions = (import ./functions.nix { inherit pkgs; });
           resources = config.kubernetes.resources;
           priority = resources.priority;
+          # TODO apply skip
           modules = {
             "${priority.high "istio"}"       = [ istio-service-mesh ];
             "${priority.mid  "knative"}"     = [ knative ];
@@ -191,6 +193,7 @@ with pkgs.lib;
   };
 }
 ```
+
 #### Monitoring
 * `grafana`
 ![grafana](https://bitbucket.org/repo/6zKBnz9/images/1943034243-Screenshot%202019-06-19%20at%2013.45.21.png)
