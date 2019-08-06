@@ -16,8 +16,12 @@ rec {
     };
 
     # TODO
-    # projects = mkOption {
-    # };
+    projects = mkOption {
+      default = {};
+      description = ''
+        Brigade projects
+      '';
+    };
 
     customization = {
       extension = mkOption {

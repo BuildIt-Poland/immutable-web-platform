@@ -50,14 +50,15 @@ with pkgs.lib;
     brigade = {
       enabled = true;
       secret-key = inputs.brigade.secret;
-      # FIXME
-      # projects = {
-      #   # project-template {
-      #   #   project-name = "embracing-nix-docker-k8s-helm-knative";
-      #   #   pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
-      #   #   clone-url = project-config.project.repositories.code-repository;
-      #   # };
-      # };
+      projects = {
+        brigade-project = {
+          project-name = "embracing-nix-docker-k8s-helm-knative";
+          pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
+          clone-url = config.project.repositories.code-repository;
+          # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
+          overridings = {};
+        };
+      };
     };
 
     git-secrets = {

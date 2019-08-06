@@ -99,20 +99,23 @@ items:
     cloneURL: git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
     defaultScript: "const { events, Job, Group } = require(\"brigadier\")\nconst {\
       \ NixJob, extractSecret, saveSecrets, buildNixExpression } = require('brigade-extension')\n\
-      \n// TODO think how it can be automated to avoid defining it here\n// process.env.BRIGADE_COMMIT_REF\
-      \ = \"brigade-resource-generation\"\n\n// saveSecrets('secrets.json'),\n// `cat\
-      \ secrets.json`,\n\n\nconst createJob = (name) =>\n  new NixJob(name)\n    .withExtraParams({\n\
-      \      streamLogs: true,\n      privileged: true,\n      shell: 'bash',\n  \
-      \    serviceAccount: \"brigade-worker\"\n    })\n    .withTasks([\n      `echo\
-      \ \"aws key $AWS_ACCESS_KEY_ID\"`,\n      `echo \"aws secret $AWS_SECRET_ACCESS_KEY\"\
-      `,\n      saveSecrets('secrets.json'),\n      `cat secrets.json`,\n      `cd\
-      \ /src/pipeline`,\n      buildNixExpression('shell.nix', 'make-pr-with-descriptors'),\n\
-      \    ])\n\n\nevents.on(\"exec\", (event, project) => {\n  let test =\n    createJob(\"\
-      test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
-      \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
-      \      })\n\n  test.run()\n})\n\nevents.on(\"push\", (event, project) => {\n\
-      \  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\n  test.run()\n\
-      })\n"
+      \n// TODO think how it can be automated to avoid defining it here\nprocess.env.BRIGADE_COMMIT_REF\
+      \ = \"nix-modules-refactoring\"\n\n// saveSecrets('secrets.json'),\n// `cat\
+      \ secrets.json`,\n\n// TODO better would be to run shell instead of command\
+      \ -> nix-shell --command make-pr-with-descriptors\nconst createJob = (name)\
+      \ =>\n  new NixJob(name)\n    .withExtraParams({\n      streamLogs: true,\n\
+      \      privileged: true,\n      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\
+      \n    })\n    .withTasks([\n      `echo $SECRETS`,\n      `echo \"aws key $AWS_ACCESS_KEY_ID\"\
+      `,\n      `echo \"aws secret $AWS_SECRET_ACCESS_KEY\"`,\n      `sops --version`,\n\
+      \      // does not work - investigate\n      saveSecrets('secrets.json'),\n\
+      \      `cat secrets.json`,\n      // `cd /src`,\n      // `./nix/run-tests.sh`,\
+      \ // running nix tests\n      // `cd ./pipeline`,\n      // buildNixExpression('shell.nix',\
+      \ 'make-pr-with-descriptors'),\n    ])\n\n\nevents.on(\"exec\", (event, project)\
+      \ => {\n  let test =\n    createJob(\"test\")\n      .withSecrets(project.secrets)\n\
+      \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
+      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  test.run()\n})\n\nevents.on(\"\
+      push\", (event, project) => {\n  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\
+      \n  test.run()\n})\n"
     genericGatewaySecret: mygenericsecret
     initGitSubmodules: 'false'
     kubernetes.allowSecretKeyRef: 'true'

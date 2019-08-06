@@ -27,27 +27,9 @@ let
     if project-config.environment.isLocal
       then "k8s.io/minikube-hostpath"
       else "kubernetes.io/host-path";
-in
-# TODO add enabled true/false
-{
-  imports = with kubenix.modules; [ 
-    k8s
-    helm
-    docker
-  ];
 
-  config = {
-    docker.images.brigade-worker.image = remote-worker.docker-image;
-    docker.images.brigade-extension.image = brigade-extension.docker-image;
-
-    kubernetes.api.namespaces."${brigade-ns}"= {};
-
-    kubernetes.helm.instances.brigade = {
-      namespace = "${brigade-ns}";
-      chart = k8s-resources.brigade;
-    };
-
-    kubernetes.helm.instances.brigade-bitbucket-gateway = {
+  helm-charts = {
+    brigade-bitbucket-gateway = {
       namespace = "${brigade-ns}";
       name = "brigade-bitbucket-gateway";
       chart = k8s-resources.brigade-bitbucket;
@@ -64,6 +46,28 @@ in
         };
       };
     };
+
+    brigade = {
+      namespace = "${brigade-ns}";
+      chart = k8s-resources.brigade;
+    };
+  } // (builtins.mapAttrs (n: v: project-template v) project-config.brigade.projects);
+in
+# TODO add enabled true/false
+{
+  imports = with kubenix.modules; [ 
+    k8s
+    helm
+    docker
+  ];
+
+  config = {
+    docker.images.brigade-worker.image = remote-worker.docker-image;
+    docker.images.brigade-extension.image = brigade-extension.docker-image;
+
+    kubernetes.api.namespaces."${brigade-ns}"= {};
+
+    kubernetes.helm.instances = helm-charts;
 
     kubernetes.api.storageclasses = {
       build-storage = {
@@ -122,14 +126,5 @@ in
         };
       };
     # kubernetes.api.clusterrole = {};
-
-    # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
-    # FIXME take from project-config
-    kubernetes.helm.instances.brigade-project = project-template {
-      # FIXME add some ns here
-      project-name = "embracing-nix-docker-k8s-helm-knative";
-      pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
-      clone-url = project-config.project.repositories.code-repository;
-    };
   };
 }
