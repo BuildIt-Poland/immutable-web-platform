@@ -97,6 +97,9 @@ let
     pass=$(${extractSecret ["bitbucket" "pass"]})
     branch="build-$BUILD_ID"
 
+    echo from secrets $user
+    echo from secrets $pass
+
     ${clone-repo} $user $pass $branch
     cd $branch
     ${create-pr-branch} $branch
@@ -128,7 +131,7 @@ with pkgs;
   inherit make-pr-with-descriptors;
 
   shell = mkShell {
-    # SECRETS = builtins.readFile ../secrets.json;
+    SECRETS = builtins.readFile ../secrets.json;
     PROJECT_NAME = project-config.project.name;
 
     buildInputs = [ make-pr-with-descriptors ] ++ project-config.packages;

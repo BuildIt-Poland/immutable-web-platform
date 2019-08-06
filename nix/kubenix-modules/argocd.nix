@@ -25,7 +25,7 @@ in
     # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
     kubernetes.patches = [
       (pkgs.writeScriptBin "patch-argo-password" ''
-        ${pkgs.log.info "Patching Argo CD admin password"}
+        ${pkgs.log.important "Patching Argo CD admin password"}
         ${pkgs.kubectl}/bin/kubectl patch secret -n argocd argocd-secret \
           -p '{"stringData": { "admin.password": "'$(htpasswd -bnBC 10 "" admin | tr -d ':\n')'"}}'
       '')

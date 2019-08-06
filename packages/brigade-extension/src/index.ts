@@ -18,6 +18,7 @@ type WorkerSecrets = {
     bitbucket: {
       user: string
       pass: string
+      hook: string
     }
   }
 }
@@ -34,7 +35,7 @@ const applyNixConfig = ({ cacheBucket, awsRegion }) => [
 ]
 
 export const saveSecrets = (fileName: string = 'secrets-encrypted.json') => [
-  `echo $SECRETS | sops  --input-type json --output-type json -d /dev/stdin > ${fileName}`,
+  `echo $SECRETS | sops --input-type json --output-type json -d /dev/stdin > ${fileName}`,
 ]
 
 // https://github.com/mozilla/sops#45extract-a-sub-part-of-a-document-tree

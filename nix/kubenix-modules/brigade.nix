@@ -57,6 +57,7 @@ in
 {
   imports = with kubenix.modules; [ 
     k8s
+    k8s-extension
     helm
     docker
   ];
@@ -68,6 +69,30 @@ in
     kubernetes.api.namespaces."${brigade-ns}"= {};
 
     kubernetes.helm.instances = helm-charts;
+
+    # FIXME take from project-config.brigade.projects
+    kubernetes.patches = 
+    let
+      get-secret = project: pkgs.writeScript "get-secret-${project}" ''
+        ${pkgs.kubectl}/bin/kubectl get secrets \
+          --selector release=${project} -n ${brigade-ns} \
+          -o=jsonpath='{.items[?(@.type=="brigade.sh/project")].metadata.name}'
+      '';
+      ssh-key = project-config.bitbucket.ssh-keys.priv;
+    in
+    [
+      (pkgs.writeScriptBin "patch-brigade-ssh-key" ''
+        ${pkgs.log.important "Patching Brigade project to pass ssh-key"}
+
+        secret=$(${get-secret "embracing-nix-docker-k8s-helm-knative"})
+        value=$(echo "${ssh-key}" | base64 | tr -d '\n')
+
+        ${pkgs.kubectl}/bin/kubectl patch \
+          secret -n ${brigade-ns} $secret \
+          -p '{"data": {"sshKey": "'"$value"'"}}'
+      '')
+
+    ];
 
     kubernetes.api.storageclasses = {
       build-storage = {

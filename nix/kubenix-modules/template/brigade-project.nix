@@ -32,7 +32,7 @@ in
       sharedSecret = project-config.brigade.secret-key;
       defaultScript = builtins.readFile pipeline-file; 
       # FIXME: THIS IS INSECURE!!!
-      sshKey = bitbucket.ssh-keys.priv;
+      # sshKey = bitbucket.ssh-keys.priv;
       workerCommand = "yarn build-start";
       worker = {
         registry = project-config.docker.registry;
