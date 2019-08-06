@@ -55,6 +55,7 @@ with pkgs.lib;
           project-name = "embracing-nix-docker-k8s-helm-knative";
           pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
           clone-url = config.project.repositories.code-repository;
+          ssh-key = config.bitbucket.ssh-keys.priv;
           # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
           overridings = {};
         };
@@ -75,6 +76,7 @@ with pkgs.lib;
           functions = (import ./functions.nix { inherit pkgs; });
           resources = config.kubernetes.resources;
           priority = resources.priority;
+          # TODO apply skip
           modules = {
             "${priority.high "istio"}"       = [ istio-service-mesh ];
             "${priority.mid  "knative"}"     = [ knative ];

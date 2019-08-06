@@ -51,7 +51,7 @@ let
       namespace = "${brigade-ns}";
       chart = k8s-resources.brigade;
     };
-  } // (builtins.mapAttrs (n: v: project-template v) project-config.brigade.projects);
+  } // (builtins.mapAttrs (_: project-template) project-config.brigade.projects);
 in
 # TODO add enabled true/false
 {
@@ -70,29 +70,27 @@ in
 
     kubernetes.helm.instances = helm-charts;
 
-    # FIXME take from project-config.brigade.projects
     kubernetes.patches = 
-    let
-      get-secret = project: pkgs.writeScript "get-secret-${project}" ''
-        ${pkgs.kubectl}/bin/kubectl get secrets \
-          --selector release=${project} -n ${brigade-ns} \
-          -o=jsonpath='{.items[?(@.type=="brigade.sh/project")].metadata.name}'
-      '';
-      ssh-key = project-config.bitbucket.ssh-keys.priv;
-    in
-    [
-      (pkgs.writeScriptBin "patch-brigade-ssh-key" ''
-        ${pkgs.log.important "Patching Brigade project to pass ssh-key"}
+      let
+        projects = builtins.attrValues project-config.brigade.projects;
+        get-secret = project: pkgs.writeScript "get-secret-${project}" ''
+          ${pkgs.kubectl}/bin/kubectl get secrets \
+            --selector release=${project} -n ${brigade-ns} \
+            -o=jsonpath='{.items[?(@.type=="brigade.sh/project")].metadata.name}'
+        '';
+        inject-ssh-key = {project-name, ssh-key, ...}:
+          (pkgs.writeScriptBin "patch-brigade-ssh-key-for-${project-name}" ''
+            ${pkgs.log.important "Patching Brigade project to pass ssh-key"}
 
-        secret=$(${get-secret "embracing-nix-docker-k8s-helm-knative"})
-        value=$(echo "${ssh-key}" | base64 | tr -d '\n')
+            secret=$(${get-secret "${project-name}"})
+            value=$(echo "${ssh-key}" | base64 | tr -d '\n')
 
-        ${pkgs.kubectl}/bin/kubectl patch \
-          secret -n ${brigade-ns} $secret \
-          -p '{"data": {"sshKey": "'"$value"'"}}'
-      '')
-
-    ];
+            ${pkgs.kubectl}/bin/kubectl patch \
+              secret -n ${brigade-ns} $secret \
+              -p '{"data": {"sshKey": "'"$value"'"}}'
+          '');
+      in
+        [] ++ (builtins.map inject-ssh-key projects);
 
     kubernetes.api.storageclasses = {
       build-storage = {

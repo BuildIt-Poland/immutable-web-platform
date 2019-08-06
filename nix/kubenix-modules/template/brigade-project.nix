@@ -15,7 +15,8 @@ in
     project-name ? "",
     clone-url ?  "",
     pipeline-file ? "",
-    overridings ? {}
+    overridings ? {},
+    ...
   }:
   {
     namespace = "${brigade-ns}";
@@ -31,8 +32,6 @@ in
       vcsSidecar = "brigadecore/git-sidecar:latest";
       sharedSecret = project-config.brigade.secret-key;
       defaultScript = builtins.readFile pipeline-file; 
-      # FIXME: THIS IS INSECURE!!!
-      # sshKey = bitbucket.ssh-keys.priv;
       workerCommand = "yarn build-start";
       worker = {
         registry = project-config.docker.registry;
@@ -47,12 +46,6 @@ in
         buildStorageClass = "build-storage";
       };
       secrets = {
-        # TODO
-        # awsAccessKey = aws.access-key;
-        # awsSecretKey = aws.secret-key;
-        # THIS is insecure as well!
-        # gitToken = bitbucket.ssh-keys.priv;
-
         gitUser = project-config.project.author-email;
         awsRegion = aws.region;
         sopsSecrets = builtins.readFile project-config.git-secrets.location;
