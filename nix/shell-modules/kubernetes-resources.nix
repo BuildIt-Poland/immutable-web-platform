@@ -125,10 +125,17 @@ with lib;
             (test: "${test}/bin/${test.name}") 
             cfg.modules.tests;
 
-        kubernetes.patches.run =
-          lib.concatMapStringsSep "\n" 
+      })
+
+      # patches
+      (let
+          patches = lib.concatMapStringsSep "\n" 
             (patch: "${patch}/bin/${patch.name}") 
             cfg.modules.patches;
+        in
+        {
+          packages = [(pkgs.writeScriptBin "apply-kubernetes-patches" ''${patches}'')];
+          kubernetes.patches.run = patches;
       })
 
       ({
