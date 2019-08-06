@@ -1,16 +1,17 @@
 ## Today
 ### in progress
-* brigade setup -> running nix tests
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
-* move nix stuff to module pattern
-* improve readability what is going on when starting cluster
 * think about detecting empty resources during generation - minor
-* think about getting rid of eval minikube docker-env
 * add skip flag for resources like secrets
-* add ability to handle secrets in similar manner as other kubenretes resources but with extra script
 * define brigade project within config/environement-setup rather that in brigade module
+* `Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
 ----
+* add ability to handle secrets in similar manner as other kubenretes resources but with extra script - patch phase
+* move nix stuff to module pattern
+* brigade setup -> running nix tests
+* think about getting rid of eval minikube docker-env
+* improve readability what is going on when starting cluster
 * introduce better control over granularity related to kubernetes resources
 * introduce more distinctive parts for kubernetes resources (cluster, monitoring, faas, application, etc.) - move argo to separate resource to avoid chicken egg problem
 * minikube and pvc and SC for brigade
@@ -21,6 +22,8 @@
 * figure out better invalidation -> nix is doing a hash from directory, so move baking the image to some other place
 * integrate `istioctl` - create derivation
 * each time dockerTools.buildImage is run even if contents won't change it is invoked - in case of development it is a bit painful
+
+WHY it was needed: keeping secrets and improving granularity to not kill the argo
 
 ----
 # try to setup local env with buildkit - much faster builds

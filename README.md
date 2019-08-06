@@ -86,6 +86,111 @@ provide full testing ability of infrastructure as well as on application level f
 * get [`nix`](https://nixos.org/nix/download.html) - creating isolated local environment
 * run `nix-shell` - if you encounter any issues check [docs](/docs/)
 
+#### Example configuration
+```nix
+{config, pkgs, lib, kubenix, shell-modules, inputs, ...}: 
+with pkgs.lib;
+{
+  imports = with shell-modules.modules; [
+    project-configuration
+    kubernetes
+    kubernetes-resources
+    docker
+    brigade
+    bitbucket
+    git-secrets
+    aws
+    base
+  ];
+
+  config = {
+    environment.type = inputs.environment.type;
+
+    project = {
+      name = "future-is-comming";
+      author-email = "damian.baar@wipro.com";
+      version = "0.0.1";
+      resources.yaml.folder = "$PWD/resources";
+      repositories = {
+        k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
+        code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
+      };
+    };
+
+    test.enable = inputs.tests.enable;
+
+    docker = {
+      upload-images-type = ["functions" "cluster"];
+      upload = inputs.docker.upload;
+      namespace = "dev.local";
+      registry = "";
+      tag = makeDefault inputs.docker.tag "dev-build";
+    };
+
+    aws = {
+      location = {
+        credentials = ~/.aws/credentials;
+        config = ~/.aws/config;
+      };
+      s3-buckets = {
+        worker-cache = "${config.project.name}-worker-binary-store";
+      };
+    };
+
+    brigade = {
+      enabled = true;
+      secret-key = inputs.brigade.secret;
+      projects = {
+        brigade-project = {
+          project-name = "embracing-nix-docker-k8s-helm-knative";
+          pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
+          clone-url = config.project.repositories.code-repository;
+          # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
+          overridings = {};
+        };
+      };
+    };
+
+    git-secrets = {
+      location = ../../secrets.json;
+    };
+
+    kubernetes = {
+      cluster.clean = inputs.kubernetes.clean;
+      patches.enable = inputs.kubernetes.patches;
+      imagePullPolicy = "Never";
+      resources = 
+        with kubenix.modules;
+        let
+          functions = (import ./functions.nix { inherit pkgs; });
+          resources = config.kubernetes.resources;
+          priority = resources.priority;
+          modules = {
+            "${priority.high "istio"}"       = [ istio-service-mesh ];
+            "${priority.mid  "knative"}"     = [ knative ];
+            "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
+            "${priority.low  "gitops"}"      = [ argocd ];
+            "${priority.low  "ci"}"          = [ brigade ];
+            "${priority.low  "secrets"}"     = [ secrets ];
+          } // functions;
+          in
+          {
+            apply = inputs.kubernetes.update;
+            save = inputs.kubernetes.save;
+            list = modules;
+          };
+
+      namespace = {
+        functions = "functions";
+      };
+    };
+
+    bitbucket = {
+      ssh-keys.location = ~/.ssh/bitbucket_webhook;
+    };
+  };
+}
+```
 #### Monitoring
 * `grafana`
 ![grafana](https://bitbucket.org/repo/6zKBnz9/images/1943034243-Screenshot%202019-06-19%20at%2013.45.21.png)
