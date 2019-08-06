@@ -20,13 +20,14 @@ const createJob = (name) =>
       `echo $SECRETS`,
       `echo "aws key $AWS_ACCESS_KEY_ID"`,
       `echo "aws secret $AWS_SECRET_ACCESS_KEY"`,
+      `sops --version`,
       // does not work - investigate
       saveSecrets('secrets.json'),
       `cat secrets.json`,
-      `cd /src`,
-      `./nix/run-tests.sh`, // running nix tests
-      `cd /pipeline`,
-      buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
+      // `cd /src`,
+      // `./nix/run-tests.sh`, // running nix tests
+      // `cd ./pipeline`,
+      // buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
     ])
 
 

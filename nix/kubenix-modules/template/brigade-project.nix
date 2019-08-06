@@ -1,4 +1,5 @@
-{config, project-config, k8s-resources}:
+{config, pkgs, project-config, k8s-resources}:
+with pkgs;
 let
   namespace = project-config.kubernetes.namespace;
   brigade-ns = namespace.brigade;
@@ -13,13 +14,15 @@ in
   {
     project-name ? "",
     clone-url ?  "",
-    pipeline-file ? ""
+    pipeline-file ? "",
+    overridings ? {}
   }:
   {
     namespace = "${brigade-ns}";
     name = project-name;
     chart = k8s-resources.brigade-project;
-    values = {
+    # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
+    values = lib.recursiveUpdate {
       project = project-name;
       repository = project-name; 
       cloneURL = clone-url;
@@ -56,5 +59,5 @@ in
         cacheBucket = aws.s3-buckets.worker-cache;
         workerDockerImage = worker.path;
       };
-    };
+    } overridings;
   }
