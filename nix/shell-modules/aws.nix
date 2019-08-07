@@ -56,7 +56,7 @@ rec {
     };
   };
 
-  config = mkIf cfg.aws.enabled (mkMerge [
+  config = mkIf (cfg.aws.enabled && cfg.environment.isLocal) (mkMerge [
     ({
       checks = ["Enabling AWS config module"];
 

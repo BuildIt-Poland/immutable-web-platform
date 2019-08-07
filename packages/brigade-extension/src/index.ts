@@ -68,8 +68,7 @@ export const copyShellDependenciesToS3 =
       `nix-store --repair --verify`, // need to check how to skip this step
       `nix copy \
         --to ${bucketURL({ cacheBucket, awsRegion })}\
-        $(nix-store -qR --include-outputs $(nix-instantiate shell.nix))`,
-      `nix path-info -r --json ./result | jq .`,
+        $(nix-store -qR --include-outputs $(nix-instantiate shell.nix))`
     ]
 
 export const copyResultDerivationToS3 =
