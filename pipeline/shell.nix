@@ -10,7 +10,8 @@
         patches = false;
       };
     };
-  })
+  }),
+  local ? false
 }:
 with pkgs;
 let
@@ -128,7 +129,11 @@ with pkgs;
   inherit make-pr-with-descriptors;
 
   shell = mkShell {
-    SECRETS = builtins.readFile ../secrets.json;
+    SECRETS = 
+      if local 
+        then (builtins.readFile ../secrets.json) 
+        else null;
+
     PROJECT_NAME = project-config.project.name;
 
     buildInputs = [ make-pr-with-descriptors ] ++ project-config.packages;
