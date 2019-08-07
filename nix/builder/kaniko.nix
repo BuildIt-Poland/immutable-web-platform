@@ -13,6 +13,8 @@
         # extraContent = "";
       };
 */
+# this will be impure but in case of development environment I don't mind
+# check docker with DOCKER_BUILDKIT enabled - seems that cooking image is faster
 {pkgs}:
 let
   safe-name = builtins.replaceStrings ["\/" "."] ["_" "_"];

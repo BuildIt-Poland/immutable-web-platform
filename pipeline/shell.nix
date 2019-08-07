@@ -23,7 +23,7 @@ let
 
   bitbucket-pr-payload = {
     title = "Kubernetes update";
-    description =  "CI build";
+    description =  "$description";
     source.branch.name = "$branch";
     source.repository.full_name = "$user/${repo-name}";
     destination.branch.name = "master";
@@ -62,13 +62,17 @@ let
     git push
   '';
 
+  # FIXME use eval instead of sed
   make-pr = writeScript "make-pr" ''
     user=$1
     pass=$2
     branch=$3
 
     payload=$(echo '${builtins.toJSON bitbucket-pr-payload}' \
-             | sed -e 's/$user/'"$user"'/g' -e 's/$branch/'"$branch"'/g')
+             | sed -e 's/$user/'"$user"'/g' \
+                   -e 's/$branch/'"$branch"'/g' \
+                   -e 's/$description/CI build: '"$BUILD_ID"'/g'
+                   )
 
     curl \
       -X POST \
@@ -125,18 +129,19 @@ let
 
 in
 with pkgs; 
-{ 
-  inherit make-pr-with-descriptors;
+mkShell {
+  BUILD_ID =
+    if local 
+      then "local-build-${pkgs.project-config.project.hash}"
+      else null;
 
-  shell = mkShell {
-    SECRETS = 
-      if local 
-        then (builtins.readFile ../secrets.json) 
-        else null;
+  SECRETS = 
+    if local 
+      then (builtins.readFile ../secrets.json) 
+      else null;
 
-    PROJECT_NAME = project-config.project.name;
+  PROJECT_NAME = project-config.project.name;
 
-    buildInputs = [ make-pr-with-descriptors ] ++ project-config.packages;
-    shellHook= project-config.shellHook;
-  };
+  buildInputs = [ make-pr-with-descriptors ] ++ project-config.packages;
+  shellHook= project-config.shellHook;
 }
