@@ -11,6 +11,7 @@ let
   istio-ns = namespace.istio;
   knative-monitoring-ns = namespace.knative-monitoring;
   argo-ns = namespace.argo;
+  brigade-ns = namespace.brigade;
 in
 # TODO create similar module for gitops
 # TODO argocd sth is not correct here - investigate
@@ -69,6 +70,12 @@ in
         nodePort = 31200;
         name = "argocd-port";
       } 
+      {
+        port = 15201;
+        targetPort = 15201;
+        nodePort = 31201;
+        name = "kashti-port";
+      } 
       ];
     };
 
@@ -101,8 +108,14 @@ in
               protocol = "HTTP";
             };
             hosts = ["*"];
-          } 
-          {
+          } {
+            port = {
+              number = 15201;
+              name = "http-kashti";
+              protocol = "HTTP";
+            };
+            hosts = ["*"];
+          } {
             port = {
               number = 15200;
               name = "http2-argocd";
@@ -177,6 +190,17 @@ in
               destination = {
                 host = "zipkin.${istio-ns}.svc.cluster.local";
                 port.number = 9411; 
+              };
+            }];
+          }
+          {
+            match = [
+              { port = 15201; }
+            ];
+            route = [{
+              destination = {
+                host = "brigade-kashti.${brigade-ns}.svc.cluster.local";
+                port.number = 80; 
               };
             }];
           }

@@ -1,5 +1,9 @@
 ## Today
 ### in progress
+* enable kashti
+* move git commands from shell to nix module
+* 
+* allow to define virtual services within environement config
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 * think about detecting empty resources during generation - minor

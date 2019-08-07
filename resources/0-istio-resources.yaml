@@ -57,6 +57,12 @@ items:
     - hosts:
       - '*'
       port:
+        name: http-kashti
+        number: 15201
+        protocol: HTTP
+    - hosts:
+      - '*'
+      port:
         name: http2-argocd
         number: 15200
         protocol: HTTPS
@@ -96,6 +102,13 @@ items:
           host: zipkin.istio-system.svc.cluster.local
           port:
             number: 9411
+    - match:
+      - port: 15201
+      route:
+      - destination:
+          host: brigade-kashti.brigade.svc.cluster.local
+          port:
+            number: 80
     tls:
     - match:
       - port: 15200
@@ -1234,6 +1247,10 @@ items:
       nodePort: 31200
       port: 15200
       targetPort: 15200
+    - name: kashti-port
+      nodePort: 31201
+      port: 15201
+      targetPort: 15201
     - name: grafana-port
       nodePort: 31300
       port: 15300
@@ -2434,6 +2451,7 @@ items:
             name: http-envoy-prom
             protocol: TCP
           - containerPort: 15200
+          - containerPort: 15201
           - containerPort: 15300
           - containerPort: 15301
           - containerPort: 15302
