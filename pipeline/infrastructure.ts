@@ -1,5 +1,5 @@
 const { events, Job, Group } = require("brigadier")
-const { NixJob, extractSecret, saveSecrets, buildNixExpression } = require('brigade-extension')
+const { NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand } = require('brigade-extension')
 
 // TODO think how it can be automated to avoid defining it here
 process.env.BRIGADE_COMMIT_REF = "nix-modules-refactoring"
@@ -14,12 +14,8 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
     .withTasks([
-      `cd /src`,
-      saveSecrets('secrets.json'),
-      `./nix/run-tests.sh`, // running nix tests
       `cd ./pipeline`,
-      buildNixExpression('shell.nix', 'make-pr-with-descriptors'),
-      `./result/bin/make-pr-with-descriptors`,
+      runShellCommand('make-pr-with-descriptors'),
     ])
 
 

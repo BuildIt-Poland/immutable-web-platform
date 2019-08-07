@@ -1,26 +1,8 @@
-# worker shell
-# IMPORTANT: nix is lazy so we can require whole ./nix folder and reuse the scripts - awesome isn't it?
+# TODO
 {
-  pkgs ? (import ../nix { 
-    inputs = {
-      environment.type = "brigade"; 
-      tests.enable = false;
-      kubernetes = {
-        save = false;
-        patches = false;
-      };
-    };
-  }),
-  local ? false
+  pkgs
 }:
-with pkgs;
-let
-  repo-name = "k8s-infra-descriptors";
-
-  #######
-  # GIT
-  #######
-
+{
   bitbucket-pr-payload = {
     title = "Kubernetes update";
     description =  "$description";
@@ -82,19 +64,6 @@ let
       -d "$payload"
   '';
   
-  #######
-  # SOPS
-  #######
-  get-path = path:
-    builtins.concatStringsSep ""
-      (builtins.map (x: ''["${x}"]'') path);
-
-  extractSecret = path: pkgs.writeScript "extract-secret" ''
-    echo $SECRETS | sops --input-type json -d --extract '${get-path path}' -d /dev/stdin
-  '';
-
-  repo = "k8s-infra-descriptors";
-
   push-descriptors-to-git = pkgs.writeScript "make-pr-with-descriptors" ''
     ${setup-git} 
 
@@ -126,24 +95,4 @@ let
       cp ${push-descriptors-to-git} $out/bin/${push-descriptors-to-git.name}
     '';
   };
-
-in
-with pkgs; 
-mkShell {
-  NIX_SHELL_NAME = "#brigade-pipeline";
-
-  BUILD_ID =
-    if local 
-      then "local-build-${pkgs.project-config.project.hash}"
-      else null;
-
-  SECRETS = 
-    if local 
-      then (builtins.readFile ../secrets.json) 
-      else null;
-
-  PROJECT_NAME = project-config.project.name;
-
-  buildInputs = [ make-pr-with-descriptors ]; # ++ project-config.packages;
-  shellHook= project-config.shellHook;
 }
