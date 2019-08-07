@@ -33,7 +33,7 @@ rec {
     };
   };
 
-  config = mkIf cfg.brigade.enabled (mkMerge [
+  config = mkIf (cfg.brigade.enabled && cfg.environment.isLocal) (mkMerge [
     { checks = ["Enabling brigade module"]; }
     ({
       packages = with pkgs;[

@@ -26,7 +26,7 @@ rec {
     };
   };
 
-  config = mkIf cfg.bitbucket.enabled (mkMerge [{
+  config = mkIf (cfg.bitbucket.enabled && cfg.environment.isLocal) (mkMerge [{
       checks = ["Enabling bitbucket module"];
     }
     (mkIf ssh-exists {

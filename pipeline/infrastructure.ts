@@ -14,6 +14,8 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
     .withTasks([
+      `AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
+      `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,
       `cd ./pipeline`,
       runShellCommand('make-pr-with-descriptors'),
     ])

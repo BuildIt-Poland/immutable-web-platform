@@ -37,7 +37,7 @@ rec {
   };
 
   # FIXME if local
-  config = mkIf cfg.docker.enabled (mkMerge [
+  config = mkIf (cfg.docker.enabled && cfg.environment.isLocal) (mkMerge [
     { checks = ["Enabling docker module"]; }
     ({
       packages = with pkgs; [
