@@ -38,6 +38,6 @@ rec {
   config = {
     project.hash = 
       builtins.hashString "sha1" 
-        (builtins.toJSON cfg.kubernetes.resources);
+        (builtins.toJSON cfg.kubernetes.resources.list);
   };
 }
