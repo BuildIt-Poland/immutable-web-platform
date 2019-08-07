@@ -100,7 +100,7 @@ in
         let
           pretty-input = 
             lib.generators.toINI {} 
-              (lib.filterAttrsRecursive (n: v: n != null) inputs);
+              (inputs // {modules = {};});
 
           header = ''
             ${log.info "Configuration overridings: \n ${pretty-input}"}

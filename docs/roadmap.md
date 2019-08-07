@@ -2,7 +2,7 @@
 ### in progress
 * enable kashti
 * move git commands from shell to nix module
-* 
+* shell-modules -> run cluster on virtualbox with shell-modules attached
 * allow to define virtual services within environement config
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)

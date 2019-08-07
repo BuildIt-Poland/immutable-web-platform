@@ -101,16 +101,18 @@ items:
       \ NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand }\
       \ = require('brigade-extension')\n\n// TODO think how it can be automated to\
       \ avoid defining it here\nprocess.env.BRIGADE_COMMIT_REF = \"nix-modules-refactoring\"\
-      \n\n// TODO better would be to run shell instead of command -> nix-shell --command\
-      \ make-pr-with-descriptors\nconst createJob = (name) =>\n  new NixJob(name)\n\
-      \    .withExtraParams({\n      streamLogs: true,\n      privileged: true,\n\
-      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n  \
-      \  .withTasks([\n      `cd ./pipeline`,\n      runShellCommand('make-pr-with-descriptors'),\n\
-      \    ])\n\n\nevents.on(\"exec\", (event, project) => {\n  let test =\n    createJob(\"\
-      test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
-      \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
-      \      })\n\n  test.run()\n})\n\nevents.on(\"push\", (event, project) => {\n\
-      \  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\n  test.run()\n\
+      \n\nconst createJob = (name) =>\n  new NixJob(name)\n    .withExtraParams({\n\
+      \      streamLogs: true,\n      privileged: true,\n      shell: 'bash',\n  \
+      \    serviceAccount: \"brigade-worker\"\n    })\n    .withTasks([\n      //\
+      \ `AWS_ACCESS_KEY_ID=\"$(echo $AWS_ACCESS_KEY_ID | tr -d \"\\n\")\"`,\n    \
+      \  // `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d \"\\n\")`,\n\
+      \      `echo \"$AWS_ACCESS_KEY_ID test test\"`,\n      `echo $AWS_SECRET_ACCESS_KEY`,\n\
+      \      runShellCommand('make-pr-with-descriptors'),\n    ])\n\n\nevents.on(\"\
+      exec\", (event, project) => {\n  let test =\n    createJob(\"test\")\n     \
+      \ .withSecrets(project.secrets)\n      .withEnvVars({\n        BUILD_ID: event.buildID\
+      \ || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n      })\n\
+      \n  test.run()\n})\n\nevents.on(\"push\", (event, project) => {\n  let test\
+      \ = createJob(\"test\")\n    .withSecrets(project.secrets)\n\n  test.run()\n\
       })\n"
     genericGatewaySecret: mygenericsecret
     initGitSubmodules: 'false'

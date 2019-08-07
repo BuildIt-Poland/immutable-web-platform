@@ -1,11 +1,7 @@
-# TODO
 {
   pkgs
 }:
-{
-  #######
-  # SOPS
-  #######
+rec {
   get-path = path:
     builtins.concatStringsSep ""
       (builtins.map (x: ''["${x}"]'') path);

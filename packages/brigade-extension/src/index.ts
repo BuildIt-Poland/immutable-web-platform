@@ -58,17 +58,21 @@ export const runShellCommand =
   (command: string, attribute: string, extraArgs: string = '') =>
     (secrets: Secrets) =>
       [
+        `cd /src/pipeline`,
         `nix-shell --run ${command} ${extraArgs}`,
-        ...copyShellDependenciesToS3(secrets)
+        ...copyShellDependenciesToS3(secrets),
+        `cd /`
       ]
 
 export const copyShellDependenciesToS3 =
   ({ cacheBucket, awsRegion }: Secrets) =>
     [
       `nix-store --repair --verify`, // need to check how to skip this step
+      `nix-store -qR --include-outputs $(nix-instantiate shell.nix --add-root ./result --indirect)`,
       `nix copy \
-        --to ${bucketURL({ cacheBucket, awsRegion })}\
-        $(nix-store -qR --include-outputs $(nix-instantiate shell.nix))`
+          --to ${bucketURL({ cacheBucket, awsRegion })}\
+          $(nix-store --query --requisites --include-outputs $(nix-store --query --deriver ./result))`,
+      `nix path-info -r --json ./result | jq .`,
     ]
 
 export const copyResultDerivationToS3 =
@@ -135,11 +139,11 @@ export class NixJob extends Job {
 
     this.tasks = [
       ...applyNixConfig({ cacheBucket, awsRegion }),
-      `cd /src`,
-      `./nix/run-tests.sh`, // running nix tests
+      // `cd /src`,
+      // `./nix/run-tests.sh`, // running nix tests
       // not sure from \n comes from - check secret generation
-      `export AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
-      `export AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,
+      `AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
+      `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,
       ...this.resolveTasks(this.secrets)
     ]
 

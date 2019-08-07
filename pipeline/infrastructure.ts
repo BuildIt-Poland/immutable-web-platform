@@ -4,7 +4,6 @@ const { NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand 
 // TODO think how it can be automated to avoid defining it here
 process.env.BRIGADE_COMMIT_REF = "nix-modules-refactoring"
 
-// TODO better would be to run shell instead of command -> nix-shell --command make-pr-with-descriptors
 const createJob = (name) =>
   new NixJob(name)
     .withExtraParams({
@@ -14,10 +13,11 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
     .withTasks([
-      `AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
-      `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,
-      `cd ./pipeline`,
-      runShellCommand('make-pr-with-descriptors'),
+      // `AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
+      // `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,
+      `echo "$AWS_ACCESS_KEY_ID test test"`,
+      `echo $AWS_SECRET_ACCESS_KEY`,
+      runShellCommand('push-k8s-resources-to-repo'),
     ])
 
 

@@ -19,15 +19,19 @@ let
 
     k8s-resources = super.callPackage ./k8s-resources {};
 
-    project-config = (super.shell-modules.eval {
-      modules = [./config/environment-setup.nix]; # this should be injected from external
-      args = { 
-        inputs = make-defaults inputs; 
-        pkgs = super.pkgs;
-        kubenix = super.kubenix;
-        k8s-resources = k8s-resources;
-      };
-    }).config;
+    project-config = 
+      let
+        safe-inputs = make-defaults inputs; 
+      in
+      (super.shell-modules.eval {
+        modules = [./config/environment-setup.nix] ++ safe-inputs.modules;
+        args = { 
+          inputs = safe-inputs; 
+          pkgs = super.pkgs;
+          kubenix = super.kubenix;
+          k8s-resources = k8s-resources;
+        };
+      }).config;
 
     inherit sources;
     inherit inputs;
