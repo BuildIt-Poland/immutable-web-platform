@@ -46,6 +46,7 @@ mkShell {
       ))
   ];
 
+  NIX_SHELL_NAME = "#deployment-shell";
   PROJECT_NAME = project-config.project.name;
 
   # THIS NODE_PATH is a hack - wrap npx and export PATH there - npx does not take into account $PATH
