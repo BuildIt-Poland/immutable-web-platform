@@ -1,9 +1,17 @@
-# TODO
 {
   pkgs
 }:
-{
-  bitbucket-pr-payload = {
+let
+  sops = pkgs.callPackage ./sops.nix {};
+  prj = pkgs.project-config;
+  email = prj.project.author-email;
+  repo-name = prj.bitbucket.k8s-resources.repository;
+  version = prj.project.version;
+in
+with pkgs;
+# FIXME refactor this module
+rec {
+  pr-payload = {
     title = "Kubernetes update";
     description =  "$description";
     source.branch.name = "$branch";
@@ -20,7 +28,7 @@
   '';
 
   setup-git = writeScript "setup-git" ''
-    git config --global user.email "damian.baar@wipro.com"
+    git config --global user.email "${email}"
     git config --global user.name "CI bot"
   '';
 
@@ -35,7 +43,7 @@
 
   commit-descriptors = writeScript "commit-descriptors" ''
     git add -A
-    git commit -m "Applying resources for release: ${pkgs.project-config.project.version}, build id: $BUILD_ID"
+    git commit -m "Applying resources for release: ${version}, build id: $BUILD_ID"
   '';
 
   push-branch = writeScript "push-branch" ''
@@ -50,7 +58,7 @@
     pass=$2
     branch=$3
 
-    payload=$(echo '${builtins.toJSON bitbucket-pr-payload}' \
+    payload=$(echo '${builtins.toJSON pr-payload}' \
              | sed -e 's/$user/'"$user"'/g' \
                    -e 's/$branch/'"$branch"'/g' \
                    -e 's/$description/CI build: '"$BUILD_ID"'/g'
@@ -65,11 +73,11 @@
   '';
   
   push-descriptors-to-git = pkgs.writeScript "make-pr-with-descriptors" ''
-    ${setup-git} 
+    user=$1
+    pass=$2
+    branch=$3
 
-    user=$(${extractSecret ["bitbucket" "user"]})
-    pass=$(${extractSecret ["bitbucket" "pass"]})
-    branch="build-$BUILD_ID"
+    ${setup-git} 
 
     ${clone-repo} $user $pass $branch
     cd $branch
@@ -80,19 +88,14 @@
     ${commit-descriptors}
     ${push-branch} $branch
     ${show-changes-diff}
-    ${make-pr} $user $pass $branch
   '';
 
-  make-pr-with-descriptors = pkgs.stdenv.mkDerivation {
-    name = "make-pr-with-descriptors";
-    src = ./.;
-    phases = ["installPhase"];
-    buildInputs = [];
-    preferLocalBuild = true;
-    nativeBuildInputs = [];
-    installPhase = ''
-      mkdir -p $out/bin
-      cp ${push-descriptors-to-git} $out/bin/${push-descriptors-to-git.name}
-    '';
-  };
+  push-with-pr = pkgs.writeScriptBin "push-k8s-resources-to-repo" ''
+    user=$(${sops.extractSecret ["bitbucket" "user"]})
+    pass=$(${sops.extractSecret ["bitbucket" "pass"]})
+    branch="build-$BUILD_ID"
+
+    ${push-descriptors-to-git} $user $pass $branch
+    ${make-pr} $user $pass $branch
+  '';
 }

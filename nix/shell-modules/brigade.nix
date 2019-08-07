@@ -15,7 +15,7 @@ rec {
       default = "";
     };
 
-    # TODO
+    # FIXME add submodules type
     projects = mkOption {
       default = {};
       description = ''

@@ -9,4 +9,5 @@
   bitbucket = ./bitbucket.nix;
   git-secrets = ./git-secrets.nix;
   kubernetes-resources = ./kubernetes-resources.nix;
+  bitbucket-k8s-repo = ./bitbucket-k8s-repo.nix;
 }

@@ -17,3 +17,5 @@
 
 * brigade.js got stuck and getting pending status when `kubectl get pv -A`
 > minikube addons enable storage-provisioner -p $PROJECT_NAME
+
+* aws skewed response -> https://github.com/orbs-network/orbs-network-go/issues/1072

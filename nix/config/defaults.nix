@@ -8,4 +8,5 @@ with pkgs;
       brigade = { secret = ""; };
       aws = { region = ""; };
       tests = {enable = true;};
+      modules = [];
     } input

@@ -1,7 +1,13 @@
-{ lib, pkgs, modules ? import ./modules.nix }:
+{ 
+  lib, 
+  pkgs, 
+  modules ? import ./modules.nix, 
+  extraLibs ? (pkgs.callPackage ./lib {}) 
+}:
 let
   defaultSpecialArgs = {
     inherit shell-modules;
+    lib = lib // extraLibs;
   };
 
   eval = {
