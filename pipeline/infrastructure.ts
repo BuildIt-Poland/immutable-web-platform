@@ -2,7 +2,9 @@ const { events, Job, Group } = require("brigadier")
 const { NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand } = require('brigade-extension')
 
 // TODO think how it can be automated to avoid defining it here
-process.env.BRIGADE_COMMIT_REF = "nix-modules-refactoring"
+// process.env.BRIGADE_COMMIT_REF = "nix-modules-refactoring"
+// TODO prepare script
+// brig run -f pipeline/infrastructure.ts embracing-nix-docker-k8s-helm-knative --ref nix-modules-refactoring
 
 const createJob = (name) =>
   new NixJob(name)
