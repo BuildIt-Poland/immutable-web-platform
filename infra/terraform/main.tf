@@ -1,6 +1,5 @@
 provider "aws" {
-  version = "~> 2.15"
-  region  = "${var.region}"
+  region = "${var.region}"
 }
 
 module "backend" {
@@ -25,3 +24,8 @@ module "worker-build-cache" {
   common_tags = "${local.common_tags}"
 }
 
+module "nixos-instance" {
+  source      = "./modules/nixos"
+  common_tags = "${local.common_tags}"
+  ssh_pub_key = "~/.ssh/id_rsa.pub"
+}
