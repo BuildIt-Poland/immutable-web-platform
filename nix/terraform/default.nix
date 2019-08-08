@@ -4,6 +4,7 @@ let
   nix-provider-nix = nix-terraform;
   terraform = pkgs.terraform_0_12.withPlugins (plugins: [
     plugins.aws
+    plugins.random
     nix-provider-nix
   ]);
   config = rec {

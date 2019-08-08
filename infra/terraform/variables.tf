@@ -21,6 +21,10 @@ variable "worker_bucket" {
   default = ""
 }
 
+variable "nixos_ssh_pub_key" {
+  default = "~/.ssh/id_rsa.pub"
+}
+
 # REMOTE STATE
 variable "tf_state_bucket" {
   default     = ""
