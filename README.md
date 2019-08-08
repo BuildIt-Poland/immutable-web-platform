@@ -86,6 +86,9 @@ provide full testing ability of infrastructure as well as on application level f
 * get [`nix`](https://nixos.org/nix/download.html) - creating isolated local environment
 * run `nix-shell` - if you encounter any issues check [docs](/docs/)
 
+#### Wait for kubernetes
+* to check status you can run `kubectl get pods -Aw` - wait until everything will be running
+
 #### Getting all available services
 * `minikube service list -p $PROJECT_NAME`
 

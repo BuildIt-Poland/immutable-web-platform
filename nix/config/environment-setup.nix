@@ -5,6 +5,7 @@ with pkgs.lib;
     project-configuration
     kubernetes
     kubernetes-resources
+    bitbucket-k8s-repo
     docker
     brigade
     bitbucket

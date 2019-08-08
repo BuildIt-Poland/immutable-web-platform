@@ -104,12 +104,9 @@ items:
       \n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts embracing-nix-docker-k8s-helm-knative\
       \ --ref nix-modules-refactoring\n\nconst createJob = (name) =>\n  new NixJob(name)\n\
       \    .withExtraParams({\n      streamLogs: true,\n      privileged: true,\n\
-      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n  \
-      \  .withTasks([\n      // `AWS_ACCESS_KEY_ID=\"$(echo $AWS_ACCESS_KEY_ID | tr\
-      \ -d \"\\n\")\"`,\n      // `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY\
-      \ | tr -d \"\\n\")`,\n      `echo \"$AWS_ACCESS_KEY_ID test test\"`,\n     \
-      \ `echo $AWS_SECRET_ACCESS_KEY`,\n      runShellCommand('push-k8s-resources-to-repo'),\n\
-      \    ])\n\n\nevents.on(\"exec\", (event, project) => {\n  let test =\n    createJob(\"\
+      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n\n\
+      \    .withTasks([\n      runShellCommand('push-k8s-resources-to-repo'),\n  \
+      \  ])\n\nevents.on(\"exec\", (event, project) => {\n  let test =\n    createJob(\"\
       test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
       \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
       \      })\n\n  test.run()\n})\n\nevents.on(\"push\", (event, project) => {\n\

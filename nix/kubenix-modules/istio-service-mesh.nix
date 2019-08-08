@@ -32,7 +32,7 @@ in
     kubernetes.api.namespaces."${istio-ns}"= {};
 
     kubernetes.crd = [
-      k8s-resources.istio-init-json 
+      # k8s-resources.istio-init-json 
     ];
 
     kubernetes.helm.instances.istio = 

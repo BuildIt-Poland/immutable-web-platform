@@ -64,6 +64,11 @@ in
     default = [];
   };
 
+  options.binary-store-cache = mkOption {
+    default = [];
+  };
+
+  # FIXME add module to RUN TESTS agains nix
   options.test = {
     run = with types; mkOption {
       default = "";

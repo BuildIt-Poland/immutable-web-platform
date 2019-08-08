@@ -14,14 +14,10 @@ const createJob = (name) =>
       shell: 'bash',
       serviceAccount: "brigade-worker"
     })
+
     .withTasks([
-      // `AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
-      // `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,
-      `echo "$AWS_ACCESS_KEY_ID test test"`,
-      `echo $AWS_SECRET_ACCESS_KEY`,
       runShellCommand('push-k8s-resources-to-repo'),
     ])
-
 
 events.on("exec", (event, project) => {
   let test =
