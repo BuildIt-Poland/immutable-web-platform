@@ -90,7 +90,7 @@ rec {
     ${show-changes-diff}
   '';
 
-  push-with-pr = pkgs.writeScriptBin "push-k8s-resources-to-repo" ''
+  push-k8s-resources-to-repo = pkgs.writeScriptBin "push-k8s-resources-to-repo" ''
     user=$(${sops.extractSecret ["bitbucket" "user"]})
     pass=$(${sops.extractSecret ["bitbucket" "pass"]})
     branch="build-$BUILD_ID"

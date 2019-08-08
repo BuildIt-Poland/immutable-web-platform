@@ -13,7 +13,8 @@ with pkgs;
   mkShell {
     PROJECT_NAME = project-config.project.name;
     NIX_SHELL_NAME = "#core-shell";
-
+    
+    # FIXME move terraform to infra shell
     buildInputs = [pkgs.terraform-with-plugins] ++ project-config.packages;
     shellHook= project-config.shellHook;
   }

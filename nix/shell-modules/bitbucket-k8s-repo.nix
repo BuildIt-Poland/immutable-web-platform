@@ -7,8 +7,8 @@ rec {
 
   options.bitbucket = {
     k8s-resources = {
-      enabled = mkOption {
-        default = true;
+      enable = mkOption {
+        default = false;
       };
 
       # INFO https://github.com/lukepatrick/bitbucket-bitbucket-gateway#bitbucket-integration
@@ -18,11 +18,18 @@ rec {
     };
   };
 
-  config = mkIf cfg.bitbucket.k8s-resources.enabled (mkMerge [
+  config = mkIf cfg.bitbucket.k8s-resources.enable (mkMerge [
     { checks = ["Enabling k8s resources repository"]; }
-    ({
-      packages = with pkgs; [
-        lib.bitbucket.push-with-pr 
+    (
+      let
+        cmd = lib.bitbucket.push-k8s-resources-to-repo;
+      in
+      {
+      packages = [cmd];
+
+      help = [
+        "-- Bitbucket k8s resources --"
+        "To push yamls to repository use, ${cmd.name}"
       ];
     })
   ]);

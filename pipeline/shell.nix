@@ -3,6 +3,8 @@
 }:
 let
   pkgs = (import ../nix { 
+    # system = "x86_64-linux";
+
     inputs = {
       environment.type = "brigade"; 
       tests.enable = false;
@@ -12,14 +14,15 @@ let
       };
 
       modules = [
-        pkgs.shell-modules.modules.bitbucket-k8s-repo
-        ({
-          bitbucket.k8s-resources.repository = "k8s-infra-descriptors";
-        })
+        {
+          bitbucket.k8s-resources = {
+            enable = true;
+            repository = "k8s-infra-descriptors";
+          };
+        }
       ];
     };
   });
-
 in
 with pkgs; 
 mkShell {
@@ -36,8 +39,6 @@ mkShell {
       else null;
 
   PROJECT_NAME = project-config.project.name;
-
-  # FIXME add module to RUN TESTS from module!
-  buildInputs = project-config.packages;
-  shellHook= project-config.shellHook;
+  buildInputs = project-config.binary-store-cache;
+  shellHook = project-config.shellHook;
 }

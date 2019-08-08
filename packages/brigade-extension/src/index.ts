@@ -140,7 +140,7 @@ export class NixJob extends Job {
     this.tasks = [
       ...applyNixConfig({ cacheBucket, awsRegion }),
       // `cd /src`,
-      `./src/nix/run-tests.sh`, // running nix tests
+      // `./src/nix/run-tests.sh`, // running nix tests
       // not sure from \n comes from - check secret generation
       `AWS_ACCESS_KEY_ID="$(echo $AWS_ACCESS_KEY_ID | tr -d "\n")"`,
       `AWS_SECRET_ACCESS_KEY=$(echo $AWS_SECRET_ACCESS_KEY | tr -d "\n")`,

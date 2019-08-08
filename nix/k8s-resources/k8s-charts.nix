@@ -77,18 +77,6 @@ rec {
     sha256 = "1vdsxrz4gis5za519p0zjmd9zjckjaa34pdssbn9lis19x20ki7v";
   };
 
-  # TODO propagete this idea wider
-  preload = [
-    istio-init
-    istio
-    brigade
-    brigade-project
-    brigade-bitbucket
-    weave-scope
-    docker-registry 
-    argo-cd
-  ];
-
   istio-init-json = chart2json {
     name = "istio-init";
     chart = istio-init;

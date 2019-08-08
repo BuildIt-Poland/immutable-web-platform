@@ -1,16 +1,21 @@
 ## Today
 ### in progress
-* enable kashti
-* move git commands from shell to nix module
+* add skip flag for resources like secrets [
+  - think about detecting empty resources during generation - minor
+  -`Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
+]
+* create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
+
+(AWS Key Management Service, Amazon S3)
+
 * shell-modules -> run cluster on virtualbox with shell-modules attached
 * allow to define virtual services within environement config
-* remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x)
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
-* think about detecting empty resources during generation - minor
-* add skip flag for resources like secrets
-* define brigade project within config/environement-setup rather that in brigade module
-* `Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
+* remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x) - test -> should be ok
 ----
+* define brigade project within config/environement-setup rather that in brigade module
+* move git commands from shell to nix module
+* enable kashti
 * add ability to handle secrets in similar manner as other kubenretes resources but with extra script - patch phase
 * move nix stuff to module pattern
 * brigade setup -> running nix tests
