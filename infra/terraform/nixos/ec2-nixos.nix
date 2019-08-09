@@ -4,7 +4,9 @@ let
     inherit system;
   });
 
-  myOS = import "${pkgs.sources.nixpkgs.outPath}/nixos" {
+  nixpkgs_path = pkgs.sources.nixpkgs.outPath;
+
+  myOS = import "${nixpkgs_path}/nixos" {
     inherit system;
 
     configuration = {
@@ -14,7 +16,11 @@ let
         <nixpkgs/nixos/modules/profiles/headless.nix>
         ./configuration.nix
      ];
+
     config = {
+      nix.nixPath = [ "nixpkgs=${nixpkgs_path}" ];
+      nix.package = pkgs.nixUnstable;
+
       networking.firewall.allowedTCPPorts = [ 
         22
       ];

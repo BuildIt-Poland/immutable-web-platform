@@ -1,4 +1,5 @@
 #!/bin/bash
+# set -euo pipefail
 
 build_hash=$1
 machine_ip=$2
@@ -19,6 +20,19 @@ sshOpts=(
 
 target_host=$user@$machine_ip
 
+echo "-- copying nix store --"
 # NIX_SSHOPTS="${sshOpts[*]}" nix copy --to "ssh://$target_host" $build_hash
 NIX_SSHOPTS="${sshOpts[*]}" nix-copy-closure --to $target_host $build_hash
-ssh "${sshOpts[@]}" $target_host "sudo $build_hash/bin/switch-to-configuration switch"
+echo "-- end --"
+
+echo "-- switching configuration --"
+test=$(ssh "${sshOpts[@]}" $target_host "sudo $build_hash/bin/switch-to-configuration switch" 2>&1)
+should_rebot=$(echo $test | grep "init" | wc -c)
+
+echo $should_rebot
+echo "-- end --"
+
+if [[ $should_rebot != 0 ]] ; then
+  echo "-- rebooting instance --"
+  ssh "${sshOpts[@]}" $target_host "reboot"
+fi

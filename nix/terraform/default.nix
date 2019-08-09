@@ -6,6 +6,7 @@ let
     plugins.aws
     plugins.null
     plugins.random
+    plugins.archive
     plugins.external
     nix-provider-nix
   ]);

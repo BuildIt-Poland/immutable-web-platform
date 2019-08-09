@@ -31,9 +31,9 @@ module "worker-build-cache" {
 module "nixos-instance" {
   source              = "./modules/nixos"
   common_tags         = "${local.common_tags}"
-  ssh_pub_key         = "~/.ssh/id_rsa.pub"
   project_name        = "${var.project_name}"
   env                 = "${var.env}"
-  nixos_configuration = "${path.module}/nixos/ec2-nixos.nix"
   region              = "${var.region}"
+  nixos_configuration = "${path.module}/nixos/ec2-nixos.nix"
+  ssh_pub_key         = "~/.ssh/id_rsa.pub"
 }
