@@ -1,3 +1,5 @@
 pinned_nixpkgs
+result
 *.backup
 .terraform
+*.zip
