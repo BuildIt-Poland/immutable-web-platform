@@ -9,9 +9,3 @@ resource "aws_vpc" "local-env" {
     )
   )}"
 }
-
-resource "aws_eip" "ip-test-env" {
-  instance = "${aws_instance.nixos_instance.id}"
-  vpc      = true
-  tags     = "${var.common_tags}"
-}

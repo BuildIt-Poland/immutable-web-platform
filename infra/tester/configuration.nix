@@ -2,12 +2,8 @@ let
   nixpkgs = (import ../../nix { 
     system = "x86_64-linux"; 
   });
-  p = nixpkgs.sources.nixpkgs.outPath;
 in
-# with pkgs;
 {
-  # TODO nginx serve results from test run
-
   network.description = "buildit-tester-network";
   # investigating https://github.com/NixOS/nixpkgs/issues/6956
   # https://github.com/NixOS/nixpkgs/pull/21943
@@ -34,20 +30,13 @@ in
       enableCompletion = true;
     };
 
-    nix.nixPath = [ "nixpkgs=${p}" ];
-    nix.package = pkgs.nixUnstable;
-
-    users.extraUsers.root = {
-      shell = pkgs.zsh;
-    };
 
     nix.gc.automatic = true;
     nix.autoOptimiseStore = true;
 
-    networking.firewall.allowedTCPPorts = [ 
-      80 
-      22
-    ];
+    users.extraUsers.root = {
+      shell = pkgs.zsh;
+    };
 
     nix.binaryCaches = [ "https://cache.nixos.org" ];
     nix.binaryCachePublicKeys = [];

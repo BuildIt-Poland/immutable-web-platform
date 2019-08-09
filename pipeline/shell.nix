@@ -3,8 +3,6 @@
 }:
 let
   pkgs = (import ../nix { 
-    # system = "x86_64-linux";
-
     inputs = {
       environment.type = "brigade"; 
       tests.enable = false;

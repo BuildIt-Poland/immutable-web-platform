@@ -4,6 +4,7 @@
   - think about detecting empty resources during generation - minor
   -`Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
 ]
+* nix copy-sigs - brigade
 * create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
 
 (AWS Key Management Service, Amazon S3)

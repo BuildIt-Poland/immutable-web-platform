@@ -4,7 +4,9 @@ let
   nix-provider-nix = nix-terraform;
   terraform = pkgs.terraform_0_12.withPlugins (plugins: [
     plugins.aws
+    plugins.null
     plugins.random
+    plugins.external
     nix-provider-nix
   ]);
   config = rec {
@@ -32,7 +34,7 @@ let
   init-vars = {
     bucket = config.tf_state_bucket;
     key = config.tf_state_path;
-    # dynamodb_table = config.tf_state_table;
+    dynamodb_table = config.tf_state_table;
     region = config.region;
   };
 
@@ -46,7 +48,7 @@ in
     buildInputs = [pkgs.makeWrapper];
   } ''
     mkdir -p $out/bin
-    echo ${config-env-vars}
+    echo "Terraform env vars: ${config-env-vars}"
     makeWrapper ${terraform}/bin/terraform $out/bin/terraform \
       ${config-env-vars}
   '')
