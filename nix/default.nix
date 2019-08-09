@@ -42,10 +42,6 @@ let
   };
 
   application = self: super: rec {
-
-    # application = ./faas {};
-    # cluster = super.callPackage ./cluster-stack {};
-
     k8s-operations = super.callPackage ./k8s-operations {};
   };
 

@@ -32,6 +32,7 @@ provide full testing ability of infrastructure as well as on application level f
 * distributed build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
 * `nixops` is provisioning `ec2` or `virtualbox` instances based upon `declarative` nix file
 * custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docs](/packages/remote-state/README.md))
+* terraform provisioning of infra and deployment of nixos configurations with 4 simple steps
 
 ### Running locally
 * download [`nixpkgs`](https://nixos.org/nix/download.html)

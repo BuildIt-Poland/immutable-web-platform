@@ -1,16 +1,12 @@
 let
-  pkgs = (import ../../nix { 
+  pkgs = (import ../../../nix { 
     system = "x86_64-linux"; 
   });
   p = pkgs.sources.nixpkgs.outPath;
 in
 {
   imports = [
-    <nixpkgs/nixos/modules/profiles/minimal.nix>
-    <nixpkgs/nixos/modules/profiles/headless.nix>
   ];
-
-  ec2.hvm = true;
 
   environment.systemPackages = [ 
     pkgs.zsh
