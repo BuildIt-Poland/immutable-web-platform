@@ -18,9 +18,9 @@ let
 
     worker_bucket   = "${project-config.aws.s3-buckets.worker-cache}";
 
-    tf_state_bucket = "${project_name}-${env}-state";
-    tf_state_table  = "${project_name}-${env}-state";
-    tf_state_path = "network/terraform.tfstate";
+    tf_state_bucket = "${project_name}-${env}-${region}-state";
+    tf_state_table  = "${project_name}-${env}-${region}-state";
+    tf_state_path = "terraform-${project_name}-${env}-${region}.tfstate";
   };
 
   config-file = pkgs.writeText "terraform-tfvars" ''
@@ -43,20 +43,28 @@ let
     ${lib.generators.toKeyValue {} 
       (builtins.mapAttrs (x: y: "\"${y}\"") init-vars)}
   '';
+
+  print-env-vars = pkgs.writeScript "print-tf-env-vars" ''
+    echo "-- Terraform env vars --"
+    echo ${config-env-vars}
+  '';
+
+  # TODO or maybe generate tfvar file and link to every module?
+  wrap-terraform-init = pkgs.writeScript "wrap-terraform-init" ''
+    extraArgs="-backend-config=${init-vars-file}"
+    [[ $1 = "init" ]] || extraArgs=""
+
+    cat ${print-env-vars}
+    ${terraform}/bin/terraform $* $extraArgs
+  '';
 in 
 [
   (pkgs.runCommand "terraform" {
     buildInputs = [pkgs.makeWrapper];
   } ''
     mkdir -p $out/bin
-    echo "Terraform env vars: ${config-env-vars}"
-    makeWrapper ${terraform}/bin/terraform $out/bin/terraform \
+    makeWrapper ${wrap-terraform-init} $out/bin/terraform \
       ${config-env-vars}
-  '')
-
-  (pkgs.writeScriptBin "terraform-init" ''
-    echo "vars values: \n $(cat ${init-vars-file})"
-    ${terraform}/bin/terraform init -backend-config=${init-vars-file} $*
   '')
 
   (pkgs.writeScriptBin "terraform-bootstrap" ''

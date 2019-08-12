@@ -1,1 +1,1 @@
-terraform destroy -target module.nixos-instance
+terraform destroy -target module.aws-ec2-instances

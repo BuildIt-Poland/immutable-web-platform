@@ -15,10 +15,6 @@ variable "region" {
   default = ""
 }
 
-variable "nixos_configuration" {
-  default = ""
-}
-
 
 data "aws_availability_zones" "available" {
   state = "available"
