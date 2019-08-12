@@ -1,1 +1,0 @@
-terraform destroy -target module.aws-ec2-instances

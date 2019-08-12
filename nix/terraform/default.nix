@@ -6,6 +6,8 @@ let
     plugins.aws
     plugins.null
     plugins.random
+    plugins.local
+    plugins.template
     plugins.archive
     plugins.external
     nix-provider-nix
@@ -44,9 +46,9 @@ let
       (builtins.mapAttrs (x: y: "\"${y}\"") init-vars)}
   '';
 
-  print-env-vars = pkgs.writeScript "print-tf-env-vars" ''
-    echo "-- Terraform env vars --"
-    echo ${config-env-vars}
+  print-env-vars = pkgs.writeText "print-tf-env-vars" ''
+    "-- Terraform env vars --"
+    ${config-env-vars}
   '';
 
   # TODO or maybe generate tfvar file and link to every module?

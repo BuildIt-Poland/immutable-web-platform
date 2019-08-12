@@ -19,7 +19,7 @@ resource "aws_instance" "nixos_instance" {
   ami           = module.aws_image_nixos.ami
   instance_type = "t2.micro"
   key_name      = "${aws_key_pair.deployer.key_name}"
-  # don't use security_groups will recreate an instance - https://github.com/hashicorp/terraform/issues/16235
+  # INFO: don't use security_groups will recreate an instance - https://github.com/hashicorp/terraform/issues/16235
   vpc_security_group_ids = "${var.security_groups_ids}"
   subnet_id              = "${var.subnet_id}"
 

@@ -1,9 +1,9 @@
 # export ssh
-output "env-vars" {
+output "env_vars" {
   value = local.env-vars
 }
 
-output "secrets-kms" {
+output "secrets_kms" {
   value = module.secrets.secrets-kms-key.arn
 }
 
@@ -17,4 +17,8 @@ output "nixos_public_ip" {
 
 output "nixos_build_path" {
   value = module.nixos-updater.nixos_path
+}
+
+output "kube_config" {
+  value = module.cluster.eks.kubeconfig
 }

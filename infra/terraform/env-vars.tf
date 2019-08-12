@@ -48,6 +48,7 @@ locals {
 
   common_tags = map(
     "Owner", var.owner,
-    "Project Name", var.project_name
+    "Project Name", var.project_name,
+    "Env", var.env
   )
 }
