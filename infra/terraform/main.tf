@@ -96,6 +96,16 @@ module "cluster" {
       instance_type        = "m4.large"
       asg_max_size         = 2
       asg_desired_capacity = 1
+    },
+    {
+      instance_type        = "m4.large"
+      asg_max_size         = 2
+      asg_desired_capacity = 1
+    },
+    {
+      instance_type        = "m4.large"
+      asg_max_size         = 2
+      asg_desired_capacity = 1
     }
   ]
 

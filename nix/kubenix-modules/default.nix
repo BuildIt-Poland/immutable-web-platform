@@ -10,4 +10,5 @@
   knative = ./knative.nix;
   knative-monitoring = ./knative-monitoring.nix;
   secrets = ./secrets.nix;
+  eks-cluster = ./eks-cluster.nix;
 }

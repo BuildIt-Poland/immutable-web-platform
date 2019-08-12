@@ -1,6 +1,7 @@
 {config, pkgs, lib, inputs, ...}:
 let
   cfg = config;
+  isLocalKubernetes = cfg.environment.isLocal && cfg.kubernetes.target == "minikube";
 in
 with pkgs;
 with lib;
@@ -18,6 +19,11 @@ rec {
           ability to override by --arg kubernetes '{clean= false;}'
         '';
       };
+    };
+
+    target = mkOption {
+      default = "minikube";
+      type = types.enum ["minikube" "eks" "aks" "gcp"];
     };
 
     patches = {
@@ -65,6 +71,7 @@ rec {
       knative-monitoring = mkOption { default = "knative-monitoring";};
       knative-serving = mkOption { default = "knative-serving";};
       argo = mkOption { default = "argocd";};
+      system = mkOption { default = "system";};
     };
   };
 
@@ -77,7 +84,7 @@ rec {
         ];
       })
 
-      (mkIf (cfg.kubernetes.cluster.clean && cfg.environment.isLocal) {
+      (mkIf (cfg.kubernetes.cluster.clean && isLocalKubernetes) {
         packages = with k8s-operations.local; [
           delete-local-cluster
           create-local-cluster-if-not-exists
@@ -97,8 +104,14 @@ rec {
         ];
       })
 
+      ({
+        packages = [ 
+          k8s-operations.apply-crd 
+          k8s-operations.apply-resources
+        ];
+      })
+
       (mkIf cfg.kubernetes.cluster.clean {
-        packages = [ k8s-operations.apply-crd ];
 
         actions.queue = [
           { priority = cfg.actions.priority.crd; 
@@ -119,7 +132,6 @@ rec {
       })
 
       (mkIf cfg.kubernetes.resources.apply {
-        packages = [ k8s-operations.apply-resources ];
 
         actions.queue = [{ 
           priority = cfg.actions.priority.resources; 

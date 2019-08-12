@@ -9,3 +9,6 @@ nix-shell \
 #   --arg kubernetes '{clean= false; update=true;}' \
 #   --arg docker '{upload=false;}' \
 #   --arg tests '{enable=false;}'
+
+# EKS
+# nix-shell --arg kubernetes '{target="eks"; save=true; clean= false; update=true; patches=true;}' --arg docker '{upload=false;}' --arg tests '{enable=false;}'
