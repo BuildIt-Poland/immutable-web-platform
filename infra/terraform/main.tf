@@ -74,3 +74,31 @@ module "nixos-updater" {
   nixos_configuration = "${path.module}/nixos/ec2-nixos.nix"
   ssh_pub_key         = var.ssh_pub_key
 }
+
+locals {
+  azs = data.aws_availability_zones.available.names
+}
+
+module "cluster" {
+  source = "./modules/eks-cluster"
+
+  common_tags  = local.common_tags
+  project_name = local.env-vars.project_name
+  env          = local.env-vars.env
+  region       = local.env-vars.region
+
+  cluster_name = "${local.env-vars.project_name}-${local.env-vars.env}"
+
+  azs = local.azs
+
+  worker_groups = [
+    {
+      instance_type        = "m4.large"
+      asg_max_size         = 2
+      asg_desired_capacity = 1
+    }
+  ]
+
+  # map_users = var.map_users
+  # map_roles = var.map_roles
+}

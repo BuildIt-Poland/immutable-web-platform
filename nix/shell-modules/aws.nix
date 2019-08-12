@@ -56,12 +56,14 @@ rec {
     };
   };
 
+  # TODO env types -> local or managed
   config = mkIf (cfg.aws.enabled && cfg.environment.isLocal) (mkMerge [
     ({
       checks = ["Enabling AWS config module"];
 
       packages = [
         pkgs.awscli
+        pkgs.aws-iam-authenticator
       ];
     })
 
