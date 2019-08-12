@@ -69,7 +69,10 @@ with pkgs.lib;
 
     kubernetes = {
       target = inputs.kubernetes.target;
-      cluster.clean = inputs.kubernetes.clean;
+      cluster = {
+        clean = inputs.kubernetes.clean;
+        name = "${config.project.name}-${config.environment.type}";
+      };
       patches.enable = inputs.kubernetes.patches;
       imagePullPolicy = "Never";
       resources = 

@@ -19,6 +19,10 @@ rec {
           ability to override by --arg kubernetes '{clean= false;}'
         '';
       };
+
+      name = mkOption {
+        default = ""; 
+      };
     };
 
     target = mkOption {

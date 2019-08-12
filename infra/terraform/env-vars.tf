@@ -19,6 +19,10 @@ variable "worker_bucket" {
   default = ""
 }
 
+variable "cluster_name" {
+  default = ""
+}
+
 # REMOTE STATE
 variable "tf_state_bucket" {
   default     = ""

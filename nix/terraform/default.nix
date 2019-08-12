@@ -17,6 +17,7 @@ let
     project_name = project-config.project.name;
     owner = project-config.project.author-email;
     env = project-config.environment.type;
+    cluster_name = project-config.kubernetes.cluster.name;
 
     worker_bucket   = "${project-config.aws.s3-buckets.worker-cache}";
 
