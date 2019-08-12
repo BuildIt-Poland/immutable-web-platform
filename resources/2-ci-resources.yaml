@@ -99,14 +99,12 @@ items:
     cloneURL: git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
     defaultScript: "const { events, Job, Group } = require(\"brigadier\")\nconst {\
       \ NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand }\
-      \ = require('brigade-extension')\n\n// TODO think how it can be automated to\
-      \ avoid defining it here\n// process.env.BRIGADE_COMMIT_REF = \"nix-modules-refactoring\"\
-      \n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts embracing-nix-docker-k8s-helm-knative\
-      \ --ref nix-modules-refactoring\n\nconst createJob = (name) =>\n  new NixJob(name)\n\
-      \    .withExtraParams({\n      streamLogs: true,\n      privileged: true,\n\
-      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n\n\
-      \    .withTasks([\n      runShellCommand('push-k8s-resources-to-repo'),\n  \
-      \  ])\n\nevents.on(\"exec\", (event, project) => {\n  let test =\n    createJob(\"\
+      \ = require('brigade-extension')\n\n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts\
+      \ embracing-nix-docker-k8s-helm-knative --ref nix-modules-refactoring\n\nconst\
+      \ createJob = (name) =>\n  new NixJob(name)\n    .withExtraParams({\n      streamLogs:\
+      \ true,\n      privileged: true,\n      shell: 'bash',\n      serviceAccount:\
+      \ \"brigade-worker\"\n    })\n\n    .withTasks([\n      runShellCommand('push-k8s-resources-to-repo'),\n\
+      \    ])\n\nevents.on(\"exec\", (event, project) => {\n  let test =\n    createJob(\"\
       test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
       \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
       \      })\n\n  test.run()\n})\n\nevents.on(\"push\", (event, project) => {\n\

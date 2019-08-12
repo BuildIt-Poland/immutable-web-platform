@@ -25,6 +25,18 @@ module "eks" {
 
   worker_additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
 
+  # worker_groups_launch_template_mixed = [
+  #   {
+  #     name                    = "spot-1"
+  #     override_instance_types = ["m5.large", "m5a.large", "m5d.large", "m5ad.large"]
+  #     spot_instance_pools     = 4
+  #     asg_max_size            = 5
+  #     asg_desired_capacity    = 5
+  #     kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot"
+  #     public_ip               = true
+  #   },
+  # ]
+
   map_users = var.map_users
   map_roles = var.map_roles
 }

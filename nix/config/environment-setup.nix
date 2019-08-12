@@ -68,6 +68,7 @@ with pkgs.lib;
     };
 
     kubernetes = {
+      target = inputs.kubernetes.target;
       cluster.clean = inputs.kubernetes.clean;
       patches.enable = inputs.kubernetes.patches;
       imagePullPolicy = "Never";
@@ -76,6 +77,12 @@ with pkgs.lib;
         let
           functions = (import ./functions.nix { inherit pkgs; });
           resources = config.kubernetes.resources;
+          extra-resources = builtins.getAttr config.kubernetes.target {
+            eks = {
+              "${priority.high "eks-cluster"}"       = [ eks-cluster ];
+            };
+            minikube = {};
+          };
           priority = resources.priority;
           # TODO apply skip
           modules = {
@@ -85,7 +92,7 @@ with pkgs.lib;
             "${priority.low  "gitops"}"      = [ argocd ];
             "${priority.low  "ci"}"          = [ brigade ];
             "${priority.low  "secrets"}"     = [ secrets ];
-          } // functions;
+          } // functions // extra-resources;
           in
           {
             apply = inputs.kubernetes.update;

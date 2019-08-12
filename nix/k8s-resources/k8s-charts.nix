@@ -69,6 +69,12 @@ rec {
     sha256 = "0llvh6x04pglv3m7frc7a0xbchkfz9zkg2kj0msnisjbs2x2c1dn";
   };
 
+  cluster-autoscaler = fetch {
+    chart = "stable/cluster-autoscaler";
+    version = "3.2.0";
+    sha256 = "1vqcdd186csknkz0dsrm1mvbpiqhd4wjnz61sx0vpdg8l5lrkb13";
+  };
+
   # BOOTSTRAP
   istio-init = fetch {
     chart = "istio-init";
