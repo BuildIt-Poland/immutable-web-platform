@@ -15,6 +15,8 @@ with pkgs;
     NIX_SHELL_NAME = "#core-shell";
     
     # FIXME move terraform to infra shell
-    buildInputs = [pkgs.terraform-with-plugins] ++ project-config.packages;
+    buildInputs = [
+      pkgs.terraform-with-plugins
+    ] ++ project-config.packages;
     shellHook= project-config.shellHook;
   }
