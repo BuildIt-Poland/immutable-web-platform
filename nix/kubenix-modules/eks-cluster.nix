@@ -21,6 +21,7 @@ in
   config = {
     kubernetes.api.namespaces."${system-ns}"= {};
 
+    # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
     kubernetes.helm.instances.eks-cluster-autoscaler = {
       namespace = "${system-ns}";
       chart = k8s-resources.cluster-autoscaler;
@@ -29,8 +30,7 @@ in
         cloudProvider = "aws";
         awsRegion = project-config.aws.region;
         autoDiscovery = {
-          # TODO sync with terraform: cluster_name = "${local.env-vars.project_name}-${local.env-vars.env}"
-          clusterName = "${project-config.project.name}-${project-config.environment.type}";
+          clusterName = "${project-config.kubernetes.cluster.name}";
           enabled = true;
         };
       };

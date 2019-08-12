@@ -87,10 +87,11 @@ module "cluster" {
   env          = local.env-vars.env
   region       = local.env-vars.region
 
-  cluster_name = "${local.env-vars.project_name}-${local.env-vars.env}"
+  cluster_name = "${var.cluster_name}"
 
   azs = local.azs
 
+  # for CI bootstrap_extra_args = "--enable-docker-bridge true"
   worker_groups = [
     {
       instance_type        = "m4.large"
