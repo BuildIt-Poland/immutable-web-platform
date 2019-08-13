@@ -10,14 +10,10 @@ let
   pkgs = (import ./nix { inherit inputs; }).pkgs;
 in
 with pkgs;
-  mkShell {
-    PROJECT_NAME = project-config.project.name;
-    # TODO add modules ability to export env vars
-    # KUBECONFIG=./terraform/aws/cluster/.kube/kubeconfig_future-is-comming-local
+  mkShell ({
     NIX_SHELL_NAME = "#core-shell";
     
-    # FIXME move terraform to infra shell
-    buildInputs = [
-    ] ++ project-config.packages;
+    buildInputs = [ ] ++ project-config.packages;
     shellHook= project-config.shellHook;
-  }
+
+  } // project-config.environment.vars)

@@ -5,7 +5,9 @@ with pkgs.lib;
     project-configuration
     kubernetes
     kubernetes-resources
+    eks-cluster
     bitbucket-k8s-repo
+    local-cluster
     docker
     brigade
     bitbucket
@@ -16,7 +18,12 @@ with pkgs.lib;
   ];
 
   config = {
-    environment.type = inputs.environment.type;
+    environment = {
+      type = inputs.environment.type;
+      vars = {
+        PROJECT_NAME = config.project.name;
+      };
+    };
 
     project = {
       name = "future-is-comming";
@@ -35,11 +42,12 @@ with pkgs.lib;
       upload-images-type = ["functions" "cluster"];
       upload = inputs.docker.upload;
       namespace = "dev.local";
-      registry = "";
+      # registry = "";
       tag = makeDefault inputs.docker.tag "dev-build";
     };
 
     aws = {
+      account = "006393696278";
       location = {
         credentials = ~/.aws/credentials;
         config = ~/.aws/config;
@@ -68,8 +76,13 @@ with pkgs.lib;
       location = ../../secrets.json;
     };
 
+    eks-cluster.enable = inputs.kubernetes.target == "eks";
+    local-cluster.enable = inputs.kubernetes.target == "minikube";
+
     terraform = rec {
       enable = true;
+
+      location = ../../terraform;
 
       vars = rec {
         region = config.aws.region;

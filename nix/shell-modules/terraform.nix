@@ -10,6 +10,10 @@ rec {
       default = true;
     };
 
+    location = mkOption {
+      default = "";
+    };
+
     # TODO make it more descriptive - what kind of fields it expec
     vars = mkOption {
       default = {};

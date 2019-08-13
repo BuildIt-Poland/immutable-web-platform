@@ -3,6 +3,7 @@
   writeScript,
   writeScriptBin,
   callPackage,
+  kubenix,
   project-config,
   log,
   lib
@@ -104,31 +105,5 @@ rec {
         ${resources}
       '';
 
-  push-docker-images-to-docker-deamon = 
-    let
-      images = docker-images (desc: 
-        let
-          docker = desc.value;
-        in
-        ''
-          ${log.info "Pushing docker image, for ${desc.name} to docker daemon: ${docker.name}:${docker.tag}"}
-          ${pkgs.docker}/bin/docker load -i ${docker.image}
-        '');
-    in
-      writeScriptBin "push-docker-images-to-docker-deamon" ''
-        ${images}
-      '';
-
-  push-to-docker-registry = 
-    let
-      images = docker-images (desc: 
-        let docker = desc.value; in ''
-          ${log.info "Pushing docker image, for ${desc.name} to ${project-config.docker.destination}: ${docker.name}:${docker.tag}"}
-          ${docker.copyDockerImages { 
-            images = singleton docker.image; 
-            dest = project-config.docker.destination;
-          }}/bin/copy-docker-images
-        '');
-    in 
-      writeScriptBin "push-to-docker-registry" images;
+  inherit docker-images;
 }

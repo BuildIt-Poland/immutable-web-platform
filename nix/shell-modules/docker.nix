@@ -36,26 +36,14 @@ rec {
     };
   };
 
-  # FIXME if local
-  config = mkIf (cfg.docker.enabled && cfg.environment.isLocal) (mkMerge [
+  # FIXME if local - it should live in separate module - minikube-env
+  config = mkIf (cfg.docker.enabled) (mkMerge [
     { checks = ["Enabling docker module"]; }
     ({
       packages = with pkgs; [
         docker
         dgoss
       ];
-    })
-    (mkIf cfg.docker.upload {
-      packages = with pkgs; [
-        k8s-operations.push-docker-images-to-docker-deamon
-      ];
-
-      actions.queue = [{ 
-        priority = cfg.actions.priority.docker; 
-        action = ''
-          push-docker-images-to-docker-deamon
-        '';
-      }];
     })
   ]);
 }
