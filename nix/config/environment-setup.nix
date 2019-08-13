@@ -9,6 +9,7 @@ with pkgs.lib;
     docker
     brigade
     bitbucket
+    terraform
     git-secrets
     aws
     base
@@ -65,6 +66,32 @@ with pkgs.lib;
 
     git-secrets = {
       location = ../../secrets.json;
+    };
+
+    terraform = rec {
+      enable = true;
+
+      vars = rec {
+        region = config.aws.region;
+        project_name = config.project.name;
+        owner = config.project.author-email;
+        env = config.environment.type;
+        cluster_name = config.kubernetes.cluster.name;
+        project_prefix = "${project_name}-${env}-${region}";
+
+        worker_bucket   = "${config.aws.s3-buckets.worker-cache}";
+
+        # TODO bucket does not need to be prefixed - there will be folder inside
+        # no point to have tons of buckets
+        tf_state_bucket = "${project_prefix}-state";
+        tf_state_table  = tf_state_bucket;
+      };
+
+      backend-vars = {
+        bucket = vars.tf_state_bucket;
+        dynamodb_table = vars.tf_state_table;
+        region = vars.region;
+      };
     };
 
     kubernetes = {

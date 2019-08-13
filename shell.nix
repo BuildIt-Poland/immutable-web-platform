@@ -12,11 +12,12 @@ in
 with pkgs;
   mkShell {
     PROJECT_NAME = project-config.project.name;
+    # TODO add modules ability to export env vars
+    # KUBECONFIG=./terraform/aws/cluster/.kube/kubeconfig_future-is-comming-local
     NIX_SHELL_NAME = "#core-shell";
     
     # FIXME move terraform to infra shell
     buildInputs = [
-      pkgs.terraform-with-plugins
     ] ++ project-config.packages;
     shellHook= project-config.shellHook;
   }

@@ -1,13 +1,24 @@
 ## Today
 ### in progress
+* Terraform eks cluster [
+- docker images -> EKS (https://kubernetes.io/docs/concepts/containers/images/#using-amazon-elastic-container-registry)
+
+- create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
+- create eks cluster
+- create autoscalling groups (https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md)
+
+- trying to keep terraform dry - autogenerating varfiles and variables json to avoid duplicating code related to vars
+
+### works:
+- virtual services works - one LB will sufice
+
+-----
 * add skip flag for resources like secrets [
-  - think about detecting empty resources during generation - minor
+  - think about detecting empty resources during generation - minor - filter them out? 
   -`Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
+  - mhm ...secrets even wrong are ok since can be patched
 ]
 * nix copy-sigs - brigade
-* create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
-
-(AWS Key Management Service, Amazon S3)
 
 * shell-modules -> run cluster on virtualbox with shell-modules attached
 * allow to define virtual services within environement config
