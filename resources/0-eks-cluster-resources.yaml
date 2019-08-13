@@ -85,7 +85,7 @@ items:
           - containerPort: 8085
           resources: {}
           volumeMounts:
-          - mountPath: /etc/ssl/certs/ca-certificates.crt
+          - mountPath: /etc/ssl/certs/ca-bundle.crt
             name: ssl-certs
             readOnly: true
         serviceAccountName: eks-cluster-autoscaler-aws-cluster-autoscaler

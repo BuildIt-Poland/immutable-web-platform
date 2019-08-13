@@ -28,6 +28,8 @@ in
       values ={
         rbac.create = "true";
         cloudProvider = "aws";
+        # other location? /etc/kubernetes/pki/ca.crt -> https://medium.com/@alejandro.millan.frias/cluster-autoscaler-in-amazon-eks-d9f787176519
+        sslCertPath =  "/etc/ssl/certs/ca-bundle.crt"; # it is necessary in case of EKS
         awsRegion = project-config.aws.region;
         autoDiscovery = {
           clusterName = "${project-config.kubernetes.cluster.name}";

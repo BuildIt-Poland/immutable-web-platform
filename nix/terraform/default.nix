@@ -1,4 +1,4 @@
-{pkgs, lib, callPackage, buildGoPackage, fetchFromGitHub, project-config}:
+{pkgs, log, lib, callPackage, buildGoPackage, fetchFromGitHub, project-config}:
 let
   nix-terraform = callPackage ./terraform-provider-nix.nix {};
   nix-provider-nix = nix-terraform;
@@ -12,65 +12,54 @@ let
     plugins.external
     nix-provider-nix
   ]);
-  config = rec {
-    region = project-config.aws.region;
-    project_name = project-config.project.name;
-    owner = project-config.project.author-email;
-    env = project-config.environment.type;
-    cluster_name = project-config.kubernetes.cluster.name;
 
-    worker_bucket   = "${project-config.aws.s3-buckets.worker-cache}";
+  vars = project-config.terraform.vars;
+  backend-vars = project-config.terraform.backend-vars;
 
-    tf_state_bucket = "${project_name}-${env}-${region}-state";
-    tf_state_table  = "${project_name}-${env}-${region}-state";
-    tf_state_path = "terraform-${project_name}-${env}-${region}.tfstate";
-  };
+  generate-var-file = 
+    let
+      make-var = name: lib.attrsets.setAttrByPath ["variable" "${name}" "default"];
+      variables = 
+        builtins.attrValues (builtins.mapAttrs make-var vars);
+    in
+      lib.foldl lib.recursiveUpdate {} variables;
 
-  config-file = pkgs.writeText "terraform-tfvars" ''
-    ${builtins.toJSON config}
+  to-var-file = data:
+    lib.generators.toKeyValue {} 
+      (builtins.mapAttrs (x: y: "\"${y}\"") data);
+
+  backend-vars-file = pkgs.writeText "tf-backend-values.hcl" ''
+    ${to-var-file backend-vars}
   '';
 
-  config-env-vars = 
-    lib.concatStringsSep " "
-      (builtins.attrValues 
-        (builtins.mapAttrs (n: v: "--set TF_VAR_${n} ${v}") config));
-
-  init-vars = {
-    bucket = config.tf_state_bucket;
-    key = config.tf_state_path;
-    dynamodb_table = config.tf_state_table;
-    region = config.region;
-  };
-
-  init-vars-file = pkgs.writeText "tf-backend-values.hcl" ''
-    ${lib.generators.toKeyValue {} 
-      (builtins.mapAttrs (x: y: "\"${y}\"") init-vars)}
+  vars-file = pkgs.writeText "print-tf-env-vars" ''
+    ${to-var-file vars}
   '';
 
-  print-env-vars = pkgs.writeText "print-tf-env-vars" ''
-    "-- Terraform env vars --"
-    ${config-env-vars}
+  print-vars = ''
+    ${log.info "Backend vars"}
+    cat ${backend-vars-file}
+
+    ${log.info "Vars"}
+    cat ${vars-file}
   '';
 
-  # TODO or maybe generate tfvar file and link to every module?
+  # cat ${vars-file} > vars.generated.tfvars
+  save-vars-to-cwd = ''
+    echo '${lib.generators.toJSON {} generate-var-file}' | jq . > vars.generated.tf.json
+  '';
+
   wrap-terraform-init = pkgs.writeScript "wrap-terraform-init" ''
-    extraArgs="-backend-config=${init-vars-file}"
+    extraArgs="-backend-config=${backend-vars-file} -backend-config="key=${vars.project_prefix}/$(basename $(pwd))""
     [[ $1 = "init" ]] || extraArgs=""
+    [[ $1 = "init" ]] || echo "Running init with extra args: $extraArgs"
 
-    cat ${print-env-vars}
+    ${print-vars}
+    ${save-vars-to-cwd}
     ${terraform}/bin/terraform $* $extraArgs
   '';
 in 
-[
-  (pkgs.runCommand "terraform" {
-    buildInputs = [pkgs.makeWrapper];
-  } ''
+  pkgs.runCommand "terraform" { buildInputs = [pkgs.makeWrapper]; } ''
     mkdir -p $out/bin
-    makeWrapper ${wrap-terraform-init} $out/bin/terraform \
-      ${config-env-vars}
-  '')
-
-  (pkgs.writeScriptBin "terraform-bootstrap" ''
-    echo "create s3 and dynamodb table"
-  '')
-]
+    makeWrapper ${wrap-terraform-init} $out/bin/terraform
+  ''
