@@ -2,14 +2,14 @@ provider "aws" {
   region = var.region
 }
 
-# data "terraform_remote_state" "state" {
-#   backend = "s3"
-#   config = {
-#     key    = "${var.project_prefix}/cluster"
-#     region = var.region
-#     bucket = var.tf_state_bucket
-#   }
-# }
+data "terraform_remote_state" "state" {
+  backend = "s3"
+  config = {
+    key    = "${var.project_prefix}/cluster"
+    region = var.region
+    bucket = var.tf_state_bucket
+  }
+}
 
 module "docker-registry" {
   source = "../../modules/aws-ecr"
