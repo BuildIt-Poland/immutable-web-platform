@@ -111,6 +111,7 @@ in
             ${log.info "Configuration overridings: \n ${pretty-input}"}
             ${log.info "Nixpkgs version: ${version}"}
             ${log.info "Your environment is: ${config.environment.type}"}
+            ${log.info "Your kubernetes target is: ${config.kubernetes.target}"}
           '';
 
           footer = ''

@@ -52,9 +52,6 @@ let
   wrap-terraform-init = pkgs.writeScript "wrap-terraform-init" ''
     extraArgs="-backend-config=${backend-vars-file} -backend-config="key=${vars.project_prefix}/$(basename $(pwd))""
     [[ $1 = "init" ]] || extraArgs=""
-    [[ $1 = "init" ]] || echo "Running init with extra args: $extraArgs"
-
-    ${print-vars}
     ${save-vars-to-cwd}
     ${terraform}/bin/terraform $* $extraArgs
   '';

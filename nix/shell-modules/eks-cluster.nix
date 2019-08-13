@@ -1,2 +1,5 @@
 # TODO take path from registry
-# patch agains CNI for autoscaler https://github.com/aws/amazon-vpc-cni-k8s/releases/tag/v1.5.1-rc1
+# env var -> KUBECONFIG=./terraform/aws/cluster/.kube/kubeconfig_future-is-comming-local
+# kube_config = $(cd ./terraform/aws/cluster && terraform output kube_config)
+# $(cd ./terraform/aws/cluster && terraform output docker_registry)
+# 
