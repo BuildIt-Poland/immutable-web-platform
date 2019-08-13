@@ -8,6 +8,7 @@
   brigade = ./brigade.nix;
   bitbucket = ./bitbucket.nix;
   terraform = ./terraform.nix;
+  eks-cluster = ./eks-cluster.nix;
   git-secrets = ./git-secrets.nix;
   kubernetes-resources = ./kubernetes-resources.nix;
   bitbucket-k8s-repo = ./bitbucket-k8s-repo.nix;

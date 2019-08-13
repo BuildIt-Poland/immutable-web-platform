@@ -11,8 +11,13 @@ in
       default = "local";
       type = enum ["local" "nixos" "brigade" "ec2"];
     };
+
     isLocal = mkOption {
       default = true;
+    };
+
+    vars = mkOption {
+      default = {};
     };
   };
 

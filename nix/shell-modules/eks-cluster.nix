@@ -1,5 +1,68 @@
-# TODO take path from registry
-# env var -> KUBECONFIG=./terraform/aws/cluster/.kube/kubeconfig_future-is-comming-local
-# kube_config = $(cd ./terraform/aws/cluster && terraform output kube_config)
-# $(cd ./terraform/aws/cluster && terraform output docker_registry)
-# 
+{config, pkgs, lib, inputs, ...}:
+let
+  cfg = config;
+
+  cluster-name = config.kubernetes.cluster.name;
+  terraform-kubeconfig-path = "${config.terraform.location}/aws/cluster/.kube/kubeconfig_${cluster-name}";
+  registry-path = "${config.aws.account}.dkr.ecr.${config.aws.region}.amazonaws.com/${cluster-name}";
+
+  # https://docs.aws.amazon.com/cli/latest/reference/ecr/get-authorization-token.html
+  get-authorization-token  = pkgs.writeScript "get-authorization-token" ''
+    ${pkgs.awscli}/bin/aws ecr get-authorization-token \
+      --output text --query 'authorizationData[].authorizationToken' \
+      | base64 --decode
+  '';
+
+  push-to-docker-registry = 
+    let
+      images = pkgs.k8s-operations.docker-images (desc: 
+        let docker = desc.value; in ''
+          ${pkgs.log.info "Pushing docker image, for ${desc.name} to ${config.docker.registry}: ${docker.name}:${docker.tag}, ${docker.image}"}
+
+          ${pkgs.skopeo}/bin/skopeo copy \
+            docker-archive://${docker.image} \
+            docker://${config.docker.registry} \
+            --dest-creds=$token
+        '');
+    in 
+      pkgs.writeScriptBin "push-to-docker-registry" ''
+        token="$(${get-authorization-token})"
+        ${images}
+    '';
+in
+with lib;
+rec {
+
+  options.eks-cluster = {
+    enable = mkOption {
+      default = true;
+    };
+  };
+
+  config = mkIf cfg.eks-cluster.enable (mkMerge [
+    { checks = ["Enabling eks module"]; }
+    ({
+      environment.vars = {
+        KUBECONFIG = terraform-kubeconfig-path;
+        DOCKER_REGISTRY = registry-path;
+      };
+    })
+
+    (mkIf cfg.docker.upload {
+      docker.namespace = mkForce cluster-name;
+      docker.registry = mkForce registry-path;
+      docker.destination = "docker://${registry-path}";
+
+      packages = with pkgs; [
+        push-to-docker-registry
+      ];
+
+      actions.queue = [{ 
+        priority = cfg.actions.priority.docker; 
+        action = ''
+          push-to-docker-registry
+        '';
+      }];
+    })
+  ]);
+}

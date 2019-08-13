@@ -42,6 +42,10 @@ rec {
       type = types.string;
     };
 
+    account = mkOption {
+      default = 0;
+    };
+
     access-key = mkOption {
       default = "";
     };
