@@ -155,6 +155,20 @@ rec {
         '';
       })
 
+      (mkIf isLocalKubernetes {
+        packages = [
+          k8s-operations.local.skaffold-build
+          k8s-operations.local.setup-env-vars
+        ];
+        actions.queue = [
+          { priority = cfg.actions.priority.docker + 1; # INFO before uploading docker images
+            action = ''
+              source setup-env-vars
+            '';
+          }
+        ];
+      })
+
       (mkIf (cfg.kubernetes.tools.enabled && cfg.environment.isLocal) {
         packages = with pkgs; [
           knctl
@@ -166,15 +180,6 @@ rec {
           minikube
           kail
           kubectx
-          k8s-operations.local.skaffold-build
-          k8s-operations.local.setup-env-vars
-        ];
-        actions.queue = [
-          { priority = cfg.actions.priority.docker + 1; # INFO before uploading docker images
-            action = ''
-              source setup-env-vars
-            '';
-          }
         ];
       })
     ]);

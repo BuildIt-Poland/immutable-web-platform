@@ -5,7 +5,7 @@
 
 - create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
 - create eks cluster
-- create autoscalling groups (https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md)
+- create autoscalling groups (https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md) - done
 
 - trying to keep terraform dry - autogenerating varfiles and variables json to avoid duplicating code related to vars
 
@@ -16,7 +16,7 @@
 * add skip flag for resources like secrets [
   - think about detecting empty resources during generation - minor - filter them out? 
   -`Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
-  - mhm ...secrets even wrong are ok since can be patched
+  - module is referencing generated secret - but secret does not need to be applied - skip when applying would be enough
 ]
 * nix copy-sigs - brigade
 
