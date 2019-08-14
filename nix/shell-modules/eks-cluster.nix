@@ -48,9 +48,7 @@ rec {
         KUBECONFIG = terraform-kubeconfig-path;
         DOCKER_REGISTRY = registry-path;
       };
-    })
 
-    (mkIf cfg.docker.upload {
       docker = {
         namespace = mkForce cluster-name;
         tag = mkForce cfg.project.hash;
@@ -59,6 +57,12 @@ rec {
         destination = "docker://${registry-path}";
       };
 
+      kubernetes = {
+        imagePullPolicy = "IfNotPresent";
+      };
+    })
+
+    (mkIf cfg.docker.upload {
       packages = with pkgs; [
         push-to-docker-registry
       ];

@@ -82,7 +82,7 @@ with pkgs.lib;
     terraform = rec {
       enable = true;
 
-      location = ../../terraform;
+      location = toString ../../terraform;
 
       vars = rec {
         region = config.aws.region;
@@ -111,10 +111,9 @@ with pkgs.lib;
       target = inputs.kubernetes.target;
       cluster = {
         clean = inputs.kubernetes.clean;
-        name = "${config.project.name}-${config.environment.type}";
+        name = "${config.project.name}-cluster";
       };
       patches.enable = inputs.kubernetes.patches;
-      imagePullPolicy = "Never";
       resources = 
         with kubenix.modules;
         let

@@ -95,6 +95,12 @@ in
         pilot.autoscaleMin = 2;
         pilot.traceSampling = 100;
         global = {
+          # https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/values.yaml#L368
+          defaultNodeSelector = {
+            "kubernetes.io/lifecycle"= "on-demand";
+          };
+          # TODO
+          # defaultTolerations = [];
           disablePolicyChecks = true;
           proxy.autoInject = "disabled";
           sidecarInjectorWebhook.enabled = true;

@@ -1,7 +1,12 @@
 ## Today
 ### in progress
+* task to generate kubeconfig from terraform (
+  terraform apply -target module.cluster.module.eks.local_file.kubeconfig)
 * Terraform eks cluster [
 - docker images -> EKS (https://kubernetes.io/docs/concepts/containers/images/#using-amazon-elastic-container-registry)
+
+* tests and functions should be run in spot instances
+* istio / autscaller run on main instance -> nodeSelector / nodeAffinity
 
 - create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
 - create eks cluster
@@ -9,6 +14,7 @@
 
 - trying to keep terraform dry - autogenerating varfiles and variables json to avoid duplicating code related to vars
 
+- add taints - think about best strategy for testing and app perfomance
 ### works:
 - virtual services works - one LB will sufice
 
