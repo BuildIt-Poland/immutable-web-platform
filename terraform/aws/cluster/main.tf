@@ -11,15 +11,8 @@ data "terraform_remote_state" "state" {
   }
 }
 
-module "docker-registry" {
-  source = "../../modules/aws-ecr"
-
-  project_name = var.project_name
-  env          = var.env
-  region       = var.region
-  common_tags  = local.common_tags
-}
-
+# TODO add spot instances and node labels
+# TODO add autoscaller priority
 module "cluster" {
   source = "../../modules/aws-eks-cluster"
 

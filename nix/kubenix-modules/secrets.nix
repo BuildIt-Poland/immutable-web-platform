@@ -16,7 +16,7 @@ let
       secret-ref = project-config.kubernetes.resources.getByName "secrets";
     in
     pkgs.writeScriptBin "apply-aws-credentails-secret" ''
-      ${pkgs.log.important "Creating AWS secret"}
+      ${pkgs.lib.log.important "Creating AWS secret"}
       AWS_KEY=$(aws configure get aws_access_key_id | base64)
       AWS_SECRET=$(aws configure get aws_secret_access_key | base64)
 

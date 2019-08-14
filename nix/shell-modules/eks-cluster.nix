@@ -1,10 +1,11 @@
 {config, pkgs, lib, inputs, ...}:
+with lib;
 let
   cfg = config;
 
   cluster-name = config.kubernetes.cluster.name;
   terraform-kubeconfig-path = "${config.terraform.location}/aws/cluster/.kube/kubeconfig_${cluster-name}";
-  registry-path = "${config.aws.account}.dkr.ecr.${config.aws.region}.amazonaws.com/${cluster-name}";
+  registry-path = "${config.aws.account}.dkr.ecr.${config.aws.region}.amazonaws.com";
 
   # https://docs.aws.amazon.com/cli/latest/reference/ecr/get-authorization-token.html
   get-authorization-token  = pkgs.writeScript "get-authorization-token" ''
@@ -17,11 +18,12 @@ let
     let
       images = pkgs.k8s-operations.docker-images (desc: 
         let docker = desc.value; in ''
-          ${pkgs.log.info "Pushing docker image, for ${desc.name} to ${config.docker.registry}: ${docker.name}:${docker.tag}, ${docker.image}"}
+          ${log.info "Pushing docker image, for ${desc.name} to ${config.docker.registry}: ${docker.name}:${docker.tag}, ${docker.image}"}
+          echo "full path: ${docker.path}"
 
           ${pkgs.skopeo}/bin/skopeo copy \
-            docker-archive://${docker.image} \
-            docker://${config.docker.registry} \
+            docker-archive:${docker.image} \
+            docker://${config.docker.registry}/${cluster-name}:${docker.tag} \
             --dest-creds=$token
         '');
     in 
@@ -49,9 +51,13 @@ rec {
     })
 
     (mkIf cfg.docker.upload {
-      docker.namespace = mkForce cluster-name;
-      docker.registry = mkForce registry-path;
-      docker.destination = "docker://${registry-path}";
+      docker = {
+        namespace = mkForce cluster-name;
+        tag = mkForce cfg.project.hash;
+
+        registry = mkForce registry-path;
+        destination = "docker://${registry-path}";
+      };
 
       packages = with pkgs; [
         push-to-docker-registry

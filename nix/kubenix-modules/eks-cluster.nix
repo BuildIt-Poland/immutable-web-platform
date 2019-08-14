@@ -14,7 +14,7 @@ let
 
   update-eks-vpc-cni = 
     pkgs.writeScriptBin "apply-aws-credentails-secret" ''
-      ${pkgs.log.important "Patching AWS VPC CNI"}
+      ${pkgs.lib.log.important "Patching AWS VPC CNI"}
 
       ${pkgs.kubectl}/bin/kubectl patch daemonset aws-node \
         -n kube-system \

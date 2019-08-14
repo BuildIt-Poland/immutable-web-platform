@@ -90,8 +90,8 @@ in
       packages = 
         let
           get-help = pkgs.writeScriptBin "get-help" ''
-            ${pkgs.log.important "You've got in shell some extra spells under your hand ..."}
-            ${lib.concatMapStrings pkgs.log.line config.help}
+            ${log.important "You've got in shell some extra spells under your hand ..."}
+            ${lib.concatMapStrings log.line config.help}
           '';
         in
         [
