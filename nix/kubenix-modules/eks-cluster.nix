@@ -47,6 +47,11 @@ in
         clusterName = "${project-config.kubernetes.cluster.name}";
         enabled = true;
       };
+      nodeSelector = {
+        "kubernetes.io/lifecycle"= "on-demand";
+      };
     };
   };
+
+  # TODO helm install stable/k8s-spot-termination-handler
 }

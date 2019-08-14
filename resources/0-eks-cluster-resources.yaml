@@ -67,7 +67,7 @@ items:
           - ./cluster-autoscaler
           - --cloud-provider=aws
           - --namespace=system
-          - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/future-is-comming-local
+          - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/future-is-comming-cluster
           - --logtostderr=true
           - --stderrthreshold=info
           - --v=4
@@ -88,6 +88,8 @@ items:
           - mountPath: /etc/ssl/certs/ca-bundle.crt
             name: ssl-certs
             readOnly: true
+        nodeSelector:
+          kubernetes.io/lifecycle: dedicated
         serviceAccountName: eks-cluster-autoscaler-aws-cluster-autoscaler
         tolerations: []
         volumes:

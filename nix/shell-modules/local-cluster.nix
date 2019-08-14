@@ -27,8 +27,13 @@ rec {
     };
   };
 
-  config = mkIf (cfg.docker.enabled && cfg.local-cluster.enable) (mkMerge [
+  config = mkIf (cfg.local-cluster.enable) (mkMerge [
     { checks = ["Enabling docker module for minikube"]; }
+
+    ({
+      kubernetes.imagePullPolicy = "Never";
+    })
+
     (mkIf cfg.docker.upload {
       packages = with pkgs; [
         push-docker-images-to-docker-deamon

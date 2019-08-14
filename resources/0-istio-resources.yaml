@@ -568,6 +568,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - command:
           - /bin/bash
@@ -638,6 +642,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - command:
           - /bin/bash
@@ -1452,6 +1460,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - args:
           - --append-dns-names=true
@@ -1536,6 +1548,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - command:
           - /usr/local/bin/galley
@@ -1657,6 +1673,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - args:
           - proxy
@@ -1837,6 +1857,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - args:
           - discovery
@@ -2006,6 +2030,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - args:
           - --caCertFile=/etc/istio/certs/root-cert.pem
@@ -2129,6 +2157,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - args:
           - proxy
@@ -2295,6 +2327,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - args:
           - --storage.tsdb.retention=6h
@@ -2388,6 +2424,10 @@ items:
                   - amd64
                   - ppc64le
                   - s390x
+                - key: kubernetes.io/lifecycle
+                  operator: In
+                  values:
+                  - dedicated
         containers:
         - args:
           - proxy

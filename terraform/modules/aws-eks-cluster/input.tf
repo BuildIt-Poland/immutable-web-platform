@@ -5,9 +5,11 @@ variable "common_tags" {
 variable "region" {}
 variable "project_name" {}
 variable "env" {}
-variable "worker_groups" {}
 variable "azs" {}
 variable "cluster_name" {}
+
+variable "worker_groups_launch_template_mixed" {}
+variable "worker_groups" {}
 
 variable "map_roles" {
   description = "Additional IAM roles to add to the aws-auth configmap."
