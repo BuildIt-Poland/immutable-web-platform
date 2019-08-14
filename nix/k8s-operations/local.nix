@@ -3,7 +3,6 @@
   lib, 
   project-config, 
   kubenix,
-  log,
   node-development-tools,
   helpers
 }:
@@ -35,13 +34,13 @@ let
 in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
-    ${log.message "Deleting cluster"}
+    ${lib.log.message "Deleting cluster"}
     ${pkgs.minikube}/bin/minikube -p ${projectName} delete
   '';
 
   # brew install docker-machine-driver-hyperkit - check if there is a nixpkgs for that
   create-local-cluster = pkgs.writeScript "create-local-cluster" ''
-    ${log.message "Creating cluster"}
+    ${lib.log.message "Creating cluster"}
     minikube start -p ${projectName} \
       --cpus 6 \
       --memory 16400 \
@@ -57,7 +56,7 @@ rec {
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
-    ${log.message "Checking existence of cluster ..."}
+    ${lib.log.message "Checking existence of cluster ..."}
     isRunning=$(${check-if-already-started})
     if [ $isRunning = "0" ]; then
       echo "Running minikube"
@@ -80,14 +79,14 @@ rec {
 
   # helpful flag ... --print-requests 
   create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
-    ${log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}
+    ${lib.log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}
     ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${projectName}"
   '';
 
   # export BRIGADE_PROJECT=${env-config.brigade.project-name}
   # FIXME this is too late
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
-    ${log.message "Exporting env vars and evaluating minikube docker-env"}
+    ${lib.log.message "Exporting env vars and evaluating minikube docker-env"}
     export BRIGADE_NAMESPACE=${brigade-service.namespace}
     eval $(${pkgs.minikube}/bin/minikube docker-env -p ${projectName})
   '';

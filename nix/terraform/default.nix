@@ -1,4 +1,4 @@
-{pkgs, log, lib, callPackage, buildGoPackage, fetchFromGitHub, project-config}:
+{pkgs, lib, callPackage, buildGoPackage, fetchFromGitHub, project-config}:
 let
   nix-terraform = callPackage ./terraform-provider-nix.nix {};
   nix-provider-nix = nix-terraform;
@@ -37,10 +37,10 @@ let
   '';
 
   print-vars = ''
-    ${log.info "Backend vars"}
+    ${lib.log.info "Backend vars"}
     cat ${backend-vars-file}
 
-    ${log.info "Vars"}
+    ${lib.log.info "Vars"}
     cat ${vars-file}
   '';
 

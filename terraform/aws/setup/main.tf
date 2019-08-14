@@ -29,6 +29,15 @@ module "worker-build-cache" {
   common_tags  = local.common_tags
 }
 
+module "docker-registry" {
+  source = "../../modules/aws-ecr"
+
+  project_name = var.project_name
+  env          = var.env
+  region       = var.region
+  common_tags  = local.common_tags
+}
+
 output "state" {
   value = data.terraform_remote_state.state.outputs
 }

@@ -5,18 +5,18 @@
   callPackage,
   kubenix,
   project-config,
-  log,
   lib
 }:
+with lib;
 let
   resourceMap = 
     {resources, path}:
     transformer:
       let
-        k8s-crd = lib.mapAttrs (name: lib.getAttrFromPath path) resources;
-        name-value-pairs = builtins.attrValues (lib.mapAttrs lib.nameValuePair k8s-crd);
+        k8s-crd = mapAttrs (name: getAttrFromPath path) resources;
+        name-value-pairs = builtins.attrValues (mapAttrs nameValuePair k8s-crd);
       in
-        lib.concatMapStringsSep "\n" transformer name-value-pairs;
+        concatMapStringsSep "\n" transformer name-value-pairs;
 
   crds-command = resourceMap {
     resources = project-config.modules.kubernetes;

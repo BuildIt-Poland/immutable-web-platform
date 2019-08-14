@@ -1,5 +1,6 @@
-{pkgs}:
+{pkgs, lib}:
 with pkgs;
+with lib;
 {
   get-port = {
     service,

@@ -60,6 +60,7 @@ in
     k8s-extension
     helm
     docker
+    docker-registry
   ];
 
   config = {
@@ -80,7 +81,7 @@ in
         '';
         inject-ssh-key = {project-name, ssh-key, ...}:
           (pkgs.writeScriptBin "patch-brigade-ssh-key-for-${project-name}" ''
-            ${pkgs.log.important "Patching Brigade project to pass ssh-key"}
+            ${pkgs.lib.log.important "Patching Brigade project to pass ssh-key"}
 
             secret=$(${get-secret "${project-name}"})
             value=$(echo "${ssh-key}" | base64 | tr -d '\n')

@@ -2,7 +2,8 @@
 with pkgs;
 let
   function-packages = 
-    find-files-in-folder 
+    lib.findFilesInFolder 
+      ./../..
       "/functions" 
       "/nix/default.nix";
 
