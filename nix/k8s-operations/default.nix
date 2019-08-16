@@ -35,6 +35,14 @@ let
 
   helpers = callPackage ./helpers.nix {};
   local = callPackage ./local.nix { inherit helpers; };
+
+  should-skip-resource = ok: fail: {name, value}@arg: 
+    let
+      shouldSkip = builtins.elem "skip" (lib.splitString "-" name);
+    in
+      if shouldSkip 
+        then (fail arg) 
+        else (ok arg);
 in
 with helpers;
 rec {
@@ -67,10 +75,13 @@ rec {
     let
       crds = 
         crds-command 
-          (desc: ''
-            ${log.info "Applying crd for ${desc.name}"}
-            ${kubectl-apply desc.value}
-          '');
+          (should-skip-resource
+            (desc: ''
+              ${log.info "Applying crd for ${desc.name}"}
+              ${kubectl-apply desc.value}
+            '')
+            (desc: "${log.message "Skipping crd for ${desc.name}"}")
+          );
 
       wait-for-job = wait-for {
         service = "job";
@@ -96,10 +107,13 @@ rec {
     let
       resources = 
         resources-command
-          (desc: ''
-            ${log.info "Applying kubernetes resources for ${desc.name}"}
-            ${kubectl-apply desc.value}
-          '');
+          (should-skip-resource
+            (desc: ''
+              ${log.info "Applying kubernetes resources for ${desc.name}"}
+              ${kubectl-apply desc.value}
+            '')
+            (desc: "${log.message "Skipping resource for ${desc.name}"}")
+          );
     in
       writeScriptBin "apply-k8s-resources" ''
         ${resources}

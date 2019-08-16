@@ -2,8 +2,10 @@ const { events, Job, Group } = require("brigadier")
 const { NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand } = require('brigade-extension')
 
 // TODO prepare script
-// brig run -f pipeline/infrastructure.ts embracing-nix-docker-k8s-helm-knative --ref nix-modules-refactoring
+// brig run -f pipeline/infrastructure.ts <project_name> --ref <branch>
 
+//#Node-Selectors:  beta.kubernetes.io/os=linux 
+// this.host.nodeSelector["kubernetes.io/lifecycle"] = "spot"
 const createJob = (name) =>
   new NixJob(name)
     .withExtraParams({
@@ -25,6 +27,10 @@ events.on("exec", (event, project) => {
         BUILD_ID: event.buildID || "missing-build-id",
         EVENT: JSON.stringify(event),
       })
+  // i don't like it, not sure how to attach nodeSelector
+  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393
+  // test.host.name = "spot"
+  // test.host.os = "linux"
 
   test.run()
 })

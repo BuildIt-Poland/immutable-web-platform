@@ -27,6 +27,7 @@ with lib;
             high = mkPriority 0;
             mid = mkPriority 1;
             low = mkPriority 2;
+            skip = name: "skip-${name}";
           };
         };
     };

@@ -47,6 +47,13 @@ rec {
     sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
   };
 
+  rook-ceph = fetch {
+    chart = "rook-ceph";
+    version = "1.0.5";
+    repo = "https://charts.rook.io/release";
+    sha256 = "0136briq1aw36l25sbv8337al9a7x1bx1m3by78q5dsg4dk4rbl1";
+  };
+
   cert-manager = fetch {
     chart = "cert-manager";
     version = "0.8.1";
