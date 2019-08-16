@@ -1,5 +1,6 @@
 ## Today
 ### in progress
+* shell for infra is necessary - nix shell infra first to bootstrap env and export outputs from terraform after that ... nix with resources
 * task to generate kubeconfig from terraform (
   terraform apply -target module.cluster.module.eks.local_file.kubeconfig)
 * Terraform eks cluster [
@@ -11,7 +12,7 @@
 - create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
 - create eks cluster
 - create autoscalling groups (https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md) - done
-
+- https://github.com/rook/rook/tree/master/cluster/examples/kubernetes/ceph
 - trying to keep terraform dry - autogenerating varfiles and variables json to avoid duplicating code related to vars
 
 - add taints - think about best strategy for testing and app perfomance

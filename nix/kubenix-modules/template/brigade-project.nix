@@ -43,7 +43,7 @@ in
       kubernetes = {
         allowSecretKeyRef = "true";
         # TODO - not sure if it is necessary - 
-        # cacheStorageClass = "cache-storage";
+        cacheStorageClass = "cache-storage";
         # buildStorageClass = "build-storage";
       };
       secrets = {

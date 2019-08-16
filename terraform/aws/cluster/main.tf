@@ -11,6 +11,15 @@ data "terraform_remote_state" "state" {
   }
 }
 
+data "terraform_remote_state" "setup-state" {
+  backend = "s3"
+  config = {
+    key    = "${var.project_prefix}/setup"
+    region = var.region
+    bucket = var.tf_state_bucket
+  }
+}
+
 # TODO add spot instances and node labels
 # TODO add autoscaller priority
 # TODO nodeaffinity/taints - test should not take run on spot
@@ -36,6 +45,7 @@ module "cluster" {
       asg_desired_capacity = 1
       kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand"
       key_name             = module.bastion.ssh_key.key_name
+      ebs_optimized        = true
     },
   ]
 
@@ -50,6 +60,7 @@ module "cluster" {
       bootstrap_extra_args    = "--enable-docker-bridge true"
       kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot"
       key_name                = module.bastion.ssh_key.key_name
+      ebs_optimized           = true
     },
   ]
 
@@ -66,4 +77,16 @@ module "bastion" {
   common_tags  = local.common_tags
   ssh_pub_key  = var.ssh_pub_key
   vpc          = module.cluster.vpc
+}
+
+# INFO: cmd to generate: `tf-nix-exporter aws/cluster`
+module "export-to-nix" {
+  source = "../../modules/export-to-nix"
+  data = {
+    # TODO formatitng of yaml seems to be inccorect
+    kubeconfig = yamldecode(module.cluster.eks.kubeconfig)
+    bastion    = module.bastion.public_ip
+    efs        = module.cluster.efs_provisoner.id
+  }
+  file-output = "${var.root_folder}/nix/cluster-vars.json"
 }

@@ -54,6 +54,12 @@ rec {
     sha256 = "0136briq1aw36l25sbv8337al9a7x1bx1m3by78q5dsg4dk4rbl1";
   };
 
+  efs-provisioner = fetch {
+    chart = "stable/efs-provisioner";
+    version = "0.7.0";
+    sha256 = "1dg3fcjzz5p1qxspaky0nvrvqb2d0daq1mfdynn8v91vw9a23bz3";
+  };
+
   cert-manager = fetch {
     chart = "cert-manager";
     version = "0.8.1";

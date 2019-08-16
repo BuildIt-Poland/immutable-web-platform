@@ -91,6 +91,7 @@ with pkgs.lib;
         env = config.environment.type;
         cluster_name = config.kubernetes.cluster.name;
         project_prefix = "${project_name}-${env}-${region}";
+        root_folder = toString ../..;
 
         worker_bucket   = "${config.aws.s3-buckets.worker-cache}";
 
