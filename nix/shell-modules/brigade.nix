@@ -33,12 +33,11 @@ rec {
     };
   };
 
-  config = mkIf (cfg.brigade.enabled && cfg.environment.isLocal) (mkMerge [
+  config = mkIf cfg.brigade.enabled (mkMerge [
     { checks = ["Enabling brigade module"]; }
-    ({
+
+    (mkIf cfg.environment.isLocal {
       packages = with pkgs;[
-        brigade
-        brigadeterm
         k8s-operations.local.expose-brigade-gateway
         k8s-operations.local.create-localtunnel-for-brigade
       ];
@@ -47,6 +46,17 @@ rec {
         "-- Brigade integration --"
         "To expose brigade gateway for BitBucket events, run '${pkgs.k8s-operations.local.expose-brigade-gateway.name}'"
         "To make gateway accessible from outside, run '${pkgs.k8s-operations.local.create-localtunnel-for-brigade.name}'"
+      ];
+    })
+
+    ({
+      environment.vars = {
+        BRIGADE_NAMESPACE = cfg.kubernetes.namespace.brigade;
+      };
+
+      packages = with pkgs;[
+        brigade
+        brigadeterm
       ];
 
       warnings = mkIf (cfg.brigade.secret-key == "") [

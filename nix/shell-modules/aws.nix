@@ -66,7 +66,7 @@ rec {
       checks = ["Enabling AWS config module"];
 
       packages = [
-        # SCP?
+        pkgs.rsync
         pkgs.awscli
         pkgs.aws-iam-authenticator
       ];
