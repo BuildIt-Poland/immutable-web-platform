@@ -19,7 +19,6 @@ let
       images = pkgs.k8s-operations.docker-images (desc: 
         let docker = desc.value; in ''
           ${log.info "Pushing docker image, for ${desc.name} to ${config.docker.registry}: ${docker.name}:${docker.tag}, ${docker.image}"}
-          echo "full path: ${docker.path}"
 
           ${pkgs.skopeo}/bin/skopeo copy \
             docker-archive:${docker.image} \

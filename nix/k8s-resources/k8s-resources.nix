@@ -5,28 +5,28 @@ rec {
 
   knative-serving-json = helm.yaml-to-json {
     name = "knative-serving";
-    version = "0.7.1";
+    version = "0.8.0";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.7.1/serving.yaml;
-      sha256="177aq85d8933p9rby10v2g72sgs2a60q675qr1im55f1acf19llz";
+      url = https://github.com/knative/serving/releases/download/v0.8.0/serving.yaml;
+      sha256="1s4qdp9cikv1sjzw0xzxwzad2431cv5zp816nqbwfpcq1j0fham7";
     };
   };
 
   knative-crd-json = helm.yaml-to-json {
     name = "knative-crd";
-    version = "0.7.1";
+    version = "0.8.0";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.7.1/serving-beta-crds.yaml;
-      sha256="13ns3sc857qqipjdfdbjgcaj1sfkyspbv9dwvdw7jp91rlr73qrf";
+      url = https://github.com/knative/serving/releases/download/v0.8.0/serving-beta-crds.yaml;
+      sha256="17gcn52nch295sxy0lf2qr1alprj3jvnhm45v3yipxqr3jbcsw3x";
     };
   };
   
   knative-monitoring-json = helm.yaml-to-json {
     name = "knative-monitoring";
-    version = "0.7.1";
+    version = "0.8.0";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.7.1/monitoring.yaml;
-      sha256="0cdpp1d3k39vghn5m6l6cxpqz5k935r1x4fq16k62ssnick3p0ss";
+      url = https://github.com/knative/serving/releases/download/v0.8.0/monitoring.yaml;
+      sha256="0b37rv8a3ck8qx7a01nyjj5w0wf82yayw2a95dgi67vahdq84gjf";
     };
   };
 

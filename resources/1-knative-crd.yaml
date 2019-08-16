@@ -5,7 +5,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.7.1
+      serving.knative.dev/release: v0.8.0
     name: configurations.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -48,12 +48,15 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.7.1
+      serving.knative.dev/release: v0.8.0
     name: revisions.serving.knative.dev
   spec:
     additionalPrinterColumns:
+    - JSONPath: .metadata.labels['serving\.knative\.dev/configuration']
+      name: Config Name
+      type: string
     - JSONPath: .status.serviceName
-      name: Service Name
+      name: K8s Service Name
       type: string
     - JSONPath: .metadata.labels['serving\.knative\.dev/configurationGeneration']
       name: Generation
@@ -90,7 +93,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.7.1
+      serving.knative.dev/release: v0.8.0
     name: routes.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -129,7 +132,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.7.1
+      serving.knative.dev/release: v0.8.0
     name: services.serving.knative.dev
   spec:
     additionalPrinterColumns:
