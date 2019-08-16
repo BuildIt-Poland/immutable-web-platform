@@ -84,12 +84,18 @@ with pkgs.lib;
 
       location = toString ../../terraform;
 
+      stateFiles = {
+        aws_cluster = "${toString ../.}/aws-cluster.vars.json";
+        aws_setup = "${toString ../.}/aws-setup.vars.json";
+      };
+
       vars = rec {
         region = config.aws.region;
         project_name = config.project.name;
         owner = config.project.author-email;
         env = config.environment.type;
         cluster_name = config.kubernetes.cluster.name;
+        output_state_file = config.terraform.stateFiles;
         project_prefix = "${project_name}-${env}-${region}";
         root_folder = toString ../..;
 
