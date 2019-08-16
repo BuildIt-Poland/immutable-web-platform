@@ -24,9 +24,13 @@ let
   };
 
   sc-provisioner = 
-    if project-config.environment.isLocal
-      then "k8s.io/minikube-hostpath"
-      else "kubernetes.io/host-path";
+    (builtins.getAttr 
+      (project-config.kubernetes.target) 
+      {
+        "minikube" = "k8s.io/minikube-hostpath";
+        "eks" = "kubernetes.io/aws-ebs";
+        # "kubernetes.io/host-path";
+      });
 
   helm-charts = {
     brigade-bitbucket-gateway = {
@@ -94,21 +98,22 @@ in
         [] ++ (builtins.map inject-ssh-key projects);
 
     kubernetes.api.storageclasses = {
-      build-storage = {
-        metadata = {
-          namespace = brigade-ns;
-          name = "build-storage";
-          annotations = {
-            "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
-          };
-          labels = {
-            "addonmanager.kubernetes.io/mode" = "EnsureExists";
-            # exec
-          };
-        };
-        # reclaimPolicy = "Retain";
-        provisioner = sc-provisioner;
-      };
+      # ReadWritMany required - EFS? or glusterfs?
+      # build-storage = {
+      #   metadata = {
+      #     namespace = brigade-ns;
+      #     name = "build-storage";
+      #     annotations = {
+      #       "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
+      #     };
+      #     labels = {
+      #       "addonmanager.kubernetes.io/mode" = "EnsureExists";
+      #       # exec
+      #     };
+      #   };
+      #   # reclaimPolicy = "Retain";
+      #   provisioner = sc-provisioner;
+      # };
 
       cache-storage = {
         metadata = {

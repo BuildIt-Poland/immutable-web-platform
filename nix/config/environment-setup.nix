@@ -133,7 +133,7 @@ with pkgs.lib;
             "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
             "${priority.low  "gitops"}"      = [ argocd ];
             "${priority.low  "ci"}"          = [ brigade ];
-            "${priority.low  "secrets"}"     = [ secrets ];
+            "${priority.skip "secrets"}"     = [ secrets ];
           } // functions // extra-resources;
           in
           {

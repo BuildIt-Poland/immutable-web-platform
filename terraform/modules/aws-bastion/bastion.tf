@@ -3,8 +3,6 @@ resource "aws_key_pair" "bastion_key" {
   public_key = file("${var.ssh_pub_key}")
 }
 
-# resource "aws_default_vpc" "default" {}
-
 data "aws_ami" "amazon-linux-2" {
   most_recent = true
   owners      = ["amazon"]
@@ -15,7 +13,6 @@ data "aws_ami" "amazon-linux-2" {
   }
 }
 
-# TODO add private key?
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.amazon-linux-2.id
   key_name                    = aws_key_pair.bastion_key.key_name

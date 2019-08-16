@@ -34,7 +34,7 @@ module "cluster" {
       instance_type        = "m4.xlarge"
       asg_max_size         = 2
       asg_desired_capacity = 1
-      kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand --cloud-provider=aws"
+      kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand"
       key_name             = module.bastion.ssh_key.key_name
     },
   ]
@@ -43,11 +43,12 @@ module "cluster" {
     {
       name                    = "spot-1"
       override_instance_types = ["m4.large", "m4.xlarge"]
-      spot_instance_pools     = 1
-      asg_desired_capacity    = 1
+      spot_instance_pools     = 4
+      asg_desired_capacity    = 2
       asg_max_size            = 5
+      name_prefix             = "spot"
       bootstrap_extra_args    = "--enable-docker-bridge true"
-      kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot --cloud-provider=aws"
+      kubelet_extra_args      = "--node-labels=kubernetes.io/lifecycle=spot"
       key_name                = module.bastion.ssh_key.key_name
     },
   ]

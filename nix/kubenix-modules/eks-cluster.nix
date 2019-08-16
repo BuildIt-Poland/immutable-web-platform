@@ -49,6 +49,11 @@ in
   kubernetes.api.namespaces."${system-ns}"= {};
 
   # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
+  kubernetes.helm.instances.rook-ceph = {
+    namespace = system-ns;
+    chart = k8s-resources.rook-ceph;
+  };
+
   kubernetes.helm.instances.eks-cluster-autoscaler = {
     namespace = "${system-ns}";
     chart = k8s-resources.cluster-autoscaler;

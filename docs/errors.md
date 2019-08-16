@@ -19,3 +19,5 @@
 > minikube addons enable storage-provisioner -p $PROJECT_NAME
 
 * aws skewed response -> https://github.com/orbs-network/orbs-network-go/issues/1072
+
+* when terraform cannot delete subnets and ig - clean ELB first - don't know yet how to remove them automatically since they are requested from kubernetes context

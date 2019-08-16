@@ -4,7 +4,7 @@
   terraform apply -target module.cluster.module.eks.local_file.kubeconfig)
 * Terraform eks cluster [
 - docker images -> EKS (https://kubernetes.io/docs/concepts/containers/images/#using-amazon-elastic-container-registry)
-
+* distrubuted store
 * tests and functions should be run in spot instances
 * istio / autscaller run on main instance -> nodeSelector / nodeAffinity
 
@@ -15,15 +15,12 @@
 - trying to keep terraform dry - autogenerating varfiles and variables json to avoid duplicating code related to vars
 
 - add taints - think about best strategy for testing and app perfomance
+- make PR to brigade to be able to select nodeSelector - required to spawn tests on spot instances
 ### works:
 - virtual services works - one LB will sufice
+- pvc for brigade project - think about this one
 
 -----
-* add skip flag for resources like secrets [
-  - think about detecting empty resources during generation - minor - filter them out? 
-  -`Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
-  - module is referencing generated secret - but secret does not need to be applied - skip when applying would be enough
-]
 * nix copy-sigs - brigade
 
 * shell-modules -> run cluster on virtualbox with shell-modules attached
@@ -88,6 +85,11 @@ research -> https://gist.github.com/damianbaar/7194251de2b6f64af459ac861d34a323
 * [formatting](https://github.com/nixcloud/nix-beautify)
 
 ### DONE
+* add skip flag for resources like secrets [
+  - think about detecting empty resources during generation - minor - filter them out? 
+  -`Error from server: error decoding from json: illegal base64 data at input byte 0` - don't apply secrets
+  - module is referencing generated secret - but secret does not need to be applied - skip when applying would be enough
+]
 * apply scripts from local shell to `nixos` cluster - done
 * gitignore - https://nixos.org/nixpkgs/manual/#sec-pkgs-nix-gitignore
 * setup brigade (serviceaccount) to be able to operate on kubernetes cluster (partially done - custom binding is there)
