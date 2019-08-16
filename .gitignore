@@ -21,3 +21,4 @@ functions/express-app/k8s-resource.yaml
 .terraform
 .kube/*
 **/.kube
+*vars.json

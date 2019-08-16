@@ -8,6 +8,7 @@
 }@inputs:
 let
   pkgs = (import ./nix { inherit inputs; }).pkgs;
+
 in
 with pkgs;
   mkShell ({

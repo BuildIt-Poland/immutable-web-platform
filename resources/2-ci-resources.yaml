@@ -115,6 +115,8 @@ items:
     genericGatewaySecret: mygenericsecret
     initGitSubmodules: 'false'
     kubernetes.allowSecretKeyRef: 'true'
+    kubernetes.buildStorageClass: build-storage
+    kubernetes.cacheStorageClass: cache-storage
     repository: embracing-nix-docker-k8s-helm-knative
     secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
       {\n\t\t\"user\": \"ENC[AES256_GCM,data:3nI/zKGnlDywP+g=,iv:+ZVqJvRrSf22cvRgSOVOe8smx1y6FwYRAoNxMPUMwfs=,tag:B/hSNsOGgVNVLlYt2S2DGQ==,type:str]\",\n\t\t\"pass\":
@@ -126,13 +128,13 @@ items:
       \"2019-05-30T08:53:28Z\",\n\t\t\t\t\"enc\": \"AQICAHjS6PwEx20O7P4yh35aJPfmzi4aw4Y6O7J374+k6zIsWgFsa5b6GS8qxZzcQr83Bf7sAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMvwZWKpDsNI/eWmcwAgEQgDtQoEeq7UBHlW8tbt2gx65BAdO6XIw3beyBl0NJNvbW+m9QeyVbgvgFlTWWpy+vhNW4Kh0cAOCLdtI2yg==\",\n\t\t\t\t\"aws_profile\":
       \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
       \"2019-07-26T17:15:50Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:t0ZVa/Of38MNYbQ7MHXLpfWnnvCjygOPdoS6UMgCSIPZ4Jydaq2Yh5gI9R/m526HFptswXaU74sID3vWPiPYGP3zvS1JvCaBdXkBYhug5CRopgQefCOpKtZJ8LL4/yGpSyM1sbeGAhM+55P5ouYDApqrzFX/SqXcNEGAE4MtX+s=,iv:Za4u0weobiHpE1ZalkAfWy5pJxDDVXBGrxg3UL5y1lA=,tag:KJmSuUzKtV0uLs66zT3X7g==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:remote-worker-c61102440249c04782ff569e9756ead8275d03b9"}'
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:remote-worker-db796a4c03c500a288f05f9359fe23622a79642c"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-c61102440249c04782ff569e9756ead8275d03b9
+    worker.tag: brigade-worker-db796a4c03c500a288f05f9359fe23622a79642c
     workerCommand: yarn build-start
   type: brigade.sh/project
 - apiVersion: v1
@@ -689,8 +691,19 @@ items:
     labels:
       addonmanager.kubernetes.io/mode: EnsureExists
       kubenix/project-name: kubenix
+    name: build-storage
+    namespace: brigade
+  provisioner: kubernetes.io/aws-efs
+- apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.beta.kubernetes.io/is-default-class: 'false'
+    labels:
+      addonmanager.kubernetes.io/mode: EnsureExists
+      kubenix/project-name: kubenix
     name: cache-storage
     namespace: brigade
-  provisioner: kubernetes.io/aws-ebs
+  provisioner: kubernetes.io/aws-efs
 kind: List
 labels:

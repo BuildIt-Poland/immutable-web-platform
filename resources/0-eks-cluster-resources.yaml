@@ -1,199 +1,5 @@
 apiVersion: v1
 items:
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: cephblockpools.ceph.rook.io
-    namespace: system
-  spec:
-    group: ceph.rook.io
-    names:
-      kind: CephBlockPool
-      listKind: CephBlockPoolList
-      plural: cephblockpools
-      singular: cephblockpool
-    scope: Namespaced
-    version: v1
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: cephclusters.ceph.rook.io
-    namespace: system
-  spec:
-    additionalPrinterColumns:
-    - JSONPath: .spec.dataDirHostPath
-      description: Directory used on the K8s nodes
-      name: DataDirHostPath
-      type: string
-    - JSONPath: .spec.mon.count
-      description: Number of MONs
-      name: MonCount
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-    - JSONPath: .status.state
-      description: Current State
-      name: State
-      type: string
-    group: ceph.rook.io
-    names:
-      kind: CephCluster
-      listKind: CephClusterList
-      plural: cephclusters
-      singular: cephcluster
-    scope: Namespaced
-    validation:
-      openAPIV3Schema:
-        properties:
-          spec:
-            properties:
-              cephVersion:
-                properties:
-                  allowUnsupported:
-                    type: boolean
-                  image:
-                    type: string
-                  name:
-                    pattern: ^(luminous|mimic|nautilus)$
-                    type: string
-              dashboard:
-                properties:
-                  enabled:
-                    type: boolean
-                  port:
-                    maximum: 65535
-                    minimum: 0
-                    type: integer
-                  urlPrefix:
-                    type: string
-              dataDirHostPath:
-                pattern: ^/(\S+)
-                type: string
-              mon:
-                properties:
-                  allowMultiplePerNode:
-                    type: boolean
-                  count:
-                    maximum: 9
-                    minimum: 1
-                    type: integer
-                required:
-                - count
-              network:
-                properties:
-                  hostNetwork:
-                    type: boolean
-              storage:
-                properties:
-                  nodes:
-                    items: {}
-                    type: array
-                  useAllDevices: {}
-                  useAllNodes:
-                    type: boolean
-            required:
-            - mon
-    version: v1
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: cephfilesystems.ceph.rook.io
-    namespace: system
-  spec:
-    additionalPrinterColumns:
-    - JSONPath: .spec.metadataServer.activeCount
-      description: Number of MDSs
-      name: MdsCount
-      type: string
-    - JSONPath: .metadata.creationTimestamp
-      name: Age
-      type: date
-    group: ceph.rook.io
-    names:
-      kind: CephFilesystem
-      listKind: CephFilesystemList
-      plural: cephfilesystems
-      singular: cephfilesystem
-    scope: Namespaced
-    version: v1
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: cephnfses.ceph.rook.io
-    namespace: system
-  spec:
-    group: ceph.rook.io
-    names:
-      kind: CephNFS
-      listKind: CephNFSList
-      plural: cephnfses
-      shortNames:
-      - nfs
-      singular: cephnfs
-    scope: Namespaced
-    version: v1
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: cephobjectstores.ceph.rook.io
-    namespace: system
-  spec:
-    group: ceph.rook.io
-    names:
-      kind: CephObjectStore
-      listKind: CephObjectStoreList
-      plural: cephobjectstores
-      singular: cephobjectstore
-    scope: Namespaced
-    version: v1
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: cephobjectstoreusers.ceph.rook.io
-    namespace: system
-  spec:
-    group: ceph.rook.io
-    names:
-      kind: CephObjectStoreUser
-      listKind: CephObjectStoreUserList
-      plural: cephobjectstoreusers
-      shortNames:
-      - rcou
-      - objectuser
-      singular: cephobjectstoreuser
-    scope: Namespaced
-    version: v1
-- apiVersion: apiextensions.k8s.io/v1beta1
-  kind: CustomResourceDefinition
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: volumes.rook.io
-    namespace: system
-  spec:
-    group: rook.io
-    names:
-      kind: Volume
-      listKind: VolumeList
-      plural: volumes
-      shortNames:
-      - rv
-      singular: volume
-    scope: Namespaced
-    version: v1alpha2
 - apiVersion: v1
   kind: Namespace
   metadata:
@@ -201,67 +7,55 @@ items:
       kubenix/project-name: kubenix
     name: system
     namespace: default
-- apiVersion: apps/v1
+- apiVersion: apps/v1beta2
   kind: Deployment
   metadata:
+    annotations: {}
     labels:
-      chart: rook-ceph-v1.0.5
+      app: efs-provisioner
+      chart: efs-provisioner-0.7.0
+      env: dev
+      heritage: Tiller
       kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-operator
+      release: efs-provisioner
+    name: efs-provisioner
     namespace: system
   spec:
     replicas: 1
+    revisionHistoryLimit: 10
     selector:
       matchLabels:
-        app: rook-ceph-operator
+        app: efs-provisioner
+        release: efs-provisioner
+    strategy:
+      type: Recreate
     template:
       metadata:
         labels:
-          app: rook-ceph-operator
-          chart: rook-ceph-v1.0.5
+          app: efs-provisioner
+          release: efs-provisioner
       spec:
         containers:
-        - args:
-          - ceph
-          - operator
-          env:
-          - name: NODE_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: ROOK_CEPH_STATUS_CHECK_INTERVAL
-            value: 60s
-          - name: ROOK_CURRENT_NAMESPACE_ONLY
-            value: 'true'
-          - name: ROOK_ENABLE_SELINUX_RELABELING
-            value: 'true'
-          - name: ROOK_LOG_LEVEL
-            value: INFO
-          - name: ROOK_MON_HEALTHCHECK_INTERVAL
-            value: 45s
-          - name: ROOK_MON_OUT_TIMEOUT
-            value: 600s
-          image: rook/ceph:v1.0.5
+        - env:
+          - name: AWS_REGION
+            value: eu-west-2
+          - name: FILE_SYSTEM_ID
+            value: $patch_required
+          - name: PROVISIONER_NAME
+            value: kubernetes.io/aws-efs
+          image: quay.io/external_storage/efs-provisioner:v2.2.0-k8s1.12
           imagePullPolicy: IfNotPresent
-          name: rook-ceph-operator
-          resources:
-            limits:
-              cpu: 500m
-              memory: 128Mi
-            requests:
-              cpu: 100m
-              memory: 128Mi
-        serviceAccountName: rook-ceph-system
+          name: efs-provisioner
+          resources: {}
+          volumeMounts:
+          - mountPath: /persistentvolumes
+            name: pv-volume
+        serviceAccount: efs-provisioner
+        volumes:
+        - name: pv-volume
+          nfs:
+            path: /
+            server: $patch_required.efs.eu-west-2.amazonaws.com
 - apiVersion: v1
   kind: Service
   metadata:
@@ -286,6 +80,19 @@ items:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
+    annotations: {}
+    labels:
+      app: efs-provisioner
+      chart: efs-provisioner-0.7.0
+      env: dev
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: efs-provisioner
+    name: efs-provisioner
+    namespace: system
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
     labels:
       app.kubernetes.io/instance: eks-cluster-autoscaler
       app.kubernetes.io/managed-by: Tiller
@@ -293,36 +100,6 @@ items:
       helm.sh/chart: cluster-autoscaler-3.2.0
       kubenix/project-name: kubenix
     name: eks-cluster-autoscaler-aws-cluster-autoscaler
-    namespace: system
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      chart: rook-ceph-v1.0.5
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-mgr
-    namespace: system
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      chart: rook-ceph-v1.0.5
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-osd
-    namespace: system
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      chart: rook-ceph-v1.0.5
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-system
     namespace: system
 - apiVersion: extensions/v1beta1
   kind: Deployment
@@ -398,30 +175,89 @@ items:
       matchLabels:
         app.kubernetes.io/instance: eks-cluster-autoscaler
         app.kubernetes.io/name: aws-cluster-autoscaler
-- apiVersion: policy/v1beta1
-  kind: PodSecurityPolicy
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
   metadata:
+    annotations: {}
     labels:
+      app: efs-provisioner
+      chart: efs-provisioner-0.7.0
+      env: dev
+      heritage: Tiller
       kubenix/project-name: kubenix
-    name: 00-rook-ceph-operator
+      release: efs-provisioner
+    name: efs-provisioner
     namespace: system
-  spec:
-    allowedCapabilities:
-    - '*'
-    fsGroup:
-      rule: RunAsAny
-    hostIPC: true
-    hostNetwork: true
-    hostPID: true
-    privileged: true
-    runAsUser:
-      rule: RunAsAny
-    seLinux:
-      rule: RunAsAny
-    supplementalGroups:
-      rule: RunAsAny
-    volumes:
-    - '*'
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - persistentvolumes
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - delete
+  - apiGroups:
+    - ''
+    resources:
+    - persistentvolumeclaims
+    verbs:
+    - get
+    - list
+    - watch
+    - update
+  - apiGroups:
+    - storage.k8s.io
+    resources:
+    - storageclasses
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    verbs:
+    - list
+    - watch
+    - create
+    - update
+    - patch
+  - apiGroups:
+    - ''
+    resources:
+    - endpoints
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    annotations: {}
+    labels:
+      app: efs-provisioner
+      chart: efs-provisioner-0.7.0
+      env: dev
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: efs-provisioner
+    name: efs-provisioner
+    namespace: system
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: efs-provisioner
+  subjects:
+  - kind: ServiceAccount
+    name: efs-provisioner
+    namespace: system
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
@@ -534,239 +370,6 @@ items:
     verbs:
     - list
     - watch
-- aggregationRule:
-    clusterRoleSelectors:
-    - matchLabels:
-        rbac.rook.ceph.io/aggregate-to-rook-ceph-cluster-mgmt: 'true'
-  apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-cluster-mgmt
-    namespace: system
-  rules: []
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      rbac.rook.ceph.io/aggregate-to-rook-ceph-cluster-mgmt: 'true'
-      storage-backend: ceph
-    name: rook-ceph-cluster-mgmt-rules
-    namespace: system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - secrets
-    - pods
-    - pods/log
-    - services
-    - configmaps
-    verbs:
-    - get
-    - list
-    - watch
-    - patch
-    - create
-    - update
-    - delete
-  - apiGroups:
-    - apps
-    resources:
-    - deployments
-    - daemonsets
-    verbs:
-    - get
-    - list
-    - watch
-    - create
-    - update
-    - delete
-- aggregationRule:
-    clusterRoleSelectors:
-    - matchLabels:
-        rbac.ceph.rook.io/aggregate-to-rook-ceph-global: 'true'
-  apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-global
-    namespace: system
-  rules: []
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      rbac.ceph.rook.io/aggregate-to-rook-ceph-global: 'true'
-      storage-backend: ceph
-    name: rook-ceph-global-rules
-    namespace: system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    - nodes
-    - nodes/proxy
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - ''
-    resources:
-    - events
-    - persistentvolumes
-    - persistentvolumeclaims
-    - endpoints
-    verbs:
-    - get
-    - list
-    - watch
-    - patch
-    - create
-    - update
-    - delete
-  - apiGroups:
-    - storage.k8s.io
-    resources:
-    - storageclasses
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - batch
-    resources:
-    - jobs
-    verbs:
-    - get
-    - list
-    - watch
-    - create
-    - update
-    - delete
-  - apiGroups:
-    - ceph.rook.io
-    resources:
-    - '*'
-    verbs:
-    - '*'
-  - apiGroups:
-    - rook.io
-    resources:
-    - '*'
-    verbs:
-    - '*'
-- aggregationRule:
-    clusterRoleSelectors:
-    - matchLabels:
-        rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-cluster: 'true'
-  apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-mgr-cluster
-    namespace: system
-  rules: []
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-cluster: 'true'
-      storage-backend: ceph
-    name: rook-ceph-mgr-cluster-rules
-    namespace: system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - configmaps
-    - nodes
-    - nodes/proxy
-    verbs:
-    - get
-    - list
-    - watch
-- aggregationRule:
-    clusterRoleSelectors:
-    - matchLabels:
-        rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: 'true'
-  apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: rook-ceph-mgr-system
-    namespace: system
-  rules: []
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: 'true'
-    name: rook-ceph-mgr-system-rules
-    namespace: system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - configmaps
-    verbs:
-    - get
-    - list
-    - watch
-- aggregationRule:
-    clusterRoleSelectors:
-    - matchLabels:
-        rbac.ceph.rook.io/aggregate-to-rook-ceph-system-psp-user: 'true'
-  apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      chart: rook-ceph-v1.0.5
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-system-psp-user
-    namespace: system
-  rules: []
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRole
-  metadata:
-    labels:
-      chart: rook-ceph-v1.0.5
-      kubenix/project-name: kubenix
-      operator: rook
-      rbac.ceph.rook.io/aggregate-to-rook-ceph-system-psp-user: 'true'
-      storage-backend: ceph
-    name: rook-ceph-system-psp-user-rules
-    namespace: system
-  rules:
-  - apiGroups:
-    - apps
-    resourceNames:
-    - 00-rook-ceph-operator
-    resources:
-    - podsecuritypolicies
-    verbs:
-    - use
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
@@ -785,57 +388,6 @@ items:
   subjects:
   - kind: ServiceAccount
     name: eks-cluster-autoscaler-aws-cluster-autoscaler
-    namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRoleBinding
-  metadata:
-    labels:
-      chart: rook-ceph-v1.0.5
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-global
-    namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: rook-ceph-global
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-system
-    namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRoleBinding
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: rook-ceph-mgr-cluster
-    namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: rook-ceph-mgr-cluster
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-mgr
-    namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: ClusterRoleBinding
-  metadata:
-    labels:
-      chart: rook-ceph-v1.0.5
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-system-psp-users
-    namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: rook-ceph-system-psp-user
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-system
     namespace: system
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role
@@ -866,95 +418,6 @@ items:
     - get
     - update
 - apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: rook-ceph-mgr
-    namespace: system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    - services
-    verbs:
-    - get
-    - list
-    - watch
-  - apiGroups:
-    - batch
-    resources:
-    - jobs
-    verbs:
-    - get
-    - list
-    - watch
-    - create
-    - update
-    - delete
-  - apiGroups:
-    - ceph.rook.io
-    resources:
-    - '*'
-    verbs:
-    - '*'
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: rook-ceph-osd
-    namespace: system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - configmaps
-    verbs:
-    - get
-    - list
-    - watch
-    - create
-    - update
-    - delete
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-system
-    namespace: system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    - configmaps
-    - services
-    verbs:
-    - get
-    - list
-    - watch
-    - patch
-    - create
-    - update
-    - delete
-  - apiGroups:
-    - apps
-    resources:
-    - daemonsets
-    - statefulsets
-    verbs:
-    - get
-    - list
-    - watch
-    - create
-    - update
-    - delete
-- apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: RoleBinding
   metadata:
     labels:
@@ -973,82 +436,23 @@ items:
   - kind: ServiceAccount
     name: eks-cluster-autoscaler-aws-cluster-autoscaler
     namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
+- apiVersion: storage.k8s.io/v1beta1
+  kind: StorageClass
   metadata:
     labels:
+      app: efs-provisioner
+      chart: efs-provisioner-0.7.0
+      env: dev
+      heritage: Tiller
       kubenix/project-name: kubenix
-    name: rook-ceph-cluster-mgmt
+      release: efs-provisioner
+    name: efs
     namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: rook-ceph-cluster-mgmt
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-system
-    namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: rook-ceph-mgr
-    namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: rook-ceph-mgr
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-mgr
-    namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: rook-ceph-mgr-system
-    namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: rook-ceph-mgr-system
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-mgr
-    namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: rook-ceph-osd
-    namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: rook-ceph-osd
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-osd
-    namespace: system
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-      operator: rook
-      storage-backend: ceph
-    name: rook-ceph-system
-    namespace: system
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: rook-ceph-system
-  subjects:
-  - kind: ServiceAccount
-    name: rook-ceph-system
-    namespace: system
+  parameters:
+    gidAllocate: 'true'
+    gidMax: '50000'
+    gidMin: '40000'
+  provisioner: kubernetes.io/aws-efs
+  reclaimPolicy: Delete
 kind: List
 labels:

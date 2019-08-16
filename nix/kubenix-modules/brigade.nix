@@ -28,7 +28,7 @@ let
       (project-config.kubernetes.target) 
       {
         "minikube" = "k8s.io/minikube-hostpath";
-        "eks" = "kubernetes.io/aws-ebs";
+        "eks" = "kubernetes.io/aws-efs";
         # "kubernetes.io/host-path";
       });
 
@@ -99,21 +99,21 @@ in
 
     kubernetes.api.storageclasses = {
       # ReadWritMany required - EFS? or glusterfs?
-      # build-storage = {
-      #   metadata = {
-      #     namespace = brigade-ns;
-      #     name = "build-storage";
-      #     annotations = {
-      #       "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
-      #     };
-      #     labels = {
-      #       "addonmanager.kubernetes.io/mode" = "EnsureExists";
-      #       # exec
-      #     };
-      #   };
-      #   # reclaimPolicy = "Retain";
-      #   provisioner = sc-provisioner;
-      # };
+      build-storage = {
+        metadata = {
+          namespace = brigade-ns;
+          name = "build-storage";
+          annotations = {
+            "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
+          };
+          labels = {
+            "addonmanager.kubernetes.io/mode" = "EnsureExists";
+            # exec
+          };
+        };
+        # reclaimPolicy = "Retain";
+        provisioner = sc-provisioner;
+      };
 
       cache-storage = {
         metadata = {

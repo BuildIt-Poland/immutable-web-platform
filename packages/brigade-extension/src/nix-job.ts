@@ -147,7 +147,7 @@ export class NixJob extends Job {
       ...this.resolveTasks(this.secrets)
     ]
 
-    // this.cache.enabled = true
+    this.cache.enabled = true
     // this.storage.enabled = true
     this.docker.enabled = true
 
