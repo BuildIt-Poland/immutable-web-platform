@@ -3,10 +3,9 @@ variable "common_tags" {
 }
 
 variable "region" {}
-variable "project_name" {}
-variable "env" {}
+variable "cluster_name" {}
 
 resource "aws_ecr_repository" "docker-registry" {
-  name = "${var.project_name}-${var.env}"
+  name = var.cluster_name
   tags = var.common_tags
 }

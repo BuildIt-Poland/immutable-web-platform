@@ -27,10 +27,11 @@ module "cluster" {
 
   azs = local.azs
 
+  # think about buildit aws limits / Running On-Demand m4 hosts 2
   worker_groups = [
     {
       autoscaling_enabled  = "true"
-      instance_type        = "m4.large"
+      instance_type        = "m4.xlarge"
       asg_max_size         = 2
       asg_desired_capacity = 1
       kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand --cloud-provider=aws"
