@@ -87,7 +87,6 @@ rec {
   # FIXME this is too late
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
     ${lib.log.message "Exporting env vars and evaluating minikube docker-env"}
-    export BRIGADE_NAMESPACE=${brigade-service.namespace}
     eval $(${pkgs.minikube}/bin/minikube docker-env -p ${projectName})
   '';
 
