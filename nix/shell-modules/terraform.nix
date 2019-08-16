@@ -43,6 +43,10 @@ rec {
       default = {};
     };
 
+    stateFiles = mkOption {
+      default = {};
+    };
+
     # TODO think about it
     outputs = mkOption {
       default = {};
@@ -57,6 +61,16 @@ rec {
         "You can use 'tf-project <name_of_project> <command>', to avoid the need to go to terraform folders."
         "You can use 'tf-nix-exporter <name_of_project>', it is required to define module.export-to-nix in module."
       ];
+
+      warnings = 
+        let
+          files = builtins.attrValues cfg.terraform.stateFiles;
+          not-exists = builtins.filter (x: !(builtins.pathExists x)) files;
+          messages = builtins.map (x: ''
+            Output from terraform state file does not exists, try to run 'tf-nix-exporter' to generate <${builtins.baseNameOf x}> file.
+          '') not-exists;
+        in
+          messages;
 
       packages = with pkgs; [
         get-terraform-output

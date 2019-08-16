@@ -41,3 +41,12 @@ module "docker-registry" {
 output "state" {
   value = data.terraform_remote_state.state.outputs
 }
+
+module "export-to-nix" {
+  source = "../../modules/export-to-nix"
+  data = {
+    secret_kms      = module.secrets.secrets-kms-key.arn
+    docker_registry = module.docker-registry.ecr.repository_url
+  }
+  file-output = "${var.output_state_file["aws_setup"]}" # convention path from terraform folder perspective
+}

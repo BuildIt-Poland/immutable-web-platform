@@ -83,10 +83,9 @@ module "bastion" {
 module "export-to-nix" {
   source = "../../modules/export-to-nix"
   data = {
-    # TODO formatitng of yaml seems to be inccorect
     kubeconfig = yamldecode(module.cluster.eks.kubeconfig)
     bastion    = module.bastion.public_ip
     efs        = module.cluster.efs_provisoner.id
   }
-  file-output = "${var.root_folder}/nix/cluster-vars.json"
+  file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
 }
