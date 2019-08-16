@@ -104,16 +104,25 @@ with pkgs.lib;
     project-configuration
     kubernetes
     kubernetes-resources
+    eks-cluster
+    bitbucket-k8s-repo
+    local-cluster
     docker
     brigade
     bitbucket
+    terraform
     git-secrets
     aws
     base
   ];
 
   config = {
-    environment.type = inputs.environment.type;
+    environment = {
+      type = inputs.environment.type;
+      vars = {
+        PROJECT_NAME = config.project.name;
+      };
+    };
 
     project = {
       name = "future-is-comming";
@@ -132,11 +141,12 @@ with pkgs.lib;
       upload-images-type = ["functions" "cluster"];
       upload = inputs.docker.upload;
       namespace = "dev.local";
-      registry = "";
+      # registry = "";
       tag = makeDefault inputs.docker.tag "dev-build";
     };
 
     aws = {
+      account = "006393696278";
       location = {
         credentials = ~/.aws/credentials;
         config = ~/.aws/config;
@@ -155,6 +165,8 @@ with pkgs.lib;
           pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
           clone-url = config.project.repositories.code-repository;
           ssh-key = config.bitbucket.ssh-keys.priv;
+          # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
+          overridings = {};
         };
       };
     };
@@ -163,15 +175,55 @@ with pkgs.lib;
       location = ../../secrets.json;
     };
 
+    eks-cluster.enable = inputs.kubernetes.target == "eks";
+    local-cluster.enable = inputs.kubernetes.target == "minikube";
+
+    terraform = rec {
+      enable = true;
+
+      location = toString ../../terraform;
+
+      vars = rec {
+        region = config.aws.region;
+        project_name = config.project.name;
+        owner = config.project.author-email;
+        env = config.environment.type;
+        cluster_name = config.kubernetes.cluster.name;
+        project_prefix = "${project_name}-${env}-${region}";
+
+        worker_bucket   = "${config.aws.s3-buckets.worker-cache}";
+
+        # TODO bucket does not need to be prefixed - there will be folder inside
+        # no point to have tons of buckets
+        tf_state_bucket = "${project_prefix}-state";
+        tf_state_table  = tf_state_bucket;
+      };
+
+      backend-vars = {
+        bucket = vars.tf_state_bucket;
+        dynamodb_table = vars.tf_state_table;
+        region = vars.region;
+      };
+    };
+
     kubernetes = {
-      cluster.clean = inputs.kubernetes.clean;
+      target = inputs.kubernetes.target;
+      cluster = {
+        clean = inputs.kubernetes.clean;
+        name = "${config.project.name}-cluster";
+      };
       patches.enable = inputs.kubernetes.patches;
-      imagePullPolicy = "Never";
       resources = 
         with kubenix.modules;
         let
           functions = (import ./functions.nix { inherit pkgs; });
           resources = config.kubernetes.resources;
+          extra-resources = builtins.getAttr config.kubernetes.target {
+            eks = {
+              "${priority.high "eks-cluster"}"       = [ eks-cluster ];
+            };
+            minikube = {};
+          };
           priority = resources.priority;
           # TODO apply skip
           modules = {
@@ -181,7 +233,7 @@ with pkgs.lib;
             "${priority.low  "gitops"}"      = [ argocd ];
             "${priority.low  "ci"}"          = [ brigade ];
             "${priority.low  "secrets"}"     = [ secrets ];
-          } // functions;
+          } // functions // extra-resources;
           in
           {
             apply = inputs.kubernetes.update;
