@@ -105,15 +105,24 @@ items:
       \ createJob = (name) => {\n  let t = new NixJob(name)\n    .withExtraParams({\n\
       \      streamLogs: true,\n      privileged: true,\n      shell: 'bash',\n  \
       \    serviceAccount: \"brigade-worker\"\n    })\n\n  t = t.withTasks([\n   \
-      \ `ls ${t.storage.path}`,\n    `ls ${t.cache.path}`,\n    `echo \"yay\" > ${t.storage.path}/test.file`,\n\
-      \    `echo \"yay\" > ${t.cache.path}/test.file`,\n    // runShellCommand('push-k8s-resources-to-repo'),\n\
-      \  ])\n\n  return t\n}\n\nevents.on(\"exec\", (event, project) => {\n  let test\
-      \ =\n    createJob(\"test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n\
-      \        BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
-      \      })\n  // i don't like it, not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
-      \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  test.run()\n\
-      })\n\nevents.on(\"push\", (event, project) => {\n  let test = createJob(\"test\"\
-      )\n    .withSecrets(project.secrets)\n\n  test.run()\n})\n"
+      \ `cat ${t.cache.path}/test.file`,\n    `mkdir -p ${t.storage.path}`,\n    `ls\
+      \ -la ${t.cache.path}`,\n    `ls -la /mnt`,\n    `ls -la /mnt/brigade`,\n  \
+      \  // `ls -la ${t.storage.path}`,\n    `echo \"yay\" > ${t.storage.path}/test.file`,\n\
+      \    // `cat ${t.storage.path}/test.file`,\n    // runShellCommand('push-k8s-resources-to-repo'),\n\
+      \  ])\n\n  return t\n}\n\nevents.on(\"exec\", async (event, project) => {\n\
+      \  let test =\n    createJob(\"test\")\n      .withSecrets(project.secrets)\n\
+      \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
+      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  let test2 =\n    createJob(\"\
+      test2\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n      \
+      \  BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
+      \      })\n\n  test2 = test2\n    .withTasks([\n      `ls -la /mnt/brigade`,\n\
+      \      `ls -la ${test2.storage.path}`,\n      `ls -la /var`,\n      `ls -la\
+      \ /`,\n    ])\n  // i don't like it, not sure how to attach nodeSelector\n \
+      \ // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
+      \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  // test.run()\n\
+      \  await test.run()\n  await test2.run()\n})\n\nevents.on(\"push\", (event,\
+      \ project) => {\n  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\
+      \n  test.run()\n})\n"
     genericGatewaySecret: mygenericsecret
     initGitSubmodules: 'false'
     kubernetes.allowSecretKeyRef: 'true'
