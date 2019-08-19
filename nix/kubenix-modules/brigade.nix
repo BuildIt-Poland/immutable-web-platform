@@ -18,6 +18,7 @@ let
   namespace = project-config.kubernetes.namespace;
 
   brigade-ns = namespace.brigade;
+  system-ns = namespace.system;
 
   project-template = pkgs.callPackage ./template/brigade-project.nix {
     inherit config;
@@ -27,9 +28,10 @@ let
     (builtins.getAttr 
       (project-config.kubernetes.target) 
       {
-        "minikube" = "k8s.io/minikube-hostpath";
-        "eks" = "kubernetes.io/aws-efs";
-        # "kubernetes.io/host-path";
+        "minikube" = "k8s.io/minikube-hostpath"; # "kubernetes.io/host-path";
+        "eks" = "ceph.rook.io/block";
+        "gcp" = "";
+        "aks" = "";
       });
 
   helm-charts = {
@@ -98,7 +100,6 @@ in
         [] ++ (builtins.map inject-ssh-key projects);
 
     kubernetes.api.storageclasses = {
-      # ReadWritMany required - EFS? or glusterfs?
       build-storage = {
         metadata = {
           namespace = brigade-ns;
@@ -113,6 +114,12 @@ in
         };
         # reclaimPolicy = "Retain";
         provisioner = sc-provisioner;
+        parameters = {
+          blockPool = "brigade-storage";
+          clusterNamespace= "${system-ns}";
+          # Specify the filesystem type of the volume. If not specified, it will use `ext4`.
+          # fstype = "xfs";
+        };
       };
 
       cache-storage = {
@@ -128,6 +135,12 @@ in
         };
         # reclaimPolicy = "Retain";
         provisioner = sc-provisioner;
+        parameters = {
+          blockPool = "brigade-cache";
+          clusterNamespace= "${system-ns}";
+          # Specify the filesystem type of the volume. If not specified, it will use `ext4`.
+          # fstype = "xfs";
+        };
       };
     };
     

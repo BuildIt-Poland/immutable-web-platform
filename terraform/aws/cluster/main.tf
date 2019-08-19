@@ -11,19 +11,13 @@ data "terraform_remote_state" "state" {
   }
 }
 
-data "terraform_remote_state" "setup-state" {
-  backend = "s3"
-  config = {
-    key    = "${var.project_prefix}/setup"
-    region = var.region
-    bucket = var.tf_state_bucket
-  }
-}
-
-# TODO add spot instances and node labels
-# TODO add autoscaller priority
 # TODO nodeaffinity/taints - test should not take run on spot
 # TODO from kubelet: in 1.15, --node-labels in the 'kubernetes.io' namespace must begin with an allowed prefix (kubelet.kubernetes.io, node.kubernetes.io) or be in the sp
+# https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler/cloudprovider/aws#scaling-a-node-group-to-0
+
+# mixedtemplates works since 0.14 -> 
+# https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
+# https://github.com/kubernetes/autoscaler/pull/2248/files
 module "cluster" {
   source = "../../modules/aws-eks-cluster"
 
@@ -41,7 +35,7 @@ module "cluster" {
     {
       autoscaling_enabled  = "true"
       instance_type        = "m4.xlarge"
-      asg_max_size         = 2
+      asg_max_size         = 3
       asg_desired_capacity = 1
       kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand"
       key_name             = module.bastion.ssh_key.key_name
@@ -49,10 +43,12 @@ module "cluster" {
     },
   ]
 
-  worker_groups_launch_template_mixed = [
+  worker_groups_launch_template = [
     {
-      name                    = "spot-1"
-      override_instance_types = ["m4.large", "m4.xlarge"]
+      name                = "spot-1"
+      autoscaling_enabled = "true"
+      # override_instance_types = ["m5.xlarge", "m4.xlarge"]
+      override_instance_types = ["m5.xlarge"] #, "m4.xlarge"]
       spot_instance_pools     = 4
       asg_desired_capacity    = 2
       asg_max_size            = 5
@@ -88,4 +84,19 @@ module "export-to-nix" {
     efs        = module.cluster.efs_provisoner.id
   }
   file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
+}
+
+
+resource "aws_elb" "virtual-services" {
+  name                      = "monitoring-services-elb"
+  availability_zones        = local.azs
+  cross_zone_load_balancing = true
+  tags                      = local.common_tags
+}
+
+resource "aws_elb" "istio-services" {
+  name                      = "istio-services-elb"
+  availability_zones        = local.azs
+  cross_zone_load_balancing = true
+  tags                      = local.common_tags
 }

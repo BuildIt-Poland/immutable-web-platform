@@ -1,5 +1,6 @@
 ## Today
 ### in progress
+* https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
 * shell for infra is necessary - nix shell infra first to bootstrap env and export outputs from terraform after that ... nix with resources
 * task to generate kubeconfig from terraform (
   terraform apply -target module.cluster.module.eks.local_file.kubeconfig)
@@ -8,6 +9,7 @@
 * distrubuted store
 * tests and functions should be run in spot instances
 * istio / autscaller run on main instance -> nodeSelector / nodeAffinity
+* enum for fs types - aws-efs
 
 - create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
 - create eks cluster

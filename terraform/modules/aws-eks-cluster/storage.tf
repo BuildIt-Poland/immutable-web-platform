@@ -1,5 +1,6 @@
 
 resource "aws_efs_file_system" "efs_provisioner" {
+  performance_mode = "generalPurpose"
   tags = merge(var.common_tags, {
     Name = "efs.${var.cluster_name}"
   })

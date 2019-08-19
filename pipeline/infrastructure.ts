@@ -6,8 +6,8 @@ const { NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand 
 
 //#Node-Selectors:  beta.kubernetes.io/os=linux 
 // this.host.nodeSelector["kubernetes.io/lifecycle"] = "spot"
-const createJob = (name) =>
-  new NixJob(name)
+const createJob = (name) => {
+  let t = new NixJob(name)
     .withExtraParams({
       streamLogs: true,
       privileged: true,
@@ -15,11 +15,22 @@ const createJob = (name) =>
       serviceAccount: "brigade-worker"
     })
 
-    .withTasks([
-      runShellCommand('push-k8s-resources-to-repo'),
-    ])
+  t = t.withTasks([
+    `cat ${t.cache.path}/test.file`,
+    `mkdir -p ${t.storage.path}`,
+    `ls -la ${t.cache.path}`,
+    `ls -la /mnt`,
+    `ls -la /mnt/brigade`,
+    // `ls -la ${t.storage.path}`,
+    `echo "yay" > ${t.storage.path}/test.file`,
+    // `cat ${t.storage.path}/test.file`,
+    // runShellCommand('push-k8s-resources-to-repo'),
+  ])
 
-events.on("exec", (event, project) => {
+  return t
+}
+
+events.on("exec", async (event, project) => {
   let test =
     createJob("test")
       .withSecrets(project.secrets)
@@ -27,12 +38,29 @@ events.on("exec", (event, project) => {
         BUILD_ID: event.buildID || "missing-build-id",
         EVENT: JSON.stringify(event),
       })
+
+  let test2 =
+    createJob("test2")
+      .withSecrets(project.secrets)
+      .withEnvVars({
+        BUILD_ID: event.buildID || "missing-build-id",
+        EVENT: JSON.stringify(event),
+      })
+
+  test2 = test2
+    .withTasks([
+      `ls -la /mnt/brigade`,
+      `ls -la /var`,
+      `ls -la /`,
+    ])
   // i don't like it, not sure how to attach nodeSelector
   // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393
   // test.host.name = "spot"
   // test.host.os = "linux"
 
-  test.run()
+  // test.run()
+  await test.run()
+  await test2.run()
 })
 
 events.on("push", (event, project) => {

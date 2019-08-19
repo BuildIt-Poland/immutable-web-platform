@@ -38,11 +38,29 @@ rec {
     enable = mkOption {
       default = true;
     };
+    configuration = {
+      efs = mkOption {
+        default = "";
+      };
+      bastion = mkOption {
+        default = "";
+      };
+    };
   };
 
   config = mkIf cfg.eks-cluster.enable (mkMerge [
     { checks = ["Enabling eks module"]; }
+
+    (mkIf (cfg.eks-cluster.configuration.efs == "") {
+      errors = [
+        "Run `tf-nix-exporter aws/cluster` to get output from terraform - efs id is required."
+      ];
+    })
+
     ({
+      packages = with pkgs; [
+      ];
+
       environment.vars = {
         KUBECONFIG = terraform-kubeconfig-path;
         DOCKER_REGISTRY = registry-path;

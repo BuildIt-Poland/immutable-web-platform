@@ -64,3 +64,6 @@ droping kind to use minikube as is more mature and better for local development.
 ### ecr
 * https://stackoverflow.com/questions/36702439/kubernetes-authentication-issues-pulling-ecr-images
 * https://github.com/knative/serving/pull/4084 ...
+
+### unable to delete brigade pvc 
+* https://stackoverflow.com/questions/51358856/kubernetes-cant-delete-persistentvolumeclaim-pvc

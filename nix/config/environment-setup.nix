@@ -76,7 +76,20 @@ with pkgs.lib;
       location = ../../secrets.json;
     };
 
-    eks-cluster.enable = inputs.kubernetes.target == "eks";
+    eks-cluster = {
+      enable = inputs.kubernetes.target == "eks";
+      configuration = 
+        let
+          terraform-output = 
+            builtins.fromJSON 
+              (builtins.readFile config.terraform.stateFiles.aws_cluster); # actually I can merge these state files
+        in
+        {
+          efs = terraform-output.efs;
+          bastion = terraform-output.bastion;
+        };
+    };
+
     local-cluster.enable = inputs.kubernetes.target == "minikube";
 
     terraform = rec {
@@ -131,6 +144,8 @@ with pkgs.lib;
               "${priority.high "eks-cluster"}"       = [ eks-cluster ];
             };
             minikube = {};
+            gcp = {};
+            aks = {};
           };
           priority = resources.priority;
           # TODO apply skip
