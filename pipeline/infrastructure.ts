@@ -17,12 +17,8 @@ const createJob = (name) => {
 
   t = t.withTasks([
     `cat ${t.cache.path}/test.file`,
-    `mkdir -p ${t.storage.path}`,
-    `ls -la ${t.cache.path}`,
-    `ls -la /mnt`,
-    `ls -la /mnt/brigade`,
-    // `ls -la ${t.storage.path}`,
-    `echo "yay" > ${t.storage.path}/test.file`,
+    `echo "storage" > ${t.storage.path}/test.file`,
+    `echo "cache" > ${t.cache.path}/test.file`,
     // `cat ${t.storage.path}/test.file`,
     // runShellCommand('push-k8s-resources-to-repo'),
   ])
@@ -49,9 +45,8 @@ events.on("exec", async (event, project) => {
 
   test2 = test2
     .withTasks([
-      `ls -la /mnt/brigade`,
-      `ls -la /var`,
-      `ls -la /`,
+      `cat ${test2.storage.path}/test.file`,
+      // `cat ${test2.cache.path}/test.file`,
     ])
   // i don't like it, not sure how to attach nodeSelector
   // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393
