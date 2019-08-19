@@ -138,7 +138,7 @@ in
     })
     (mkIf config.test.enable {
       shellHook = ''
-        ${pkgs.log.important "Running module tests"}
+        ${pkgs.lib.log.important "Running module tests"}
         ${config.test.run}
       '';
     })

@@ -148,7 +148,7 @@ export class NixJob extends Job {
     ]
 
     this.cache.enabled = true
-    // this.storage.enabled = true
+    this.storage.enabled = true
     this.docker.enabled = true
 
     this.applyExtraParams()

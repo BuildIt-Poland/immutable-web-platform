@@ -8,7 +8,7 @@ variable "env" {}
 variable "azs" {}
 variable "cluster_name" {}
 
-variable "worker_groups_launch_template_mixed" {}
+variable "worker_groups_launch_template" {}
 variable "worker_groups" {}
 
 variable "map_roles" {

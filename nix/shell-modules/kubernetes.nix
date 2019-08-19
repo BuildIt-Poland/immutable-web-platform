@@ -76,6 +76,7 @@ rec {
       knative-serving = mkOption { default = "knative-serving";};
       argo = mkOption { default = "argocd";};
       system = mkOption { default = "system";};
+      rook-ceph = mkOption { default = "rook-ceph";};
     };
   };
 
