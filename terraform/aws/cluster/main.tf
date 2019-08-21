@@ -35,7 +35,11 @@ module "cluster" {
     {
       autoscaling_enabled  = "true"
       instance_type        = "m4.xlarge"
+<<<<<<< HEAD
       asg_max_size         = 3
+=======
+      asg_max_size         = 2
+>>>>>>> 268ec3b0f93a521492e3f60f07b413e664b68189
       asg_desired_capacity = 1
       kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand"
       key_name             = module.bastion.ssh_key.key_name
