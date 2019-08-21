@@ -66,22 +66,22 @@ in
   kubernetes.api.namespaces."${rook-ceph-ns}"= {};
 
   # if something is not working well here then most likely SG on AWS -> opened port for NFS
-  kubernetes.helm.instances.efs-provisioner = {
-    namespace = system-ns;
-    chart = k8s-resources.efs-provisioner;
-    values = {
-      efsProvisioner = {
-        efsFileSystemId = project-config.eks-cluster.configuration.efs;
-        awsRegion = project-config.aws.region;
-        provisionerName = "kubernetes.io/aws-efs";
-        path = "/pv";
-        storageClass = {
-          name = "efs";
-          isDefault = false;
-        };
-      };
-    };
-  };
+  # kubernetes.helm.instances.efs-provisioner = {
+  #   namespace = system-ns;
+  #   chart = k8s-resources.efs-provisioner;
+  #   values = {
+  #     efsProvisioner = {
+  #       efsFileSystemId = project-config.eks-cluster.configuration.efs;
+  #       awsRegion = project-config.aws.region;
+  #       provisionerName = "kubernetes.io/aws-efs";
+  #       path = "/pv";
+  #       storageClass = {
+  #         name = "efs";
+  #         isDefault = false;
+  #       };
+  #     };
+  #   };
+  # };
 
   kubernetes.helm.instances.rook-ceph = {
     # namespace = rook-ceph-ns;
