@@ -24,7 +24,7 @@ in
     kubernetes.api.namespaces."${knative-monitoring-ns}"= {};
 
     kubernetes.static = [
-      (override-namespace k8s-resources.knative-monitoring-json)
+      k8s-resources.knative-monitoring-json
     ];
   };
 }

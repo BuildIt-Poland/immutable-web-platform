@@ -9,7 +9,7 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  rook-ceph-ns = namespace.storage;
+  storage-ns = namespace.storage;
 
   create-cr = kind: resource: {
     inherit kind resource;
@@ -35,7 +35,7 @@ with kubenix.lib.helm;
     };
 
     namespace = mkOption {
-      default = rook-ceph-ns;
+      default = storage-ns;
     };
 
     toolbox = {
@@ -46,10 +46,10 @@ with kubenix.lib.helm;
   };
 
   config = {
-    kubernetes.api.namespaces."${rook-ceph-ns}"= {};
+    kubernetes.api.namespaces."${storage-ns}"= {};
 
     kubernetes.helm.instances.rook-ceph = {
-      namespace = rook-ceph-ns;
+      namespace = storage-ns;
       chart = k8s-resources.rook-ceph;
     };
 
@@ -58,7 +58,7 @@ with kubenix.lib.helm;
         mkPool = name: value: {
           metadata = ({
             inherit name;
-            namespace = rook-ceph-ns;
+            namespace = storage-ns;
           });
           spec = (lib.recursiveUpdate {
             replicated.size = 3;
@@ -72,7 +72,7 @@ with kubenix.lib.helm;
       file-store = {
         metadata = {
           name = "rook-ceph";
-          namespace = rook-ceph-ns;
+          namespace = storage-ns;
         };
 
         spec = {
@@ -86,7 +86,7 @@ with kubenix.lib.helm;
           dashboard = {
             enabled = true;
             port = 8443;
-            ssl = true;
+            ssl = false; # soon
           };
           storage = {
             useAllNodes = true;
@@ -115,10 +115,29 @@ with kubenix.lib.helm;
     kubernetes.crd = [
     ];
 
+    kubernetes.patches = [
+      (pkgs.writeScriptBin "patch-ceph-password" ''
+        ${pkgs.lib.log.important "Patching Ceph admin password"}
+
+        pass=${"$\{1:-admin}"}
+        encoded=$(echo $pass | tr -d ':\n' | base64)
+        
+        ${pkgs.kubectl}/bin/kubectl patch secret -n ${storage-ns} rook-ceph-dashboard-password \
+          -p '{"data": { "password": "'$encoded'"}}'
+      '')
+    ];
+
+    module.scripts = [
+      (pkgs.writeScriptBin "get-ceph-admin-password" ''
+        ${pkgs.kubectl}/bin/kubectl -n ${storage-ns} get secret rook-ceph-dashboard-password \
+          -o jsonpath="{['data']['password']}" | base64 --decode && echo
+      '')
+    ];
+
     # TODO should be handled similary to helm - don't need to have another pattern here
     kubernetes.static = [
       (override-static-yaml 
-        { metadata.namespace = rook-ceph-ns; }
+        { metadata.namespace = storage-ns; }
         k8s-resources.rook-ceph-toolbox)
     ];
 

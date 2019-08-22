@@ -27,7 +27,8 @@ in
   ];
 
   config = {
-    kubernetes.api.namespaces."${knative-ns}"= {};
+    # INFO skipping custom ns as it is a bit more complicated to put knative in separate namespace
+    # kubernetes.api.namespaces."${knative-ns}"= {};
 
     kubernetes.api.namespaces."${functions-ns}"= {
       metadata = {
@@ -38,11 +39,11 @@ in
     };
 
     kubernetes.crd = [
-      (override-namespace k8s-resources.knative-crd-json)
+      k8s-resources.knative-crd-json
     ];
 
     kubernetes.static = [
-      (override-namespace k8s-resources.knative-serving-json)
+      k8s-resources.knative-serving-json
     ];
   };
 }
