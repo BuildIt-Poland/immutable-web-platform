@@ -169,7 +169,7 @@ with pkgs.lib;
         functions = "functions";
         argo = "gitops";
         brigade = "ci";
-        knative-serving = "knative";
+        knative-serving = "faas-knative";
       };
     };
 

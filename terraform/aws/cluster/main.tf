@@ -35,13 +35,9 @@ module "cluster" {
     {
       autoscaling_enabled  = "true"
       instance_type        = "m4.xlarge"
-<<<<<<< HEAD
       asg_max_size         = 3
-=======
-      asg_max_size         = 2
->>>>>>> 268ec3b0f93a521492e3f60f07b413e664b68189
-      asg_desired_capacity = 1
-      kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand"
+      asg_desired_capacity = 2
+      kubelet_extra_args   = "--node-labels=kubernetes.io/lifecycle=on-demand,rook-ceph=cluster"
       key_name             = module.bastion.ssh_key.key_name
       ebs_optimized        = true
     },
@@ -52,7 +48,7 @@ module "cluster" {
       name                = "spot-1"
       autoscaling_enabled = "true"
       # override_instance_types = ["m5.xlarge", "m4.xlarge"]
-      override_instance_types = ["m5.xlarge"] #, "m4.xlarge"]
+      override_instance_types = ["m4.xlarge"] #, "m4.xlarge"]
       spot_instance_pools     = 4
       asg_desired_capacity    = 2
       asg_max_size            = 5
@@ -91,16 +87,16 @@ module "export-to-nix" {
 }
 
 
-resource "aws_elb" "virtual-services" {
-  name                      = "monitoring-services-elb"
-  availability_zones        = local.azs
-  cross_zone_load_balancing = true
-  tags                      = local.common_tags
-}
+# resource "aws_elb" "virtual-services" {
+#   name                      = "monitoring-services-elb"
+#   availability_zones        = local.azs
+#   cross_zone_load_balancing = true
+#   tags                      = local.common_tags
+# }
 
-resource "aws_elb" "istio-services" {
-  name                      = "istio-services-elb"
-  availability_zones        = local.azs
-  cross_zone_load_balancing = true
-  tags                      = local.common_tags
-}
+# resource "aws_elb" "istio-services" {
+#   name                      = "istio-services-elb"
+#   availability_zones        = local.azs
+#   cross_zone_load_balancing = true
+#   tags                      = local.common_tags
+# }
