@@ -20,6 +20,7 @@ provide full testing ability of infrastructure as well as on application level f
 * monitoring tools with predefined dashboards
 * scale to `0` with `knative & istio`, scale based on concurrency level or resources level
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
+* building docker without daemon with `nix`
 
 ### ... and more
 * `helm charts` without `helm` and `tiller`

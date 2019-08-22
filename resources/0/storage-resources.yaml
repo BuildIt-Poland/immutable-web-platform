@@ -234,7 +234,7 @@ items:
     dashboard:
       enabled: true
       port: 8443
-      ssl: true
+      ssl: false
     dataDirHostPath: /var/lib/rook
     mon:
       allowMultiplePerNode: true

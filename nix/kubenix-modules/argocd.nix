@@ -26,7 +26,7 @@ in
       (pkgs.writeScriptBin "patch-argo-password" ''
         ${pkgs.lib.log.important "Patching Argo CD admin password"}
 
-        pass=$\{1:-admin}  
+        pass=${"$\{1:-admin}"}
         ${pkgs.kubectl}/bin/kubectl patch secret -n ${argo-ns} argocd-secret \
           -p '{"stringData": { "admin.password": "'$(htpasswd -bnBC 10 "" $pass | tr -d ':\n')'"}}'
       '')
