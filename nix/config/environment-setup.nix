@@ -91,7 +91,6 @@ with pkgs.lib;
               (builtins.readFile config.terraform.stateFiles.aws_cluster); # actually I can merge these state files
         in
         {
-          efs = terraform-output.efs;
           bastion = terraform-output.bastion;
         };
     };

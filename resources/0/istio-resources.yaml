@@ -71,7 +71,7 @@ items:
     - hosts:
       - '*'
       port:
-        name: rook-ceph-argocd
+        name: http2-rook-ceph
         number: 15400
         protocol: HTTPS
       tls:
@@ -117,13 +117,6 @@ items:
           host: brigade-kashti.ci.svc.cluster.local
           port:
             number: 80
-    - match:
-      - port: 15400
-      route:
-      - destination:
-          host: rook-ceph-mgr-dashboard.system.svc.cluster.local
-          port:
-            number: 8443
     tls:
     - match:
       - port: 15200
@@ -134,6 +127,15 @@ items:
           host: argocd-server.gitops.svc.cluster.local
           port:
             number: 443
+    - match:
+      - port: 15400
+        sni_hosts:
+        - '*'
+      route:
+      - destination:
+          host: rook-ceph-mgr-dashboard.storage.svc.cluster.local
+          port:
+            number: 8443
 - apiVersion: config.istio.io/v1alpha2
   kind: attributemanifest
   metadata:
