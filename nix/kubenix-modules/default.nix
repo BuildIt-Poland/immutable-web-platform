@@ -11,5 +11,5 @@
   knative-monitoring = ./knative-monitoring.nix;
   secrets = ./secrets.nix;
   eks-cluster = ./eks-cluster.nix;
-  ceph-storage = ./ceph-storage.nix;
+  storage = ./storage.nix;
 }

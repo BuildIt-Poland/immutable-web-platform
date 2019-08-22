@@ -12,7 +12,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: applications.argoproj.io
-    namespace: argocd
+    namespace: gitops
   spec:
     group: argoproj.io
     names:
@@ -35,7 +35,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: appprojects.argoproj.io
-    namespace: argocd
+    namespace: gitops
   spec:
     group: argoproj.io
     names:
@@ -51,7 +51,7 @@ items:
   metadata:
     labels:
       kubenix/project-name: kubenix
-    name: argocd
+    name: gitops
     namespace: default
 - apiVersion: apps/v1
   kind: Deployment
@@ -65,7 +65,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
   spec:
     selector:
       matchLabels:
@@ -110,7 +110,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-dex-server
-    namespace: argocd
+    namespace: gitops
   spec:
     selector:
       matchLabels:
@@ -165,7 +165,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-redis
-    namespace: argocd
+    namespace: gitops
   spec:
     selector:
       matchLabels:
@@ -204,7 +204,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-repo-server
-    namespace: argocd
+    namespace: gitops
   spec:
     selector:
       matchLabels:
@@ -245,7 +245,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
   spec:
     selector:
       matchLabels:
@@ -306,7 +306,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-cm
-    namespace: argocd
+    namespace: gitops
 - apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -318,7 +318,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-rbac-cm
-    namespace: argocd
+    namespace: gitops
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -330,7 +330,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-secret
-    namespace: argocd
+    namespace: gitops
   type: Opaque
 - apiVersion: v1
   kind: Service
@@ -344,7 +344,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
   spec:
     ports:
     - port: 8082
@@ -363,7 +363,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-dex-server
-    namespace: argocd
+    namespace: gitops
   spec:
     ports:
     - name: http
@@ -388,7 +388,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-metrics
-    namespace: argocd
+    namespace: gitops
   spec:
     ports:
     - name: metrics
@@ -409,7 +409,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-redis
-    namespace: argocd
+    namespace: gitops
   spec:
     ports:
     - port: 6379
@@ -428,7 +428,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-repo-server
-    namespace: argocd
+    namespace: gitops
   spec:
     ports:
     - port: 8081
@@ -447,7 +447,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
   spec:
     ports:
     - name: https
@@ -472,7 +472,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -485,7 +485,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-dex-server
-    namespace: argocd
+    namespace: gitops
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -498,7 +498,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
@@ -511,7 +511,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
   rules:
   - apiGroups:
     - '*'
@@ -535,7 +535,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
   rules:
   - apiGroups:
     - '*'
@@ -570,7 +570,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -578,7 +578,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -591,7 +591,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -599,7 +599,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
@@ -612,7 +612,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
   rules:
   - apiGroups:
     - ''
@@ -655,7 +655,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-dex-server
-    namespace: argocd
+    namespace: gitops
   rules:
   - apiGroups:
     - ''
@@ -678,7 +678,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
   rules:
   - apiGroups:
     - ''
@@ -725,7 +725,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-application-controller
-    namespace: argocd
+    namespace: gitops
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -745,7 +745,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-dex-server
-    namespace: argocd
+    namespace: gitops
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -765,7 +765,7 @@ items:
       helm.sh/chart: argo-cd-0.2.2
       kubenix/project-name: kubenix
     name: argocd-server
-    namespace: argocd
+    namespace: gitops
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role

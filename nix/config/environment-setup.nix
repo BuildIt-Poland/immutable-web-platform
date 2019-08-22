@@ -139,6 +139,8 @@ with pkgs.lib;
         let
           functions = (import ./functions.nix { inherit pkgs; });
           resources = config.kubernetes.resources;
+          priority = resources.priority;
+          # FIXME this is a bit crappy ...
           extra-resources = builtins.getAttr config.kubernetes.target {
             eks = {
               "${priority.high "eks-cluster"}"       = [ eks-cluster ];
@@ -147,10 +149,9 @@ with pkgs.lib;
             gcp = {};
             aks = {};
           };
-          priority = resources.priority;
-          # TODO apply skip
           modules = {
             "${priority.high "istio"}"       = [ istio-service-mesh ];
+            "${priority.high "storage"}"     = [ storage ];
             "${priority.mid  "knative"}"     = [ knative ];
             "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
             "${priority.low  "gitops"}"      = [ argocd ];
@@ -166,6 +167,9 @@ with pkgs.lib;
 
       namespace = {
         functions = "functions";
+        argo = "gitops";
+        brigade = "ci";
+        knative-serving = "knative";
       };
     };
 

@@ -68,6 +68,14 @@ items:
         protocol: HTTPS
       tls:
         mode: PASSTHROUGH
+    - hosts:
+      - '*'
+      port:
+        name: rook-ceph-argocd
+        number: 15400
+        protocol: HTTPS
+      tls:
+        mode: PASSTHROUGH
 - apiVersion: networking.istio.io/v1alpha3
   kind: VirtualService
   metadata:
@@ -106,19 +114,24 @@ items:
       - port: 15201
       route:
       - destination:
-          host: brigade-kashti.brigade.svc.cluster.local
+          host: brigade-kashti.ci.svc.cluster.local
           port:
             number: 80
+    - match:
+      - port: 15400
+      route:
+      - destination:
+          host: rook-ceph-mgr-dashboard.system.svc.cluster.local
+          port:
+            number: 8443
     tls:
     - match:
       - port: 15200
         sni_hosts:
-        - localhost
-        - kind.local
         - '*'
       route:
       - destination:
-          host: argocd-server.argocd.svc.cluster.local
+          host: argocd-server.gitops.svc.cluster.local
           port:
             number: 443
 - apiVersion: config.istio.io/v1alpha2
@@ -1271,6 +1284,10 @@ items:
       nodePort: 31302
       port: 15302
       targetPort: 15302
+    - name: rook-ceph-port
+      nodePort: 31350
+      port: 15400
+      targetPort: 15400
     selector:
       app: virtual-services
       istio: virtual-services-gateway
@@ -2495,6 +2512,7 @@ items:
           - containerPort: 15300
           - containerPort: 15301
           - containerPort: 15302
+          - containerPort: 15400
           readinessProbe:
             failureThreshold: 30
             httpGet:

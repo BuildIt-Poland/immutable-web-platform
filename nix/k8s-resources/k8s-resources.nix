@@ -30,6 +30,15 @@ rec {
     };
   };
 
+  rook-ceph-toolbox = helm.yaml-to-json {
+    name = "rook-ceph-toolbox";
+    version = "1.0.5";
+    src = pkgs.fetchurl {
+      url = https://raw.githubusercontent.com/rook/rook/v1.0.5/cluster/examples/kubernetes/ceph/toolbox.yaml;
+      sha256="1iic9dd4r0qw7rvlgakpdajhbkawp6al8bq1hclb11dfyr1gg136";
+    };
+  };
+
   # core crd
   cert-manager-crd-json = helm.yaml-to-json {
     name = "cert-manager-crd";
