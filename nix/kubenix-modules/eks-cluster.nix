@@ -10,7 +10,7 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  system-ns = namespace.system;
+  eks-ns = "eks";
   kn-serving = namespace.knative-serving;
 
   update-eks-vpc-cni = 
@@ -46,11 +46,11 @@ in
     knative-not-resolve-tags
   ];
 
-  kubernetes.api.namespaces."${system-ns}"= {};
+  kubernetes.api.namespaces."${eks-ns}"= {};
  
    # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
   kubernetes.helm.instances.eks-cluster-autoscaler = {
-    namespace = "${system-ns}";
+    namespace = "${eks-ns}";
     chart = k8s-resources.cluster-autoscaler;
     values ={
       rbac.create = "true";

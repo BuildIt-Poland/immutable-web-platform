@@ -21,18 +21,17 @@ in
   config = {
     kubernetes.api.namespaces."${argo-ns}"= {};
 
-    # FIXME if local
     # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
     kubernetes.patches = [
       (pkgs.writeScriptBin "patch-argo-password" ''
         ${pkgs.lib.log.important "Patching Argo CD admin password"}
-        ${pkgs.kubectl}/bin/kubectl patch secret -n argocd argocd-secret \
-          -p '{"stringData": { "admin.password": "'$(htpasswd -bnBC 10 "" admin | tr -d ':\n')'"}}'
+
+        pass=$\{1:-admin}  
+        ${pkgs.kubectl}/bin/kubectl patch secret -n ${argo-ns} argocd-secret \
+          -p '{"stringData": { "admin.password": "'$(htpasswd -bnBC 10 "" $pass | tr -d ':\n')'"}}'
       '')
     ];
 
-    # TODO
-    # there is a cli - a bit regret that this is not a kubernetes resource
     kubernetes.helm.instances.argo-cd = {
       namespace = "${argo-ns}";
       chart = k8s-resources.argo-cd;

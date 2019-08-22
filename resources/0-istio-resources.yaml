@@ -93,7 +93,7 @@ items:
       - port: 15300
       route:
       - destination:
-          host: grafana.knative-monitoring.svc.cluster.local
+          host: grafana.fass-monitoring.svc.cluster.local
           port:
             number: 30802
     - match:

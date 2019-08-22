@@ -24,16 +24,6 @@ let
     inherit config;
   };
 
-  sc-provisioner = 
-    (builtins.getAttr 
-      (project-config.kubernetes.target) 
-      {
-        "minikube" = "k8s.io/minikube-hostpath"; # "kubernetes.io/host-path";
-        "eks" = cfg.storage.provisioner;
-        "gcp" = cfg.storage.provisioner;
-        "aks" = cfg.storage.provisioner;
-      });
-
   helm-charts = {
     brigade-bitbucket-gateway = {
       namespace = "${brigade-ns}";
@@ -67,7 +57,6 @@ in
     helm
     docker
     docker-registry
-    storage
   ];
 
   config = {
@@ -100,55 +89,6 @@ in
       in
         [] ++ (builtins.map inject-ssh-key projects);
 
-    # FIXME I dont like this coupling here brigade should be separate of storage
-    # hard to handle well in case of other providers - actually can be defined within cloud provider
-
-    storage.blockPools = {
-      brigade-storage = {
-        replicated.size = 1;
-      };
-      brigade-cache = {
-        replicated.size = 1;
-      };
-    };
-
-    kubernetes.api.storageclasses = 
-      let
-        metadata = {
-          annotations = {
-            "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
-          };
-          labels = {
-            "addonmanager.kubernetes.io/mode" = "EnsureExists";
-          };
-        };
-      in
-      {
-        build-storage = {
-          metadata = {
-            namespace = brigade-ns;
-            name = "build-storage";
-          } // metadata;
-          provisioner = sc-provisioner;
-          parameters = {
-            blockPool = "brigade-storage";
-            clusterNamespace= cfg.storage.namespace;
-          };
-        };
-
-        cache-storage = {
-          metadata = {
-            namespace = brigade-ns;
-            name = "cache-storage";
-          } // metadata;
-          provisioner = sc-provisioner;
-          parameters = {
-            blockPool = "brigade-cache";
-            clusterNamespace= cfg.storage.namespace;
-          };
-        };
-      };
-    
     kubernetes.api.clusterrolebindings = 
       let
         admin = "brigade-admin-privileges";

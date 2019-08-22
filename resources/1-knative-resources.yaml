@@ -4,6 +4,13 @@ items:
   kind: Namespace
   metadata:
     labels:
+      kubenix/project-name: kubenix
+    name: faas-knative
+    namespace: default
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
       istio-injection: enabled
       kubenix/project-name: kubenix
     name: functions
@@ -12,24 +19,17 @@ items:
   kind: Namespace
   metadata:
     labels:
-      kubenix/project-name: kubenix
-    name: knative
-    namespace: default
-- apiVersion: v1
-  kind: Namespace
-  metadata:
-    labels:
       istio-injection: enabled
       serving.knative.dev/release: v0.8.0
     name: knative-serving
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
     labels:
       serving.knative.dev/release: v0.8.0
     name: knative-serving-controller-admin
-    namespace: knative
+    namespace: faas-knative
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -45,7 +45,7 @@ items:
       autoscaling.knative.dev/metric-provider: custom-metrics
       serving.knative.dev/release: v0.8.0
     name: custom-metrics-auth-reader
-    namespace: knative
+    namespace: faas-knative
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -61,7 +61,7 @@ items:
       networking.knative.dev/ingress-provider: istio
       serving.knative.dev/release: v0.8.0
     name: knative-ingress-gateway
-    namespace: knative
+    namespace: faas-knative
   spec:
     selector:
       istio: ingressgateway
@@ -87,7 +87,7 @@ items:
       networking.knative.dev/ingress-provider: istio
       serving.knative.dev/release: v0.8.0
     name: cluster-local-gateway
-    namespace: knative
+    namespace: faas-knative
   spec:
     selector:
       istio: cluster-local-gateway
@@ -105,7 +105,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: certificates.networking.internal.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.conditions[?(@.type=="Ready")].status
@@ -135,7 +135,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: clusteringresses.networking.internal.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.conditions[?(@.type=='Ready')].status
@@ -165,7 +165,7 @@ items:
     labels:
       knative.dev/crd-install: 'true'
     name: images.caching.internal.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     group: caching.internal.knative.dev
     names:
@@ -188,7 +188,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: ingresses.networking.internal.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.conditions[?(@.type=='Ready')].status
@@ -221,7 +221,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: metrics.autoscaling.internal.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.conditions[?(@.type=='Ready')].status
@@ -249,7 +249,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: podautoscalers.autoscaling.internal.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.conditions[?(@.type=='Ready')].status
@@ -284,7 +284,7 @@ items:
       serving.knative.dev/controller: 'true'
       serving.knative.dev/release: v0.8.0
     name: knative-serving-istio
-    namespace: knative
+    namespace: faas-knative
   rules:
   - apiGroups:
     - networking.istio.io
@@ -306,7 +306,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: serverlessservices.networking.internal.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .spec.mode
@@ -348,7 +348,7 @@ items:
       app: activator
       serving.knative.dev/release: v0.8.0
     name: activator-service
-    namespace: knative
+    namespace: faas-knative
   spec:
     ports:
     - name: http
@@ -373,7 +373,7 @@ items:
       app: controller
       serving.knative.dev/release: v0.8.0
     name: controller
-    namespace: knative
+    namespace: faas-knative
   spec:
     ports:
     - name: metrics
@@ -389,7 +389,7 @@ items:
       role: webhook
       serving.knative.dev/release: v0.8.0
     name: webhook
-    namespace: knative
+    namespace: faas-knative
   spec:
     ports:
     - port: 443
@@ -402,7 +402,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: queue-proxy
-    namespace: knative
+    namespace: faas-knative
   spec:
     image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:e0654305370cf3bbbd0f56f97789c92cf5215f752b70902eba5d5fc0e88c5aca
 - apiVersion: apps/v1
@@ -411,7 +411,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: activator
-    namespace: knative
+    namespace: faas-knative
   spec:
     selector:
       matchLabels:
@@ -485,7 +485,7 @@ items:
   metadata:
     labels:
     name: activator
-    namespace: knative
+    namespace: faas-knative
   spec:
     maxReplicas: 20
     metrics:
@@ -505,7 +505,7 @@ items:
       autoscaling.knative.dev/autoscaler-provider: hpa
       serving.knative.dev/release: v0.8.0
     name: autoscaler-hpa
-    namespace: knative
+    namespace: faas-knative
   spec:
     replicas: 1
     selector:
@@ -553,7 +553,7 @@ items:
       app: autoscaler
       serving.knative.dev/release: v0.8.0
     name: autoscaler
-    namespace: knative
+    namespace: faas-knative
   spec:
     ports:
     - name: http
@@ -576,7 +576,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: autoscaler
-    namespace: knative
+    namespace: faas-knative
   spec:
     replicas: 1
     selector:
@@ -647,7 +647,7 @@ items:
       autoscaling.knative.dev/metric-provider: custom-metrics
       serving.knative.dev/release: v0.8.0
     name: custom-metrics-server-resources
-    namespace: knative
+    namespace: faas-knative
   rules:
   - apiGroups:
     - custom.metrics.k8s.io
@@ -822,7 +822,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-autoscaler
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: '################################
@@ -927,7 +927,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-defaults
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: '################################
@@ -969,7 +969,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-deployment
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: "################################\n#                              #\n\
@@ -994,7 +994,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-domain
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: '################################
@@ -1058,7 +1058,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-gc
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: '################################
@@ -1142,7 +1142,7 @@ items:
       networking.knative.dev/ingress-provider: istio
       serving.knative.dev/release: v0.8.0
     name: config-istio
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: "################################\n#                              #\n\
@@ -1170,7 +1170,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-logging
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: '################################
@@ -1399,7 +1399,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-network
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: v1
   data:
     _example: "################################\n#                              #\n\
@@ -1459,7 +1459,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-observability
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
@@ -1467,7 +1467,7 @@ items:
       rbac.authorization.k8s.io/aggregate-to-admin: 'true'
       serving.knative.dev/release: v0.8.0
     name: knative-serving-namespaced-admin
-    namespace: knative
+    namespace: faas-knative
   rules:
   - apiGroups:
     - serving.knative.dev
@@ -1535,14 +1535,14 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: config-tracing
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     labels:
       serving.knative.dev/release: v0.8.0
     name: controller
-    namespace: knative
+    namespace: faas-knative
   spec:
     replicas: 1
     selector:
@@ -1590,7 +1590,7 @@ items:
       autoscaling.knative.dev/metric-provider: custom-metrics
       serving.knative.dev/release: v0.8.0
     name: v1beta1.custom.metrics.k8s.io
-    namespace: knative
+    namespace: faas-knative
   spec:
     group: custom.metrics.k8s.io
     groupPriorityMinimum: 100
@@ -1607,7 +1607,7 @@ items:
       networking.knative.dev/ingress-provider: istio
       serving.knative.dev/release: v0.8.0
     name: networking-istio
-    namespace: knative
+    namespace: faas-knative
   spec:
     replicas: 1
     selector:
@@ -1653,7 +1653,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: webhook
-    namespace: knative
+    namespace: faas-knative
   spec:
     replicas: 1
     selector:
@@ -1704,7 +1704,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: configurations.serving.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.latestCreatedRevisionName
@@ -1745,7 +1745,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: revisions.serving.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .metadata.labels['serving\.knative\.dev/configuration']
@@ -1788,7 +1788,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: routes.serving.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.url
@@ -1825,7 +1825,7 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: services.serving.knative.dev
-    namespace: knative
+    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.url
@@ -1872,7 +1872,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: knative-serving-admin
-    namespace: knative
+    namespace: faas-knative
   rules: []
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
@@ -1881,7 +1881,7 @@ items:
       serving.knative.dev/controller: 'true'
       serving.knative.dev/release: v0.8.0
     name: knative-serving-core
-    namespace: knative
+    namespace: faas-knative
   rules:
   - apiGroups:
     - ''
@@ -1992,7 +1992,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: controller
-    namespace: knative
+    namespace: faas-knative
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -2000,7 +2000,7 @@ items:
       autoscaling.knative.dev/metric-provider: custom-metrics
       serving.knative.dev/release: v0.8.0
     name: custom-metrics:system:auth-delegator
-    namespace: knative
+    namespace: faas-knative
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -2016,7 +2016,7 @@ items:
       autoscaling.knative.dev/metric-provider: custom-metrics
       serving.knative.dev/release: v0.8.0
     name: hpa-controller-custom-metrics
-    namespace: knative
+    namespace: faas-knative
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole

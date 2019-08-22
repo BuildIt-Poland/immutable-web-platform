@@ -9,6 +9,7 @@ with pkgs.lib;
     bitbucket-k8s-repo
     local-cluster
     docker
+    storage
     brigade
     bitbucket
     terraform
@@ -67,7 +68,12 @@ with pkgs.lib;
           clone-url = config.project.repositories.code-repository;
           ssh-key = config.bitbucket.ssh-keys.priv;
           # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
-          overridings = {};
+          overridings = {
+            kubernetes = {
+              cacheStorageClass = "cache-storage";
+              buildStorageClass = "build-storage";
+            };
+          };
         };
       };
     };
@@ -151,7 +157,7 @@ with pkgs.lib;
           };
           modules = {
             "${priority.high "istio"}"       = [ istio-service-mesh ];
-            "${priority.high "storage"}"     = [ storage ];
+            "${priority.high "storage"}"     = [ ./storage-classes.nix ];
             "${priority.mid  "knative"}"     = [ knative ];
             "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
             "${priority.low  "gitops"}"      = [ argocd ];
@@ -170,6 +176,7 @@ with pkgs.lib;
         argo = "gitops";
         brigade = "ci";
         knative-serving = "faas-knative";
+        knative-monitoring = "fass-monitoring";
       };
     };
 

@@ -42,8 +42,6 @@ in
       };
       kubernetes = {
         allowSecretKeyRef = "true";
-        cacheStorageClass = "cache-storage";
-        buildStorageClass = "build-storage";
       };
       secrets = {
         gitUser = project-config.project.author-email;

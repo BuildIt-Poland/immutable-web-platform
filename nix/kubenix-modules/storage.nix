@@ -1,4 +1,3 @@
-# IN PROGRESS
 { 
   config, 
   lib, 
@@ -30,13 +29,11 @@ with kubenix.lib.helm;
   ];
 
   options.storage = {
-    provisioner = mkOption {
-      default = "ceph.rook.io/block";
-    };
     blockPools = mkOption {
       # TODO add type {name: spec (replicated.size)}
       default = {};
     };
+
     namespace = mkOption {
       default = rook-ceph-ns;
     };

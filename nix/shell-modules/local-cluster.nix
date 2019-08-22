@@ -32,6 +32,7 @@ rec {
 
     ({
       kubernetes.imagePullPolicy = "Never";
+      storage.provisioner = "k8s.io/minikube-hostpath";
     })
 
     (mkIf cfg.docker.upload {
