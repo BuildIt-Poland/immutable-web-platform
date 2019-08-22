@@ -7,7 +7,6 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: configurations.serving.knative.dev
-    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.latestCreatedRevisionName
@@ -51,7 +50,6 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: revisions.serving.knative.dev
-    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .metadata.labels['serving\.knative\.dev/configuration']
@@ -97,7 +95,6 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: routes.serving.knative.dev
-    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.url
@@ -137,7 +134,6 @@ items:
       knative.dev/crd-install: 'true'
       serving.knative.dev/release: v0.8.0
     name: services.serving.knative.dev
-    namespace: faas-knative
   spec:
     additionalPrinterColumns:
     - JSONPath: .status.url
