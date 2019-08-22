@@ -1,5 +1,3 @@
-AmazonEC2ContainerRegistryReadOnly
-
 data "aws_iam_policy_document" "worker-role-policy" {
   statement {
     actions = [
