@@ -202,6 +202,26 @@ items:
     name: storage
     namespace: default
 - apiVersion: ceph.rook.io/v1
+  kind: CephBlockPool
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: brigade-cache
+    namespace: storage
+  spec:
+    replicated:
+      size: 1
+- apiVersion: ceph.rook.io/v1
+  kind: CephBlockPool
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: brigade-storage
+    namespace: storage
+  spec:
+    replicated:
+      size: 1
+- apiVersion: ceph.rook.io/v1
   kind: CephCluster
   metadata:
     labels:
@@ -791,6 +811,34 @@ items:
   - kind: ServiceAccount
     name: rook-ceph-system
     namespace: storage
+- apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.beta.kubernetes.io/is-default-class: 'false'
+    labels:
+      addonmanager.kubernetes.io/mode: EnsureExists
+      kubenix/project-name: kubenix
+    name: build-storage
+    namespace: ci
+  parameters:
+    blockPool: brigade-storage
+    clusterNamespace: storage
+  provisioner: ceph.rook.io/block
+- apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.beta.kubernetes.io/is-default-class: 'false'
+    labels:
+      addonmanager.kubernetes.io/mode: EnsureExists
+      kubenix/project-name: kubenix
+    name: cache-storage
+    namespace: ci
+  parameters:
+    blockPool: brigade-cache
+    clusterNamespace: storage
+  provisioner: ceph.rook.io/block
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

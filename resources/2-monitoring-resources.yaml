@@ -1,5 +1,12 @@
 apiVersion: v1
 items:
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: fass-monitoring
+    namespace: default
 - apiVersion: apps/v1beta1
   kind: Deployment
   metadata:
@@ -281,6 +288,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   kind: Service
   metadata:
@@ -290,7 +298,7 @@ items:
       kubernetes.io/cluster-service: 'true'
       kubernetes.io/name: Elasticsearch
     name: elasticsearch-logging
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     ports:
     - port: 9200
@@ -305,6 +313,7 @@ items:
       app: fluentd-ds
       serving.knative.dev/release: v0.8.0
     name: fluentd-ds
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -322,6 +331,7 @@ items:
       app: fluentd-ds
       serving.knative.dev/release: v0.8.0
     name: fluentd-ds
+    namespace: fass-monitoring
   roleRef:
     apiGroup: ''
     kind: ClusterRole
@@ -338,7 +348,7 @@ items:
       app: fluentd-ds
       serving.knative.dev/release: v0.8.0
     name: fluentd-ds
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     ports:
     - name: fluentd-tcp
@@ -359,7 +369,7 @@ items:
       serving.knative.dev/release: v0.8.0
       version: v2.0.4
     name: fluentd-ds
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     selector:
       matchLabels:
@@ -432,13 +442,13 @@ items:
   metadata:
     labels:
     name: kube-state-metrics
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role
   metadata:
     labels:
     name: kube-state-metrics-resizer
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -460,7 +470,7 @@ items:
   metadata:
     labels:
     name: kube-state-metrics
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -474,7 +484,7 @@ items:
   metadata:
     labels:
     name: kube-state-metrics
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -542,7 +552,7 @@ items:
   metadata:
     labels:
     name: kube-state-metrics
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -556,7 +566,7 @@ items:
   metadata:
     labels:
     name: kube-state-metrics
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     replicas: 1
     template:
@@ -641,14 +651,14 @@ items:
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
     name: elasticsearch-logging
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   kind: Service
   metadata:
     labels:
       app: kube-state-metrics
     name: kube-state-metrics
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     clusterIP: None
     ports:
@@ -955,7 +965,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-deployment
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-capacity-planning-dashboard.json: "{\n  \"__inputs\": [\n    {\n  \
@@ -1336,7 +1346,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-capacity-planning
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-cluster-health-dashboard.json: "{\n  \"__inputs\": [\n    {\n     \
@@ -1609,7 +1619,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-cluster-health
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-cluster-status-dashboard.json: "{\n  \"__inputs\": [\n    {\n     \
@@ -1929,7 +1939,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-cluster-status
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-control-plane-status-dashboard.json: "{\n  \"__inputs\": [\n    {\n\
@@ -2175,7 +2185,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-control-plane-status
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-resource-requests-dashboard.json: "{\n  \"__inputs\": [\n    {\n  \
@@ -2339,7 +2349,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-resource-requests
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-nodes-dashboard.json: "{\n  \"__inputs\": [\n    {\n      \"description\"\
@@ -2664,7 +2674,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-nodes
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-pods-dashboard.json: "{\n  \"__inputs\": [\n    {\n      \"description\"\
@@ -2830,7 +2840,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-pods
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     kubernetes-statefulset-dashboard.json: "{\n  \"__inputs\": [\n    {\n      \"\
@@ -3112,7 +3122,7 @@ items:
   metadata:
     labels:
     name: grafana-dashboard-definition-kubernetes-statefulset
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
@@ -3121,6 +3131,7 @@ items:
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
     name: elasticsearch-logging
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -3135,13 +3146,13 @@ items:
   metadata:
     labels:
     name: node-exporter
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
     labels:
     name: node-exporter
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - authentication.k8s.io
@@ -3160,7 +3171,7 @@ items:
   metadata:
     labels:
     name: node-exporter
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -3174,7 +3185,7 @@ items:
   metadata:
     labels:
     name: node-exporter
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     template:
       metadata:
@@ -3246,7 +3257,7 @@ items:
     labels:
       app: node-exporter
     name: node-exporter
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     clusterIP: None
     ports:
@@ -3438,7 +3449,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: grafana-dashboard-definition-knative-efficiency
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     knative-reconciler-dashboard.json: "{\n  \"__inputs\": [\n    {\n      \"description\"\
@@ -3646,7 +3657,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: grafana-dashboard-definition-knative-reconciler
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     scaling-dashboard.json: "{\n   \"__inputs\": [\n      {\n         \"name\": \"\
@@ -4077,7 +4088,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: scaling-config
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     resource-dashboard.json: "{\n  \"__inputs\": [\n    {\n      \"description\":\
@@ -4531,7 +4542,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: grafana-dashboard-definition-knative
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   data:
     prometheus.yaml: "datasources:\n - name: prometheus\n   type: prometheus\n   access:\
@@ -4542,7 +4553,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: grafana-datasources
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4551,7 +4562,7 @@ items:
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
     name: elasticsearch-logging
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   roleRef:
     apiGroup: ''
     kind: ClusterRole
@@ -4596,7 +4607,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: grafana-dashboards
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   kind: Service
   metadata:
@@ -4604,7 +4615,7 @@ items:
       app: grafana
       serving.knative.dev/release: v0.8.0
     name: grafana
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     ports:
     - port: 30802
@@ -4619,7 +4630,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: grafana
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     replicas: 1
     selector:
@@ -4921,7 +4932,7 @@ items:
       name: prometheus-scrape-config
       serving.knative.dev/release: v0.8.0
     name: prometheus-scrape-config
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   kind: Service
   metadata:
@@ -4929,7 +4940,7 @@ items:
       app: kube-controller-manager
       serving.knative.dev/release: v0.8.0
     name: kube-controller-manager
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     clusterIP: None
     ports:
@@ -4947,7 +4958,7 @@ items:
       app: prometheus
       serving.knative.dev/release: v0.8.0
     name: prometheus-system-discovery
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     clusterIP: None
     ports:
@@ -4965,14 +4976,14 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: default
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -4997,7 +5008,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -5022,7 +5033,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: kube-system
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -5043,7 +5054,7 @@ items:
       kubernetes.io/cluster-service: 'true'
       version: v5.6.4
     name: elasticsearch-logging
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     replicas: 2
     selector:
@@ -5100,7 +5111,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: istio-system
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -5126,7 +5137,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   rules:
   - apiGroups:
     - ''
@@ -5157,7 +5168,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: default
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -5172,7 +5183,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -5187,7 +5198,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: kube-system
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -5202,7 +5213,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: istio-system
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -5217,6 +5228,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
+    namespace: fass-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -5231,7 +5243,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system-np
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     ports:
     - port: 8080
@@ -5245,7 +5257,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: prometheus-system
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     podManagementPolicy: Parallel
     replicas: 2
@@ -5317,7 +5329,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: zipkin
-    namespace: istio-system
+    namespace: fass-monitoring
   spec:
     ports:
     - name: http
@@ -5333,7 +5345,7 @@ items:
       kubernetes.io/cluster-service: 'true'
       kubernetes.io/name: Kibana
     name: kibana-logging
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     ports:
     - port: 5601
@@ -5348,7 +5360,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: zipkin
-    namespace: istio-system
+    namespace: fass-monitoring
   spec:
     replicas: 1
     selector:
@@ -5395,7 +5407,7 @@ items:
       app: kibana-logging
       kubernetes.io/cluster-service: 'true'
     name: kibana-logging
-    namespace: knative-monitoring
+    namespace: fass-monitoring
   spec:
     replicas: 1
     selector:
@@ -5473,7 +5485,7 @@ items:
     labels:
       serving.knative.dev/release: v0.8.0
     name: fluentd-ds-config
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -5481,6 +5493,6 @@ items:
       app: fluentd-ds
       serving.knative.dev/release: v0.8.0
     name: fluentd-ds
-    namespace: knative-monitoring
+    namespace: fass-monitoring
 kind: List
 labels:

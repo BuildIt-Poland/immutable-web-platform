@@ -61,6 +61,8 @@ rec {
       packages = with pkgs; [
       ];
 
+      storage.provisioner = "ceph.rook.io/block";
+
       environment.vars = {
         KUBECONFIG = terraform-kubeconfig-path;
         DOCKER_REGISTRY = registry-path;

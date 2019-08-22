@@ -122,7 +122,7 @@ with lib;
         
         packages = 
           with cfg.modules;
-            (tests ++ scripts);
+            (tests ++ scripts ++ patches);
 
         test.run =
           lib.concatMapStringsSep "\n" 
