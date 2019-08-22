@@ -12,6 +12,7 @@ let
   knative-monitoring-ns = namespace.knative-monitoring;
   argo-ns = namespace.argo;
   brigade-ns = namespace.brigade;
+  system-ns = namespace.system;
 in
 # TODO create similar module for gitops
 # TODO argocd sth is not correct here - investigate
@@ -47,35 +48,45 @@ in
       };
       type = "LoadBalancer";
       ports = [
+        # OPS
         {
-        port = 15300;
-        targetPort = 15300;
-        nodePort = 31300;
-        name = "grafana-port";
-      } 
-      {
-        port = 15301;
-        targetPort = 15301;
-        nodePort = 31301;
-        name = "weavescope-port";
-      } {
-        port = 15302;
-        targetPort = 15302;
-        nodePort = 31302;
-        name = "zipkin-port";
-      } 
-      {
-        port = 15200;
-        targetPort = 15200;
-        nodePort = 31200;
-        name = "argocd-port";
-      } 
-      {
-        port = 15201;
-        targetPort = 15201;
-        nodePort = 31201;
-        name = "kashti-port";
-      } 
+          port = 15400;
+          targetPort = 15400;
+          nodePort = 31350;
+          name = "rook-ceph-port";
+        } 
+        # Monitoring
+        {
+          port = 15300;
+          targetPort = 15300;
+          nodePort = 31300;
+          name = "grafana-port";
+        } 
+        {
+          port = 15301;
+          targetPort = 15301;
+          nodePort = 31301;
+          name = "weavescope-port";
+        } {
+          port = 15302;
+          targetPort = 15302;
+          nodePort = 31302;
+          name = "zipkin-port";
+        } 
+        # Deployments
+        {
+          port = 15200;
+          targetPort = 15200;
+          nodePort = 31200;
+          name = "argocd-port";
+        } 
+        # CI/CD
+        {
+          port = 15201;
+          targetPort = 15201;
+          nodePort = 31201;
+          name = "kashti-port";
+        } 
       ];
     };
 
@@ -127,6 +138,18 @@ in
             hosts = [ 
               "*"
             ];
+          } {
+            port = {
+              number = 15400;
+              name = "rook-ceph-argocd";
+              protocol = "HTTPS";
+            };
+            tls = {
+              mode = "PASSTHROUGH";
+            };
+            hosts = [ 
+              "*"
+            ];
           }
           ];
         };
@@ -145,8 +168,6 @@ in
               { 
                 port = 15200; 
                 sni_hosts = [
-                  "localhost"
-                  "kind.local"
                   "*"
                 ];
               }
@@ -157,7 +178,26 @@ in
                 port.number = 443;
               };
             }];
-          }];
+          } 
+          # {
+          #   match = [
+          #     { 
+          #       port = 15400; 
+          #       sni_hosts = [
+          #         "localhost"
+          #         "kind.local"
+          #         "*"
+          #       ];
+          #     }
+          #   ];
+          #   route = [{
+          #     destination = {
+          #       host = "rook-ceph-mgr-dashboard.${system-ns}.svc.cluster.local";
+          #       port.number = 8443;
+          #     };
+          #   }];
+          # }
+          ];
           http = [
           # MONITORING 15300+
           {
@@ -201,6 +241,17 @@ in
               destination = {
                 host = "brigade-kashti.${brigade-ns}.svc.cluster.local";
                 port.number = 80; 
+              };
+            }];
+          }
+          {
+            match = [
+              { port = 15400; }
+            ];
+            route = [{
+              destination = {
+                host = "rook-ceph-mgr-dashboard.${system-ns}.svc.cluster.local";
+                port.number = 8443;
               };
             }];
           }

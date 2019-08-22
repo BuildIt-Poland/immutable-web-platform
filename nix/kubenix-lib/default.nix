@@ -5,5 +5,6 @@
     yaml-to-json = import ./yaml-to-json.nix args;
     concat-json = import ./concat-json.nix args;
     jsons-to-yaml = import ./jsons-to-yaml.nix args;
+    override-static-yaml = import ./override-static-yaml.nix args;
   };
 }

@@ -14,7 +14,10 @@ with pkgs;
   mkShell ({
     NIX_SHELL_NAME = "#core-shell";
     
-    buildInputs = [ ] ++ project-config.packages;
+    buildInputs = [ 
+      pkgs.watch
+    ] ++ project-config.packages;
+
     shellHook= project-config.shellHook;
 
   } // project-config.environment.vars)

@@ -1,12 +1,319 @@
 apiVersion: v1
 items:
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephblockpools.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephBlockPool
+      listKind: CephBlockPoolList
+      plural: cephblockpools
+      singular: cephblockpool
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephclusters.ceph.rook.io
+    namespace: storage
+  spec:
+    additionalPrinterColumns:
+    - JSONPath: .spec.dataDirHostPath
+      description: Directory used on the K8s nodes
+      name: DataDirHostPath
+      type: string
+    - JSONPath: .spec.mon.count
+      description: Number of MONs
+      name: MonCount
+      type: string
+    - JSONPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    - JSONPath: .status.state
+      description: Current State
+      name: State
+      type: string
+    group: ceph.rook.io
+    names:
+      kind: CephCluster
+      listKind: CephClusterList
+      plural: cephclusters
+      singular: cephcluster
+    scope: Namespaced
+    validation:
+      openAPIV3Schema:
+        properties:
+          spec:
+            properties:
+              cephVersion:
+                properties:
+                  allowUnsupported:
+                    type: boolean
+                  image:
+                    type: string
+                  name:
+                    pattern: ^(luminous|mimic|nautilus)$
+                    type: string
+              dashboard:
+                properties:
+                  enabled:
+                    type: boolean
+                  port:
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                  urlPrefix:
+                    type: string
+              dataDirHostPath:
+                pattern: ^/(\S+)
+                type: string
+              mon:
+                properties:
+                  allowMultiplePerNode:
+                    type: boolean
+                  count:
+                    maximum: 9
+                    minimum: 1
+                    type: integer
+                required:
+                - count
+              network:
+                properties:
+                  hostNetwork:
+                    type: boolean
+              storage:
+                properties:
+                  nodes:
+                    items: {}
+                    type: array
+                  useAllDevices: {}
+                  useAllNodes:
+                    type: boolean
+            required:
+            - mon
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephfilesystems.ceph.rook.io
+    namespace: storage
+  spec:
+    additionalPrinterColumns:
+    - JSONPath: .spec.metadataServer.activeCount
+      description: Number of MDSs
+      name: MdsCount
+      type: string
+    - JSONPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    group: ceph.rook.io
+    names:
+      kind: CephFilesystem
+      listKind: CephFilesystemList
+      plural: cephfilesystems
+      singular: cephfilesystem
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephnfses.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephNFS
+      listKind: CephNFSList
+      plural: cephnfses
+      shortNames:
+      - nfs
+      singular: cephnfs
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephobjectstores.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephObjectStore
+      listKind: CephObjectStoreList
+      plural: cephobjectstores
+      singular: cephobjectstore
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephobjectstoreusers.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephObjectStoreUser
+      listKind: CephObjectStoreUserList
+      plural: cephobjectstoreusers
+      shortNames:
+      - rcou
+      - objectuser
+      singular: cephobjectstoreuser
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: volumes.rook.io
+    namespace: storage
+  spec:
+    group: rook.io
+    names:
+      kind: Volume
+      listKind: VolumeList
+      plural: volumes
+      shortNames:
+      - rv
+      singular: volume
+    scope: Namespaced
+    version: v1alpha2
 - apiVersion: v1
   kind: Namespace
   metadata:
     labels:
       kubenix/project-name: kubenix
-    name: brigade
+    name: ci
     namespace: default
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: storage
+    namespace: default
+- apiVersion: ceph.rook.io/v1
+  kind: CephBlockPool
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: brigade-cache
+    namespace: storage
+  spec:
+    replicated:
+      size: 1
+- apiVersion: ceph.rook.io/v1
+  kind: CephBlockPool
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: brigade-storage
+    namespace: storage
+  spec:
+    replicated:
+      size: 1
+- apiVersion: ceph.rook.io/v1
+  kind: CephCluster
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph
+    namespace: storage
+  spec:
+    cephVersion:
+      image: ceph/ceph:v14.2
+    dashboard:
+      enabled: true
+      port: 8443
+      ssl: false
+    dataDirHostPath: /var/lib/rook
+    mon:
+      allowMultiplePerNode: true
+      count: 2
+    storage:
+      config:
+        storeType: filestore
+      directories:
+      - path: /var/lib/rook
+      useAllDevices: false
+      useAllNodes: true
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-operator
+    namespace: storage
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: rook-ceph-operator
+    template:
+      metadata:
+        labels:
+          app: rook-ceph-operator
+          chart: rook-ceph-v1.0.5
+      spec:
+        containers:
+        - args:
+          - ceph
+          - operator
+          env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: ROOK_CEPH_STATUS_CHECK_INTERVAL
+            value: 60s
+          - name: ROOK_CURRENT_NAMESPACE_ONLY
+            value: 'true'
+          - name: ROOK_ENABLE_SELINUX_RELABELING
+            value: 'true'
+          - name: ROOK_LOG_LEVEL
+            value: INFO
+          - name: ROOK_MON_HEALTHCHECK_INTERVAL
+            value: 45s
+          - name: ROOK_MON_OUT_TIMEOUT
+            value: 600s
+          image: rook/ceph:v1.0.5
+          imagePullPolicy: IfNotPresent
+          name: rook-ceph-operator
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        serviceAccountName: rook-ceph-system
 - apiVersion: batch/v1beta1
   kind: CronJob
   metadata:
@@ -18,7 +325,7 @@ items:
       kubenix/project-name: kubenix
       role: vacuum
     name: brigade-brigade-vacuum
-    namespace: brigade
+    namespace: ci
   spec:
     failedJobsHistoryLimit: 10
     jobTemplate:
@@ -61,7 +368,7 @@ items:
       kubenix/project-name: kubenix
       release: brigade
     name: brigade-kashti-js
-    namespace: brigade
+    namespace: ci
 - apiVersion: v1
   data:
     default.conf: "server {\n    listen       80;\n    server_name  localhost;\n\n\
@@ -78,7 +385,7 @@ items:
       kubenix/project-name: kubenix
       release: brigade
     name: brigade-kashti-nginx
-    namespace: brigade
+    namespace: ci
 - apiVersion: v1
   kind: Secret
   metadata:
@@ -92,7 +399,7 @@ items:
       kubenix/project-name: kubenix
       release: embracing-nix-docker-k8s-helm-knative
     name: brigade-a2a013f22a364382e7dc23ce94145b1fcb31697724035cc4ff3624
-    namespace: brigade
+    namespace: ci
   stringData:
     allowHostMounts: 'false'
     allowPrivilegedJobs: 'true'
@@ -105,20 +412,17 @@ items:
       \ createJob = (name) => {\n  let t = new NixJob(name)\n    .withExtraParams({\n\
       \      streamLogs: true,\n      privileged: true,\n      shell: 'bash',\n  \
       \    serviceAccount: \"brigade-worker\"\n    })\n\n  t = t.withTasks([\n   \
-      \ `cat ${t.cache.path}/test.file`,\n    `mkdir -p ${t.storage.path}`,\n    `ls\
-      \ -la ${t.cache.path}`,\n    `ls -la /mnt`,\n    `ls -la /mnt/brigade`,\n  \
-      \  // `ls -la ${t.storage.path}`,\n    `echo \"yay\" > ${t.storage.path}/test.file`,\n\
-      \    // `cat ${t.storage.path}/test.file`,\n    // runShellCommand('push-k8s-resources-to-repo'),\n\
-      \  ])\n\n  return t\n}\n\nevents.on(\"exec\", async (event, project) => {\n\
-      \  let test =\n    createJob(\"test\")\n      .withSecrets(project.secrets)\n\
+      \ `cat ${t.cache.path}/test.file`,\n    `echo \"storage\" > ${t.storage.path}/test.file`,\n\
+      \    `echo \"cache\" > ${t.cache.path}/test.file`,\n    // `cat ${t.storage.path}/test.file`,\n\
+      \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
+      }\n\nevents.on(\"exec\", async (event, project) => {\n  let test =\n    createJob(\"\
+      test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
+      \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
+      \      })\n\n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
       \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
-      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  let test2 =\n    createJob(\"\
-      test2\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n      \
-      \  BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
-      \      })\n\n  test2 = test2\n    .withTasks([\n      `ls -la /mnt/brigade`,\n\
-      \      `ls -la ${test2.storage.path}`,\n      `ls -la /var`,\n      `ls -la\
-      \ /`,\n    ])\n  // i don't like it, not sure how to attach nodeSelector\n \
-      \ // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
+      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  test2 = test2\n    .withTasks([\n\
+      \      `cat ${test2.storage.path}/test.file`,\n      // `cat ${test2.cache.path}/test.file`,\n\
+      \    ])\n  // i don't like it, not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
       \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  // test.run()\n\
       \  await test.run()\n  await test2.run()\n})\n\nevents.on(\"push\", (event,\
       \ project) => {\n  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\
@@ -139,13 +443,13 @@ items:
       \"2019-05-30T08:53:28Z\",\n\t\t\t\t\"enc\": \"AQICAHjS6PwEx20O7P4yh35aJPfmzi4aw4Y6O7J374+k6zIsWgFsa5b6GS8qxZzcQr83Bf7sAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMvwZWKpDsNI/eWmcwAgEQgDtQoEeq7UBHlW8tbt2gx65BAdO6XIw3beyBl0NJNvbW+m9QeyVbgvgFlTWWpy+vhNW4Kh0cAOCLdtI2yg==\",\n\t\t\t\t\"aws_profile\":
       \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
       \"2019-07-26T17:15:50Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:t0ZVa/Of38MNYbQ7MHXLpfWnnvCjygOPdoS6UMgCSIPZ4Jydaq2Yh5gI9R/m526HFptswXaU74sID3vWPiPYGP3zvS1JvCaBdXkBYhug5CRopgQefCOpKtZJ8LL4/yGpSyM1sbeGAhM+55P5ouYDApqrzFX/SqXcNEGAE4MtX+s=,iv:Za4u0weobiHpE1ZalkAfWy5pJxDDVXBGrxg3UL5y1lA=,tag:KJmSuUzKtV0uLs66zT3X7g==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:remote-worker-7241ae3d9d2561824093ff6f6012d4dcb59a65c5"}'
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:remote-worker-01fa032f7b8a8ec9ce8805bb5e07aaaa1d503697"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-7241ae3d9d2561824093ff6f6012d4dcb59a65c5
+    worker.tag: brigade-worker-01fa032f7b8a8ec9ce8805bb5e07aaaa1d503697
     workerCommand: yarn build-start
   type: brigade.sh/project
 - apiVersion: v1
@@ -159,7 +463,7 @@ items:
       role: gateway
       type: bitbucket
     name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-    namespace: brigade
+    namespace: ci
   spec:
     ports:
     - name: service
@@ -181,7 +485,7 @@ items:
       kubenix/project-name: kubenix
       role: api
     name: brigade-brigade-api
-    namespace: brigade
+    namespace: ci
   spec:
     ports:
     - name: brigade-api
@@ -201,7 +505,7 @@ items:
       kubenix/project-name: kubenix
       release: brigade
     name: brigade-kashti
-    namespace: brigade
+    namespace: ci
   spec:
     ports:
     - name: kashti
@@ -222,7 +526,7 @@ items:
       kubenix/project-name: kubenix
       release: brigade-bitbucket-gateway
     name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-    namespace: brigade
+    namespace: ci
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -233,7 +537,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-api
-    namespace: brigade
+    namespace: ci
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -244,7 +548,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-ctrl
-    namespace: brigade
+    namespace: ci
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -255,7 +559,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-vacuum
-    namespace: brigade
+    namespace: ci
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -266,7 +570,37 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-worker
-    namespace: brigade
+    namespace: ci
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-osd
+    namespace: storage
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system
+    namespace: storage
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -279,7 +613,7 @@ items:
       role: gateway
       type: bitbucket
     name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-    namespace: brigade
+    namespace: ci
   spec:
     replicas: 1
     template:
@@ -324,7 +658,7 @@ items:
       kubenix/project-name: kubenix
       role: api
     name: brigade-brigade-api
-    namespace: brigade
+    namespace: ci
   spec:
     replicas: 1
     template:
@@ -367,7 +701,7 @@ items:
       kubenix/project-name: kubenix
       role: controller
     name: brigade-brigade-ctrl
-    namespace: brigade
+    namespace: ci
   spec:
     replicas: 1
     template:
@@ -405,7 +739,7 @@ items:
       kubenix/project-name: kubenix
       release: brigade
     name: brigade-kashti
-    namespace: brigade
+    namespace: ci
   spec:
     replicas: 1
     template:
@@ -444,6 +778,314 @@ items:
         - configMap:
             name: brigade-kashti-nginx
           name: config-nginx
+- apiVersion: policy/v1beta1
+  kind: PodSecurityPolicy
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: 00-rook-ceph-operator
+    namespace: storage
+  spec:
+    allowedCapabilities:
+    - '*'
+    fsGroup:
+      rule: RunAsAny
+    hostIPC: true
+    hostNetwork: true
+    hostPID: true
+    privileged: true
+    runAsUser:
+      rule: RunAsAny
+    seLinux:
+      rule: RunAsAny
+    supplementalGroups:
+      rule: RunAsAny
+    volumes:
+    - '*'
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.rook.ceph.io/aggregate-to-rook-ceph-cluster-mgmt: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-cluster-mgmt
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.rook.ceph.io/aggregate-to-rook-ceph-cluster-mgmt: 'true'
+      storage-backend: ceph
+    name: rook-ceph-cluster-mgmt-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    - pods
+    - pods/log
+    - services
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - apps
+    resources:
+    - deployments
+    - daemonsets
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-global: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-global
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-global: 'true'
+      storage-backend: ceph
+    name: rook-ceph-global-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - nodes
+    - nodes/proxy
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    - persistentvolumes
+    - persistentvolumeclaims
+    - endpoints
+    verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - storage.k8s.io
+    resources:
+    - storageclasses
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - batch
+    resources:
+    - jobs
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - ceph.rook.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - apiGroups:
+    - rook.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-cluster: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-mgr-cluster
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-cluster: 'true'
+      storage-backend: ceph
+    name: rook-ceph-mgr-cluster-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    - nodes
+    - nodes/proxy
+    verbs:
+    - get
+    - list
+    - watch
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr-system
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: 'true'
+    name: rook-ceph-mgr-system-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-system-psp-user: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system-psp-user
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-system-psp-user: 'true'
+      storage-backend: ceph
+    name: rook-ceph-system-psp-user-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - apps
+    resourceNames:
+    - 00-rook-ceph-operator
+    resources:
+    - podsecuritypolicies
+    verbs:
+    - use
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-global
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-global
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr-cluster
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-mgr-cluster
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system-psp-users
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-system-psp-user
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role
   metadata:
@@ -454,7 +1096,7 @@ items:
       kubenix/project-name: kubenix
       release: brigade-bitbucket-gateway
     name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-    namespace: brigade
+    namespace: ci
   rules:
   - apiGroups:
     - ''
@@ -485,7 +1127,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-api
-    namespace: brigade
+    namespace: ci
   rules:
   - apiGroups:
     - ''
@@ -507,7 +1149,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-ctrl
-    namespace: brigade
+    namespace: ci
   rules:
   - apiGroups:
     - ''
@@ -533,7 +1175,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-vacuum
-    namespace: brigade
+    namespace: ci
   rules:
   - apiGroups:
     - ''
@@ -564,7 +1206,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-wrk
-    namespace: brigade
+    namespace: ci
   rules:
   - apiGroups:
     - ''
@@ -590,6 +1232,95 @@ items:
     - list
     - watch
 - apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - services
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - batch
+    resources:
+    - jobs
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - ceph.rook.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-osd
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - configmaps
+    - services
+    verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - apps
+    resources:
+    - daemonsets
+    - statefulsets
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+- apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: RoleBinding
   metadata:
     labels:
@@ -599,7 +1330,7 @@ items:
       kubenix/project-name: kubenix
       release: brigade-bitbucket-gateway
     name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-    namespace: brigade
+    namespace: ci
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -617,7 +1348,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-api
-    namespace: brigade
+    namespace: ci
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -635,7 +1366,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-ctrl
-    namespace: brigade
+    namespace: ci
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -653,7 +1384,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-vacuum
-    namespace: brigade
+    namespace: ci
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -671,7 +1402,7 @@ items:
       helm.sh/chart: brigade-1.1.0
       kubenix/project-name: kubenix
     name: brigade-brigade-wrk
-    namespace: brigade
+    namespace: ci
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -679,6 +1410,83 @@ items:
   subjects:
   - kind: ServiceAccount
     name: brigade-worker
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-cluster-mgmt
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-cluster-mgmt
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rook-ceph-mgr
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr-system
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-mgr-system
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-osd
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rook-ceph-osd
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-osd
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rook-ceph-system
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -693,7 +1501,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: brigade-worker
-    namespace: brigade
+    namespace: ci
 - apiVersion: storage.k8s.io/v1
   kind: StorageClass
   metadata:
@@ -703,10 +1511,10 @@ items:
       addonmanager.kubernetes.io/mode: EnsureExists
       kubenix/project-name: kubenix
     name: build-storage
-    namespace: brigade
+    namespace: ci
   parameters:
     blockPool: brigade-storage
-    clusterNamespace: system
+    clusterNamespace: storage
   provisioner: ceph.rook.io/block
 - apiVersion: storage.k8s.io/v1
   kind: StorageClass
@@ -717,10 +1525,72 @@ items:
       addonmanager.kubernetes.io/mode: EnsureExists
       kubenix/project-name: kubenix
     name: cache-storage
-    namespace: brigade
+    namespace: ci
   parameters:
     blockPool: brigade-cache
-    clusterNamespace: system
+    clusterNamespace: storage
   provisioner: ceph.rook.io/block
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: rook-ceph-tools
+    name: rook-ceph-tools
+    namespace: storage
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: rook-ceph-tools
+    template:
+      metadata:
+        labels:
+          app: rook-ceph-tools
+      spec:
+        containers:
+        - args:
+          - -g
+          - --
+          - /usr/local/bin/toolbox.sh
+          command:
+          - /tini
+          env:
+          - name: ROOK_ADMIN_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: admin-secret
+                name: rook-ceph-mon
+          image: rook/ceph:v1.0.5
+          imagePullPolicy: IfNotPresent
+          name: rook-ceph-tools
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev
+            name: dev
+          - mountPath: /sys/bus
+            name: sysbus
+          - mountPath: /lib/modules
+            name: libmodules
+          - mountPath: /etc/rook
+            name: mon-endpoint-volume
+        dnsPolicy: ClusterFirstWithHostNet
+        hostNetwork: true
+        volumes:
+        - hostPath:
+            path: /dev
+          name: dev
+        - hostPath:
+            path: /sys/bus
+          name: sysbus
+        - hostPath:
+            path: /lib/modules
+          name: libmodules
+        - configMap:
+            items:
+            - key: data
+              path: mon-endpoints
+            name: rook-ceph-mon-endpoints
+          name: mon-endpoint-volume
 kind: List
 labels:

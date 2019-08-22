@@ -10,9 +10,15 @@
   project-config, 
   ... 
 }:
+with kubenix.lib.helm;
 let
   namespace = project-config.kubernetes.namespace;
   functions-ns = namespace.functions;
+  knative-ns = namespace.knative-serving;
+
+  override-namespace = 
+      override-static-yaml 
+        { metadata.namespace = knative-ns; };
 in
 {
   imports = with kubenix.modules; [ 
@@ -21,6 +27,8 @@ in
   ];
 
   config = {
+    kubernetes.api.namespaces."${knative-ns}"= {};
+
     kubernetes.api.namespaces."${functions-ns}"= {
       metadata = {
         labels = {
@@ -30,11 +38,11 @@ in
     };
 
     kubernetes.crd = [
-      k8s-resources.knative-crd-json
+      (override-namespace k8s-resources.knative-crd-json)
     ];
 
     kubernetes.static = [
-      k8s-resources.knative-serving-json
+      (override-namespace k8s-resources.knative-serving-json)
     ];
   };
 }

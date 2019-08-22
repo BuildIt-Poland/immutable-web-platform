@@ -11,7 +11,6 @@
 let
   namespace = project-config.kubernetes.namespace;
   system-ns = namespace.system;
-  rook-ceph-ns = namespace.rook-ceph;
   kn-serving = namespace.knative-serving;
 
   update-eks-vpc-cni = 
@@ -34,20 +33,6 @@ let
         -n ${kn-serving} \
         -p '{"data":{"registriesSkippingTagResolving":"${project-config.aws.account}.dkr.ecr.${project-config.aws.region}.amazonaws.com/${project-config.kubernetes.cluster.name}"}}'
     '';
-    
-    # don't like it
-    # patch-efs-provisioner =
-    #   let
-    #     tf-output-name = "efs_provisoner";
-    #     provisioner-name = "efs-provisoner";
-    #   in
-    #   pkgs.writeScriptBin "patch-efs-provisioner" ''
-    #     echo "patching provisioner"
-    #     fs_id="$(terraform output ${tf-output-name})"
-    #     ${pkgs.kubectl}/bin/kubectl patch deployment ${provisioner-name} \
-    #       -n ${system-ns} \
-    #       -p '{"spec":{"template":{"spec":{"$setElementOrder/containers":[{"name":"${provisioner-name}"}],"$setElementOrder/volumes":[{"name":"pv-volume"}],"containers":[{"$setElementOrder/env":[{"name":"AWS_REGION"},{"name":"FILE_SYSTEM_ID"},{"name":"PROVISIONER_NAME"}],"env":[{"name":"FILE_SYSTEM_ID","value":"'"$fs_id"'"}],"name":"efs-provisioner"}],"volumes":[{"$retainKeys":["name","nfs"],"name":"pv-volume","nfs":{"server":"'"$fs_id"'".efs.${project-config.aws.region}.amazonaws.com"}}]}}}}'
-    #   '';
 in
 {
   imports = with kubenix.modules; [ 
@@ -59,37 +44,11 @@ in
   kubernetes.patches = [
     update-eks-vpc-cni
     knative-not-resolve-tags
-    # patch-efs-provisioner 
   ];
 
   kubernetes.api.namespaces."${system-ns}"= {};
-  kubernetes.api.namespaces."${rook-ceph-ns}"= {};
-
-  # if something is not working well here then most likely SG on AWS -> opened port for NFS
-  # kubernetes.helm.instances.efs-provisioner = {
-  #   namespace = system-ns;
-  #   chart = k8s-resources.efs-provisioner;
-  #   values = {
-  #     efsProvisioner = {
-  #       efsFileSystemId = project-config.eks-cluster.configuration.efs;
-  #       awsRegion = project-config.aws.region;
-  #       provisionerName = "kubernetes.io/aws-efs";
-  #       path = "/pv";
-  #       storageClass = {
-  #         name = "efs";
-  #         isDefault = false;
-  #       };
-  #     };
-  #   };
-  # };
-
-  kubernetes.helm.instances.rook-ceph = {
-    # namespace = rook-ceph-ns;
-    namespace = system-ns;
-    chart = k8s-resources.rook-ceph;
-  };
-
-  # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
+ 
+   # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
   kubernetes.helm.instances.eks-cluster-autoscaler = {
     namespace = "${system-ns}";
     chart = k8s-resources.cluster-autoscaler;
