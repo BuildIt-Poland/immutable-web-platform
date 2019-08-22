@@ -86,7 +86,7 @@ with kubenix.lib.helm;
           dashboard = {
             enabled = true;
             port = 8443;
-            ssl = false;
+            ssl = true;
           };
           storage = {
             useAllNodes = true;

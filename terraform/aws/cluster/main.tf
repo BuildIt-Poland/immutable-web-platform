@@ -81,7 +81,6 @@ module "export-to-nix" {
   data = {
     kubeconfig = yamldecode(module.cluster.eks.kubeconfig)
     bastion    = module.bastion.public_ip
-    efs        = module.cluster.efs_provisoner.id
   }
   file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
 }

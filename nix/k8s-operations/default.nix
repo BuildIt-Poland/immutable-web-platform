@@ -52,19 +52,26 @@ rec {
   save-resources = 
     let
       loc = project-config.project.resources.yaml.folder;
-      drop-hash = ''sed -e '/kubenix\/hash/d' '';
-      crds = 
-        crds-command 
-          (desc: ''
-            ${log.info "Saving crd for ${desc.name}, to: ${loc}"}
-            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}-crd.yaml
-          '');
-      resources =
-        resources-command 
-          (desc: ''
-            ${log.info "Saving resources for ${desc.name}, to: ${loc}"}
-            cat ${desc.value} | ${drop-hash} > ${loc}/${desc.name}-resources.yaml
-          '');
+      save-any-resource = 
+        suffix: desc:
+          let
+            drop-hash = ''sed -e '/kubenix\/hash/d' '';
+            priority-name = lib.splitString "-" desc.name;
+            priority = lib.head priority-name;
+            name = lib.last priority-name;
+          in
+            ''
+              location="${loc}/${priority}"
+              file=${name}-${suffix}.yaml
+
+              mkdir -p $location
+
+              ${log.info "Saving crd for ${name}, to: $location/$file"}
+              cat ${desc.value} | ${drop-hash} > $location/$file
+            '';
+
+      crds = crds-command (save-any-resource "crd");
+      resources = resources-command (save-any-resource "resources");
     in
       writeScriptBin "save-resources" ''
         ${crds}

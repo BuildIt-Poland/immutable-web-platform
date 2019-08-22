@@ -20,7 +20,6 @@ module "export-to-nix" {
     # TODO formatitng of yaml seems to be inccorect
     kubeconfig = yamldecode(module.cluster.eks.kubeconfig)
     bastion    = module.bastion.public_ip
-    efs        = module.cluster.efs_provisoner.id
   }
   file-output = "${var.output_state_file["aws_cluster"]}"
 }

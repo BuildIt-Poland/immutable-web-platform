@@ -13,6 +13,7 @@ let
   argo-ns = namespace.argo;
   brigade-ns = namespace.brigade;
   system-ns = namespace.system;
+  storage-ns = namespace.storage;
 in
 # TODO create similar module for gitops
 # TODO argocd sth is not correct here - investigate
@@ -141,7 +142,7 @@ in
           } {
             port = {
               number = 15400;
-              name = "rook-ceph-argocd";
+              name = "http2-rook-ceph";
               protocol = "HTTPS";
             };
             tls = {
@@ -154,107 +155,48 @@ in
           ];
         };
       };
-      VirtualService.cluster-services = {
+
+      VirtualService.cluster-services = 
+      let
+        make-route = host: port: {
+          destination = {
+            inherit host;
+            port.number = port;
+          };
+        };
+
+        match-http = gateway-port: host: port: {
+          match = [ { port = gateway-port; } ];
+          route = [ (make-route host port) ];
+        };
+
+        match-tls = gateway-port: host: port: {
+          match = [{ 
+            port = gateway-port; 
+            sni_hosts = [ "*" ];
+          }];
+          route = [ (make-route host port) ];
+        };
+      in
+      {
         metadata = {
           name = "virtual-service";
         };
+
         spec = {
-          hosts = [
-            "*"
-          ];
+          hosts = [ "*" ];
           gateways = ["virtual-services-gateway"];
-          tls = [{
-            match = [
-              { 
-                port = 15200; 
-                sni_hosts = [
-                  "*"
-                ];
-              }
-            ];
-            route = [{
-              destination = {
-                host = "argocd-server.${argo-ns}.svc.cluster.local";
-                port.number = 443;
-              };
-            }];
-          } 
-          # {
-          #   match = [
-          #     { 
-          #       port = 15400; 
-          #       sni_hosts = [
-          #         "localhost"
-          #         "kind.local"
-          #         "*"
-          #       ];
-          #     }
-          #   ];
-          #   route = [{
-          #     destination = {
-          #       host = "rook-ceph-mgr-dashboard.${system-ns}.svc.cluster.local";
-          #       port.number = 8443;
-          #     };
-          #   }];
-          # }
+
+          tls = [
+            (match-tls 15200 "argocd-server.${argo-ns}.svc.cluster.local" 443)
+            (match-tls 15400 "rook-ceph-mgr-dashboard.${storage-ns}.svc.cluster.local" 8443)
           ];
+
           http = [
-          # MONITORING 15300+
-          {
-            match = [
-              { port = 15300; }
-            ];
-            route = [{
-              destination = {
-                host = "grafana.${knative-monitoring-ns}.svc.cluster.local";
-                port.number = 30802; # take this port from somewhere - create ports map
-              };
-            }];
-          } 
-          {
-            match = [
-              { port = 15301; }
-            ];
-            route = [{
-              destination = {
-                host = "weave-scope-app.${istio-ns}.svc.cluster.local";
-                port.number = 80;
-              };
-            }];
-          }
-          {
-            match = [
-              { port = 15302; }
-            ];
-            route = [{
-              destination = {
-                host = "zipkin.${istio-ns}.svc.cluster.local";
-                port.number = 9411; 
-              };
-            }];
-          }
-          {
-            match = [
-              { port = 15201; }
-            ];
-            route = [{
-              destination = {
-                host = "brigade-kashti.${brigade-ns}.svc.cluster.local";
-                port.number = 80; 
-              };
-            }];
-          }
-          {
-            match = [
-              { port = 15400; }
-            ];
-            route = [{
-              destination = {
-                host = "rook-ceph-mgr-dashboard.${system-ns}.svc.cluster.local";
-                port.number = 8443;
-              };
-            }];
-          }
+            (match-http 15300 "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
+            (match-http 15301 "weave-scope-app.${istio-ns}.svc.cluster.local" 80)
+            (match-http 15302 "zipkin.${istio-ns}.svc.cluster.local" 9411)
+            (match-http 15201 "brigade-kashti.${brigade-ns}.svc.cluster.local" 80)
           ];
         };
       };
