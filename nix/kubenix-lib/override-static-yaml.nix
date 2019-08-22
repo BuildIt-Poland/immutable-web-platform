@@ -6,6 +6,7 @@ overridings: json:
     altered-content = 
       builtins.toJSON
         (builtins.map 
+          # FIXME this should be smarter - if namespace exists -> overrite instead of attaching to every object
           (x: lib.recursiveUpdate x overridings)
           (builtins.fromJSON (builtins.readFile json)));
   in
