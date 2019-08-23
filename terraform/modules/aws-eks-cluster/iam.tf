@@ -19,6 +19,24 @@ data "aws_iam_policy_document" "worker-role-policy" {
     effect    = "Allow"
     resources = ["*"]
   }
+
+  # https://github.com/kubernetes-incubator/external-dns/blob/master/docs/tutorials/aws.md#setting-up-externaldns-for-services-on-aws
+  statement {
+    actions = [
+      "route53:ChangeResourceRecordSets"
+    ]
+    effect    = "Allow"
+    resources = ["arn:aws:route53:::hostedzone/*"]
+  }
+
+  statement {
+    actions = [
+      "route53:ListHostedZones",
+      "route53:ListResourceRecordSets"
+    ]
+    effect    = "Allow"
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "worker-policy" {

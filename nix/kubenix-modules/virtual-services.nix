@@ -92,10 +92,19 @@ in
     };
 
     kubernetes.api."networking.istio.io"."v1alpha3" = {
-      Gateway."virtual-services-gateway" = {
+      Gateway."virtual-services-gateway" = 
+      let
+        hosts = [
+          "monitoring.${project-config.project.domain}"
+        ];
+      in
+      {
         # BUG: this metadata should be taken from name
         metadata = {
           name = "virtual-services-gateway";
+          annotations = {
+            type = "external";
+          };
         };
         spec = {
           selector.istio = "virtual-services-gateway";
@@ -105,28 +114,28 @@ in
               name = "http-weavescope";
               protocol = "HTTP";
             };
-            hosts = ["*"];
+            inherit hosts;
           } {
             port = {
               number = 15300;
               name = "http-grafana";
               protocol = "HTTP";
             };
-            hosts = ["*"];
+            inherit hosts;
           } {
             port = {
               number = 15302;
               name = "http-zipkin";
               protocol = "HTTP";
             };
-            hosts = ["*"];
+            inherit hosts;
           } {
             port = {
               number = 15201;
               name = "http-kashti";
               protocol = "HTTP";
             };
-            hosts = ["*"];
+            inherit hosts;
           } {
             port = {
               number = 15200;
@@ -136,9 +145,7 @@ in
             tls = {
               mode = "PASSTHROUGH";
             };
-            hosts = [ 
-              "*"
-            ];
+            inherit hosts;
           } {
             port = {
               number = 15400;
@@ -148,9 +155,7 @@ in
             tls = {
               mode = "PASSTHROUGH";
             };
-            hosts = [ 
-              "*"
-            ];
+            inherit hosts;
           }
           ];
         };

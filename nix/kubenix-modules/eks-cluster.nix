@@ -12,6 +12,7 @@ let
   namespace = project-config.kubernetes.namespace;
   eks-ns = "eks";
   kn-serving = namespace.knative-serving;
+  istio-ns = namespace.istio;
 
   update-eks-vpc-cni = 
     pkgs.writeScriptBin "apply-aws-credentails-secret" ''
@@ -33,6 +34,15 @@ let
         -n ${kn-serving} \
         -p '{"data":{"registriesSkippingTagResolving":"${project-config.aws.account}.dkr.ecr.${project-config.aws.region}.amazonaws.com/${project-config.kubernetes.cluster.name}"}}'
     '';
+
+  # aws route53 list-hosted-zones-by-name --output json --dns-name "local-future-is-comming.io" | jq -r '.HostedZones[0].Id
+  create-cr = kind: resource: {
+    inherit kind resource;
+
+    group = "certmanager.k8s.io";
+    version = "v1alpha1";
+    description = "";
+  };
 in
 {
   imports = with kubenix.modules; [ 
@@ -52,7 +62,7 @@ in
   kubernetes.helm.instances.eks-cluster-autoscaler = {
     namespace = "${eks-ns}";
     chart = k8s-resources.cluster-autoscaler;
-    values ={
+    values = {
       rbac.create = "true";
       cloudProvider = "aws";
       sslCertPath =  "/etc/ssl/certs/ca-bundle.crt"; # it is necessary in case of EKS
@@ -67,5 +77,65 @@ in
     };
   };
 
-  # TODO helm install stable/k8s-spot-termination-handler
+  # crd -> https://github.com/helm/charts/blob/master/stable/external-dns/templates/crd.yaml
+  # example: https://github.com/kubernetes-incubator/external-dns/blob/master/docs/contributing/crd-source/dnsendpoint-example.yaml
+
+  # issue: https://github.com/kubernetes-incubator/external-dns/issues/888
+  kubernetes.helm.instances.external-dns = {
+    namespace = "${eks-ns}";
+    chart = k8s-resources.external-dns;
+    values = {
+      # global = {
+      #   registry = "registry.opensource.zalan.do";
+      #   repository = "teapot/external-dns";
+      #   tag = "latest"; # FIXME check tags
+      # };
+      provider = "aws"; 
+      istioIngressGateways = [
+        "istio-system/istio-ingressgateway"
+        "istio-system/virtual-services"
+      ];
+      sources = ["service" "ingress" "istio-gateway"];
+      rbac.create = true;
+      policy = "sync";
+      logLevel = "debug";
+      aws = {
+        region = project-config.aws.region;
+        # zoneType = "public";
+      };
+      domainFilters = [project-config.project.domain];
+      # annotationFilter="type=external";
+      # crd.create = true;
+    };
+  };
+
+  kubernetes.api.cert-manager-certificates = {
+    ingress-cert = {
+      metadata = {
+        namespace = istio-ns;
+        name = "ingress-cert";
+      };
+      spec = {
+        secretName = "ingress-cert";
+        issuerRef = {
+          name = "letsencrypt-staging"; # FIXME staging and prod
+          kind = "ClusterIssuer";
+        };
+        commonName = project-config.project.domain;
+        dnsNames = [ project-config.project.domain ];
+        acme.config = {
+          http01 = {
+            ingressClass = "istio";
+            domains = [ project-config.project.domain ];
+          };
+        };
+      };
+    };
+  };
+
+  # TODO helm stable/k8s-spot-termination-handler
+
+  kubernetes.customResources = [
+    (create-cr "Certificate" "cert-manager-certificates")
+  ];
 }

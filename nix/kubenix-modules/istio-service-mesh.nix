@@ -13,11 +13,18 @@ let
   virtual-services-gateway = config.kubernetes.virtual-services.gateway;
 
   create-istio-cr = kind: {
+    inherit kind;
     group = "config.istio.io";
     version = "v1alpha2";
-    kind = kind;
     description = "";
-  } ;
+  };
+
+  create-cert-mgr-cr = kind: {
+    inherit kind;
+    group = "certmanager.k8s.io";
+    version = "v1alpha1";
+    description = "";
+  };
 in
 {
   imports = with kubenix.modules; [ 
@@ -28,11 +35,23 @@ in
     k8s-extension
   ];
 
+  # FIXME instance cannot be imported as will be duplicated
+  # modules configuration + instance
+  # move this to configuration - to be able to import it everywhere, i.e. eks-cluster
+  options.service-mesh = {
+    virtual-services = lib.mkOption {
+      default = {};
+    };
+    overridings = lib.mkOption {
+      default = {};
+    };
+  };
+
   config = {
     kubernetes.api.namespaces."${istio-ns}"= {};
 
     kubernetes.crd = [
-      k8s-resources.istio-init-json 
+      (k8s-resources.istio-init-json ({certmanager.enabled = true;}))
     ];
 
     kubernetes.helm.instances.istio = 
@@ -49,7 +68,7 @@ in
           };
         };
         certmanager.enabled = true;
-        certmanager.email = "damian.baar@wipro.com";
+        certmanager.email = project-config.project.author-email;
         global = {
           controlPlaneSecurityEnabled = false;
           mtls.enabled = false;
@@ -62,7 +81,7 @@ in
           proxy.clusterDomain = "dev.cluster";
           k8sIngress.gatewayName = "ingressgateway";
           k8sIngress.enabled = true;
-          k8sIngress.enableHttps = false;
+          k8sIngress.enableHttps = true; # FIXME should be target related
         };
       };
     in
@@ -71,25 +90,30 @@ in
       chart = k8s-resources.istio;
       values = {
         gateways = 
-        let
-          annotations = {
-            serviceAnnotations = project-config.load-balancer.service-annotations;
-          };
-        in
-        {
-          istio-ingressgateway = {
-            # sds.enabled = true;
-            type = "LoadBalancer";
-            autoscaleMin = 1;
-            autoscaleMax = 1;
-            resources.requests = {
-              cpu = "500m";
-              memory="256Mi";
+          let
+            annotations = name: {
+              # external-dns.alpha.kubernetes.io/hostname: nginx.external-dns-test.my-org.com
+              serviceAnnotations = 
+                {type = "external";} //
+                (project-config.load-balancer.service-annotations name);
             };
-          } // annotations;
+          in
+          {
+            istio-ingressgateway = {
+              sds.enabled = true;
+              type = "LoadBalancer";
+              autoscaleMin = 1;
+              autoscaleMax = 1;
+              resources.requests = {
+                cpu = "500m";
+                memory="256Mi";
+              };
+            } // (annotations "services");
+            virtual-services = virtual-services-gateway // (annotations "monitoring");
+          };
 
-          virtual-services = virtual-services-gateway // annotations;
-        };
+        certmanager.enabled = true;
+        certmanager.email = project-config.project.author-email;
 
         istio_cni.enabled = false;
         mixer.policy.enabled = false;
@@ -121,6 +145,10 @@ in
       (create-istio-cr "rule")
       (create-istio-cr "handler")
       (create-istio-cr "instance")
+
+      # required to allow (kubenix limitation / validation) -> certmanager.enabled = true;
+      (create-cert-mgr-cr "certmanager")
+      (create-cert-mgr-cr "ClusterIssuer")
     ];
   };
 }

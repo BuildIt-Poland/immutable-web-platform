@@ -86,25 +86,15 @@ module "export-to-nix" {
   file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
 }
 
-# FIXME take from nix
-resource "aws_route53_zone" "primary" {
+resource "aws_route53_zone" "domain" {
   name = var.domain
   tags = local.common_tags
 
   vpc {
     vpc_id = module.cluster.vpc.vpc_id
   }
-}
 
-resource "aws_route53_record" "www-primary" {
-  zone_id = aws_route53_zone.primary.zone_id
-  name    = "www.${var.domain}"
-  type    = "NS"
-  ttl     = "30"
-  records = [
-    "${aws_route53_zone.primary.name_servers.0}",
-    "${aws_route53_zone.primary.name_servers.1}",
-    "${aws_route53_zone.primary.name_servers.2}",
-    "${aws_route53_zone.primary.name_servers.3}",
-  ]
+  lifecycle {
+    ignore_changes = ["vpc"]
+  }
 }

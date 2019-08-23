@@ -30,7 +30,7 @@ with pkgs.lib;
     project = rec {
       name = inputs.project.name;
       author-email = "damian.baar@wipro.com";
-      domain = "${config.environment.type}-${name}.io";
+      domain = "${name}.io";
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
       repositories = {
