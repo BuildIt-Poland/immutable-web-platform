@@ -93,7 +93,7 @@ items:
       - port: 15300
       route:
       - destination:
-          host: grafana.fass-monitoring.svc.cluster.local
+          host: grafana.knative-monitoring.svc.cluster.local
           port:
             number: 30802
     - match:
@@ -1120,6 +1120,10 @@ items:
 - apiVersion: v1
   kind: Service
   metadata:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: Owner=damian.baar@wipro.com
+      service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: '*'
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
     labels:
       app: istio-ingressgateway
       chart: gateways
@@ -1255,6 +1259,10 @@ items:
 - apiVersion: v1
   kind: Service
   metadata:
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: Owner=damian.baar@wipro.com
+      service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: '*'
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
     labels:
       app: virtual-services
       chart: gateways

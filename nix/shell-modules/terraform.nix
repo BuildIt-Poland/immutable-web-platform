@@ -19,7 +19,7 @@ let
 
     cd "${cfg.terraform.location}/$dir" && \
     ${pkgs.terraform-with-plugins}/bin/terraform state rm module.export-to-nix.null_resource.vars && \
-    ${pkgs.terraform-with-plugins}/bin/terraform apply -target module.export-to-nix.null_resource.vars -input=false
+    ${pkgs.terraform-with-plugins}/bin/terraform apply -target module.export-to-nix.null_resource.vars -input=false -auto-approve
   '';
 in
 with lib;

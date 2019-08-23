@@ -32,11 +32,7 @@ module "worker-build-cache" {
 module "docker-registry" {
   source = "../../modules/aws-ecr"
 
-<<<<<<< HEAD
   # INFO has to be aligned with nix/shell-modules/eks-cluster.nix -> docker.namespace
-=======
-  # Has to be aligned with nix/shell-modules/eks-cluster.nix -> docker.namespace
->>>>>>> 268ec3b0f93a521492e3f60f07b413e664b68189
   cluster_name = var.cluster_name
   region       = var.region
   common_tags  = local.common_tags

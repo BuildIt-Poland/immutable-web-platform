@@ -5,7 +5,7 @@ items:
   metadata:
     labels:
       kubenix/project-name: kubenix
-    name: fass-monitoring
+    name: knative-monitoring
     namespace: default
 - apiVersion: apps/v1beta1
   kind: Deployment

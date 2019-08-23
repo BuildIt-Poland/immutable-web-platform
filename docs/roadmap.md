@@ -1,27 +1,31 @@
 ## Today
 ### in progress
+* SSL with istio and EKS - aws_route_53
+* prometheus metrics and grafana dashboard for ceph
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
 * shell for infra is necessary - nix shell infra first to bootstrap env and export outputs from terraform after that ... nix with resources
-* task to generate kubeconfig from terraform (
-  terraform apply -target module.cluster.module.eks.local_file.kubeconfig)
-* Terraform eks cluster [
-- docker images -> EKS (https://kubernetes.io/docs/concepts/containers/images/#using-amazon-elastic-container-registry)
 * distrubuted store
 * tests and functions should be run in spot instances
 * istio / autscaller run on main instance -> nodeSelector / nodeAffinity
 * enum for fs types - aws-efs
+* velero - backups - auto at least before resources to rollback quickly
 
-- create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
-- create eks cluster
 - create autoscalling groups (https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md) - done
 - https://github.com/rook/rook/tree/master/cluster/examples/kubernetes/ceph
-- trying to keep terraform dry - autogenerating varfiles and variables json to avoid duplicating code related to vars
-
 - add taints - think about best strategy for testing and app perfomance
 - make PR to brigade to be able to select nodeSelector - required to spawn tests on spot instances
+
 ### works:
+* rook-ceph with dashboard
+* task to generate kubeconfig from terraform (
+  terraform apply -target module.cluster.module.eks.local_file.kubeconfig) - `tf-nix-exporter`
+* Terraform eks cluster [
+- create aws role to attach for KMS and BinaryStore + kms generation from nixops or terraform
+- create eks cluster
+- trying to keep terraform dry - autogenerating varfiles and variables json to avoid duplicating code related to vars - tf-project bash command + var generator
+- docker images -> EKS (https://kubernetes.io/docs/concepts/containers/images/#using-amazon-elastic-container-registry)
 - virtual services works - one LB will sufice
-- pvc for brigade project - think about this one
+- pvc for brigade project - done -> rook ceph
 
 -----
 * nix copy-sigs - brigade

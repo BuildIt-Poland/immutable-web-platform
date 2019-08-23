@@ -64,6 +64,7 @@ module "cluster" {
   map_roles = var.map_roles
 }
 
+# count        = var.createResource ? 1 : 0
 module "bastion" {
   source       = "../../modules/aws-bastion"
   project_name = var.project_name
@@ -85,17 +86,25 @@ module "export-to-nix" {
   file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
 }
 
+# FIXME take from nix
+resource "aws_route53_zone" "primary" {
+  name = var.domain
+  tags = local.common_tags
 
-# resource "aws_elb" "virtual-services" {
-#   name                      = "monitoring-services-elb"
-#   availability_zones        = local.azs
-#   cross_zone_load_balancing = true
-#   tags                      = local.common_tags
-# }
+  vpc {
+    vpc_id = module.cluster.vpc.vpc_id
+  }
+}
 
-# resource "aws_elb" "istio-services" {
-#   name                      = "istio-services-elb"
-#   availability_zones        = local.azs
-#   cross_zone_load_balancing = true
-#   tags                      = local.common_tags
-# }
+resource "aws_route53_record" "www-primary" {
+  zone_id = aws_route53_zone.primary.zone_id
+  name    = "www.${var.domain}"
+  type    = "NS"
+  ttl     = "30"
+  records = [
+    "${aws_route53_zone.primary.name_servers.0}",
+    "${aws_route53_zone.primary.name_servers.1}",
+    "${aws_route53_zone.primary.name_servers.2}",
+    "${aws_route53_zone.primary.name_servers.3}",
+  ]
+}
