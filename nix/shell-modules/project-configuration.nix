@@ -17,6 +17,10 @@ rec {
       default = "";
     };
 
+    domain = mkOption {
+      default = "";
+    };
+
     hash = mkOption {
       default = ""; 
     };

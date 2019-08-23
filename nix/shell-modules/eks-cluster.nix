@@ -33,7 +33,6 @@ let
 in
 with lib;
 rec {
-
   options.eks-cluster = {
     enable = mkOption {
       default = true;
@@ -56,6 +55,12 @@ rec {
       environment.vars = {
         KUBECONFIG = terraform-kubeconfig-path;
         DOCKER_REGISTRY = registry-path;
+      };
+
+      load-balancer.service-annotations = {
+        "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb";
+        "service.beta.kubernetes.io/aws-load-balancer-proxy-protocol" = "*";
+        "service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags" = "Owner=${cfg.project.author-email}";
       };
 
       docker = {

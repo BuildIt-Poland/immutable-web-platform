@@ -8,6 +8,7 @@ with pkgs.lib;
     eks-cluster
     bitbucket-k8s-repo
     local-cluster
+    load-balancer
     docker
     storage
     brigade
@@ -26,9 +27,10 @@ with pkgs.lib;
       };
     };
 
-    project = {
-      name = "future-is-comming";
+    project = rec {
+      name = inputs.project.name;
       author-email = "damian.baar@wipro.com";
+      domain = "${config.environment.type}-${name}.io";
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
       repositories = {
@@ -110,7 +112,9 @@ with pkgs.lib;
       vars = rec {
         region = config.aws.region;
         project_name = config.project.name;
+        domain = config.project.domain;
         owner = config.project.author-email;
+        hash = config.project.hash;
         env = config.environment.type;
         cluster_name = config.kubernetes.cluster.name;
         output_state_file = config.terraform.stateFiles;
@@ -174,8 +178,8 @@ with pkgs.lib;
         functions = "functions";
         argo = "gitops";
         brigade = "ci";
-        knative-serving = "faas-knative";
-        knative-monitoring = "fass-monitoring";
+        # knative-serving = "faas-knative";
+        # knative-monitoring = "fass-monitoring";
       };
     };
 

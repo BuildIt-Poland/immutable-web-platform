@@ -16,6 +16,7 @@ let
   functions-ns = namespace.functions;
   knative-ns = namespace.knative-serving;
 
+  # FIXME
   override-namespace = 
       override-static-yaml 
         { metadata.namespace = knative-ns; };

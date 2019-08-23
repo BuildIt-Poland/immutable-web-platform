@@ -18,9 +18,10 @@ provide full testing ability of infrastructure as well as on application level f
 * gitops - infrastructure and applications described as generated from `nix` `yamls` and stored in `git`
 * full determinism of results
 * monitoring tools with predefined dashboards
-* scale to `0` with `knative & istio`, scale based on concurrency level or resources level
+* scale pods to `0` with `knative & istio`, scale based on concurrency level or resources level
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
 * building docker without daemon with `nix`
+* distributed storage with [`rook-ceph`](https://rook.io/)
 
 ### ... and more
 * `helm charts` without `helm` and `tiller`

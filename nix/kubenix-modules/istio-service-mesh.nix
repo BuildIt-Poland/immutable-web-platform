@@ -70,7 +70,13 @@ in
       namespace = "${istio-ns}";
       chart = k8s-resources.istio;
       values = {
-        gateways = {
+        gateways = 
+        let
+          annotations = {
+            serviceAnnotations = project-config.load-balancer.service-annotations;
+          };
+        in
+        {
           istio-ingressgateway = {
             # sds.enabled = true;
             type = "LoadBalancer";
@@ -80,9 +86,9 @@ in
               cpu = "500m";
               memory="256Mi";
             };
-          };
+          } // annotations;
 
-          virtual-services = virtual-services-gateway;
+          virtual-services = virtual-services-gateway // annotations;
         };
 
         istio_cni.enabled = false;
