@@ -136,13 +136,13 @@ items:
       \"2019-05-30T08:53:28Z\",\n\t\t\t\t\"enc\": \"AQICAHjS6PwEx20O7P4yh35aJPfmzi4aw4Y6O7J374+k6zIsWgFsa5b6GS8qxZzcQr83Bf7sAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMvwZWKpDsNI/eWmcwAgEQgDtQoEeq7UBHlW8tbt2gx65BAdO6XIw3beyBl0NJNvbW+m9QeyVbgvgFlTWWpy+vhNW4Kh0cAOCLdtI2yg==\",\n\t\t\t\t\"aws_profile\":
       \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
       \"2019-07-26T17:15:50Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:t0ZVa/Of38MNYbQ7MHXLpfWnnvCjygOPdoS6UMgCSIPZ4Jydaq2Yh5gI9R/m526HFptswXaU74sID3vWPiPYGP3zvS1JvCaBdXkBYhug5CRopgQefCOpKtZJ8LL4/yGpSyM1sbeGAhM+55P5ouYDApqrzFX/SqXcNEGAE4MtX+s=,iv:Za4u0weobiHpE1ZalkAfWy5pJxDDVXBGrxg3UL5y1lA=,tag:KJmSuUzKtV0uLs66zT3X7g==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:remote-worker-1ba9578d5250097af7116e9bca2cbf0102a67ec9"}'
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:remote-worker-52590965c44d79b0bb1174296e74a3bb24630fb0"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-1ba9578d5250097af7116e9bca2cbf0102a67ec9
+    worker.tag: brigade-worker-52590965c44d79b0bb1174296e74a3bb24630fb0
     workerCommand: yarn build-start
   type: brigade.sh/project
 - apiVersion: v1

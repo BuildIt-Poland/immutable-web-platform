@@ -7,6 +7,97 @@ items:
       kubenix/project-name: kubenix
     name: eks
     namespace: default
+- apiVersion: certmanager.k8s.io/v1alpha1
+  kind: Certificate
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: ingress-cert
+    namespace: istio-system
+  spec:
+    acme:
+      config:
+        http01:
+          domains:
+          - future-is-comming.io
+          ingressClass: istio
+    commonName: future-is-comming.io
+    dnsNames:
+    - future-is-comming.io
+    issuerRef:
+      kind: ClusterIssuer
+      name: letsencrypt-staging
+    secretName: ingress-cert
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: external-dns
+        app.kubernetes.io/name: external-dns
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: external-dns
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: external-dns
+          helm.sh/chart: external-dns-2.5.4
+      spec:
+        containers:
+        - args:
+          - --log-level=debug
+          - --domain-filter=future-is-comming.io
+          - --policy=sync
+          - --provider=aws
+          - --registry=txt
+          - --interval=1m
+          - --istio-ingress-gateway=istio-system/istio-ingressgateway
+          - --istio-ingress-gateway=istio-system/virtual-services
+          - --source=service
+          - --source=ingress
+          - --source=istio-gateway
+          - --aws-batch-change-size=1000
+          env:
+          - name: AWS_DEFAULT_REGION
+            value: eu-west-2
+          image: docker.io/bitnami/external-dns:0.5.16-debian-9-r0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: external-dns
+          ports:
+          - containerPort: 7979
+            name: http
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+        securityContext:
+          fsGroup: 1001
+          runAsUser: 1001
+        serviceAccountName: external-dns
 - apiVersion: v1
   kind: Service
   metadata:
@@ -29,6 +120,27 @@ items:
       app.kubernetes.io/name: aws-cluster-autoscaler
     type: ClusterIP
 - apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  spec:
+    ports:
+    - name: http
+      port: 7979
+      protocol: TCP
+      targetPort: http
+    selector:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/name: external-dns
+    type: ClusterIP
+- apiVersion: v1
   kind: ServiceAccount
   metadata:
     labels:
@@ -38,6 +150,17 @@ items:
       helm.sh/chart: cluster-autoscaler-3.2.0
       kubenix/project-name: kubenix
     name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
     namespace: eks
 - apiVersion: extensions/v1beta1
   kind: Deployment
@@ -226,6 +349,53 @@ items:
     - list
     - watch
 - apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - services
+    - pods
+    - nodes
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - extensions
+    - networking.k8s.io
+    resources:
+    - ingresses
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - networking.istio.io
+    resources:
+    - gateways
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - externaldns.k8s.io
+    resources:
+    - dnsendpoints
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
     labels:
@@ -243,6 +413,25 @@ items:
   subjects:
   - kind: ServiceAccount
     name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: external-dns
+  subjects:
+  - kind: ServiceAccount
+    name: external-dns
     namespace: eks
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role

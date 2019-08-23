@@ -117,6 +117,7 @@ in
             ${log.info "Nixpkgs version: ${version}"}
             ${log.info "Your environment is: ${config.environment.type}"}
             ${log.info "Your kubernetes target is: ${config.kubernetes.target}"}
+            ${log.info "Your build hash is: ${config.project.hash}"}
           '';
 
           footer = ''

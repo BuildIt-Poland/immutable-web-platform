@@ -10,6 +10,7 @@ rec {
       default = true;
     };
     service-annotations = mkOption {
+      # this is function now - so so
       default = {};
     };
   };

@@ -20,7 +20,7 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:express-app-1ba9578d5250097af7116e9bca2cbf0102a67ec9
+          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:express-app-52590965c44d79b0bb1174296e74a3bb24630fb0
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:

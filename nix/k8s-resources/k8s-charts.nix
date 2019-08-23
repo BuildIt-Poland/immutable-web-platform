@@ -24,9 +24,9 @@ rec {
 
   istio = fetch {
     chart = "istio";
-    version = "1.1.9";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
-    sha256 = "1ly6nd4y9shvx166pbpm8gmh0r1pn00d5y4arxvxb5rqbsdknzjh";
+    version = "1.2.4";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.2.4/charts";
+    sha256 = "1h269yj9whc49yiyqgzaz77nz2viwxillc1y3r9y507lk5wfg9m1";
   };
 
   nginx-ingress = fetch {
@@ -60,6 +60,12 @@ rec {
     sha256 = "1dg3fcjzz5p1qxspaky0nvrvqb2d0daq1mfdynn8v91vw9a23bz3";
   };
 
+  external-dns = fetch {
+    chart = "stable/external-dns";
+    version = "2.5.4";
+    sha256 = "1s7474ip77j06y8hmlh592rhgvbmyqy8mvpcp7jwsxd3xipahmiv";
+  };
+
   cert-manager = fetch {
     chart = "cert-manager";
     version = "0.8.1";
@@ -91,12 +97,14 @@ rec {
   # BOOTSTRAP
   istio-init = fetch {
     chart = "istio-init";
-    version = "1.1.9";
-    repo = "https://storage.googleapis.com/istio-release/releases/1.1.9/charts";
-    sha256 = "1vdsxrz4gis5za519p0zjmd9zjckjaa34pdssbn9lis19x20ki7v";
+    version = "1.2.4";
+    repo = "https://storage.googleapis.com/istio-release/releases/1.2.4/charts";
+    sha256 = "1jpyfq4v6rp9l7jd2dcn0xdd6rrbkmxgzcr0q51r6fbcysvp0bwr";
   };
 
-  istio-init-json = chart2json {
+  istio-init-json = values: chart2json {
+    inherit values;
+
     name = "istio-init";
     chart = istio-init;
   };
