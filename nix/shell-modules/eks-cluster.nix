@@ -58,10 +58,10 @@ rec {
       };
 
       load-balancer.service-annotations = name: {
-        domainName = cfg.project.domain;
-        # "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"; # FIXME someday ... sth is not working with nlb
+        domainName = cfg.project.make-sub-domain "";
+        # "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"; # FIXME does not work with external-dns
         "service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags" = "Owner=${cfg.project.author-email}";
-        "external-dns.alpha.kubernetes.io/hostname" = "${name}.${cfg.project.domain}";
+        "external-dns.alpha.kubernetes.io/hostname" = "${cfg.project.make-sub-domain "*"}";
       };
 
       docker = {

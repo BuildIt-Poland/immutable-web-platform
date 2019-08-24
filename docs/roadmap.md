@@ -1,6 +1,11 @@
 ## Today
 ### in progress
-* SSL with istio and EKS - aws_route_53
+* refactor env -> should be more like dev, staging, qa, prod - local and current usage is a bit unclear (i.e. it would be handy to use for ssl -> certificate -> lets encrypt)
+- (kubernetes.target (minikube/eks/aks), environement.runtime (local, ci), environement.type 'dev','staging','prod')
+* virtual-services does not work
+* change shell-modules to configuration-modules, and kubenix-modules to kubernetes-modules, prepare virtual-services for local and cloud env (hosts related)
+
+* SSL with istio and EKS - aws_route_53 - partially done
 * prometheus metrics and grafana dashboard for ceph
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
 * shell for infra is necessary - nix shell infra first to bootstrap env and export outputs from terraform after that ... nix with resources

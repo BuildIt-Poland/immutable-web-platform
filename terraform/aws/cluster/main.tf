@@ -86,15 +86,15 @@ module "export-to-nix" {
   file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
 }
 
-resource "aws_route53_zone" "domain" {
-  name = var.domain
-  tags = local.common_tags
+# resource "aws_route53_zone" "domain" {
+#   name = var.domain
+#   tags = local.common_tags
 
-  vpc {
-    vpc_id = module.cluster.vpc.vpc_id
-  }
+#   vpc {
+#     vpc_id = module.cluster.vpc.vpc_id
+#   }
 
-  lifecycle {
-    ignore_changes = ["vpc"]
-  }
-}
+#   lifecycle {
+#     ignore_changes = ["vpc"]
+#   }
+# }

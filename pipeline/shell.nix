@@ -4,7 +4,8 @@
 let
   pkgs = (import ../nix { 
     inputs = {
-      environment.type = "brigade"; 
+      environment.runtime = "ci-shell"; 
+      environment.type = "dev"; 
       tests.enable = false;
       kubernetes = {
         save = false;

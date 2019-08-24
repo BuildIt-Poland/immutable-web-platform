@@ -3,7 +3,7 @@ rec {
   port = 8080;
   label = "express-app";
 
-  domain = "dev.cluster";
+  domain = project-config.project.make-sub-domain label;
 
   cpu = 
     if project-config.environment.isLocal
