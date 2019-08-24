@@ -29,12 +29,6 @@ rec {
     sha256 = "1h269yj9whc49yiyqgzaz77nz2viwxillc1y3r9y507lk5wfg9m1";
   };
 
-  nginx-ingress = fetch {
-    chart = "stable/nginx-ingress";
-    version = "1.7.0";
-    sha256 = "12kal4q07al25wz9j1422sn2zg8icj1csznch64vgci38h6m06vd";
-  };
-
   weave-scope = fetch {
     chart = "stable/weave-scope";
     version = "1.1.2";
@@ -54,12 +48,6 @@ rec {
     sha256 = "0136briq1aw36l25sbv8337al9a7x1bx1m3by78q5dsg4dk4rbl1";
   };
 
-  efs-provisioner = fetch {
-    chart = "stable/efs-provisioner";
-    version = "0.7.0";
-    sha256 = "1dg3fcjzz5p1qxspaky0nvrvqb2d0daq1mfdynn8v91vw9a23bz3";
-  };
-
   external-dns = fetch {
     chart = "stable/external-dns";
     version = "2.5.4";
@@ -73,25 +61,12 @@ rec {
     repo = "https://charts.jetstack.io";
   };
 
-  kube-registry-proxy = fetch {
-    chart = "kube-registry-proxy";
-    version = "0.3.1";
-    repo = "http://storage.googleapis.com/kubernetes-charts-incubator";
-    sha256 = "04vnmyfqvddiw1n63sab4as7apcxq9gx0hrkv8p2w1b6q12hjwhd";
-  };
-
   # https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
   argo-cd = chart-from-git {
     url = "https://github.com/argoproj/argo-helm";
     path = "charts/argo-cd";
     rev = "c7b415b6341b9db6c57e3d378e2d98ec493bfbe5";
     sha256 = "0llvh6x04pglv3m7frc7a0xbchkfz9zkg2kj0msnisjbs2x2c1dn";
-  };
-
-  cluster-autoscaler = fetch {
-    chart = "stable/cluster-autoscaler";
-    version = "3.2.0";
-    sha256 = "1vqcdd186csknkz0dsrm1mvbpiqhd4wjnz61sx0vpdg8l5lrkb13";
   };
 
   # BOOTSTRAP
@@ -108,4 +83,19 @@ rec {
     name = "istio-init";
     chart = istio-init;
   };
+
+  # AWS related
+
+  kube2iam = fetch {
+    chart = "stable/kube2iam";
+    version = "2.0.1";
+    sha256 = "1c4dw9681p8gkapwgmvhdgrhh5x1f94lqhc1rl050wv993zzqy2g";
+  };
+
+  cluster-autoscaler = fetch {
+    chart = "stable/cluster-autoscaler";
+    version = "3.2.0";
+    sha256 = "1vqcdd186csknkz0dsrm1mvbpiqhd4wjnz61sx0vpdg8l5lrkb13";
+  };
+
 }

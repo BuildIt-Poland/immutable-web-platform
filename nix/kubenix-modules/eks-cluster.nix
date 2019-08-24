@@ -100,6 +100,14 @@ in
     };
   };
 
+  kubernetes.helm.instances.kube2iam = {
+    namespace = "${eks-ns}";
+    chart = k8s-resources.kube2iam;
+    values = {
+      rbac.create = true;
+    };
+  };
+
   kubernetes.api.cert-manager-certificates = {
     ingress-cert = 
     let
@@ -138,21 +146,22 @@ in
         name = "cert-issuer";
       };
       spec = {
-        acme = { 
+        acme = {
           server = "https://acme-v02.api.letsencrypt.org/directory";
           email = project-config.project.author-email;
           privateKeySecretRef.name = "cert-prod";
           dns01.providers = [{ 
             name = "route53"; 
-            route53.region = project-config.aws.region; 
+            route53 = {
+              region = project-config.aws.region; 
+            };
           }];
         };
       };
     };
   };
 
-  # TODO helm stable/k8s-spot-termination-handler
-  # TODO https://github.com/helm/charts/tree/master/stable/kube2iam
+  # FIXME helm stable/k8s-spot-termination-handler
 
   kubernetes.customResources = [
     (create-cr "Certificate" "cert-manager-certificates")
