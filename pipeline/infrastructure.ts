@@ -11,6 +11,9 @@ const createJob = (name) => {
     .withExtraParams({
       streamLogs: true,
       privileged: true,
+      annotations: {
+        // kube2iam
+      },
       shell: 'bash',
       serviceAccount: "brigade-worker"
     })

@@ -11,6 +11,10 @@ variable "env" {
   default = ""
 }
 
+variable "domain" {
+  default = ""
+}
+
 resource "aws_kms_key" "key-for-secrets" {
   description         = "Key to decrypt secrets.json file, for ${var.project_name}-${var.env}"
   enable_key_rotation = true
@@ -23,7 +27,7 @@ resource "aws_kms_key" "key-for-secrets" {
 }
 
 resource "aws_kms_alias" "key-alias" {
-  name          = "alias/${var.env}/${var.project_name}"
+  name          = "alias/${replace(var.domain, ".", "-")}"
   target_key_id = aws_kms_key.key-for-secrets.key_id
 }
 
