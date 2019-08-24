@@ -56,6 +56,10 @@ in
     knative-not-resolve-tags
   ];
 
+  kubernetes.annotations = {
+    instance-on-demand = {"kubernetes.io/lifecycle"= "on-demand";};
+  };
+
   kubernetes.api.namespaces."${eks-ns}"= {};
  
    # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
@@ -71,9 +75,7 @@ in
         clusterName = "${project-config.kubernetes.cluster.name}";
         enabled = true;
       };
-      nodeSelector = {
-        "kubernetes.io/lifecycle"= "on-demand";
-      };
+      nodeSelector = config.kubernetes.annotations.instance-on-demand;
     };
   };
 
