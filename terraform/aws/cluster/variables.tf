@@ -35,6 +35,11 @@ variable "ssh_pub_key" {
   default = "~/.ssh/id_rsa.pub"
 }
 
+variable "bootstrap" {
+  type    = bool
+  default = false
+}
+
 locals {
   azs = data.aws_availability_zones.available.names
 

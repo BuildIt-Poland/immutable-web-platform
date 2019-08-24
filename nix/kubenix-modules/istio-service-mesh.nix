@@ -48,7 +48,12 @@ in
   };
 
   config = {
-    kubernetes.api.namespaces."${istio-ns}"= {};
+    kubernetes.api.namespaces."${istio-ns}"= {
+      # Iingres
+      metadata.annotations = {
+        "iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";
+      };
+    };
 
     kubernetes.crd = [
       (k8s-resources.istio-init-json ({certmanager.enabled = true;}))

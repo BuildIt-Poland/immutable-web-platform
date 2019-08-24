@@ -103,10 +103,11 @@ items:
       \ <project_name> --ref <branch>\n\n//#Node-Selectors:  beta.kubernetes.io/os=linux\
       \ \n// this.host.nodeSelector[\"kubernetes.io/lifecycle\"] = \"spot\"\nconst\
       \ createJob = (name) => {\n  let t = new NixJob(name)\n    .withExtraParams({\n\
-      \      streamLogs: true,\n      privileged: true,\n      shell: 'bash',\n  \
-      \    serviceAccount: \"brigade-worker\"\n    })\n\n  t = t.withTasks([\n   \
-      \ `cat ${t.cache.path}/test.file`,\n    `echo \"storage\" > ${t.storage.path}/test.file`,\n\
-      \    `echo \"cache\" > ${t.cache.path}/test.file`,\n    // `cat ${t.storage.path}/test.file`,\n\
+      \      streamLogs: true,\n      privileged: true,\n      annotations: {\n  \
+      \      // kube2iam\n      },\n      shell: 'bash',\n      serviceAccount: \"\
+      brigade-worker\"\n    })\n\n  t = t.withTasks([\n    `cat ${t.cache.path}/test.file`,\n\
+      \    `echo \"storage\" > ${t.storage.path}/test.file`,\n    `echo \"cache\"\
+      \ > ${t.cache.path}/test.file`,\n    // `cat ${t.storage.path}/test.file`,\n\
       \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
       }\n\nevents.on(\"exec\", async (event, project) => {\n  let test =\n    createJob(\"\
       test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
@@ -126,23 +127,23 @@ items:
     kubernetes.buildStorageClass: build-storage
     kubernetes.cacheStorageClass: cache-storage
     repository: embracing-nix-docker-k8s-helm-knative
-    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
-      {\n\t\t\"user\": \"ENC[AES256_GCM,data:3nI/zKGnlDywP+g=,iv:+ZVqJvRrSf22cvRgSOVOe8smx1y6FwYRAoNxMPUMwfs=,tag:B/hSNsOGgVNVLlYt2S2DGQ==,type:str]\",\n\t\t\"pass\":
-      \"ENC[AES256_GCM,data:zaxX9rJB3hn62bruXcexsi9oZCs=,iv:k2y54rZTGrK2JbcgNWVYhlzTSOKw9Eh1jMInRTScosk=,tag:f6htlS2Ah3GHrLi909F/WA==,type:str]\",\n\t\t\"hook\":
-      \"ENC[AES256_GCM,data:I1fddrrt4eh4WitqG/Lk6bQxTRWH+mmKwLnDCwv+nG9u97Gh,iv:ibl64jUCL1a/RtzG2hQZ7KTF0iLxxFwTclPMZiIpVnw=,tag:FcxE6cWxN6d586TeQs3QFA==,type:str]\"\n\t},\n\t\"docker\":
-      {\n\t\t\"user\": \"ENC[AES256_GCM,data:Hjuv97Xp,iv:FwHG472//MwaTD0wuRl65tP0ve4WZKpF7HEqyDzmYxA=,tag:mlSfk4zt8LRhTB95i409jg==,type:str]\",\n\t\t\"pass\":
-      \"ENC[AES256_GCM,data:29BcVYov,iv:aa+eoZ8ZZyXI5pEjCxzMxAVyap55ZxdpCB/S0Lv6S+o=,tag:CSQhk9W7Y8jbuMP/TGrksw==,type:str]\"\n\t},\n\t\"sops\":
-      {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:key/e4fb3b77-a681-4f61-a7a7-9df51d1a22c3\",\n\t\t\t\t\"created_at\":
-      \"2019-05-30T08:53:28Z\",\n\t\t\t\t\"enc\": \"AQICAHjS6PwEx20O7P4yh35aJPfmzi4aw4Y6O7J374+k6zIsWgFsa5b6GS8qxZzcQr83Bf7sAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMvwZWKpDsNI/eWmcwAgEQgDtQoEeq7UBHlW8tbt2gx65BAdO6XIw3beyBl0NJNvbW+m9QeyVbgvgFlTWWpy+vhNW4Kh0cAOCLdtI2yg==\",\n\t\t\t\t\"aws_profile\":
-      \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
-      \"2019-07-26T17:15:50Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:t0ZVa/Of38MNYbQ7MHXLpfWnnvCjygOPdoS6UMgCSIPZ4Jydaq2Yh5gI9R/m526HFptswXaU74sID3vWPiPYGP3zvS1JvCaBdXkBYhug5CRopgQefCOpKtZJ8LL4/yGpSyM1sbeGAhM+55P5ouYDApqrzFX/SqXcNEGAE4MtX+s=,iv:Za4u0weobiHpE1ZalkAfWy5pJxDDVXBGrxg3UL5y1lA=,tag:KJmSuUzKtV0uLs66zT3X7g==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-3623fc1f7c69bbc89f03268d09e25d8c264e6228"}'
+    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n  \"bitbucket\":
+      {\n    \"user\": \"ENC[AES256_GCM,data:3nI/zKGnlDywP+g=,iv:+ZVqJvRrSf22cvRgSOVOe8smx1y6FwYRAoNxMPUMwfs=,tag:B/hSNsOGgVNVLlYt2S2DGQ==,type:str]\",\n    \"pass\":
+      \"ENC[AES256_GCM,data:zaxX9rJB3hn62bruXcexsi9oZCs=,iv:k2y54rZTGrK2JbcgNWVYhlzTSOKw9Eh1jMInRTScosk=,tag:f6htlS2Ah3GHrLi909F/WA==,type:str]\",\n    \"hook\":
+      \"ENC[AES256_GCM,data:I1fddrrt4eh4WitqG/Lk6bQxTRWH+mmKwLnDCwv+nG9u97Gh,iv:ibl64jUCL1a/RtzG2hQZ7KTF0iLxxFwTclPMZiIpVnw=,tag:FcxE6cWxN6d586TeQs3QFA==,type:str]\"\n  },\n  \"docker\":
+      {\n    \"user\": \"ENC[AES256_GCM,data:Hjuv97Xp,iv:FwHG472//MwaTD0wuRl65tP0ve4WZKpF7HEqyDzmYxA=,tag:mlSfk4zt8LRhTB95i409jg==,type:str]\",\n    \"pass\":
+      \"ENC[AES256_GCM,data:29BcVYov,iv:aa+eoZ8ZZyXI5pEjCxzMxAVyap55ZxdpCB/S0Lv6S+o=,tag:CSQhk9W7Y8jbuMP/TGrksw==,type:str]\"\n  },\n  \"sops\":
+      {\n    \"kms\": [\n      {\n        \"arn\": \"arn:aws:kms:eu-west-2:006393696278:key/e4fb3b77-a681-4f61-a7a7-9df51d1a22c3\",\n        \"created_at\":
+      \"2019-05-30T08:53:28Z\",\n        \"enc\": \"AQICAHjS6PwEx20O7P4yh35aJPfmzi4aw4Y6O7J374+k6zIsWgFsa5b6GS8qxZzcQr83Bf7sAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMvwZWKpDsNI/eWmcwAgEQgDtQoEeq7UBHlW8tbt2gx65BAdO6XIw3beyBl0NJNvbW+m9QeyVbgvgFlTWWpy+vhNW4Kh0cAOCLdtI2yg==\",\n        \"aws_profile\":
+      \"\"\n      }\n    ],\n    \"gcp_kms\": null,\n    \"azure_kv\": null,\n    \"lastmodified\":
+      \"2019-07-26T17:15:50Z\",\n    \"mac\": \"ENC[AES256_GCM,data:t0ZVa/Of38MNYbQ7MHXLpfWnnvCjygOPdoS6UMgCSIPZ4Jydaq2Yh5gI9R/m526HFptswXaU74sID3vWPiPYGP3zvS1JvCaBdXkBYhug5CRopgQefCOpKtZJ8LL4/yGpSyM1sbeGAhM+55P5ouYDApqrzFX/SqXcNEGAE4MtX+s=,iv:Za4u0weobiHpE1ZalkAfWy5pJxDDVXBGrxg3UL5y1lA=,tag:KJmSuUzKtV0uLs66zT3X7g==,type:str]\",\n    \"pgp\":
+      null,\n    \"unencrypted_suffix\": \"_unencrypted\",\n    \"version\": \"3.3.1\"\n  }\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-e096f15f64f5227f1e2ea748ca09a0ad24b822c6"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-dev-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-3623fc1f7c69bbc89f03268d09e25d8c264e6228
+    worker.tag: brigade-worker-e096f15f64f5227f1e2ea748ca09a0ad24b822c6
     workerCommand: yarn build-start
   type: brigade.sh/project
 - apiVersion: v1

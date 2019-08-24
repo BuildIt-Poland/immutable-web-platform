@@ -60,7 +60,11 @@ in
     instance-on-demand = {"kubernetes.io/lifecycle"= "on-demand";};
   };
 
-  kubernetes.api.namespaces."${eks-ns}"= {};
+  kubernetes.api.namespaces."${eks-ns}"= {
+    metadata.annotations = {
+      "iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";
+    };
+  };
  
    # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
   kubernetes.helm.instances.eks-cluster-autoscaler = {
@@ -153,7 +157,8 @@ in
         name = "cert-issuer";
         annotations = {
           # take from terraform or define upfront
-          "iam.amazonaws.com/role" = "arn:aws:iam::006393696278:role/future-is-comming-cluster20190823155558805300000007";
+          # "iam.amazonaws.com/role" = "arn:aws:iam::006393696278:role/future-is-comming-cluster20190823155558805300000007";
+          
         };
         # Annotate your pods with iam.amazonaws.com/role: <role arn> and apply changes
   # FIXME create in terraform or take from workers from now

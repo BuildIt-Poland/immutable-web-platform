@@ -3,6 +3,7 @@ provider "aws" {
 }
 
 data "terraform_remote_state" "state" {
+  count   = var.bootstrap ? 0 : 1
   backend = "s3"
   config = {
     key    = "${var.project_prefix}/cluster"
@@ -64,7 +65,6 @@ module "cluster" {
   map_roles = var.map_roles
 }
 
-# count        = var.createResource ? 1 : 0
 module "bastion" {
   source       = "../../modules/aws-bastion"
   project_name = var.project_name

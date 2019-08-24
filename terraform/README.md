@@ -1,11 +1,21 @@
 ### First steps
-* create bucket for development and dynamodb table
+#### bootstrap
+create bucket for development and dynamodb table
+`tf-project aws/aws-remote-state apply`
+
+#### setup
+* `tf-project aws/setup init`
+* `tf-project aws/setup apply -var 'bootstrap=true'`
+#### cluster
+* `tf-project aws/cluster init`
+* `tf-project aws/cluster apply -var 'bootstrap=true'`
+
+### Clean up
+If something is not right, try to remove all folders and do init once again - well it's terraform.
+* delete `.terraform`, like so `rm -rf terraform/aws/setup/.terraform`
 
 ### Kubectl
-* `export KUBECONFIG=./.kube/kubeconfig_future-is-comming-local`
-
-### Deploy cluster
-* `terraform apply -target module.cluster`
+* Kubeconfig can be find after using `tf-nix-exporter` within the `./nix` folder
 
 ### Shorthands
 * `tf-project <project_name> <any_terraform_command>` - `project_name` means folder from terraform perspective, this is, we've got `terraform/aws/cluster` project in this case would be `aws/cluster`

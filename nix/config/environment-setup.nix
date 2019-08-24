@@ -68,7 +68,7 @@ with pkgs.lib;
         config = ~/.aws/config;
       };
       s3-buckets = {
-        worker-cache = "${config.project.name}-worker-binary-store";
+        worker-cache = "${config.project.name}-${config.environment.type}-worker-binary-store";
       };
     };
 

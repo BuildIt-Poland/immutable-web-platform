@@ -5,3 +5,7 @@ output "kube_config" {
 output "bastion_public_ip" {
   value = module.bastion.public_ip
 }
+
+output "iam" {
+  value = module.cluster.policy.arn
+}
