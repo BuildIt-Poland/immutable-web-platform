@@ -9,9 +9,15 @@ in
   options.environment = {
     type = with types; mkOption {
       default = "local";
-      type = enum ["local" "nixos" "brigade" "ec2"];
+      type = enum ["dev" "staging" "qa" "prod"];
     };
 
+    runtime = with types; mkOption {
+      default = "local-shell";
+      type = enum ["local-shell" "ci-shell"];
+    };
+
+    # FIXME remove this
     isLocal = mkOption {
       default = true;
     };
@@ -85,7 +91,7 @@ in
 
   config = mkMerge [
     ({
-      environment.isLocal = config.environment.type == "local";
+      environment.isLocal = config.environment.runtime == "local-shell";
 
       packages = 
         let
@@ -118,6 +124,8 @@ in
             ${log.info "Your environment is: ${config.environment.type}"}
             ${log.info "Your kubernetes target is: ${config.kubernetes.target}"}
             ${log.info "Your build hash is: ${config.project.hash}"}
+            ${log.info "Your domain is: ${config.project.domain}"}
+            ${log.info "Your runtime is: ${config.environment.runtime}"}
           '';
 
           footer = ''

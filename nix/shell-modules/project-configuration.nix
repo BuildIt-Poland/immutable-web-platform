@@ -21,6 +21,10 @@ rec {
       default = "";
     };
 
+    make-sub-domain = mkOption {
+      default = null;      
+    };
+
     hash = mkOption {
       default = ""; 
     };

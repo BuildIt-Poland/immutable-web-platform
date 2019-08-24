@@ -109,8 +109,18 @@ in
                 memory="256Mi";
               };
             } // (annotations "services");
-            virtual-services = virtual-services-gateway // (annotations "monitoring");
+            # virtual-services = virtual-services-gateway // (annotations "monitoring");
           };
+
+        nodeagent = {
+          enabled =  true;
+          image =  "node-agent-k8s";
+          env = {
+            CA_PROVIDER =  "Citadel";
+            CA_ADDR =  "istio-citadel:8060";
+            VALID_TOKEN = true;
+          };
+        };
 
         certmanager.enabled = true;
         certmanager.email = project-config.project.author-email;
@@ -135,6 +145,15 @@ in
           proxy.autoInject = "disabled";
           sidecarInjectorWebhook.enabled = true;
           sidecarInjectorWebhook.enableNamespacesByDefault = true;
+          k8sIngress.gatewayName = "ingressgateway";
+          k8sIngress.enabled = true;
+          k8sIngress.enableHttps = true; # FIXME should be target related\
+
+          sds = {
+            enabled = true;
+            udsPath = "unix:/var/run/sds/uds_path";
+            useNormalJwt = true;
+          };
         };
       };
     };

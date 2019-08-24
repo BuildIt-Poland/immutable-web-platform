@@ -22,6 +22,7 @@ with pkgs.lib;
   config = {
     environment = {
       type = inputs.environment.type;
+      runtime = inputs.environment.runtime;
       vars = {
         PROJECT_NAME = config.project.name;
       };
@@ -30,13 +31,24 @@ with pkgs.lib;
     project = rec {
       name = inputs.project.name;
       author-email = "damian.baar@wipro.com";
-      domain = "${name}.io";
+      # IMPORTANT you have to own it
+      domain = "buildit.consulting";
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
       repositories = {
         k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
         code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
       };
+      # FIXME move me to somewhere else
+      make-sub-domain = 
+        name: 
+          (lib.concatStringsSep "." 
+            (builtins.filter (x: x != "") [
+              name
+              config.project.name
+              config.environment.type
+              config.project.domain
+            ]));
     };
 
     test.enable = inputs.tests.enable;
@@ -112,7 +124,7 @@ with pkgs.lib;
       vars = rec {
         region = config.aws.region;
         project_name = config.project.name;
-        domain = config.project.domain;
+        domain = (config.project.make-sub-domain "");
         owner = config.project.author-email;
         hash = config.project.hash;
         env = config.environment.type;

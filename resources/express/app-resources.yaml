@@ -20,7 +20,7 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:express-app-52590965c44d79b0bb1174296e74a3bb24630fb0
+          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-cluster:express-app-eaab7cf4ab204ff9d266ecc4c0b6e11fcd05e977
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
@@ -32,7 +32,7 @@ items:
               cpu: 100m
 - apiVersion: v1
   data:
-    dev.cluster: ''
+    express-app.future-is-comming.dev.buildit.consulting: ''
   kind: ConfigMap
   metadata:
     labels:

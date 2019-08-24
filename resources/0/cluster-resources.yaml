@@ -17,13 +17,14 @@ items:
   spec:
     acme:
       config:
+      - domains:
+        - future-is-comming.dev.buildit.consulting
+        - '*.future-is-comming.dev.buildit.consulting'
         http01:
-          domains:
-          - future-is-comming.io
           ingressClass: istio
-    commonName: future-is-comming.io
+    commonName: '*.future-is-comming.dev.buildit.consulting'
     dnsNames:
-    - future-is-comming.io
+    - future-is-comming.dev.buildit.consulting
     issuerRef:
       kind: ClusterIssuer
       name: letsencrypt-staging
@@ -56,13 +57,12 @@ items:
         containers:
         - args:
           - --log-level=debug
-          - --domain-filter=future-is-comming.io
-          - --policy=sync
+          - --domain-filter=buildit.consulting
+          - --policy=upsert-only
           - --provider=aws
           - --registry=txt
           - --interval=1m
           - --istio-ingress-gateway=istio-system/istio-ingressgateway
-          - --istio-ingress-gateway=istio-system/virtual-services
           - --source=service
           - --source=ingress
           - --source=istio-gateway

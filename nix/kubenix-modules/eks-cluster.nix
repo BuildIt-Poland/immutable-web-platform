@@ -79,29 +79,20 @@ in
 
   # crd -> https://github.com/helm/charts/blob/master/stable/external-dns/templates/crd.yaml
   # example: https://github.com/kubernetes-incubator/external-dns/blob/master/docs/contributing/crd-source/dnsendpoint-example.yaml
-
-  # issue: https://github.com/kubernetes-incubator/external-dns/issues/888
   kubernetes.helm.instances.external-dns = {
     namespace = "${eks-ns}";
     chart = k8s-resources.external-dns;
     values = {
-      # global = {
-      #   registry = "registry.opensource.zalan.do";
-      #   repository = "teapot/external-dns";
-      #   tag = "latest"; # FIXME check tags
-      # };
       provider = "aws"; 
       istioIngressGateways = [
         "istio-system/istio-ingressgateway"
-        "istio-system/virtual-services"
       ];
       sources = ["service" "ingress" "istio-gateway"];
       rbac.create = true;
-      policy = "sync";
+      policy = "upsert-only";
       logLevel = "debug";
       aws = {
         region = project-config.aws.region;
-        # zoneType = "public";
       };
       domainFilters = [project-config.project.domain];
       # annotationFilter="type=external";
@@ -110,7 +101,11 @@ in
   };
 
   kubernetes.api.cert-manager-certificates = {
-    ingress-cert = {
+    ingress-cert = 
+    let
+      mk-domain = project-config.project.make-sub-domain;
+    in
+    {
       metadata = {
         namespace = istio-ns;
         name = "ingress-cert";
@@ -121,17 +116,19 @@ in
           name = "letsencrypt-staging"; # FIXME staging and prod
           kind = "ClusterIssuer";
         };
-        commonName = project-config.project.domain;
-        dnsNames = [ project-config.project.domain ];
-        acme.config = {
-          http01 = {
-            ingressClass = "istio";
-            domains = [ project-config.project.domain ];
-          };
+        commonName = "${mk-domain "*"}";
+        dnsNames = [ (mk-domain "") ];
+        acme.config = [
+          { http01.ingressClass = "istio";
+            domains = [ 
+              (mk-domain "")
+              (mk-domain "*")
+            ];
+          }
+        ];
         };
       };
     };
-  };
 
   # TODO helm stable/k8s-spot-termination-handler
 
