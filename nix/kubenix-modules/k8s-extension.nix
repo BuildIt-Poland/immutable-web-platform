@@ -25,6 +25,10 @@ rec {
       '';
     };
 
+    annotations = mkOption {
+      default = {};
+    };
+
     crd = mkOption {
       default = [];
     };
