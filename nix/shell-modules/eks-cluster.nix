@@ -65,6 +65,7 @@ rec {
         "certmanager.k8s.io/acme-challenge-type" = "dns01";
         "certmanager.k8s.io/acme-dns01-provider" = "aws";
         "kubernetes.io/tls-acme" = "true";
+        "kubernetes.io/tls" = "ingress-cert";
         "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
       };
 

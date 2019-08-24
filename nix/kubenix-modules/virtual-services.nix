@@ -53,66 +53,6 @@ in
 
   config = {
     # values: https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml
-    # kubernetes.virtual-services.gateway = {
-    #   enabled = true;
-    #   # https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml#L15
-    #   # TODO define limits
-    #   # sds = {
-    #   #   enabled = true;
-    #   #   image = "node-agent-k8s";
-    #   #   requests = {
-    #   #     cpu = "100m";
-    #   #     memory = "128Mi";
-    #   #   };
-    #   # };
-    #   labels = {
-    #     app = "virtual-services";
-    #     istio = "virtual-services-gateway";
-    #   };
-    #   type = "LoadBalancer";
-    #   ports = [
-    #     # OPS
-    #     {
-    #       port = 15400;
-    #       targetPort = 15400;
-    #       nodePort = 31350;
-    #       name = "rook-ceph-port";
-    #     } 
-    #     # Monitoring
-    #     # {
-    #     #   port = 15300;
-    #     #   targetPort = 15300;
-    #     #   nodePort = 31300;
-    #     #   name = "grafana-port";
-    #     # } 
-    #     # {
-    #     #   port = 15301;
-    #     #   targetPort = 15301;
-    #     #   nodePort = 31301;
-    #     #   name = "weavescope-port";
-    #     # } {
-    #     #   port = 15302;
-    #     #   targetPort = 15302;
-    #     #   nodePort = 31302;
-    #     #   name = "zipkin-port";
-    #     # } 
-    #     # # Deployments
-    #     # {
-    #     #   port = 15200;
-    #     #   targetPort = 15200;
-    #     #   nodePort = 31200;
-    #     #   name = "argocd-port";
-    #     # } 
-    #     # # CI/CD
-    #     # {
-    #     #   port = 15201;
-    #     #   targetPort = 15201;
-    #     #   nodePort = 31201;
-    #     #   name = "kashti-port";
-    #     # } 
-    #   ];
-    # };
-
     kubernetes.api."networking.istio.io"."v1alpha3" = {
       Gateway."virtual-services-gateway" = 
       let
@@ -121,19 +61,23 @@ in
           (mk-domain "topology")
           (mk-domain "storage")
           (mk-domain "gitops")
+          (mk-domain "tracing")
+          (mk-domain "ci")
         ];
       in
       {
         # BUG: this metadata should be taken from name
         metadata = {
           name = "virtual-services-gateway";
+          namespace = istio-ns;
           annotations = {
             type = "external";
           };
         };
         spec = {
           selector.istio = "ingressgateway";
-          servers = [{
+          servers = [
+            {
             inherit hosts;
 
             port = {
@@ -141,7 +85,8 @@ in
               name = "http-system";
               protocol = "HTTP";
             };
-          } {
+          } 
+          {
             inherit hosts;
 
             port = {
@@ -153,60 +98,16 @@ in
               mode = "SIMPLE";
               privateKey = "sds";
               serverCertificate = "sds";
-              credentialName = "ingress-cert"; # FROM EKS
+              credentialName = "ingress-cert"; # FROM EKS-module
             };
           }];
         };
       };
-        #    {
-        #     port = {
-        #       number = 15300;
-        #       name = "http-grafana";
-        #       protocol = "HTTP";
-        #     };
-        #     hosts = [
-        #       "monitoring.${domain}"
-        #     ];
-        #   } {
-        #     port = {
-        #       number = 15302;
-        #       name = "http-zipkin";
-        #       protocol = "HTTP";
-        #     };
-        #     inherit hosts;
-        #   } {
-        #     port = {
-        #       number = 15201;
-        #       name = "http-kashti";
-        #       protocol = "HTTP";
-        #     };
-        #     inherit hosts;
-        #   } {
-        #     port = {
-        #       number = 15200;
-        #       name = "http2-argocd";
-        #       protocol = "HTTPS";
-        #     };
-        #     tls = {
-        #       mode = "PASSTHROUGH";
-        #     };
-        #     inherit hosts;
-        #   } {
-        #     port = {
-        #       number = 15400;
-        #       name = "http2-rook-ceph";
-        #       protocol = "HTTPS";
-        #     };
-        #     tls = {
-        #       mode = "PASSTHROUGH";
-        #     };
-        #     inherit hosts;
-        #   }
-        #   ];
 
       VirtualService.grafana = {
         metadata = {
           name = "monitoring-services";
+          namespace = istio-ns;
         };
         spec = {
           hosts = [ (mk-domain "monitoring") ];
@@ -223,6 +124,7 @@ in
       VirtualService.topology = {
         metadata = {
           name = "topology-services";
+          namespace = istio-ns;
         };
         spec = {
           hosts = [ (mk-domain "topology") ];
@@ -239,6 +141,7 @@ in
       VirtualService.gitops = {
         metadata = {
           name = "gitops-services";
+          namespace = istio-ns;
         };
         spec = {
           hosts = [ (mk-domain "gitops") ];
@@ -255,6 +158,7 @@ in
       VirtualService.storage = {
         metadata = {
           name = "storage-services";
+          namespace = istio-ns;
         };
         spec = {
           hosts = [ (mk-domain "storage") ];
@@ -268,27 +172,8 @@ in
         };
       };
 
-      # VirtualService.cluster-services = {
-      #   metadata = {
-      #     name = "virtual-service";
-      #   };
-      #   spec = {
-      #     hosts = [ "*.${domain}" ]; # temp
-      #     gateways = ["virtual-services-gateway"];
-
-      #     tls = [
-      #       (match-tls 15200 "gitops" "argocd-server.${argo-ns}.svc.cluster.local" 443)
-      #       (match-tls 15201 "storage" "rook-ceph-mgr-dashboard.${storage-ns}.svc.cluster.local" 8443)
-      #     ];
-
-      #     http = [
-      #       # (match-http 15300 "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
-      #       # (match-http 15301 "weave-scope-app.${istio-ns}.svc.cluster.local" 80)
       #       (match-http 15302 "zipkin.${istio-ns}.svc.cluster.local" 9411)
       #       (match-http 15201 "brigade-kashti.${brigade-ns}.svc.cluster.local" 80)
-      #     ];
-      #   };
-      # };
     };
   };
 }
