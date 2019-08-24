@@ -113,15 +113,17 @@ in
       spec = {
         secretName = "ingress-cert";
         issuerRef = {
-          name = "letsencrypt-staging"; # FIXME staging and prod
+          # name = "letsencrypt-${if project-config.environment.type != "prod" then "staging" else "prod"}";
+          name = "cert-issuer";
           kind = "ClusterIssuer";
         };
         commonName = "${mk-domain "*"}";
-        dnsNames = [ (mk-domain "") ];
+        dnsNames = [ 
+          (mk-domain "*") 
+        ];
         acme.config = [
           { http01.ingressClass = "istio";
             domains = [ 
-              (mk-domain "")
               (mk-domain "*")
             ];
           }
@@ -130,9 +132,30 @@ in
       };
     };
 
+  kubernetes.api.cert-manager-issuer = {
+    ingress-cert =  {
+      metadata = {
+        name = "cert-issuer";
+      };
+      spec = {
+        acme = { 
+          server = "https://acme-v02.api.letsencrypt.org/directory";
+          email = project-config.project.author-email;
+          privateKeySecretRef.name = "cert-prod";
+          dns01.providers = [{ 
+            name = "route53"; 
+            route53.region = project-config.aws.region; 
+          }];
+        };
+      };
+    };
+  };
+
   # TODO helm stable/k8s-spot-termination-handler
+  # TODO https://github.com/helm/charts/tree/master/stable/kube2iam
 
   kubernetes.customResources = [
     (create-cr "Certificate" "cert-manager-certificates")
+    (create-cr "ClusterIssuer" "cert-manager-issuer")
   ];
 }

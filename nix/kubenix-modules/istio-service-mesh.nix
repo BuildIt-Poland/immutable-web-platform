@@ -112,15 +112,15 @@ in
             # virtual-services = virtual-services-gateway // (annotations "monitoring");
           };
 
-        nodeagent = {
-          enabled =  true;
-          image =  "node-agent-k8s";
-          env = {
-            CA_PROVIDER =  "Citadel";
-            CA_ADDR =  "istio-citadel:8060";
-            VALID_TOKEN = true;
-          };
-        };
+        # nodeagent = {
+        #   enabled =  true;
+        #   image =  "node-agent-k8s";
+        #   env = {
+        #     CA_PROVIDER =  "Citadel";
+        #     CA_ADDR =  "istio-citadel:8060";
+        #     VALID_TOKEN = true;
+        #   };
+        # };
 
         certmanager.enabled = true;
         certmanager.email = project-config.project.author-email;
