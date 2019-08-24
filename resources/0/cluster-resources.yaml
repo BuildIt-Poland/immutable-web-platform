@@ -18,17 +18,34 @@ items:
     acme:
       config:
       - domains:
-        - future-is-comming.dev.buildit.consulting
         - '*.future-is-comming.dev.buildit.consulting'
         http01:
           ingressClass: istio
     commonName: '*.future-is-comming.dev.buildit.consulting'
     dnsNames:
-    - future-is-comming.dev.buildit.consulting
+    - '*.future-is-comming.dev.buildit.consulting'
     issuerRef:
       kind: ClusterIssuer
-      name: letsencrypt-staging
+      name: cert-issuer
     secretName: ingress-cert
+- apiVersion: certmanager.k8s.io/v1alpha1
+  kind: ClusterIssuer
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cert-issuer
+    namespace: default
+  spec:
+    acme:
+      dns01:
+        providers:
+        - name: route53
+          route53:
+            region: eu-west-2
+      email: damian.baar@wipro.com
+      privateKeySecretRef:
+        name: cert-prod
+      server: https://acme-v02.api.letsencrypt.org/directory
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

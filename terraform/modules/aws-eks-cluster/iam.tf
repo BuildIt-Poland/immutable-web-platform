@@ -32,10 +32,20 @@ data "aws_iam_policy_document" "worker-role-policy" {
   statement {
     actions = [
       "route53:ListHostedZones",
-      "route53:ListResourceRecordSets"
+      "route53:ListResourceRecordSets",
+      "route53:ListHostedZonesByName"
     ]
     effect    = "Allow"
     resources = ["*"]
+  }
+
+  # cert manager
+  statement {
+    actions = [
+      "route53:GetChange",
+    ]
+    effect    = "Allow"
+    resources = ["arn:aws:route53:::change/*"]
   }
 }
 

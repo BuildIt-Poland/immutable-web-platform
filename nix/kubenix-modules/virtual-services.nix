@@ -29,9 +29,8 @@ let
     route = [ (make-route host port) ];
   };
 
-  match-tls = gateway-port: name: host: port: {
+  match-tls = name: host: port: {
     match = [{ 
-      port = gateway-port; 
       sni_hosts = [ (mk-domain name) ];
     }];
     route = [ (make-route host port) ];
@@ -115,6 +114,14 @@ in
 
     kubernetes.api."networking.istio.io"."v1alpha3" = {
       Gateway."virtual-services-gateway" = 
+      let
+        hosts  = [
+          (mk-domain "monitoring")
+          (mk-domain "topology")
+          (mk-domain "storage")
+          (mk-domain "gitops")
+        ];
+      in
       {
         # BUG: this metadata should be taken from name
         metadata = {
@@ -126,26 +133,23 @@ in
         spec = {
           selector.istio = "ingressgateway";
           servers = [{
+            inherit hosts;
+
             port = {
               number = 80;
               name = "http-system";
               protocol = "HTTP";
             };
-            hosts = [
-              (mk-domain "monitoring")
-              (mk-domain "topology")
-            ];
           } {
+            inherit hosts;
+
             port = {
               number = 443;
               name = "https-system";
               protocol = "HTTPS";
             };
-            hosts = [
-              (mk-domain "monitoring")
-              (mk-domain "topology")
-            ];
             tls = {
+              # mode = "SIMPLE";
               mode = "SIMPLE";
               privateKey = "sds";
               serverCertificate = "sds";
@@ -207,8 +211,11 @@ in
         spec = {
           hosts = [ (mk-domain "monitoring") ];
           gateways = ["virtual-services-gateway"];
-          http = [
-            (match-http "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
+          # http = [
+          #   (match-http "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
+          # ];
+          tls = [
+            (match-tls "monitoring" "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
           ];
         };
       };
@@ -222,6 +229,41 @@ in
           gateways = ["virtual-services-gateway"];
           http = [
             (match-http "weave-scope-app.${istio-ns}.svc.cluster.local" 80)
+          ];
+          tls = [
+            (match-tls "topology" "weave-scope-app.${istio-ns}.svc.cluster.local" 80)
+          ];
+        };
+      };
+
+      VirtualService.gitops = {
+        metadata = {
+          name = "gitops-services";
+        };
+        spec = {
+          hosts = [ (mk-domain "gitops") ];
+          gateways = ["virtual-services-gateway"];
+          http = [
+            (match-http "argocd-server.${argo-ns}.svc.cluster.local" 443)
+          ];
+          tls = [
+            (match-tls "gitops" "argocd-server.${argo-ns}.svc.cluster.local" 443)
+          ];
+        };
+      };
+
+      VirtualService.storage = {
+        metadata = {
+          name = "storage-services";
+        };
+        spec = {
+          hosts = [ (mk-domain "storage") ];
+          gateways = ["virtual-services-gateway"];
+          http = [
+            (match-http "rook-ceph-mgr-dashboard.${storage-ns}.svc.cluster.local" 8443)
+          ];
+          tls = [
+            (match-tls "storage" "rook-ceph-mgr-dashboard.${storage-ns}.svc.cluster.local" 8443)
           ];
         };
       };
