@@ -152,7 +152,7 @@ with pkgs.lib;
       target = inputs.kubernetes.target;
       cluster = {
         clean = inputs.kubernetes.clean;
-        name = "${config.project.name}-cluster";
+        name = "${config.project.name}-${config.environment.type}-cluster";
       };
       patches.enable = inputs.kubernetes.patches;
       resources = 

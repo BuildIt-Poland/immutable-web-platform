@@ -31,7 +31,8 @@ let
 
   match-tls = name: host: port: {
     match = [{ 
-      sni_hosts = [ (mk-domain name) ];
+      port = 443;
+      sniHosts = [ (mk-domain name) ];
     }];
     route = [ (make-route host port) ];
   };
@@ -149,7 +150,6 @@ in
               protocol = "HTTPS";
             };
             tls = {
-              # mode = "SIMPLE";
               mode = "SIMPLE";
               privateKey = "sds";
               serverCertificate = "sds";
@@ -211,9 +211,9 @@ in
         spec = {
           hosts = [ (mk-domain "monitoring") ];
           gateways = ["virtual-services-gateway"];
-          # http = [
-          #   (match-http "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
-          # ];
+          http = [
+            (match-http "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
+          ];
           tls = [
             (match-tls "monitoring" "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
           ];

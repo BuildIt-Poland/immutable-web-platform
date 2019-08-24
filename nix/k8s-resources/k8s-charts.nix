@@ -85,7 +85,6 @@ rec {
   };
 
   # AWS related
-
   kube2iam = fetch {
     chart = "stable/kube2iam";
     version = "2.0.1";

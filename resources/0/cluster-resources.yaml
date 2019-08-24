@@ -17,10 +17,10 @@ items:
   spec:
     acme:
       config:
-      - domains:
+      - dns01:
+          provider: route53
+        domains:
         - '*.future-is-comming.dev.buildit.consulting'
-        http01:
-          ingressClass: istio
     commonName: '*.future-is-comming.dev.buildit.consulting'
     dnsNames:
     - '*.future-is-comming.dev.buildit.consulting'
@@ -31,6 +31,8 @@ items:
 - apiVersion: certmanager.k8s.io/v1alpha1
   kind: ClusterIssuer
   metadata:
+    annotations:
+      iam.amazonaws.com/role: arn:aws:iam::006393696278:role/future-is-comming-cluster20190823155558805300000007
     labels:
       kubenix/project-name: kubenix
     name: cert-issuer
@@ -274,7 +276,7 @@ items:
           - ./cluster-autoscaler
           - --cloud-provider=aws
           - --namespace=eks
-          - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/future-is-comming-cluster
+          - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/future-is-comming-dev-cluster
           - --logtostderr=true
           - --stderrthreshold=info
           - --v=4

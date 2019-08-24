@@ -77,14 +77,14 @@ module "bastion" {
 }
 
 # INFO: cmd to generate: `tf-nix-exporter aws/cluster`
-module "export-to-nix" {
-  source = "../../modules/export-to-nix"
-  data = {
-    kubeconfig = yamldecode(module.cluster.eks.kubeconfig)
-    bastion    = module.bastion.public_ip
-  }
-  file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
-}
+# module "export-to-nix" {
+#   source = "../../modules/export-to-nix"
+#   data = {
+#     kubeconfig = yamldecode(module.cluster.eks.kubeconfig)
+#     bastion    = module.bastion.public_ip
+#   }
+#   file-output = "${var.output_state_file["aws_cluster"]}" # convention path from terraform folder perspective
+# }
 
 # resource "aws_route53_zone" "domain" {
 #   name = var.domain
