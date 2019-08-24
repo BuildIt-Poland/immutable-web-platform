@@ -179,6 +179,73 @@ items:
       kubenix/project-name: kubenix
     name: external-dns
     namespace: eks
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+- apiVersion: extensions/v1beta1
+  kind: DaemonSet
+  metadata:
+    labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+  spec:
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: kube2iam
+          app.kubernetes.io/name: kube2iam
+      spec:
+        containers:
+        - args:
+          - --host-interface=docker0
+          - --node=$(NODE_NAME)
+          - --iptables=false
+          - --app-port=8181
+          - --metrics-port=8181
+          env:
+          - name: HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          image: jtblin/kube2iam:0.10.7
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8181
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: kube2iam
+          ports:
+          - containerPort: 8181
+            name: http
+          resources: {}
+        hostNetwork: true
+        serviceAccountName: kube2iam
+        tolerations: []
+    updateStrategy:
+      type: OnDelete
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -413,6 +480,27 @@ items:
     - list
     - watch
 - apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - namespaces
+    - pods
+    verbs:
+    - list
+    - watch
+    - get
+- apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
     labels:
@@ -449,6 +537,25 @@ items:
   subjects:
   - kind: ServiceAccount
     name: external-dns
+    namespace: eks
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: kube2iam
+  subjects:
+  - kind: ServiceAccount
+    name: kube2iam
     namespace: eks
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role
