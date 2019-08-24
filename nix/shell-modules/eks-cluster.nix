@@ -62,6 +62,8 @@ rec {
         # "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"; # FIXME does not work with external-dns
         "service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags" = "Owner=${cfg.project.author-email}";
         "external-dns.alpha.kubernetes.io/hostname" = "${cfg.project.make-sub-domain "*"}";
+        "kubernetes.io/tls-acme" = "true";
+        "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
       };
 
       docker = {
