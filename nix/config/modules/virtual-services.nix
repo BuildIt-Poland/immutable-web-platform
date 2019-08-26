@@ -125,6 +125,7 @@ in
           "weave-scope-app.${istio-ns}.svc.cluster.local"
           80;
       
+      # passthrough
       VirtualService.gitops =
         create-virtual-service 
           "gitops" 

@@ -18,7 +18,7 @@ module "secrets" {
 
   common_tags  = local.common_tags
   project_name = var.project_name
-  root_folder = var.root_folder
+  root_folder  = var.root_folder
   domain       = var.domain
   env          = var.env
 }
@@ -41,15 +41,10 @@ module "docker-registry" {
   common_tags  = local.common_tags
 }
 
-output "state" {
-  value = data.terraform_remote_state.state.*.outputs
+output "kms" {
+  value = module.secrets.secrets-kms-key.arn
 }
 
-module "export-to-nix" {
-  source = "../../modules/export-to-nix"
-  data = {
-    secret_kms      = module.secrets.secrets-kms-key.arn
-    docker_registry = module.docker-registry.ecr.repository_url
-  }
-  file-output = "${var.output_state_file["aws_setup"]}" # convention path from terraform folder perspective
+output "docker_registry" {
+  value = module.docker-registry.ecr.repository_url
 }

@@ -38,6 +38,7 @@ in
       }
     ];
 
+    # overridings - argo most likely will be shouting about duplicate
     kubernetes.api."networking.istio.io"."v1alpha3" = {
       Gateway."knative-ingress-gateway" = 
       let
@@ -89,7 +90,7 @@ in
       knative-domain = {
         metadata = {
           name = "config-domain";
-          namespace = "knative-serving";
+          namespace = "${kn-ns}";
           labels = {
             "networking.knative.dev/certificate-provider" = "cert-manager";
             "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
@@ -102,8 +103,7 @@ in
       knative-cert = {
         metadata = {
           name = "config-certmanager";
-          # namespace = "${kn-serving}";
-          namespace = "knative-serving";
+          namespace = "${kn-ns}";
           labels = {
             "networking.knative.dev/certificate-provider" = "cert-manager";
             "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
