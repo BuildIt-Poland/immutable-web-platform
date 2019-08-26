@@ -35,14 +35,16 @@ resource "aws_kms_alias" "key-alias" {
   target_key_id = aws_kms_key.key-for-secrets.key_id
 }
 
-resource "null_resource" "create-secret-file" {
+resource "null_resource" "create-secret-file-on-root" {
   depends_on = [aws_kms_alias.key-alias]
 
   provisioner "local-exec" {
     command = <<BASH
-      echo "creating sops ${aws_kms_alias.key-alias.arn} ${var.root_folder}"
+      echo "Creating secrets file based on secret key kms"
+      sops --kms ${aws_kms_alias.key-alias.arn} \
+        -e ${var.root_folder}/secrets.template.json \
+        > ${var.root_folder}/secrets.json
     BASH
-      # sops
   }
 }
 
