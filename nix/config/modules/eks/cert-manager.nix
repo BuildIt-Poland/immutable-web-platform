@@ -29,7 +29,9 @@ in
   kubernetes.api.cert-manager-certificates = {
     ingress-cert = 
     let
-      mk-domain = project-config.project.make-sub-domain;
+      project = project-config.project;
+      mk-domain = project.make-sub-domain;
+      subdomains = builtins.map (x: mk-domain "*.${x}") project.subdomains;
     in
     {
       metadata = {
@@ -42,18 +44,11 @@ in
           name = "cert-issuer";
           kind = "ClusterIssuer";
         };
-        commonName = "${mk-domain "*"}";
-        # should be field subdomains = ["*", "functions", ...]
-        dnsNames = [ 
-          (mk-domain "*") 
-          (mk-domain "*.${functions-ns}") 
-        ];
+        # commonName = "${mk-domain "*"}";
+        dnsNames = subdomains;
         acme.config = [
           { dns01.provider = "route53";
-            domains = [ 
-              (mk-domain "*")
-              (mk-domain "*.${functions-ns}") 
-            ];
+            domains = subdomains;
           }
         ];
         };

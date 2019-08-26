@@ -33,6 +33,11 @@ with pkgs.lib;
       author-email = "damian.baar@wipro.com";
       # IMPORTANT you have to own it
       domain = "buildit.consulting";
+      # TODO
+      subdomains = [
+        "functions"
+        "services"
+      ];
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
       repositories = {
