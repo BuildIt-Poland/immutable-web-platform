@@ -2,6 +2,7 @@
 with pkgs.lib;
 {
   imports = with shell-modules.modules; [
+    ./kubernetes-modules.nix
     project-configuration
     eks-cluster
     kubernetes
@@ -144,54 +145,6 @@ with pkgs.lib;
         bucket = vars.tf_state_bucket;
         dynamodb_table = vars.tf_state_table;
         region = vars.region;
-      };
-    };
-
-    kubernetes = {
-      target = inputs.kubernetes.target;
-      cluster = {
-        clean = inputs.kubernetes.clean;
-        name = "${config.project.name}-${config.environment.type}-cluster";
-      };
-      patches.enable = inputs.kubernetes.patches;
-      resources = 
-        with kubenix.modules;
-        let
-          functions = (import ./modules/functions.nix { inherit pkgs; });
-          resources = config.kubernetes.resources;
-          priority = resources.priority;
-          # FIXME this is a bit crappy ...
-          extra-resources = builtins.getAttr config.kubernetes.target {
-            eks = {
-              "${priority.high "eks-cluster"}"       = [ ./modules/eks-cluster.nix ];
-            };
-            minikube = {
-              "${priority.high "istio"}"       = [ istio-service-mesh ];
-            };
-            gcp = {};
-            aks = {};
-          };
-          modules = {
-            "${priority.high "storage"}"     = [ ./modules/storage-classes.nix ];
-            "${priority.mid  "knative"}"     = [ knative ];
-            "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
-            "${priority.low  "gitops"}"      = [ argocd ];
-            "${priority.low  "ci"}"          = [ brigade ];
-            "${priority.skip "secrets"}"     = [ secrets ];
-          } // functions // extra-resources;
-          in
-          {
-            apply = inputs.kubernetes.update;
-            save = inputs.kubernetes.save;
-            list = modules;
-          };
-
-      namespace = {
-        functions = "functions";
-        argo = "gitops";
-        brigade = "ci";
-        # knative-serving = "faas-knative";
-        # knative-monitoring = "fass-monitoring";
       };
     };
 
