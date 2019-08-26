@@ -62,15 +62,16 @@ rec {
         "You can use 'tf-nix-exporter <name_of_project>', it is required to define module.export-to-nix in module."
       ];
 
-      warnings = 
-        let
-          files = builtins.attrValues cfg.terraform.stateFiles;
-          not-exists = builtins.filter (x: !(builtins.pathExists x)) files;
-          messages = builtins.map (x: ''
-            Output from terraform state file does not exists, try to run 'tf-nix-exporter' to generate <${builtins.baseNameOf x}> file.
-          '') not-exists;
-        in
-          messages;
+      warnings = [];
+        # fortunately I dont need this relation! don't depend on terraform here at all
+        # let
+        #   files = builtins.attrValues cfg.terraform.stateFiles;
+        #   not-exists = builtins.filter (x: !(builtins.pathExists x)) files;
+        #   messages = builtins.map (x: ''
+        #     Output from terraform state file does not exists, try to run 'tf-nix-exporter' to generate <${builtins.baseNameOf x}> file.
+        #   '') not-exists;
+        # in
+        #   messages;
 
       packages = with pkgs; [
         get-terraform-output

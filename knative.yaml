@@ -1,0 +1,11 @@
+apiVersion: authentication.istio.io/v1alpha1
+kind: Policy
+metadata:
+  name: activator-service
+  namespace: knative-serving
+spec:
+  targets:
+  - name: activator-service
+  peers:
+  - mtls:
+      mode: PERMISSIVE

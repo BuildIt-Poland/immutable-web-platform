@@ -70,14 +70,14 @@ in
 {
   deploy-ec2 = deployment {
     name = "ec2";
-    configuration = "infra/deployment.nix";
-    machine = "infra/targets/ec2.nix";
+    configuration = "nixops/deployment.nix";
+    machine = "nixops/targets/ec2.nix";
   };
 
   deploy-vbox = deployment {
     name = "local-deployment";
-    configuration = "infra/deployment.nix";
-    machine = "infra/targets/vbox-cluster.nix";
+    configuration = "nixops/deployment.nix";
+    machine = "nixops/targets/vbox-cluster.nix";
   };
 
   deploy-tester = deployment {

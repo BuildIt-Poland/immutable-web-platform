@@ -65,8 +65,8 @@ rec {
   argo-cd = chart-from-git {
     url = "https://github.com/argoproj/argo-helm";
     path = "charts/argo-cd";
-    rev = "c7b415b6341b9db6c57e3d378e2d98ec493bfbe5";
-    sha256 = "0llvh6x04pglv3m7frc7a0xbchkfz9zkg2kj0msnisjbs2x2c1dn";
+    rev = "77e638f55df69450b887087e5103bcae90db6fee";
+    sha256 = "0z1byb135402j2x9swci7pcdcjpfzchc8j16dwj0zbfxmw1nbmwi";
   };
 
   # BOOTSTRAP
