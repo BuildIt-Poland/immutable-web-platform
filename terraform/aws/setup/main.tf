@@ -18,6 +18,7 @@ module "secrets" {
 
   common_tags  = local.common_tags
   project_name = var.project_name
+  root_folder = var.root_folder
   domain       = var.domain
   env          = var.env
 }
