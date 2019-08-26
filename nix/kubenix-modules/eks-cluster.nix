@@ -13,6 +13,7 @@ let
   eks-ns = "eks";
   kn-serving = namespace.knative-serving;
   istio-ns = namespace.istio;
+  functions-ns = namespace.functions;
 
   update-eks-vpc-cni = 
     pkgs.writeScriptBin "apply-aws-credentails-secret" ''
@@ -101,8 +102,6 @@ in
         region = project-config.aws.region;
       };
       domainFilters = [project-config.project.domain];
-      # annotationFilter="type=external";
-      # crd.create = true;
     };
   };
 
@@ -128,40 +127,31 @@ in
       spec = {
         secretName = "ingress-cert";
         issuerRef = {
-          # name = "letsencrypt${if project-config.environment.type != "prod" then "-staging" else ""}";
           name = "cert-issuer";
           kind = "ClusterIssuer";
         };
         commonName = "${mk-domain "*"}";
+        # should be field subdomains = ["*", "functions", ...]
         dnsNames = [ 
           (mk-domain "*") 
+          (mk-domain "*.${functions-ns}") 
         ];
         acme.config = [
           { dns01.provider = "route53";
             domains = [ 
               (mk-domain "*")
+              (mk-domain "*.${functions-ns}") 
             ];
           }
         ];
         };
       };
     };
-  # orders controller: Re-queuing item "istio-system/ingress-cert-780260723" due to error processing: Error constructing Challenge resource for Authorization: ACME server does not allow selected challenge type or no provider is configured for domain "future-is-comming.dev.buildit.consulting"
-  /*
-  E0824 12:35:17.852569       1 controller.go:207] challenges controller: Re-queuing item "istio-system/ingress-cert-3852624261-0" due to error processing: Failed to determine Route 53 hosted zone ID: AccessDenied: User: arn:aws:sts::006393696278:assumed-role/future-is-comming-cluster20190823155558805300000007/i-07df057b5997f8b27 is not authorized to perform: route53:ListHostedZonesByName
-	status code: 403, request id: b3b608da-02b5-4d6d-b411-b54c079dce69
-  */
+
   kubernetes.api.cert-manager-issuer = {
     ingress-cert =  {
       metadata = {
         name = "cert-issuer";
-        annotations = {
-          # take from terraform or define upfront
-          # "iam.amazonaws.com/role" = "arn:aws:iam::006393696278:role/future-is-comming-cluster20190823155558805300000007";
-          
-        };
-        # Annotate your pods with iam.amazonaws.com/role: <role arn> and apply changes
-  # FIXME create in terraform or take from workers from now
       };
       spec = {
         acme = {
@@ -178,33 +168,6 @@ in
       };
     };
   };
-
-  # https://github.com/knative/docs/blob/master/docs/serving/using-a-custom-domain.md#apply-from-a-file
-  # kubernetes.api.configmaps = {
-  #   knative-domain = {
-  #     metadata = {
-  #       name = "config-certmanager";
-  #       # namespace = "${kn-serving}";
-  #       namespace = "knative-serving";
-  #       labels = {
-  #         "networking.knative.dev/certificate-provider" = "cert-manager";
-  #       };
-  #     };
-  #     data = {
-  #       secretName = "ingress-cert";
-  #       issuerRef = ''
-  #         name: cert-issuer
-  #         kind: ClusterIssuer
-  #       '';
-  #       # autoTLS = "Enabled";
-  #       # httpProtocol = "Redirected";
-  #       solverConfig = ''
-  #         dns01:
-  #           provider: route53
-  #       '';
-  #     };
-  #   };
-  # };
 
   # FIXME helm stable/k8s-spot-termination-handler
 

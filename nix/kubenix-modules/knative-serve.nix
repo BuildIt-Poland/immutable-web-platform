@@ -11,10 +11,6 @@ let
   knative-monitoring-ns = namespace.knative-monitoring;
   kn-ns = namespace.knative-serving;
   mk-domain = project-config.project.make-sub-domain;
-
-  # patch if ssl
-  # kubectl edit gateway knative-ingress-gateway --namespace knative-serving
-  # https://knative.dev/docs/serving/using-a-tls-cert/
 in
 {
   imports = with kubenix.modules; [ 
@@ -85,6 +81,46 @@ in
               credentialName = "ingress-cert"; # FROM EKS-module
             };
           }];
+        };
+      };
+    };
+
+    kubernetes.api.configmaps = {
+      knative-domain = {
+        metadata = {
+          name = "config-domain";
+          namespace = "knative-serving";
+          labels = {
+            "networking.knative.dev/certificate-provider" = "cert-manager";
+            "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
+          };
+        };
+        data = {
+          "${project-config.project.make-sub-domain ""}" = "";
+        };
+      };
+      knative-cert = {
+        metadata = {
+          name = "config-certmanager";
+          # namespace = "${kn-serving}";
+          namespace = "knative-serving";
+          labels = {
+            "networking.knative.dev/certificate-provider" = "cert-manager";
+            "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
+          };
+        };
+        data = {
+          secretName = "ingress-cert";
+          issuerRef = ''
+            name: cert-issuer
+            kind: ClusterIssuer
+          '';
+          autoTLS = "Enabled";
+          httpprotocol = "redirected";
+          solverconfig = ''
+            dns01:
+              provider: route53
+          '';
         };
       };
     };
