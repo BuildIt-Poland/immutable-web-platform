@@ -50,7 +50,7 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-8a7a6868dc3b7d36d2931db5037eb930f4fc6bb6
+          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-9801d5d8b48fa89f41b588ef84013156ee80f5f1
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
@@ -63,17 +63,18 @@ items:
 - apiVersion: v1
   data:
     autoTLS: Enabled
-    httpProtocol: Redirected
+    httpprotocol: redirected
     issuerRef: 'name: cert-issuer
 
       kind: ClusterIssuer
 
       '
     secretName: ingress-cert
-    solverConfig: "dns01:\n  provider: route53\n"
+    solverconfig: "dns01:\n  provider: route53\n"
   kind: ConfigMap
   metadata:
     labels:
+      certmanager.k8s.io/cluster-issuer: cert-issuer
       kubenix/project-name: kubenix
       networking.knative.dev/certificate-provider: cert-manager
     name: config-certmanager
@@ -84,6 +85,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
+      certmanager.k8s.io/cluster-issuer: cert-issuer
       kubenix/project-name: kubenix
       networking.knative.dev/certificate-provider: cert-manager
     name: config-domain
