@@ -179,6 +179,33 @@ in
     };
   };
 
+  # https://github.com/knative/docs/blob/master/docs/serving/using-a-custom-domain.md#apply-from-a-file
+  # kubernetes.api.configmaps = {
+  #   knative-domain = {
+  #     metadata = {
+  #       name = "config-certmanager";
+  #       # namespace = "${kn-serving}";
+  #       namespace = "knative-serving";
+  #       labels = {
+  #         "networking.knative.dev/certificate-provider" = "cert-manager";
+  #       };
+  #     };
+  #     data = {
+  #       secretName = "ingress-cert";
+  #       issuerRef = ''
+  #         name: cert-issuer
+  #         kind: ClusterIssuer
+  #       '';
+  #       # autoTLS = "Enabled";
+  #       # httpProtocol = "Redirected";
+  #       solverConfig = ''
+  #         dns01:
+  #           provider: route53
+  #       '';
+  #     };
+  #   };
+  # };
+
   # FIXME helm stable/k8s-spot-termination-handler
 
   kubernetes.customResources = [

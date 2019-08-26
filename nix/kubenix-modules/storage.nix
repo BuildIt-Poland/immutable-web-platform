@@ -116,15 +116,15 @@ with kubenix.lib.helm;
     ];
 
     kubernetes.patches = [
-      (pkgs.writeScriptBin "patch-ceph-password" ''
-        ${pkgs.lib.log.important "Patching Ceph admin password"}
+      # (pkgs.writeScriptBin "patch-ceph-password" ''
+      #   ${pkgs.lib.log.important "Patching Ceph admin password"}
 
-        pass=${"$\{1:-admin}"}
-        encoded=$(echo $pass | tr -d ':\n' | base64)
+      #   pass=${"$\{1:-admin}"}
+      #   encoded=$(echo $pass | tr -d ':\n' | base64)
         
-        ${pkgs.kubectl}/bin/kubectl patch secret -n ${storage-ns} rook-ceph-dashboard-password \
-          -p '{"data": { "password": "'$encoded'"}}'
-      '')
+      #   ${pkgs.kubectl}/bin/kubectl patch secret -n ${storage-ns} rook-ceph-dashboard-password \
+      #     -p '{"data": { "password": "'$encoded'"}}'
+      # '')
     ];
 
     module.scripts = [
