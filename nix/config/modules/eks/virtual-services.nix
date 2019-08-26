@@ -15,7 +15,7 @@ let
   system-ns = namespace.system;
   storage-ns = namespace.storage;
 
-  mk-domain = project-config.project.make-sub-domain;
+  mk-domain = name: project-config.project.make-sub-domain "${name}";
 
   make-route = host: port: {
     destination = {
@@ -47,6 +47,11 @@ let
       gateways = ["virtual-services-gateway"];
       http = [ (match-http svc port) ];
       tls = [ (match-tls "${name}" svc port) ];
+      retries = {
+        attempts = "4";
+        perTryTimeout = "2s";
+        retryOn = "gateway-error,connect-failure,refused-stream";
+      };
     };
   };
 in
@@ -66,12 +71,7 @@ in
       Gateway."virtual-services-gateway" = 
       let
         hosts  = [
-          (mk-domain "monitoring")
-          (mk-domain "topology")
-          (mk-domain "storage")
-          (mk-domain "gitops")
-          (mk-domain "tracing")
-          (mk-domain "ci")
+          (mk-domain "*")
         ];
       in
       {
