@@ -71,6 +71,7 @@ in
     helm
     istio-service-mesh
     ./virtual-services.nix
+    ./storage-classes.nix
   ];
 
   kubernetes.patches = [
