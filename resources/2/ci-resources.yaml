@@ -127,17 +127,13 @@ items:
     kubernetes.buildStorageClass: build-storage
     kubernetes.cacheStorageClass: cache-storage
     repository: embracing-nix-docker-k8s-helm-knative
-    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n  \"bitbucket\":
-      {\n    \"user\": \"ENC[AES256_GCM,data:3nI/zKGnlDywP+g=,iv:+ZVqJvRrSf22cvRgSOVOe8smx1y6FwYRAoNxMPUMwfs=,tag:B/hSNsOGgVNVLlYt2S2DGQ==,type:str]\",\n    \"pass\":
-      \"ENC[AES256_GCM,data:zaxX9rJB3hn62bruXcexsi9oZCs=,iv:k2y54rZTGrK2JbcgNWVYhlzTSOKw9Eh1jMInRTScosk=,tag:f6htlS2Ah3GHrLi909F/WA==,type:str]\",\n    \"hook\":
-      \"ENC[AES256_GCM,data:I1fddrrt4eh4WitqG/Lk6bQxTRWH+mmKwLnDCwv+nG9u97Gh,iv:ibl64jUCL1a/RtzG2hQZ7KTF0iLxxFwTclPMZiIpVnw=,tag:FcxE6cWxN6d586TeQs3QFA==,type:str]\"\n  },\n  \"docker\":
-      {\n    \"user\": \"ENC[AES256_GCM,data:Hjuv97Xp,iv:FwHG472//MwaTD0wuRl65tP0ve4WZKpF7HEqyDzmYxA=,tag:mlSfk4zt8LRhTB95i409jg==,type:str]\",\n    \"pass\":
-      \"ENC[AES256_GCM,data:29BcVYov,iv:aa+eoZ8ZZyXI5pEjCxzMxAVyap55ZxdpCB/S0Lv6S+o=,tag:CSQhk9W7Y8jbuMP/TGrksw==,type:str]\"\n  },\n  \"sops\":
-      {\n    \"kms\": [\n      {\n        \"arn\": \"arn:aws:kms:eu-west-2:006393696278:key/e4fb3b77-a681-4f61-a7a7-9df51d1a22c3\",\n        \"created_at\":
-      \"2019-05-30T08:53:28Z\",\n        \"enc\": \"AQICAHjS6PwEx20O7P4yh35aJPfmzi4aw4Y6O7J374+k6zIsWgFsa5b6GS8qxZzcQr83Bf7sAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMvwZWKpDsNI/eWmcwAgEQgDtQoEeq7UBHlW8tbt2gx65BAdO6XIw3beyBl0NJNvbW+m9QeyVbgvgFlTWWpy+vhNW4Kh0cAOCLdtI2yg==\",\n        \"aws_profile\":
-      \"\"\n      }\n    ],\n    \"gcp_kms\": null,\n    \"azure_kv\": null,\n    \"lastmodified\":
-      \"2019-07-26T17:15:50Z\",\n    \"mac\": \"ENC[AES256_GCM,data:t0ZVa/Of38MNYbQ7MHXLpfWnnvCjygOPdoS6UMgCSIPZ4Jydaq2Yh5gI9R/m526HFptswXaU74sID3vWPiPYGP3zvS1JvCaBdXkBYhug5CRopgQefCOpKtZJ8LL4/yGpSyM1sbeGAhM+55P5ouYDApqrzFX/SqXcNEGAE4MtX+s=,iv:Za4u0weobiHpE1ZalkAfWy5pJxDDVXBGrxg3UL5y1lA=,tag:KJmSuUzKtV0uLs66zT3X7g==,type:str]\",\n    \"pgp\":
-      null,\n    \"unencrypted_suffix\": \"_unencrypted\",\n    \"version\": \"3.3.1\"\n  }\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-8a7a6868dc3b7d36d2931db5037eb930f4fc6bb6"}'
+    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
+      {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"\"\n\t},\n\t\"sops\":
+      {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:alias/future-is-comming-dev-buildit-consulting\",\n\t\t\t\t\"created_at\":
+      \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
+      \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
+      \"2019-08-26T08:38:52Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:cAsxidvrx33aGGewYtyzntw47jgxd44hDVkxWoeM2mAMW1Z1IvZDrZlcbFWmeDmObXZMU9TSACM2o8qSfr0/JoVlsgiayI5DMDCUNoFVLxM17syLvZA9bMPob5uYn0AMn3OGnihveH9OuzpHQ47uLAKAiB1D66uP3ciOnOGk008=,iv:u1uS20qOhQVAcqlusVtylC7AhnDcQ8wT7Pee80b+peM=,tag:ykGwiusHj/QsGAAQTh8k/w==,type:str]\",\n\t\t\"pgp\":
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-8a7a6868dc3b7d36d2931db5037eb930f4fc6bb6"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-dev-cluster

@@ -14,13 +14,13 @@ items:
       istio: ingressgateway
     servers:
     - hosts:
-      - express-app.functions.future-is-comming.dev.buildit.consulting
+      - '*.functions.future-is-comming.dev.buildit.consulting'
       port:
         name: http-system
         number: 80
         protocol: HTTP
     - hosts:
-      - express-app.functions.future-is-comming.dev.buildit.consulting
+      - '*.functions.future-is-comming.dev.buildit.consulting'
       port:
         name: https-system
         number: 443
