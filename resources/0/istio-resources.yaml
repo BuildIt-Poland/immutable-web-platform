@@ -103,6 +103,34 @@ items:
   metadata:
     labels:
       kubenix/project-name: kubenix
+    name: ci-services
+    namespace: istio-system
+  spec:
+    gateways:
+    - virtual-services-gateway
+    hosts:
+    - ci.future-is-comming.dev.buildit.consulting
+    http:
+    - route:
+      - destination:
+          host: brigade-kashti.ci.svc.cluster.local
+          port:
+            number: 80
+    tls:
+    - match:
+      - port: 443
+        sniHosts:
+        - ci.future-is-comming.dev.buildit.consulting
+      route:
+      - destination:
+          host: brigade-kashti.ci.svc.cluster.local
+          port:
+            number: 80
+- apiVersion: networking.istio.io/v1alpha3
+  kind: VirtualService
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
     name: gitops-services
     namespace: istio-system
   spec:
@@ -210,6 +238,34 @@ items:
           host: weave-scope-app.istio-system.svc.cluster.local
           port:
             number: 80
+- apiVersion: networking.istio.io/v1alpha3
+  kind: VirtualService
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: tracing-services
+    namespace: istio-system
+  spec:
+    gateways:
+    - virtual-services-gateway
+    hosts:
+    - tracing.future-is-comming.dev.buildit.consulting
+    http:
+    - route:
+      - destination:
+          host: zipkin.istio-system.svc.cluster.local
+          port:
+            number: 9411
+    tls:
+    - match:
+      - port: 443
+        sniHosts:
+        - tracing.future-is-comming.dev.buildit.consulting
+      route:
+      - destination:
+          host: zipkin.istio-system.svc.cluster.local
+          port:
+            number: 9411
 - apiVersion: config.istio.io/v1alpha2
   kind: attributemanifest
   metadata:

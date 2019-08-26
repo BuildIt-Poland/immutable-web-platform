@@ -36,6 +36,19 @@ let
     }];
     route = [ (make-route host port) ];
   };
+
+  create-virtual-service = name: svc: port: {
+    metadata = {
+      name = "${name}-services";
+      namespace = istio-ns;
+    };
+    spec = {
+      hosts = [ (mk-domain "${name}") ];
+      gateways = ["virtual-services-gateway"];
+      http = [ (match-http svc port) ];
+      tls = [ (match-tls "${name}" svc port) ];
+    };
+  };
 in
 # TODO create similar module for gitops
 # TODO argocd sth is not correct here - investigate
@@ -46,10 +59,6 @@ in
     helm
     istio
   ];
-  # TODO should be gateways
-  options.kubernetes.virtual-services = {
-    gateway = lib.mkOption {};
-  };
 
   config = {
     # values: https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/charts/gateways/values.yaml
@@ -104,76 +113,41 @@ in
         };
       };
 
-      VirtualService.grafana = {
-        metadata = {
-          name = "monitoring-services";
-          namespace = istio-ns;
-        };
-        spec = {
-          hosts = [ (mk-domain "monitoring") ];
-          gateways = ["virtual-services-gateway"];
-          http = [
-            (match-http "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
-          ];
-          tls = [
-            (match-tls "monitoring" "grafana.${knative-monitoring-ns}.svc.cluster.local" 30802)
-          ];
-        };
-      };
+      VirtualService.grafana = 
+        create-virtual-service 
+          "monitoring" 
+          "grafana.${knative-monitoring-ns}.svc.cluster.local"
+          30802;
 
-      VirtualService.topology = {
-        metadata = {
-          name = "topology-services";
-          namespace = istio-ns;
-        };
-        spec = {
-          hosts = [ (mk-domain "topology") ];
-          gateways = ["virtual-services-gateway"];
-          http = [
-            (match-http "weave-scope-app.${istio-ns}.svc.cluster.local" 80)
-          ];
-          tls = [
-            (match-tls "topology" "weave-scope-app.${istio-ns}.svc.cluster.local" 80)
-          ];
-        };
-      };
+      VirtualService.topology = 
+        create-virtual-service 
+          "topology" 
+          "weave-scope-app.${istio-ns}.svc.cluster.local"
+          80;
+      
+      VirtualService.gitops =
+        create-virtual-service 
+          "gitops" 
+          "argocd-server.${argo-ns}.svc.cluster.local"
+          443;
 
-      VirtualService.gitops = {
-        metadata = {
-          name = "gitops-services";
-          namespace = istio-ns;
-        };
-        spec = {
-          hosts = [ (mk-domain "gitops") ];
-          gateways = ["virtual-services-gateway"];
-          http = [
-            (match-http "argocd-server.${argo-ns}.svc.cluster.local" 443)
-          ];
-          tls = [
-            (match-tls "gitops" "argocd-server.${argo-ns}.svc.cluster.local" 443)
-          ];
-        };
-      };
+      VirtualService.storage =
+        create-virtual-service 
+          "storage" 
+          "rook-ceph-mgr-dashboard.${storage-ns}.svc.cluster.local"
+          8443;
 
-      VirtualService.storage = {
-        metadata = {
-          name = "storage-services";
-          namespace = istio-ns;
-        };
-        spec = {
-          hosts = [ (mk-domain "storage") ];
-          gateways = ["virtual-services-gateway"];
-          http = [
-            (match-http "rook-ceph-mgr-dashboard.${storage-ns}.svc.cluster.local" 8443)
-          ];
-          tls = [
-            (match-tls "storage" "rook-ceph-mgr-dashboard.${storage-ns}.svc.cluster.local" 8443)
-          ];
-        };
-      };
+      VirtualService.tracing =
+        create-virtual-service 
+          "tracing" 
+          "zipkin.${istio-ns}.svc.cluster.local"
+          9411;
 
-      #       (match-http 15302 "zipkin.${istio-ns}.svc.cluster.local" 9411)
-      #       (match-http 15201 "brigade-kashti.${brigade-ns}.svc.cluster.local" 80)
+      VirtualService.ci =
+        create-virtual-service 
+          "ci" 
+          "brigade-kashti.${brigade-ns}.svc.cluster.local" 
+          80;
     };
   };
 }
