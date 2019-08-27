@@ -1,10 +1,10 @@
-{config, pkgs, lib, kubenix, shell-modules, inputs, ...}: 
+{config, pkgs, lib, kubenix, integration-modules, inputs, ...}: 
 with pkgs.lib;
 let
-  functions = (import ./functions.nix { inherit pkgs; });
+  functions = (import ./modules/functions.nix { inherit pkgs; });
 in
 {
-  imports = with shell-modules.modules; [
+  imports = with integration-modules.modules; [
     ./kubernetes-modules.nix
     project-configuration
     eks-cluster

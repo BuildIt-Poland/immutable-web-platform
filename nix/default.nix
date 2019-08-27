@@ -7,7 +7,7 @@ let
 
   passthrough = self: super: rec {
     gitignore = super.nix-gitignore.gitignoreSourcePure [ ".gitignore" ];
-    make-defaults = super.callPackage ./config/defaults.nix {};
+    make-defaults = super.callPackage ./targets/defaults.nix {};
     rootFolder = toString ../.;
 
     # this part is soooo insane! don't know if it is valid ... but works o.O
@@ -24,7 +24,7 @@ let
         safe-inputs = make-defaults inputs; 
       in
       (super.integration-modules.eval {
-        modules = [./config/environment-setup.nix] ++ safe-inputs.modules;
+        modules = [./targets/environment-setup.nix] ++ safe-inputs.modules;
         args = { 
           inputs = safe-inputs; 
           pkgs = super.pkgs;

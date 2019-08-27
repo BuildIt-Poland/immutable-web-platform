@@ -3,7 +3,7 @@
 * refactor env -> should be more like dev, staging, qa, prod - local and current usage is a bit unclear (i.e. it would be handy to use for ssl -> certificate -> lets encrypt)
 - (kubernetes.target (minikube/eks/aks), environement.runtime (local, ci), environement.type 'dev','staging','prod')
 * virtual-services does not work
-* change shell-modules to configuration-modules, and kubenix-modules to kubernetes-modules, prepare virtual-services for local and cloud env (hosts related)
+* change integration-modules to configuration-modules, and kubenix-modules to kubernetes-modules, prepare virtual-services for local and cloud env (hosts related)
 
 * SSL with istio and EKS - aws_route_53 - partially done
 * prometheus metrics and grafana dashboard for ceph
@@ -35,7 +35,7 @@
 -----
 * nix copy-sigs - brigade
 
-* shell-modules -> run cluster on virtualbox with shell-modules attached
+* integration-modules -> run cluster on virtualbox with integration-modules attached
 * allow to define virtual services within environement config
 * refactoring -> create `kubectl-helpers` -> create `bootstrap-module` - (shape is there)
 * remove errors found by argo (zipkin 2x, local-infra ns 2x, functions 2x) - test -> should be ok
