@@ -11,6 +11,7 @@
 let
   namespace = project-config.kubernetes.namespace;
   istio-ns = namespace.istio;
+  argo-ns = namespace.argo;
   functions-ns = namespace.functions;
 
   create-cr = kind: resource: {
@@ -26,33 +27,52 @@ in
   ];
 
   # actually it make sense to have issuer and manager here
-  kubernetes.api.cert-manager-certificates = {
-    ingress-cert = 
+  kubernetes.api.cert-manager-certificates = 
     let
       project = project-config.project;
       mk-domain = project.make-sub-domain;
       subdomains = builtins.map mk-domain project.subdomains;
     in
     {
-      metadata = {
-        namespace = istio-ns;
-        name = "ingress-cert";
-      };
-      spec = {
-        secretName = "ingress-cert";
-        issuerRef = {
-          name = "cert-issuer";
-          kind = "ClusterIssuer";
+      ingress-cert = {
+        metadata = {
+          namespace = istio-ns;
+          name = "ingress-cert";
         };
-        dnsNames = subdomains;
-        acme.config = [
-          { dns01.provider = "route53";
-            domains = subdomains;
-          }
-        ];
+        spec = {
+          secretName = "ingress-cert";
+          issuerRef = {
+            name = "cert-issuer";
+            kind = "ClusterIssuer";
+          };
+          dnsNames = subdomains;
+          acme.config = [
+            { dns01.provider = "route53";
+              domains = subdomains;
+            }
+          ];
+          };
+        };
+        argocd-cert = {
+          metadata = {
+            namespace = argo-ns;
+            name = "argo-cd-cert";
+          };
+          spec = {
+            secretName = "argocd-secret";
+            issuerRef = {
+              name = "cert-issuer";
+              kind = "ClusterIssuer";
+            };
+            dnsNames = [(mk-domain "gitops.services")];
+            acme.config = [
+              { dns01.provider = "route53";
+                domains = [(mk-domain "gitops.services")];
+              }
+            ];
+          };
         };
       };
-    };
 
   kubernetes.api.cert-manager-issuer = {
     ingress-cert =  {
