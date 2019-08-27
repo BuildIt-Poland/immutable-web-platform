@@ -35,6 +35,13 @@ in
     kubernetes.helm.instances.argo-cd = {
       namespace = "${argo-ns}";
       chart = k8s-resources.argo-cd;
+      values = {
+        server = {
+          serviceAnnotations = {
+            "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
+          };
+        };
+      };
     };
   };
 }
