@@ -36,6 +36,7 @@ in
       author-email = "damian.baar@wipro.com";
       # IMPORTANT you have to own it
       domain = "buildit.consulting";
+      subdomains = ["*.services" "*.functions"];
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
       repositories = {
@@ -43,7 +44,7 @@ in
         code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
       };
 
-      # FIXME move me to somewhere else
+      # FIXME move me to somewhere else ... or not
       make-sub-domain = 
         name: 
           (lib.concatStringsSep "." 
@@ -148,6 +149,26 @@ in
         bucket = vars.tf_state_bucket;
         dynamodb_table = vars.tf_state_table;
         region = vars.region;
+      };
+    };
+
+    kubernetes = {
+      target = inputs.kubernetes.target;
+
+      namespace = {
+        functions = "functions";
+        argo = "gitops";
+        brigade = "ci";
+      };
+
+      cluster = {
+        clean = inputs.kubernetes.clean;
+        name = "${config.project.name}-${config.environment.type}-cluster";
+      };
+      patches.enable = inputs.kubernetes.patches;
+      resources = {
+        apply = inputs.kubernetes.update;
+        save = inputs.kubernetes.save;
       };
     };
 

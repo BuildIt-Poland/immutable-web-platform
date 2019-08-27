@@ -17,6 +17,8 @@ let
 in
 {
   imports = with kubenix.modules; [ 
+    # not the best flexibility - this will be included in the same yaml file
+    # however it is overriding so make sense - better would be eks-service-mesh and separate file?
     istio-service-mesh
   ];
 
@@ -38,34 +40,25 @@ in
         istio-ingressgateway = {
           sds.enabled = true;
           serviceAnnotations = {
-            "certmanager.k8s.io/acme-challenge-type" = "dns01";
             # "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"; # FIXME does not work with external-dns
-            "certmanager.k8s.io/acme-dns01-provider" = "aws";
-            "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
-            "domainName" = "${project-config.project.make-sub-domain ""}";
-            "external-dns.alpha.kubernetes.io/hostname" = "${project-config.project.make-sub-domain "*"}";
-            "kubernetes.io/tls" = "ingress-cert";
-            "kubernetes.io/tls-acme" = "true";
-            "service.beta.kubernetes.io/aws-load-balancer-ssl-ports" = "https";
+            # this should not be here - not necessary entry in route53
+            # "external-dns.alpha.kubernetes.io/hostname" = "${project-config.project.make-sub-domain "*"}";
             "service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags" = "Owner=${project-config.project.author-email}";
           };
         };
       };
 
       global = {
-        mtls.enabled = true;
-        disablePolicyChecks = true;
-
+        # defaultNodeSelector = {
+        #   "kubernetes.io/lifecycle"= "on-demand";
+        # };
         sds = {
           enabled = true;
           udsPath = "unix:/var/run/sds/uds_path";
           useNormalJwt = true;
         };
 
-        controlPlaneSecurityEnabled = false;
-        # most likely i dont need this gateway
-        # k8sIngress.enabled = true;
-        k8sIngress.enableHttps = true;
+        k8sIngress.gatewayName = "ingressgateway";
       };
 
       nodeagent = {

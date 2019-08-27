@@ -82,27 +82,11 @@ in
           pilot.autoscaleMin = 2;
           pilot.traceSampling = 100;
           global = {
-            # https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/values.yaml#L368
-            # defaultNodeSelector = {
-            #   "kubernetes.io/lifecycle"= "on-demand";
-            # };
-            # mtls.enabled = true;
-            # TODO
-            # defaultTolerations = [];
-            # controlPlaneSecurityEnabled = false;
-            # disablePolicyChecks = true;
             proxy.autoInject = "disabled";
             sidecarInjectorWebhook.enabled = true;
             sidecarInjectorWebhook.enableNamespacesByDefault = true;
             k8sIngress.gatewayName = "ingressgateway";
-            # k8sIngress.enabled = true;
-            # k8sIngress.enableHttps = true; # FIXME should be target related\
-
-            sds = {
-              enabled = true;
-              udsPath = "unix:/var/run/sds/uds_path";
-              useNormalJwt = true;
-            };
+            k8sIngress.enabled = false;
           };
         }) service-mesh-config.helm;
       };

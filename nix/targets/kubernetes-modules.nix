@@ -23,35 +23,14 @@ in
   ];
 
   config = {
-    kubernetes = {
-      target = inputs.kubernetes.target;
-      cluster = {
-        clean = inputs.kubernetes.clean;
-        name = "${config.project.name}-${config.environment.type}-cluster";
-      };
-      patches.enable = inputs.kubernetes.patches;
-      resources = 
-        with kubenix.modules;
-        let
-          modules = {
-            "${priority.mid  "knative"}"     = [ knative ];
-            "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
-            "${priority.low  "gitops"}"      = [ argocd ];
-            "${priority.low  "ci"}"          = [ brigade ];
-            "${priority.skip "secrets"}"     = [ secrets ];
-          } // functions // platform-specific;
-          in
-          {
-            apply = inputs.kubernetes.update;
-            save = inputs.kubernetes.save;
-            list = modules;
-          };
-
-      namespace = {
-        functions = "functions";
-        argo = "gitops";
-        brigade = "ci";
-      };
-    };
+    kubernetes.resources.list = 
+      with kubenix.modules;
+      {
+        "${priority.mid  "knative"}"     = [ knative ];
+        "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
+        "${priority.low  "gitops"}"      = [ argocd ];
+        "${priority.low  "ci"}"          = [ brigade ];
+        "${priority.skip "secrets"}"     = [ secrets ];
+      } // functions // platform-specific;
   };
 }

@@ -31,7 +31,7 @@ in
     let
       project = project-config.project;
       mk-domain = project.make-sub-domain;
-      subdomains = builtins.map (x: mk-domain "*.${x}") project.subdomains;
+      subdomains = builtins.map mk-domain project.subdomains;
     in
     {
       metadata = {
@@ -44,7 +44,6 @@ in
           name = "cert-issuer";
           kind = "ClusterIssuer";
         };
-        # commonName = "${mk-domain "*"}";
         dnsNames = subdomains;
         acme.config = [
           { dns01.provider = "route53";

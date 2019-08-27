@@ -15,7 +15,7 @@ let
   system-ns = namespace.system;
   storage-ns = namespace.storage;
 
-  mk-domain = name: project-config.project.make-sub-domain "${name}";
+  mk-domain = name: project-config.project.make-sub-domain "${name}.services";
 
   make-route = host: port: {
     destination = {
@@ -47,17 +47,9 @@ let
       gateways = ["virtual-services-gateway"];
       http = [ (match-http svc port) ];
       tls = [ (match-tls "${name}" svc port) ];
-      retries = {
-        attempts = "4";
-        perTryTimeout = "2s";
-        retryOn = "gateway-error,connect-failure,refused-stream";
-      };
     };
   };
 in
-# TODO create similar module for gitops
-# TODO argocd sth is not correct here - investigate
-# TODO add enabled true/false
 {
   imports = with kubenix.modules; [ 
     k8s
@@ -71,7 +63,12 @@ in
       Gateway."virtual-services-gateway" = 
       let
         hosts  = [
-          (mk-domain "*")
+          (mk-domain "monitoring")
+          (mk-domain "ci")
+          (mk-domain "storage")
+          (mk-domain "topology")
+          (mk-domain "gitops")
+          (mk-domain "tracing")
         ];
       in
       {
@@ -94,6 +91,8 @@ in
               name = "http-system";
               protocol = "HTTP";
             };
+
+            tls.httpsRedirect = true;
           } 
           {
             inherit hosts;
@@ -107,7 +106,7 @@ in
               mode = "SIMPLE";
               privateKey = "sds";
               serverCertificate = "sds";
-              credentialName = "ingress-cert"; # FROM EKS-module
+              credentialName = "ingress-cert";
             };
           }];
         };
