@@ -49,7 +49,7 @@ items:
       email: damian.baar@wipro.com
       privateKeySecretRef:
         name: cert-prod
-      server: https://acme-v02.api.letsencrypt.org/directory
+      server: https://acme-staging-v02.api.letsencrypt.org/directory
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

@@ -96,15 +96,15 @@ in
               } // (annotations "services");
             };
 
-          # nodeagent = {
-          #   enabled =  true;
-          #   image =  "node-agent-k8s";
-          #   env = {
-          #     CA_PROVIDER =  "Citadel";
-          #     CA_ADDR =  "istio-citadel:8060";
-          #     VALID_TOKEN = true;
-          #   };
-          # };
+          nodeagent = {
+            enabled =  true;
+            image =  "node-agent-k8s";
+            env = {
+              CA_PROVIDER =  "Citadel";
+              CA_ADDR =  "istio-citadel:8060";
+              VALID_TOKEN = true;
+            };
+          };
 
           certmanager.enabled = true;
           certmanager.email = project-config.project.author-email;
@@ -114,32 +114,32 @@ in
           mixer.telemetry.enabled = true;
           mixer.adapters.prometheus.enabled = false;
           # https://github.com/istio/istio/issues/7675#issuecomment-415447894
-          mixer.adapters.useAdapterCRDs = true;
+          # mixer.adapters.useAdapterCRDs = true;
           grafana.enabled = false;
           pilot.autoscaleMin = 2;
           pilot.traceSampling = 100;
           global = {
             # https://github.com/istio/istio/blob/master/install/kubernetes/helm/istio/values.yaml#L368
-            defaultNodeSelector = {
-              "kubernetes.io/lifecycle"= "on-demand";
-            };
+            # defaultNodeSelector = {
+            #   "kubernetes.io/lifecycle"= "on-demand";
+            # };
             # mtls.enabled = true;
             # TODO
             # defaultTolerations = [];
             # controlPlaneSecurityEnabled = false;
-            disablePolicyChecks = true;
+            # disablePolicyChecks = true;
             proxy.autoInject = "disabled";
             sidecarInjectorWebhook.enabled = true;
             sidecarInjectorWebhook.enableNamespacesByDefault = true;
             k8sIngress.gatewayName = "ingressgateway";
-            k8sIngress.enabled = true;
-            k8sIngress.enableHttps = true; # FIXME should be target related\
+            # k8sIngress.enabled = true;
+            # k8sIngress.enableHttps = true; # FIXME should be target related\
 
-            # sds = {
-            #   enabled = true;
-            #   udsPath = "unix:/var/run/sds/uds_path";
-            #   useNormalJwt = true;
-            # };
+            sds = {
+              enabled = true;
+              udsPath = "unix:/var/run/sds/uds_path";
+              useNormalJwt = true;
+            };
           };
         };
       };

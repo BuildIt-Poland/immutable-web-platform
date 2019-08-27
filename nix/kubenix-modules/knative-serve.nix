@@ -41,18 +41,13 @@ in
     kubernetes.api."networking.istio.io"."v1alpha3" = {
       Gateway."knative-ingress-gateway" = 
       let
-        hosts  = [
-          (mk-domain "*.${functions-ns}")
-        ];
+        hosts = [ (mk-domain "*.${functions-ns}") ];
       in
       {
         # BUG: this metadata should be taken from name
         metadata = {
           name = "knative-ingress-gateway";
           namespace = kn-ns;
-          annotations = {
-            type = "external";
-          };
         };
         spec = {
           selector.istio = "ingressgateway";
@@ -91,8 +86,8 @@ in
           name = "config-domain";
           namespace = "knative-serving";
           labels = {
-            "networking.knative.dev/certificate-provider" = "cert-manager";
-            "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
+            # "networking.knative.dev/certificate-provider" = "cert-manager";
+            # "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
           };
         };
         data = {
@@ -102,11 +97,10 @@ in
       knative-cert = {
         metadata = {
           name = "config-certmanager";
-          # namespace = "${kn-serving}";
           namespace = "knative-serving";
           labels = {
-            "networking.knative.dev/certificate-provider" = "cert-manager";
-            "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
+            # "networking.knative.dev/certificate-provider" = "cert-manager";
+            # "certmanager.k8s.io/cluster-issuer" = "cert-issuer";
           };
         };
         data = {
