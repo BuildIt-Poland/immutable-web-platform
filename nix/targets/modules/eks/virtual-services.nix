@@ -67,7 +67,6 @@ in
           (mk-domain "ci")
           (mk-domain "storage")
           (mk-domain "topology")
-          (mk-domain "gitops")
           (mk-domain "tracing")
         ];
       in
@@ -108,7 +107,20 @@ in
               serverCertificate = "sds";
               credentialName = "ingress-cert";
             };
-          }];
+          }
+          {
+            hosts = [(mk-domain "gitops")];
+
+            port = {
+              number = 443;
+              name = "https-gitops-system";
+              protocol = "HTTPS";
+            };
+            tls = {
+              mode = "PASSTHROUGH";
+            };
+          }
+          ];
         };
       };
 

@@ -14,6 +14,7 @@ let
 
   create-istio-cr = kind: {
     inherit kind;
+
     group = "config.istio.io";
     version = "v1alpha2";
     description = "";
@@ -30,9 +31,6 @@ in
   options.kubernetes.network-mesh = {
     enable = lib.mkOption {
       default = true;
-    };
-    ssl = lib.mkOption {
-      default = false;
     };
     helm = lib.mkOption {
       default = {};

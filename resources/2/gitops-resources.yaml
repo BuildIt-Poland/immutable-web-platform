@@ -1974,6 +1974,8 @@ items:
 - apiVersion: v1
   kind: Service
   metadata:
+    annotations:
+      certmanager.k8s.io/cluster-issuer: cert-issuer
     labels:
       app.kubernetes.io/component: server
       app.kubernetes.io/instance: argo-cd

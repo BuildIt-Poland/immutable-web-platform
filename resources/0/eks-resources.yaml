@@ -300,7 +300,6 @@ items:
       - ci.services.future-is-comming.dev.buildit.consulting
       - storage.services.future-is-comming.dev.buildit.consulting
       - topology.services.future-is-comming.dev.buildit.consulting
-      - gitops.services.future-is-comming.dev.buildit.consulting
       - tracing.services.future-is-comming.dev.buildit.consulting
       port:
         name: http-system
@@ -313,7 +312,6 @@ items:
       - ci.services.future-is-comming.dev.buildit.consulting
       - storage.services.future-is-comming.dev.buildit.consulting
       - topology.services.future-is-comming.dev.buildit.consulting
-      - gitops.services.future-is-comming.dev.buildit.consulting
       - tracing.services.future-is-comming.dev.buildit.consulting
       port:
         name: https-system
@@ -324,6 +322,14 @@ items:
         mode: SIMPLE
         privateKey: sds
         serverCertificate: sds
+    - hosts:
+      - gitops.services.future-is-comming.dev.buildit.consulting
+      port:
+        name: https-gitops-system
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: PASSTHROUGH
 - apiVersion: networking.istio.io/v1alpha3
   kind: VirtualService
   metadata:
