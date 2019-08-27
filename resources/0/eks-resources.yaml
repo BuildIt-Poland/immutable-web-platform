@@ -1,5 +1,208 @@
 apiVersion: v1
 items:
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephblockpools.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephBlockPool
+      listKind: CephBlockPoolList
+      plural: cephblockpools
+      singular: cephblockpool
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephclusters.ceph.rook.io
+    namespace: storage
+  spec:
+    additionalPrinterColumns:
+    - JSONPath: .spec.dataDirHostPath
+      description: Directory used on the K8s nodes
+      name: DataDirHostPath
+      type: string
+    - JSONPath: .spec.mon.count
+      description: Number of MONs
+      name: MonCount
+      type: string
+    - JSONPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    - JSONPath: .status.state
+      description: Current State
+      name: State
+      type: string
+    group: ceph.rook.io
+    names:
+      kind: CephCluster
+      listKind: CephClusterList
+      plural: cephclusters
+      singular: cephcluster
+    scope: Namespaced
+    validation:
+      openAPIV3Schema:
+        properties:
+          spec:
+            properties:
+              cephVersion:
+                properties:
+                  allowUnsupported:
+                    type: boolean
+                  image:
+                    type: string
+                  name:
+                    pattern: ^(luminous|mimic|nautilus)$
+                    type: string
+              dashboard:
+                properties:
+                  enabled:
+                    type: boolean
+                  port:
+                    maximum: 65535
+                    minimum: 0
+                    type: integer
+                  urlPrefix:
+                    type: string
+              dataDirHostPath:
+                pattern: ^/(\S+)
+                type: string
+              mon:
+                properties:
+                  allowMultiplePerNode:
+                    type: boolean
+                  count:
+                    maximum: 9
+                    minimum: 1
+                    type: integer
+                required:
+                - count
+              network:
+                properties:
+                  hostNetwork:
+                    type: boolean
+              storage:
+                properties:
+                  nodes:
+                    items: {}
+                    type: array
+                  useAllDevices: {}
+                  useAllNodes:
+                    type: boolean
+            required:
+            - mon
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephfilesystems.ceph.rook.io
+    namespace: storage
+  spec:
+    additionalPrinterColumns:
+    - JSONPath: .spec.metadataServer.activeCount
+      description: Number of MDSs
+      name: MdsCount
+      type: string
+    - JSONPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    group: ceph.rook.io
+    names:
+      kind: CephFilesystem
+      listKind: CephFilesystemList
+      plural: cephfilesystems
+      singular: cephfilesystem
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephnfses.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephNFS
+      listKind: CephNFSList
+      plural: cephnfses
+      shortNames:
+      - nfs
+      singular: cephnfs
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephobjectstores.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephObjectStore
+      listKind: CephObjectStoreList
+      plural: cephobjectstores
+      singular: cephobjectstore
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cephobjectstoreusers.ceph.rook.io
+    namespace: storage
+  spec:
+    group: ceph.rook.io
+    names:
+      kind: CephObjectStoreUser
+      listKind: CephObjectStoreUserList
+      plural: cephobjectstoreusers
+      shortNames:
+      - rcou
+      - objectuser
+      singular: cephobjectstoreuser
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: volumes.rook.io
+    namespace: storage
+  spec:
+    group: rook.io
+    names:
+      kind: Volume
+      listKind: VolumeList
+      plural: volumes
+      shortNames:
+      - rv
+      singular: volume
+    scope: Namespaced
+    version: v1alpha2
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    annotations:
+      iam.amazonaws.com/allowed-roles: '["future-is-comming-dev-cluster*"]'
+    labels:
+      kubenix/project-name: kubenix
+    name: eks
+    namespace: default
 - apiVersion: v1
   kind: Namespace
   metadata:
@@ -9,6 +212,58 @@ items:
       kubenix/project-name: kubenix
     name: istio-system
     namespace: default
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: storage
+    namespace: default
+- apiVersion: ceph.rook.io/v1
+  kind: CephBlockPool
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: brigade-cache
+    namespace: storage
+  spec:
+    replicated:
+      size: 1
+- apiVersion: ceph.rook.io/v1
+  kind: CephBlockPool
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: brigade-storage
+    namespace: storage
+  spec:
+    replicated:
+      size: 1
+- apiVersion: ceph.rook.io/v1
+  kind: CephCluster
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph
+    namespace: storage
+  spec:
+    cephVersion:
+      image: ceph/ceph:v14.2
+    dashboard:
+      enabled: true
+      port: 8443
+      ssl: false
+    dataDirHostPath: /var/lib/rook
+    mon:
+      allowMultiplePerNode: true
+      count: 2
+    storage:
+      config:
+        storeType: filestore
+      directories:
+      - path: /var/lib/rook
+      useAllDevices: false
+      useAllNodes: true
 - apiVersion: networking.istio.io/v1alpha3
   kind: DestinationRule
   metadata:
@@ -41,23 +296,13 @@ items:
       istio: ingressgateway
     servers:
     - hosts:
-      - monitoring.future-is-comming.dev.buildit.consulting
-      - topology.future-is-comming.dev.buildit.consulting
-      - storage.future-is-comming.dev.buildit.consulting
-      - gitops.future-is-comming.dev.buildit.consulting
-      - tracing.future-is-comming.dev.buildit.consulting
-      - ci.future-is-comming.dev.buildit.consulting
+      - '*.future-is-comming.dev.buildit.consulting'
       port:
         name: http-system
         number: 80
         protocol: HTTP
     - hosts:
-      - monitoring.future-is-comming.dev.buildit.consulting
-      - topology.future-is-comming.dev.buildit.consulting
-      - storage.future-is-comming.dev.buildit.consulting
-      - gitops.future-is-comming.dev.buildit.consulting
-      - tracing.future-is-comming.dev.buildit.consulting
-      - ci.future-is-comming.dev.buildit.consulting
+      - '*.future-is-comming.dev.buildit.consulting'
       port:
         name: https-system
         number: 443
@@ -85,6 +330,10 @@ items:
           host: brigade-kashti.ci.svc.cluster.local
           port:
             number: 80
+    retries:
+      attempts: '4'
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
     tls:
     - match:
       - port: 443
@@ -113,6 +362,10 @@ items:
           host: argocd-server.gitops.svc.cluster.local
           port:
             number: 443
+    retries:
+      attempts: '4'
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
     tls:
     - match:
       - port: 443
@@ -141,6 +394,10 @@ items:
           host: grafana.knative-monitoring.svc.cluster.local
           port:
             number: 30802
+    retries:
+      attempts: '4'
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
     tls:
     - match:
       - port: 443
@@ -169,6 +426,10 @@ items:
           host: rook-ceph-mgr-dashboard.storage.svc.cluster.local
           port:
             number: 8443
+    retries:
+      attempts: '4'
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
     tls:
     - match:
       - port: 443
@@ -197,6 +458,10 @@ items:
           host: weave-scope-app.istio-system.svc.cluster.local
           port:
             number: 80
+    retries:
+      attempts: '4'
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
     tls:
     - match:
       - port: 443
@@ -225,6 +490,10 @@ items:
           host: zipkin.istio-system.svc.cluster.local
           port:
             number: 9411
+    retries:
+      attempts: '4'
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
     tls:
     - match:
       - port: 443
@@ -526,6 +795,44 @@ items:
       source_ip: source.ip | ip("0.0.0.0")
       source_uid: source.uid | ""
 - apiVersion: certmanager.k8s.io/v1alpha1
+  kind: Certificate
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: ingress-cert
+    namespace: istio-system
+  spec:
+    acme:
+      config:
+      - dns01:
+          provider: route53
+        domains:
+        - '*.*.future-is-comming.dev.buildit.consulting'
+    dnsNames:
+    - '*.*.future-is-comming.dev.buildit.consulting'
+    issuerRef:
+      kind: ClusterIssuer
+      name: cert-issuer
+    secretName: ingress-cert
+- apiVersion: certmanager.k8s.io/v1alpha1
+  kind: ClusterIssuer
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: cert-issuer
+    namespace: default
+  spec:
+    acme:
+      dns01:
+        providers:
+        - name: route53
+          route53:
+            region: eu-west-2
+      email: damian.baar@wipro.com
+      privateKeySecretRef:
+        name: cert-prod
+      server: https://acme-v02.api.letsencrypt.org/directory
+- apiVersion: certmanager.k8s.io/v1alpha1
   kind: ClusterIssuer
   metadata:
     labels:
@@ -751,6 +1058,75 @@ items:
           name: certmanager
           resources: {}
         serviceAccountName: certmanager
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: external-dns
+        app.kubernetes.io/name: external-dns
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: external-dns
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: external-dns
+          helm.sh/chart: external-dns-2.5.4
+      spec:
+        containers:
+        - args:
+          - --log-level=debug
+          - --domain-filter=buildit.consulting
+          - --policy=upsert-only
+          - --provider=aws
+          - --registry=txt
+          - --interval=1m
+          - --istio-ingress-gateway=istio-system/istio-ingressgateway
+          - --source=service
+          - --source=ingress
+          - --source=istio-gateway
+          - --aws-batch-change-size=1000
+          env:
+          - name: AWS_DEFAULT_REGION
+            value: eu-west-2
+          image: docker.io/bitnami/external-dns:0.5.16-debian-9-r0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: external-dns
+          ports:
+          - containerPort: 7979
+            name: http
+          readinessProbe:
+            failureThreshold: 6
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+        securityContext:
+          fsGroup: 1001
+          runAsUser: 1001
+        serviceAccountName: external-dns
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -1754,6 +2130,67 @@ items:
           secret:
             defaultMode: 420
             secretName: istio.default
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-operator
+    namespace: storage
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: rook-ceph-operator
+    template:
+      metadata:
+        labels:
+          app: rook-ceph-operator
+          chart: rook-ceph-v1.0.5
+      spec:
+        containers:
+        - args:
+          - ceph
+          - operator
+          env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: ROOK_CEPH_STATUS_CHECK_INTERVAL
+            value: 60s
+          - name: ROOK_CURRENT_NAMESPACE_ONLY
+            value: 'true'
+          - name: ROOK_ENABLE_SELINUX_RELABELING
+            value: 'true'
+          - name: ROOK_LOG_LEVEL
+            value: INFO
+          - name: ROOK_MON_HEALTHCHECK_INTERVAL
+            value: 45s
+          - name: ROOK_MON_OUT_TIMEOUT
+            value: 600s
+          image: rook/ceph:v1.0.5
+          imagePullPolicy: IfNotPresent
+          name: rook-ceph-operator
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        serviceAccountName: rook-ceph-system
 - apiVersion: autoscaling/v2beta1
   kind: HorizontalPodAutoscaler
   metadata:
@@ -2097,11 +2534,26 @@ items:
     namespace: istio-system
 - apiVersion: v1
   data:
-    custom-resources.yaml: "# Authentication policy to enable permissive mode for\
-      \ all services (that have sidecar) in the mesh.\napiVersion: \"authentication.istio.io/v1alpha1\"\
-      \nkind: \"MeshPolicy\"\nmetadata:\n  name: \"default\"\n  labels:\n    app:\
-      \ security\n    chart: security\n    heritage: Tiller\n    release: istio\n\
-      spec:\n  peers:\n  - mtls:\n      mode: PERMISSIVE"
+    custom-resources.yaml: "# These policy and destination rules effectively enable\
+      \ mTLS for all services in the mesh. For now,\n# they are added to Istio installation\
+      \ yaml for backward compatible. In future, they should be in\n# a separated\
+      \ yaml file so that customer can enable mTLS independent from installation.\n\
+      \n# Authentication policy to enable mutual TLS for all services (that have sidecar)\
+      \ in the mesh.\napiVersion: \"authentication.istio.io/v1alpha1\"\nkind: \"MeshPolicy\"\
+      \nmetadata:\n  name: \"default\"\n  labels:\n    app: security\n    chart: security\n\
+      \    heritage: Tiller\n    release: istio\nspec:\n  peers:\n  - mtls: {}\n---\n\
+      # Corresponding destination rule to configure client side to use mutual TLS\
+      \ when talking to\n# any service (host) in the mesh.\napiVersion: networking.istio.io/v1alpha3\n\
+      kind: DestinationRule\nmetadata:\n  name: \"default\"\n  namespace: istio-system\n\
+      \  labels:\n    app: security\n    chart: security\n    heritage: Tiller\n \
+      \   release: istio\nspec:\n  host: \"*.local\"\n  trafficPolicy:\n    tls:\n\
+      \      mode: ISTIO_MUTUAL\n---\n# Destination rule to disable (m)TLS when talking\
+      \ to API server, as API server doesn't have sidecar.\n# Customer should add\
+      \ similar destination rules for other services that don't have sidecar.\napiVersion:\
+      \ networking.istio.io/v1alpha3\nkind: DestinationRule\nmetadata:\n  name: \"\
+      api-server\"\n  namespace: istio-system\n  labels:\n    app: security\n    chart:\
+      \ security\n    heritage: Tiller\n    release: istio\nspec:\n  host: \"kubernetes.default.svc.cluster.local\"\
+      \n  trafficPolicy:\n    tls:\n      mode: DISABLE"
     run.sh: "#!/bin/sh\n\nset -x\n\nif [ \"$#\" -ne \"1\" ]; then\n    echo \"first\
       \ argument should be path to custom resource yaml\"\n    exit 1\nfi\n\npathToResourceYAML=${1}\n\
       \nkubectl get validatingwebhookconfiguration istio-galley 2>/dev/null\nif [\
@@ -2299,7 +2751,7 @@ items:
       \ end }}\n  {{- if .Values.global.podDNSSearchNamespaces }}\n  dnsConfig:\n\
       \    searches:\n      {{- range .Values.global.podDNSSearchNamespaces }}\n \
       \     - {{ render . }}\n      {{- end }}\n  {{- end }}"
-    values: '{"certmanager":{"email":"damian.baar@wipro.com","enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"hub":"quay.io/jetstack","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"resources":{},"tag":"v0.6.2","tolerations":[]},"galley":{"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"galley","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"tolerations":[]},"gateways":{"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"istio-egressgateway":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":false,"env":{"ISTIO_META_ROUTER_MODE":"sni-dnat"},"labels":{"app":"istio-egressgateway","istio":"egressgateway"},"nodeSelector":{},"podAnnotations":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"ports":[{"name":"http2","port":80},{"name":"https","port":443},{"name":"tls","port":15443,"targetPort":15443}],"resources":{"limits":{"cpu":"2000m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"secretVolumes":[{"mountPath":"/etc/istio/egressgateway-certs","name":"egressgateway-certs","secretName":"istio-egressgateway-certs"},{"mountPath":"/etc/istio/egressgateway-ca-certs","name":"egressgateway-ca-certs","secretName":"istio-egressgateway-ca-certs"}],"serviceAnnotations":{},"tolerations":[],"type":"ClusterIP"},"istio-ilbgateway":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":false,"labels":{"app":"istio-ilbgateway","istio":"ilbgateway"},"loadBalancerIP":"","nodeSelector":{},"podAnnotations":{},"ports":[{"name":"grpc-pilot-mtls","port":15011},{"name":"grpc-pilot","port":15010},{"name":"tcp-citadel-grpc-tls","port":8060,"targetPort":8060},{"name":"tcp-dns","port":5353}],"resources":{"requests":{"cpu":"800m","memory":"512Mi"}},"secretVolumes":[{"mountPath":"/etc/istio/ilbgateway-certs","name":"ilbgateway-certs","secretName":"istio-ilbgateway-certs"},{"mountPath":"/etc/istio/ilbgateway-ca-certs","name":"ilbgateway-ca-certs","secretName":"istio-ilbgateway-ca-certs"}],"serviceAnnotations":{"cloud.google.com/load-balancer-type":"internal"},"tolerations":[],"type":"LoadBalancer"},"istio-ingressgateway":{"applicationPorts":"","autoscaleEnabled":true,"autoscaleMax":1,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":true,"env":{"ISTIO_META_ROUTER_MODE":"sni-dnat"},"externalIPs":[],"labels":{"app":"istio-ingressgateway","istio":"ingressgateway"},"loadBalancerIP":"","loadBalancerSourceRanges":[],"meshExpansionPorts":[{"name":"tcp-pilot-grpc-tls","port":15011,"targetPort":15011},{"name":"tcp-mixer-grpc-tls","port":15004,"targetPort":15004},{"name":"tcp-citadel-grpc-tls","port":8060,"targetPort":8060},{"name":"tcp-dns-tls","port":853,"targetPort":853}],"nodeSelector":{},"podAnnotations":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"ports":[{"name":"status-port","port":15020,"targetPort":15020},{"name":"http2","nodePort":31380,"port":80,"targetPort":80},{"name":"https","nodePort":31390,"port":443},{"name":"tcp","nodePort":31400,"port":31400},{"name":"https-kiali","port":15029,"targetPort":15029},{"name":"https-prometheus","port":15030,"targetPort":15030},{"name":"https-grafana","port":15031,"targetPort":15031},{"name":"https-tracing","port":15032,"targetPort":15032},{"name":"tls","port":15443,"targetPort":15443}],"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"500m","memory":"256Mi"}},"sds":{"enabled":true,"image":"node-agent-k8s","resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}},"secretVolumes":[{"mountPath":"/etc/istio/ingressgateway-certs","name":"ingressgateway-certs","secretName":"istio-ingressgateway-certs"},{"mountPath":"/etc/istio/ingressgateway-ca-certs","name":"ingressgateway-ca-certs","secretName":"istio-ingressgateway-ca-certs"}],"serviceAnnotations":{"domainName":"future-is-comming.dev.buildit.consulting","external-dns.alpha.kubernetes.io/hostname":"*.future-is-comming.dev.buildit.consulting","service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags":"Owner=damian.baar@wipro.com","type":"external"},"tolerations":[],"type":"LoadBalancer"}},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"grafana":{"enabled":false},"istio_cni":{"enabled":false},"istiocoredns":{"enabled":false},"kiali":{"enabled":false},"mixer":{"adapters":{"kubernetesenv":{"enabled":true},"prometheus":{"enabled":false,"metricsExpiryDuration":"10m"},"stdio":{"enabled":false,"outputAsJson":true},"useAdapterCRDs":false},"env":{"GODEBUG":"gctrace=1","GOMAXPROCS":"6"},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"mixer","nodeSelector":{},"podAnnotations":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"policy":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":false,"replicaCount":1},"telemetry":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":true,"loadshedding":{"latencyThreshold":"100ms","mode":"enforce"},"replicaCount":1,"resources":{"limits":{"cpu":"4800m","memory":"4G"},"requests":{"cpu":"1000m","memory":"1G"}},"sessionAffinityEnabled":false},"templates":{"useTemplateCRDs":false},"tolerations":[]},"nodeagent":{"enabled":true,"env":{"CA_ADDR":"istio-citadel:8060","CA_PROVIDER":"Citadel","Plugins":"","VALID_TOKEN":true},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"node-agent-k8s","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"tolerations":[]},"pilot":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":2,"cpu":{"targetAverageUtilization":80},"enabled":true,"env":{"GODEBUG":"gctrace=1","PILOT_PUSH_THROTTLE":100},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"pilot","keepaliveMaxServerConnectionAge":"30m","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"resources":{"requests":{"cpu":"500m","memory":"2048Mi"}},"sidecar":true,"tolerations":[],"traceSampling":100},"prometheus":{"contextPath":"/prometheus","enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"hub":"docker.io/prom","ingress":{"annotations":null,"enabled":false,"hosts":["prometheus.local"],"tls":null},"nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"retention":"6h","scrapeInterval":"15s","security":{"enabled":true},"service":{"annotations":{},"nodePort":{"enabled":false,"port":32090}},"tag":"v2.8.0","tolerations":[]},"security":{"citadelHealthCheck":false,"createMeshPolicy":true,"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"citadel","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"selfSigned":true,"tolerations":[],"workloadCertTtl":"2160h"},"sidecarInjectorWebhook":{"alwaysInjectSelector":[],"enableNamespacesByDefault":false,"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":false,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":false},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"sidecar_injector","neverInjectSelector":[],"nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"rewriteAppHTTPProbe":false,"tolerations":[]},"tracing":{"enabled":false}}'
+    values: '{"certmanager":{"email":"damian.baar@wipro.com","enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"hub":"quay.io/jetstack","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"resources":{},"tag":"v0.6.2","tolerations":[]},"galley":{"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"galley","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"tolerations":[]},"gateways":{"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"istio-egressgateway":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":false,"env":{"ISTIO_META_ROUTER_MODE":"sni-dnat"},"labels":{"app":"istio-egressgateway","istio":"egressgateway"},"nodeSelector":{},"podAnnotations":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"ports":[{"name":"http2","port":80},{"name":"https","port":443},{"name":"tls","port":15443,"targetPort":15443}],"resources":{"limits":{"cpu":"2000m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"secretVolumes":[{"mountPath":"/etc/istio/egressgateway-certs","name":"egressgateway-certs","secretName":"istio-egressgateway-certs"},{"mountPath":"/etc/istio/egressgateway-ca-certs","name":"egressgateway-ca-certs","secretName":"istio-egressgateway-ca-certs"}],"serviceAnnotations":{},"tolerations":[],"type":"ClusterIP"},"istio-ilbgateway":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":false,"labels":{"app":"istio-ilbgateway","istio":"ilbgateway"},"loadBalancerIP":"","nodeSelector":{},"podAnnotations":{},"ports":[{"name":"grpc-pilot-mtls","port":15011},{"name":"grpc-pilot","port":15010},{"name":"tcp-citadel-grpc-tls","port":8060,"targetPort":8060},{"name":"tcp-dns","port":5353}],"resources":{"requests":{"cpu":"800m","memory":"512Mi"}},"secretVolumes":[{"mountPath":"/etc/istio/ilbgateway-certs","name":"ilbgateway-certs","secretName":"istio-ilbgateway-certs"},{"mountPath":"/etc/istio/ilbgateway-ca-certs","name":"ilbgateway-ca-certs","secretName":"istio-ilbgateway-ca-certs"}],"serviceAnnotations":{"cloud.google.com/load-balancer-type":"internal"},"tolerations":[],"type":"LoadBalancer"},"istio-ingressgateway":{"applicationPorts":"","autoscaleEnabled":true,"autoscaleMax":1,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":true,"env":{"ISTIO_META_ROUTER_MODE":"sni-dnat"},"externalIPs":[],"labels":{"app":"istio-ingressgateway","istio":"ingressgateway"},"loadBalancerIP":"","loadBalancerSourceRanges":[],"meshExpansionPorts":[{"name":"tcp-pilot-grpc-tls","port":15011,"targetPort":15011},{"name":"tcp-mixer-grpc-tls","port":15004,"targetPort":15004},{"name":"tcp-citadel-grpc-tls","port":8060,"targetPort":8060},{"name":"tcp-dns-tls","port":853,"targetPort":853}],"nodeSelector":{},"podAnnotations":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"ports":[{"name":"status-port","port":15020,"targetPort":15020},{"name":"http2","nodePort":31380,"port":80,"targetPort":80},{"name":"https","nodePort":31390,"port":443},{"name":"tcp","nodePort":31400,"port":31400},{"name":"https-kiali","port":15029,"targetPort":15029},{"name":"https-prometheus","port":15030,"targetPort":15030},{"name":"https-grafana","port":15031,"targetPort":15031},{"name":"https-tracing","port":15032,"targetPort":15032},{"name":"tls","port":15443,"targetPort":15443}],"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"500m","memory":"256Mi"}},"sds":{"enabled":true,"image":"node-agent-k8s","resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}},"secretVolumes":[{"mountPath":"/etc/istio/ingressgateway-certs","name":"ingressgateway-certs","secretName":"istio-ingressgateway-certs"},{"mountPath":"/etc/istio/ingressgateway-ca-certs","name":"ingressgateway-ca-certs","secretName":"istio-ingressgateway-ca-certs"}],"serviceAnnotations":{"certmanager.k8s.io/acme-challenge-type":"dns01","certmanager.k8s.io/acme-dns01-provider":"aws","certmanager.k8s.io/cluster-issuer":"cert-issuer","domainName":"future-is-comming.dev.buildit.consulting","external-dns.alpha.kubernetes.io/hostname":"*.future-is-comming.dev.buildit.consulting","kubernetes.io/tls":"ingress-cert","kubernetes.io/tls-acme":"true","service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags":"Owner=damian.baar@wipro.com","service.beta.kubernetes.io/aws-load-balancer-ssl-ports":"https"},"tolerations":[],"type":"LoadBalancer"}},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"grafana":{"enabled":false},"istio_cni":{"enabled":false},"istiocoredns":{"enabled":false},"kiali":{"enabled":false},"mixer":{"adapters":{"kubernetesenv":{"enabled":true},"prometheus":{"enabled":false,"metricsExpiryDuration":"10m"},"stdio":{"enabled":false,"outputAsJson":true},"useAdapterCRDs":false},"env":{"GODEBUG":"gctrace=1","GOMAXPROCS":"6"},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"mixer","nodeSelector":{},"podAnnotations":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"policy":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":false,"replicaCount":1},"telemetry":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":1,"cpu":{"targetAverageUtilization":80},"enabled":true,"loadshedding":{"latencyThreshold":"100ms","mode":"enforce"},"replicaCount":1,"resources":{"limits":{"cpu":"4800m","memory":"4G"},"requests":{"cpu":"1000m","memory":"1G"}},"sessionAffinityEnabled":false},"templates":{"useTemplateCRDs":false},"tolerations":[]},"nodeagent":{"enabled":true,"env":{"CA_ADDR":"istio-citadel:8060","CA_PROVIDER":"Citadel","Plugins":"","VALID_TOKEN":true},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"node-agent-k8s","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"tolerations":[]},"pilot":{"autoscaleEnabled":true,"autoscaleMax":5,"autoscaleMin":2,"cpu":{"targetAverageUtilization":80},"enabled":true,"env":{"GODEBUG":"gctrace=1","PILOT_PUSH_THROTTLE":100},"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"pilot","keepaliveMaxServerConnectionAge":"30m","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"resources":{"requests":{"cpu":"500m","memory":"2048Mi"}},"sidecar":true,"tolerations":[],"traceSampling":100},"prometheus":{"contextPath":"/prometheus","enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"hub":"docker.io/prom","ingress":{"annotations":null,"enabled":false,"hosts":["prometheus.local"],"tls":null},"nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"retention":"6h","scrapeInterval":"15s","security":{"enabled":true},"service":{"annotations":{},"nodePort":{"enabled":false,"port":32090}},"tag":"v2.8.0","tolerations":[]},"security":{"citadelHealthCheck":false,"createMeshPolicy":true,"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"citadel","nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"selfSigned":true,"tolerations":[],"workloadCertTtl":"2160h"},"sidecarInjectorWebhook":{"alwaysInjectSelector":[],"enableNamespacesByDefault":false,"enabled":true,"global":{"arch":{"amd64":2,"ppc64le":2,"s390x":2},"configValidation":true,"controlPlaneSecurityEnabled":false,"defaultNodeSelector":{},"defaultPodDisruptionBudget":{"enabled":true},"defaultResources":{"requests":{"cpu":"10m"}},"defaultTolerations":[],"disablePolicyChecks":true,"enableHelmTest":false,"enableTracing":true,"hub":"docker.io/istio","imagePullPolicy":"IfNotPresent","imagePullSecrets":null,"k8sIngress":{"enableHttps":true,"enabled":false,"gatewayName":"ingressgateway"},"localityLbSetting":{},"logging":{"level":"default:info"},"meshExpansion":{"enabled":false,"useILB":false},"meshNetworks":{},"monitoringPort":15014,"mtls":{"enabled":true},"multiCluster":{"enabled":false},"oneNamespace":false,"outboundTrafficPolicy":{"mode":"ALLOW_ANY"},"policyCheckFailOpen":false,"priorityClassName":"","proxy":{"accessLogEncoding":"TEXT","accessLogFile":"","accessLogFormat":"","autoInject":"disabled","clusterDomain":"cluster.local","componentLogLevel":"","concurrency":2,"dnsRefreshRate":"300s","enableCoreDump":false,"envoyMetricsService":{"enabled":false,"host":null,"port":null},"envoyStatsd":{"enabled":false,"host":null,"port":null},"excludeIPRanges":"","excludeInboundPorts":"","excludeOutboundPorts":"","image":"proxyv2","includeIPRanges":"*","includeInboundPorts":"*","kubevirtInterfaces":"","logLevel":"","privileged":false,"readinessFailureThreshold":30,"readinessInitialDelaySeconds":1,"readinessPeriodSeconds":2,"resources":{"limits":{"cpu":"2000m","memory":"1024Mi"},"requests":{"cpu":"100m","memory":"128Mi"}},"statusPort":15020,"tracer":"zipkin"},"proxy_init":{"image":"proxy_init"},"sds":{"enabled":true,"udsPath":"unix:/var/run/sds/uds_path","useNormalJwt":true,"useTrustworthyJwt":false},"sidecarInjectorWebhook":{"enableNamespacesByDefault":true,"enabled":true},"tag":"1.2.4","tracer":{"datadog":{"address":"$(HOST_IP):8126"},"lightstep":{"accessToken":"","address":"","cacertPath":"","secure":true},"zipkin":{"address":""}},"trustDomain":"","useMCP":true},"image":"sidecar_injector","neverInjectSelector":[],"nodeSelector":{},"podAntiAffinityLabelSelector":[],"podAntiAffinityTermLabelSelector":[],"replicaCount":1,"rewriteAppHTTPProbe":false,"tolerations":[]},"tracing":{"enabled":false}}'
   kind: ConfigMap
   metadata:
     labels:
@@ -2435,6 +2887,48 @@ items:
   kind: Service
   metadata:
     labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+  spec:
+    ports:
+    - name: http
+      port: 8085
+      protocol: TCP
+      targetPort: 8085
+    selector:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/name: aws-cluster-autoscaler
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  spec:
+    ports:
+    - name: http
+      port: 7979
+      protocol: TCP
+      targetPort: http
+    selector:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/name: external-dns
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
       app: security
       chart: security
       heritage: Tiller
@@ -2479,10 +2973,15 @@ items:
   kind: Service
   metadata:
     annotations:
+      certmanager.k8s.io/acme-challenge-type: dns01
+      certmanager.k8s.io/acme-dns01-provider: aws
+      certmanager.k8s.io/cluster-issuer: cert-issuer
       domainName: future-is-comming.dev.buildit.consulting
       external-dns.alpha.kubernetes.io/hostname: '*.future-is-comming.dev.buildit.consulting'
+      kubernetes.io/tls: ingress-cert
+      kubernetes.io/tls-acme: 'true'
       service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: Owner=damian.baar@wipro.com
-      type: external
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
     labels:
       app: istio-ingressgateway
       chart: gateways
@@ -2630,6 +3129,28 @@ items:
   kind: ServiceAccount
   metadata:
     labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
       app: security
       chart: security
       heritage: Tiller
@@ -2741,6 +3262,17 @@ items:
   kind: ServiceAccount
   metadata:
     labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
       app: prometheus
       chart: prometheus
       heritage: Tiller
@@ -2748,6 +3280,149 @@ items:
       release: istio
     name: prometheus
     namespace: istio-system
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-osd
+    namespace: storage
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system
+    namespace: storage
+- apiVersion: extensions/v1beta1
+  kind: DaemonSet
+  metadata:
+    labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+  spec:
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: kube2iam
+          app.kubernetes.io/name: kube2iam
+      spec:
+        containers:
+        - args:
+          - --host-interface=docker0
+          - --node=$(NODE_NAME)
+          - --iptables=false
+          - --app-port=8181
+          - --metrics-port=8181
+          env:
+          - name: HOST_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          image: jtblin/kube2iam:0.10.7
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /healthz
+              port: 8181
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: kube2iam
+          ports:
+          - containerPort: 8181
+            name: http
+          resources: {}
+        hostNetwork: true
+        serviceAccountName: kube2iam
+        tolerations: []
+    updateStrategy:
+      type: OnDelete
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: eks-cluster-autoscaler
+        app.kubernetes.io/name: aws-cluster-autoscaler
+    template:
+      metadata:
+        labels:
+          app.kubernetes.io/instance: eks-cluster-autoscaler
+          app.kubernetes.io/name: aws-cluster-autoscaler
+      spec:
+        containers:
+        - command:
+          - ./cluster-autoscaler
+          - --cloud-provider=aws
+          - --namespace=eks
+          - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/future-is-comming-dev-cluster
+          - --logtostderr=true
+          - --stderrthreshold=info
+          - --v=4
+          env:
+          - name: AWS_REGION
+            value: eu-west-2
+          image: k8s.gcr.io/cluster-autoscaler:v1.13.1
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: 8085
+          name: aws-cluster-autoscaler
+          ports:
+          - containerPort: 8085
+          resources: {}
+          volumeMounts:
+          - mountPath: /etc/ssl/certs/ca-bundle.crt
+            name: ssl-certs
+            readOnly: true
+        nodeSelector:
+          kubernetes.io/lifecycle: on-demand
+        serviceAccountName: eks-cluster-autoscaler-aws-cluster-autoscaler
+        tolerations: []
+        volumes:
+        - hostPath:
+            path: /etc/ssl/certs/ca-certificates.crt
+          name: ssl-certs
 - apiVersion: policy/v1beta1
   kind: PodDisruptionBudget
   metadata:
@@ -2766,6 +3441,23 @@ items:
       matchLabels:
         app: certmanager
         release: istio
+- apiVersion: policy/v1beta1
+  kind: PodDisruptionBudget
+  metadata:
+    labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+  spec:
+    maxUnavailable: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: eks-cluster-autoscaler
+        app.kubernetes.io/name: aws-cluster-autoscaler
 - apiVersion: policy/v1beta1
   kind: PodDisruptionBudget
   metadata:
@@ -2862,6 +3554,30 @@ items:
         istio: mixer
         istio-mixer-type: telemetry
         release: istio
+- apiVersion: policy/v1beta1
+  kind: PodSecurityPolicy
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: 00-rook-ceph-operator
+    namespace: storage
+  spec:
+    allowedCapabilities:
+    - '*'
+    fsGroup:
+      rule: RunAsAny
+    hostIPC: true
+    hostNetwork: true
+    hostPID: true
+    privileged: true
+    runAsUser:
+      rule: RunAsAny
+    seLinux:
+      rule: RunAsAny
+    supplementalGroups:
+      rule: RunAsAny
+    volumes:
+    - '*'
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRole
   metadata:
@@ -3521,6 +4237,165 @@ items:
   kind: ClusterRole
   metadata:
     labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    - endpoints
+    verbs:
+    - create
+    - patch
+  - apiGroups:
+    - ''
+    resources:
+    - pods/eviction
+    verbs:
+    - create
+  - apiGroups:
+    - ''
+    resources:
+    - pods/status
+    verbs:
+    - update
+  - apiGroups:
+    - ''
+    resourceNames:
+    - cluster-autoscaler
+    resources:
+    - endpoints
+    verbs:
+    - get
+    - update
+  - apiGroups:
+    - ''
+    resources:
+    - nodes
+    verbs:
+    - watch
+    - list
+    - get
+    - update
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - services
+    - replicationcontrollers
+    - persistentvolumeclaims
+    - persistentvolumes
+    verbs:
+    - watch
+    - list
+    - get
+  - apiGroups:
+    - batch
+    resources:
+    - jobs
+    - cronjobs
+    verbs:
+    - watch
+    - list
+    - get
+  - apiGroups:
+    - extensions
+    resources:
+    - replicasets
+    - daemonsets
+    verbs:
+    - watch
+    - list
+    - get
+  - apiGroups:
+    - policy
+    resources:
+    - poddisruptionbudgets
+    verbs:
+    - watch
+    - list
+  - apiGroups:
+    - apps
+    resources:
+    - daemonsets
+    - replicasets
+    - statefulsets
+    verbs:
+    - watch
+    - list
+    - get
+  - apiGroups:
+    - storage.k8s.io
+    resources:
+    - storageclasses
+    verbs:
+    - watch
+    - list
+    - get
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    verbs:
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - services
+    - pods
+    - nodes
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - extensions
+    - networking.k8s.io
+    resources:
+    - ingresses
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - networking.istio.io
+    resources:
+    - gateways
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - externaldns.k8s.io
+    resources:
+    - dnsendpoints
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
       app: security
       chart: security
       heritage: Tiller
@@ -3558,6 +4433,298 @@ items:
     - list
     - watch
 - apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - namespaces
+    - pods
+    verbs:
+    - list
+    - watch
+    - get
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.rook.ceph.io/aggregate-to-rook-ceph-cluster-mgmt: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-cluster-mgmt
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.rook.ceph.io/aggregate-to-rook-ceph-cluster-mgmt: 'true'
+      storage-backend: ceph
+    name: rook-ceph-cluster-mgmt-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    - pods
+    - pods/log
+    - services
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - apps
+    resources:
+    - deployments
+    - daemonsets
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-global: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-global
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-global: 'true'
+      storage-backend: ceph
+    name: rook-ceph-global-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - nodes
+    - nodes/proxy
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    - persistentvolumes
+    - persistentvolumeclaims
+    - endpoints
+    verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - storage.k8s.io
+    resources:
+    - storageclasses
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - batch
+    resources:
+    - jobs
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - ceph.rook.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - apiGroups:
+    - rook.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-cluster: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-mgr-cluster
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-cluster: 'true'
+      storage-backend: ceph
+    name: rook-ceph-mgr-cluster-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    - nodes
+    - nodes/proxy
+    verbs:
+    - get
+    - list
+    - watch
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr-system
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: 'true'
+    name: rook-ceph-mgr-system-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+- aggregationRule:
+    clusterRoleSelectors:
+    - matchLabels:
+        rbac.ceph.rook.io/aggregate-to-rook-ceph-system-psp-user: 'true'
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system-psp-user
+    namespace: storage
+  rules: []
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRole
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      rbac.ceph.rook.io/aggregate-to-rook-ceph-system-psp-user: 'true'
+      storage-backend: ceph
+    name: rook-ceph-system-psp-user-rules
+    namespace: storage
+  rules:
+  - apiGroups:
+    - apps
+    resourceNames:
+    - 00-rook-ceph-operator
+    resources:
+    - podsecuritypolicies
+    verbs:
+    - use
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+  subjects:
+  - kind: ServiceAccount
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: external-dns
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: external-dns
+      helm.sh/chart: external-dns-2.5.4
+      kubenix/project-name: kubenix
+    name: external-dns
+    namespace: eks
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: external-dns
+  subjects:
+  - kind: ServiceAccount
+    name: external-dns
+    namespace: eks
+- apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
     labels:
@@ -3576,5 +4743,378 @@ items:
   - kind: ServiceAccount
     name: istio-security-post-install-account
     namespace: istio-system
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: kube2iam
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: kube2iam
+      helm.sh/chart: kube2iam-2.0.1
+      kubenix/project-name: kubenix
+    name: kube2iam
+    namespace: eks
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: kube2iam
+  subjects:
+  - kind: ServiceAccount
+    name: kube2iam
+    namespace: eks
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-global
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-global
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr-cluster
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-mgr-cluster
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      chart: rook-ceph-v1.0.5
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system-psp-users
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-system-psp-user
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    verbs:
+    - create
+  - apiGroups:
+    - ''
+    resourceNames:
+    - cluster-autoscaler-status
+    resources:
+    - configmaps
+    verbs:
+    - delete
+    - get
+    - update
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - services
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - batch
+    resources:
+    - jobs
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - ceph.rook.io
+    resources:
+    - '*'
+    verbs:
+    - '*'
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-osd
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system
+    namespace: storage
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - configmaps
+    - services
+    verbs:
+    - get
+    - list
+    - watch
+    - patch
+    - create
+    - update
+    - delete
+  - apiGroups:
+    - apps
+    resources:
+    - daemonsets
+    - statefulsets
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: eks-cluster-autoscaler
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: aws-cluster-autoscaler
+      helm.sh/chart: cluster-autoscaler-3.2.0
+      kubenix/project-name: kubenix
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+  subjects:
+  - kind: ServiceAccount
+    name: eks-cluster-autoscaler-aws-cluster-autoscaler
+    namespace: eks
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-cluster-mgmt
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-cluster-mgmt
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rook-ceph-mgr
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-mgr-system
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: rook-ceph-mgr-system
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-mgr
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: rook-ceph-osd
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rook-ceph-osd
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-osd
+    namespace: storage
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+      operator: rook
+      storage-backend: ceph
+    name: rook-ceph-system
+    namespace: storage
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: rook-ceph-system
+  subjects:
+  - kind: ServiceAccount
+    name: rook-ceph-system
+    namespace: storage
+- apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.beta.kubernetes.io/is-default-class: 'false'
+    labels:
+      addonmanager.kubernetes.io/mode: EnsureExists
+      kubenix/project-name: kubenix
+    name: build-storage
+    namespace: ci
+  parameters:
+    blockPool: brigade-storage
+    clusterNamespace: storage
+  provisioner: ceph.rook.io/block
+- apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    annotations:
+      storageclass.beta.kubernetes.io/is-default-class: 'false'
+    labels:
+      addonmanager.kubernetes.io/mode: EnsureExists
+      kubenix/project-name: kubenix
+    name: cache-storage
+    namespace: ci
+  parameters:
+    blockPool: brigade-cache
+    clusterNamespace: storage
+  provisioner: ceph.rook.io/block
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: rook-ceph-tools
+    name: rook-ceph-tools
+    namespace: storage
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: rook-ceph-tools
+    template:
+      metadata:
+        labels:
+          app: rook-ceph-tools
+      spec:
+        containers:
+        - args:
+          - -g
+          - --
+          - /usr/local/bin/toolbox.sh
+          command:
+          - /tini
+          env:
+          - name: ROOK_ADMIN_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: admin-secret
+                name: rook-ceph-mon
+          image: rook/ceph:v1.0.5
+          imagePullPolicy: IfNotPresent
+          name: rook-ceph-tools
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /dev
+            name: dev
+          - mountPath: /sys/bus
+            name: sysbus
+          - mountPath: /lib/modules
+            name: libmodules
+          - mountPath: /etc/rook
+            name: mon-endpoint-volume
+        dnsPolicy: ClusterFirstWithHostNet
+        hostNetwork: true
+        volumes:
+        - hostPath:
+            path: /dev
+          name: dev
+        - hostPath:
+            path: /sys/bus
+          name: sysbus
+        - hostPath:
+            path: /lib/modules
+          name: libmodules
+        - configMap:
+            items:
+            - key: data
+              path: mon-endpoints
+            name: rook-ceph-mon-endpoints
+          name: mon-endpoint-volume
 kind: List
 labels:
