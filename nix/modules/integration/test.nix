@@ -1,11 +1,11 @@
 { lib, test, should, stubs, ... }:
 let
   pkgs = import ./..;
-  shell-modules = ((pkgs {}).callPackage ./default.nix {});
-  eval-modules = modules: (shell-modules.eval { inherit modules; });
+  integration-modules = ((pkgs {}).callPackage ./default.nix {});
+  eval-modules = modules: (integration-modules.eval { inherit modules; });
 in
 with lib;
-with shell-modules.modules;
+with integration-modules.modules;
 builtins.concatLists [
   (let
     input = pkgs { inputs.docker.tag = "test"; };

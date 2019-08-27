@@ -99,10 +99,10 @@ provide full testing ability of infrastructure as well as on application level f
 ```nix
 # source ./nix/config/environment-setup.nix
 
-{config, pkgs, lib, kubenix, shell-modules, inputs, ...}: 
+{config, pkgs, lib, kubenix, integration-modules, inputs, ...}: 
 with pkgs.lib;
 {
-  imports = with shell-modules.modules; [
+  imports = with integration-modules.modules; [
     project-configuration
     kubernetes
     kubernetes-resources

@@ -1,4 +1,4 @@
-# this is a bridge between shell-modules and kubenix
+# this is a bridge between integration-modules and kubenix
 { 
   config, 
   pkgs,

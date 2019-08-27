@@ -1,4 +1,4 @@
-{config, pkgs, lib, kubenix, shell-modules, inputs, ...}: 
+{config, pkgs, lib, kubenix, integration-modules, inputs, ...}: 
 with pkgs.lib;
 let
   resources = config.kubernetes.resources;
@@ -18,7 +18,7 @@ let
   };
 in
 {
-  imports = with shell-modules.modules; [
+  imports = with integration-modules.modules; [
     kubernetes
   ];
 

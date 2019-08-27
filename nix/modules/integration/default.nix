@@ -6,7 +6,7 @@
 }:
 let
   defaultSpecialArgs = {
-    inherit shell-modules;
+    inherit integration-modules;
     lib = lib // extraLibs;
   };
 
@@ -27,8 +27,8 @@ let
       };
     } attrs');
 
-  shell-modules = {
+  integration-modules = {
     inherit eval modules;
   };
 in
-  shell-modules
+  integration-modules
