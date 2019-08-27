@@ -98,6 +98,7 @@ in
       rbac.create = true;
       policy = "upsert-only";
       logLevel = "debug";
+      # txtPrefix = "${project-config.project.author-email}-";
       aws = {
         region = project-config.aws.region;
       };
@@ -155,7 +156,9 @@ in
       };
       spec = {
         acme = {
-          server = "https://acme-v02.api.letsencrypt.org/directory";
+          # server = "https://acme-v02.api.letsencrypt.org/directory";
+          # staging
+          server = "https://acme-staging-v02.api.letsencrypt.org/directory";
           email = project-config.project.author-email;
           privateKeySecretRef.name = "cert-prod";
           dns01.providers = [{ 

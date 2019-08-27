@@ -3,8 +3,6 @@ items:
 - apiVersion: networking.istio.io/v1alpha3
   kind: Gateway
   metadata:
-    annotations:
-      type: external
     labels:
       kubenix/project-name: kubenix
     name: knative-ingress-gateway
@@ -50,7 +48,7 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-f18b5a43b32dbbce975a4b30916234128328635b
+          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-9d43629f9c8c72fde26832214c8f85158df60289
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
@@ -74,9 +72,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      certmanager.k8s.io/cluster-issuer: cert-issuer
       kubenix/project-name: kubenix
-      networking.knative.dev/certificate-provider: cert-manager
     name: config-certmanager
     namespace: knative-serving
 - apiVersion: v1
@@ -85,9 +81,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      certmanager.k8s.io/cluster-issuer: cert-issuer
       kubenix/project-name: kubenix
-      networking.knative.dev/certificate-provider: cert-manager
     name: config-domain
     namespace: knative-serving
 kind: List

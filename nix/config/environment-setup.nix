@@ -1,5 +1,8 @@
 {config, pkgs, lib, kubenix, shell-modules, inputs, ...}: 
 with pkgs.lib;
+let
+  functions = (import ./functions.nix { inherit pkgs; });
+in
 {
   imports = with shell-modules.modules; [
     project-configuration
@@ -8,6 +11,7 @@ with pkgs.lib;
     eks-cluster
     bitbucket-k8s-repo
     local-cluster
+    ssl
     load-balancer
     docker
     storage
@@ -51,10 +55,11 @@ with pkgs.lib;
             ]));
     };
 
+    ssl.domains = builtins.attrNames functions;
+
     test.enable = inputs.tests.enable;
 
     docker = {
-      upload-images-type = ["functions" "cluster"];
       upload = inputs.docker.upload;
       namespace = "dev.local";
       # registry = "";
@@ -158,7 +163,6 @@ with pkgs.lib;
       resources = 
         with kubenix.modules;
         let
-          functions = (import ./functions.nix { inherit pkgs; });
           resources = config.kubernetes.resources;
           priority = resources.priority;
           # FIXME this is a bit crappy ...
