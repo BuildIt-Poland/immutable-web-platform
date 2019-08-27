@@ -96,15 +96,15 @@ in
               } // (annotations "services");
             };
 
-          nodeagent = {
-            enabled =  true;
-            image =  "node-agent-k8s";
-            env = {
-              CA_PROVIDER =  "Citadel";
-              CA_ADDR =  "istio-citadel:8060";
-              VALID_TOKEN = true;
-            };
-          };
+          # nodeagent = {
+          #   enabled =  true;
+          #   image =  "node-agent-k8s";
+          #   env = {
+          #     CA_PROVIDER =  "Citadel";
+          #     CA_ADDR =  "istio-citadel:8060";
+          #     VALID_TOKEN = true;
+          #   };
+          # };
 
           certmanager.enabled = true;
           certmanager.email = project-config.project.author-email;
@@ -123,10 +123,10 @@ in
             defaultNodeSelector = {
               "kubernetes.io/lifecycle"= "on-demand";
             };
-            mtls.enabled = true;
+            # mtls.enabled = true;
             # TODO
             # defaultTolerations = [];
-            controlPlaneSecurityEnabled = false;
+            # controlPlaneSecurityEnabled = false;
             disablePolicyChecks = true;
             proxy.autoInject = "disabled";
             sidecarInjectorWebhook.enabled = true;
@@ -135,11 +135,11 @@ in
             k8sIngress.enabled = true;
             k8sIngress.enableHttps = true; # FIXME should be target related\
 
-            sds = {
-              enabled = true;
-              udsPath = "unix:/var/run/sds/uds_path";
-              useNormalJwt = true;
-            };
+            # sds = {
+            #   enabled = true;
+            #   udsPath = "unix:/var/run/sds/uds_path";
+            #   useNormalJwt = true;
+            # };
           };
         };
       };
