@@ -21,6 +21,10 @@ rec {
       default = "";
     };
 
+    subdomains = mkOption {
+      default = ["*"];
+    };
+
     make-sub-domain = mkOption {
       default = null;      
     };

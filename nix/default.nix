@@ -23,7 +23,7 @@ let
       let
         safe-inputs = make-defaults inputs; 
       in
-      (super.shell-modules.eval {
+      (super.integration-modules.eval {
         modules = [./config/environment-setup.nix] ++ safe-inputs.modules;
         args = { 
           inputs = safe-inputs; 
@@ -48,8 +48,7 @@ let
   overlays = [
     (import ./overlays/overridings.nix {inherit sources;})
     (import ./overlays/tools.nix {inherit sources;})
-    (import ./overlays/kubenix.nix {inherit sources;})
-    (import ./overlays/shell-modules.nix {inherit sources;})
+    (import ./overlays/modules.nix {inherit sources;})
     passthrough
     application
     nix-tests

@@ -13,7 +13,5 @@
   kubernetes-resources = ./kubernetes-resources.nix;
   bitbucket-k8s-repo = ./bitbucket-k8s-repo.nix;
   storage = ./storage.nix;
-  ssl = ./ssl.nix;
-  load-balancer = ./load-balancer.nix;
   service-mesh = ./service-mesh.nix;
 }

@@ -38,15 +38,4 @@ rec {
       sha256="1iic9dd4r0qw7rvlgakpdajhbkawp6al8bq1hclb11dfyr1gg136";
     };
   };
-
-  # core crd
-  cert-manager-crd-json = helm.yaml-to-json {
-    name = "cert-manager-crd";
-    version = "0.8.1";
-    src = pkgs.fetchurl {
-      url = https://raw.githubusercontent.com/jetstack/cert-manager/release-0.8/deploy/manifests/00-crds.yaml;
-      sha256 = "1a1sgh32x4ysf1mkdw4x8j5jj7xdcqcmw9a7h5qfpkl2yvn0cl18";
-    };
-  };
-
 }
