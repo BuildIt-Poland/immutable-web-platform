@@ -106,21 +106,22 @@ items:
       \      streamLogs: true,\n      privileged: true,\n      annotations: {\n  \
       \      // kube2iam\n        \"backup.velero.io/backup-volumes\": \"brigade-data\"\
       \n      },\n      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n\
-      \    })\n\n  t = t.withTasks([\n    `cat ${t.cache.path}/test.file`,\n    `echo\
-      \ \"storage\" > ${t.storage.path}/test.file`,\n    `echo \"cache\" > ${t.cache.path}/test.file`,\n\
-      \    // `cat ${t.storage.path}/test.file`,\n    // runShellCommand('push-k8s-resources-to-repo'),\n\
-      \  ])\n\n  return t\n}\n\nevents.on(\"exec\", async (event, project) => {\n\
-      \  let test =\n    createJob(\"test\")\n      .withSecrets(project.secrets)\n\
+      \    })\n\n  t = t.withTasks([\n    `cat ${t.cache.path}/test.file`,\n    `cat\
+      \ ${t.cache.path}/test2.file`,\n    `echo \"storage\" > ${t.storage.path}/test.file`,\n\
+      \    `echo \"cache 1\" > ${t.cache.path}/test.file`,\n    `echo \"cache 2\"\
+      \ > ${t.cache.path}/test2.file`,\n    // `cat ${t.storage.path}/test.file`,\n\
+      \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
+      }\n\nevents.on(\"exec\", async (event, project) => {\n  let test =\n    createJob(\"\
+      test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
+      \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
+      \      })\n\n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
       \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
-      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  let test2 =\n    createJob(\"\
-      test2\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n      \
-      \  BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
-      \      })\n\n  test2 = test2\n    .withTasks([\n      `cat ${test2.storage.path}/test.file`,\n\
-      \      // `cat ${test2.cache.path}/test.file`,\n    ])\n  // i don't like it,\
-      \ not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
+      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  test2 = test2\n    .withTasks([\n\
+      \      `cat ${test2.storage.path}/test.file`,\n      // `cat ${test2.cache.path}/test.file`,\n\
+      \    ])\n  // i don't like it, not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
       \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  // test.run()\n\
-      \  await test.run()\n  await test2.run()\n})\n\nevents.on(\"push\", (event,\
-      \ project) => {\n  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\
+      \  await test.run()\n  await test2.run()\n})\n\n// TODO\nevents.on(\"push\"\
+      , (event, project) => {\n  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\
       \n  test.run()\n})\n"
     genericGatewaySecret: mygenericsecret
     initGitSubmodules: 'false'
