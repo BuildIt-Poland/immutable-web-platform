@@ -44,7 +44,7 @@ in
     ./cert-manager.nix
     ./service-mesh.nix
     ./virtual-services.nix
-    ./storage-classes.nix
+    ./storage.nix
   ];
 
   kubernetes.patches = [
@@ -54,11 +54,15 @@ in
 
   kubernetes.annotations = {
     instance-on-demand = {"kubernetes.io/lifecycle"= "on-demand";};
-    iam = {"iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";};
+    iam = { 
+      # FIXME these should be 2 separate roles
+      cluster = {"iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";};
+      backups = {"iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";};
+    };
   };
 
   kubernetes.api.namespaces."${eks-ns}"= {
-    metadata.annotations = config.kubernetes.annotations.iam;
+    metadata.annotations = config.kubernetes.annotations.iam.cluster;
   };
  
    # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md

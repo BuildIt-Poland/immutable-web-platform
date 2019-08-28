@@ -24,6 +24,9 @@ rec {
   dgoss = super.callPackage ../tools/dgoss.nix {}; 
   kaniko-build = super.callPackage ../builder/kaniko.nix {};
 
+  # backups
+  velero = super.callPackage ../tools/velero.nix {};
+
   # NodeJS packages
   node-development-tools = super.callPackage "${nodePackages}/development-tools/nix" {};
   # brigade-extension = super.callPackage "${nodePackages}/brigade-extension/nix" {};

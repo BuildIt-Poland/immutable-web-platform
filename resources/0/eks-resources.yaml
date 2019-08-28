@@ -3,6 +3,48 @@ items:
 - apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: backups.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: Backup
+      plural: backups
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: backupstoragelocations.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: BackupStorageLocation
+      plural: backupstoragelocations
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
     labels:
       kubenix/project-name: kubenix
     name: cephblockpools.ceph.rook.io
@@ -179,6 +221,174 @@ items:
 - apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: deletebackuprequests.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: DeleteBackupRequest
+      plural: deletebackuprequests
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: downloadrequests.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: DownloadRequest
+      plural: downloadrequests
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: podvolumebackups.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: PodVolumeBackup
+      plural: podvolumebackups
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: podvolumerestores.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: PodVolumeRestore
+      plural: podvolumerestores
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: resticrepositories.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: ResticRepository
+      plural: resticrepositories
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: restores.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: Restore
+      plural: restores
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: schedules.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: Schedule
+      plural: schedules
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: serverstatusrequests.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: ServerStatusRequest
+      plural: serverstatusrequests
+    scope: Namespaced
+    version: v1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
     labels:
       kubenix/project-name: kubenix
     name: volumes.rook.io
@@ -194,6 +404,27 @@ items:
       singular: volume
     scope: Namespaced
     version: v1alpha2
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    annotations:
+      helm.sh/hook: crd-install
+      helm.sh/hook-delete-policy: before-hook-creation
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: volumesnapshotlocations.velero.io
+    namespace: eks
+  spec:
+    group: velero.io
+    names:
+      kind: VolumeSnapshotLocation
+      plural: volumesnapshotlocations
+    scope: Namespaced
+    version: v1
 - apiVersion: v1
   kind: Namespace
   metadata:
@@ -788,6 +1019,33 @@ items:
       destination_uid: destination.uid | ""
       source_ip: source.ip | ip("0.0.0.0")
       source_uid: source.uid | ""
+- apiVersion: velero.io/v1
+  kind: VolumeSnapshotLocation
+  metadata:
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: default
+    namespace: eks
+  spec: {}
+- apiVersion: velero.io/v1
+  kind: BackupStorageLocation
+  metadata:
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: default
+    namespace: eks
+  spec:
+    objectStorage:
+      bucket: future-is-comming-dev-backup
+    provider: aws
 - apiVersion: certmanager.k8s.io/v1alpha1
   kind: Certificate
   metadata:
@@ -801,9 +1059,9 @@ items:
       - dns01:
           provider: route53
         domains:
-        - gitops.services.future-is-comming.dev.buildit.consulting
+        - '*.services.future-is-comming.dev.buildit.consulting'
     dnsNames:
-    - gitops.services.future-is-comming.dev.buildit.consulting
+    - '*.services.future-is-comming.dev.buildit.consulting'
     issuerRef:
       kind: ClusterIssuer
       name: cert-issuer
@@ -1001,6 +1259,62 @@ items:
           name: sdsudspath
     updateStrategy:
       type: RollingUpdate
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: backup-velero
+    namespace: eks
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: backup
+        app.kubernetes.io/name: velero
+    template:
+      metadata:
+        annotations:
+          iam.amazonaws.com/allowed-roles: '["future-is-comming-dev-cluster*"]'
+          prometheus.io/path: /metrics
+          prometheus.io/port: '8085'
+          prometheus.io/scrape: 'true'
+        labels:
+          app.kubernetes.io/instance: backup
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: velero
+          helm.sh/chart: velero-2.1.3
+      spec:
+        containers:
+        - args:
+          - server
+          command:
+          - /velero
+          env:
+          - name: VELERO_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+          - name: VELERO_SCRATCH_DIR
+            value: /scratch
+          image: gcr.io/heptio-images/velero:v1.0.0
+          imagePullPolicy: IfNotPresent
+          name: velero
+          volumeMounts:
+          - mountPath: /plugins
+            name: plugins
+        restartPolicy: Always
+        serviceAccountName: backup-velero-server
+        volumes:
+        - emptyDir: {}
+          name: plugins
+        - emptyDir: {}
+          name: scratch
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -3111,6 +3425,17 @@ items:
   kind: ServiceAccount
   metadata:
     labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: backup-velero-server
+    namespace: eks
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
       app: certmanager
       chart: certmanager
       heritage: Tiller
@@ -4004,6 +4329,26 @@ items:
     - /metrics
     verbs:
     - get
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/component: server
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: backup-velero-server
+    namespace: eks
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+  - kind: ServiceAccount
+    name: backup-velero-server
+    namespace: eks
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -5028,7 +5373,7 @@ items:
       addonmanager.kubernetes.io/mode: EnsureExists
       kubenix/project-name: kubenix
     name: build-storage
-    namespace: ci
+    namespace: default
   parameters:
     blockPool: brigade-storage
     clusterNamespace: storage
@@ -5042,7 +5387,7 @@ items:
       addonmanager.kubernetes.io/mode: EnsureExists
       kubenix/project-name: kubenix
     name: cache-storage
-    namespace: ci
+    namespace: default
   parameters:
     blockPool: brigade-cache
     clusterNamespace: storage

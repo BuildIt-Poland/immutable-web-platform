@@ -64,10 +64,10 @@ in
               name = "cert-issuer";
               kind = "ClusterIssuer";
             };
-            dnsNames = [(mk-domain "gitops.services")];
+            dnsNames = [(mk-domain "*.services")]; # dont want to have separate certificate
             acme.config = [
               { dns01.provider = "route53";
-                domains = [(mk-domain "gitops.services")];
+                domains = [(mk-domain "*.services")];
               }
             ];
           };

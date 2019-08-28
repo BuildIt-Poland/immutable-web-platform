@@ -48,6 +48,12 @@ rec {
     sha256 = "0136briq1aw36l25sbv8337al9a7x1bx1m3by78q5dsg4dk4rbl1";
   };
 
+  velero = fetch {
+    chart = "stable/velero";
+    version = "2.1.3";
+    sha256 = "09n2csfjjw7g6qs867m944nkiqsciz699bc1a1wgifa7wpx4i2c7";
+  };
+
   external-dns = fetch {
     chart = "stable/external-dns";
     version = "2.5.4";

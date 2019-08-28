@@ -1,5 +1,6 @@
 { pkgs, writeShellScript }:
 with pkgs.stdenv;
+assert isDarwin; # sha for linux will be different
 let
   version = "0.4.0";
   bin-name = "kind";

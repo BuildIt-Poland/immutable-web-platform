@@ -76,6 +76,8 @@ in
       };
     };
 
+    storage.backup.bucket = "${config.project.name}-${config.environment.type}-backup";
+
     brigade = {
       enabled = true;
       secret-key = inputs.brigade.secret;
@@ -120,11 +122,6 @@ in
 
       location = toString ../../terraform;
 
-      # stateFiles = {
-      #   aws_cluster = "${toString ../.}/aws-cluster.vars.json";
-      #   aws_setup = "${toString ../.}/aws-setup.vars.json";
-      # };
-
       vars = rec {
         region = config.aws.region;
         project_name = config.project.name;
@@ -137,6 +134,7 @@ in
         project_prefix = "${project_name}-${env}-${region}";
         root_folder = toString ../..;
 
+        backup_bucket = config.storage.backup.bucket;
         worker_bucket   = "${config.aws.s3-buckets.worker-cache}";
 
         # TODO bucket does not need to be prefixed - there will be folder inside

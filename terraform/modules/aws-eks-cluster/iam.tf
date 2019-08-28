@@ -20,6 +20,21 @@ data "aws_iam_policy_document" "worker-role-policy" {
     resources = ["*"]
   }
 
+  # s3 for valero (https://velero.io/docs/v1.0.0/aws-config/)
+  statement {
+    actions = [
+      "s3:GetObject",
+      "s3:DeleteObject",
+      "s3:PutObject",
+      "s3:AbortMultipartUpload",
+      "s3:ListMultipartUploadParts",
+      "s3:ListBucket"
+    ]
+
+    effect    = "Allow"
+    resources = ["*"]
+  }
+
   # https://github.com/kubernetes-incubator/external-dns/blob/master/docs/tutorials/aws.md#setting-up-externaldns-for-services-on-aws
   statement {
     actions = [
