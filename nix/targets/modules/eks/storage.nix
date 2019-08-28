@@ -59,21 +59,11 @@ in
     };
 
     kubernetes.api.storageclasses = 
-      let
-        metadata = {
-          annotations = {
-            "storageclass.beta.kubernetes.io/is-default-class" = "false"; 
-          };
-          labels = {
-            "addonmanager.kubernetes.io/mode" = "EnsureExists";
-          };
-        };
-      in
       {
         build-storage = {
           metadata = {
             name = "build-storage";
-          } // metadata;
+          };
           provisioner = provisioner;
           parameters = {
             blockPool = "brigade-storage";
@@ -84,7 +74,7 @@ in
         cache-storage = {
           metadata = {
             name = "cache-storage";
-          } // metadata;
+          };
           provisioner = provisioner;
           parameters = {
             blockPool = "brigade-cache";

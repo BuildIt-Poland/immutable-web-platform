@@ -26,6 +26,7 @@ rec {
 
   # backups
   velero = super.callPackage ../tools/velero.nix {};
+  restic = super.callPackage ../tools/restic.nix {};
 
   # NodeJS packages
   node-development-tools = super.callPackage "${nodePackages}/development-tools/nix" {};

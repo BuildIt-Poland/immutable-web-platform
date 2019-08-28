@@ -37,6 +37,7 @@ rec {
 
       packages = [
         pkgs.velero
+        pkgs.restic
       ];
     })
   ]);
