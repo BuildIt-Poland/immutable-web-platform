@@ -34,7 +34,6 @@ let
           enabled = true;
         };
         bitbucket = {
-          name = "bitbucket-gateway";
           service = {
             name = "service";
             type = "NodePort";
