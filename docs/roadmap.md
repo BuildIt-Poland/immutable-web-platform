@@ -1,26 +1,27 @@
 ## Today
 ### in progress
-* refactor env -> should be more like dev, staging, qa, prod - local and current usage is a bit unclear (i.e. it would be handy to use for ssl -> certificate -> lets encrypt)
-- (kubernetes.target (minikube/eks/aks), environement.runtime (local, ci), environement.type 'dev','staging','prod')
-* virtual-services does not work
-* change integration-modules to configuration-modules, and kubenix-modules to kubernetes-modules, prepare virtual-services for local and cloud env (hosts related)
-
-* SSL with istio and EKS - aws_route_53 - partially done
+* spin up bitbucket gateway with AWS LB - virtual service and SSL is there
+* velero - backups - auto at least before resources to rollback quickly
 * prometheus metrics and grafana dashboard for ceph
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
 * shell for infra is necessary - nix shell infra first to bootstrap env and export outputs from terraform after that ... nix with resources
-* distrubuted store
 * tests and functions should be run in spot instances
 * istio / autscaller run on main instance -> nodeSelector / nodeAffinity
 * enum for fs types - aws-efs
-* velero - backups - auto at least before resources to rollback quickly
 
 - create autoscalling groups (https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md) - done
 - https://github.com/rook/rook/tree/master/cluster/examples/kubernetes/ceph
 - add taints - think about best strategy for testing and app perfomance
 - make PR to brigade to be able to select nodeSelector - required to spawn tests on spot instances
 
+### regression:
+* SSL with istio and EKS - aws_route_53 - partially done
+* refactor env -> should be more like dev, staging, qa, prod - local and current usage is a bit unclear (i.e. it would be handy to use for ssl -> certificate -> lets encrypt)
+- (kubernetes.target (minikube/eks/aks), environement.runtime (local, ci), environement.type 'dev','staging','prod')
+* change integration-modules to configuration-modules, and kubenix-modules to kubernetes-modules, prepare virtual-services for local and cloud env (hosts related)
+
 ### works:
+* virtual-services does not work
 * rook-ceph with dashboard
 * task to generate kubeconfig from terraform (
   terraform apply -target module.cluster.module.eks.local_file.kubeconfig) - `tf-nix-exporter`
