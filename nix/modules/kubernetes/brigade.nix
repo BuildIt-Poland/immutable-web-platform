@@ -84,7 +84,7 @@ in
             value=$(echo "${ssh-key}" | base64 | tr -d '\n')
 
             hook=$(cat ${project-config.git-secrets.location} | ${pkgs.sops}/bin/sops --input-type json -d --extract '["bitbucket"]["hook"]' -d /dev/stdin)
-            hook_encoded=$(echo $hook | base64)
+            hook_encoded=$(echo $hook | tr -d '\n' | base64)
 
             ${pkgs.kubectl}/bin/kubectl patch \
               secret -n ${brigade-ns} $secret \
