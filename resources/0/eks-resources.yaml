@@ -5437,10 +5437,7 @@ items:
 - apiVersion: storage.k8s.io/v1
   kind: StorageClass
   metadata:
-    annotations:
-      storageclass.beta.kubernetes.io/is-default-class: 'false'
     labels:
-      addonmanager.kubernetes.io/mode: EnsureExists
       kubenix/project-name: kubenix
     name: build-storage
     namespace: default
@@ -5451,10 +5448,7 @@ items:
 - apiVersion: storage.k8s.io/v1
   kind: StorageClass
   metadata:
-    annotations:
-      storageclass.beta.kubernetes.io/is-default-class: 'false'
     labels:
-      addonmanager.kubernetes.io/mode: EnsureExists
       kubenix/project-name: kubenix
     name: cache-storage
     namespace: default
