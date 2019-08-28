@@ -115,6 +115,8 @@ in
         };
     };
 
+    storage.dataDirHostPath = "/var/lib/rook";
+
     local-cluster.enable = inputs.kubernetes.target == "minikube";
 
     terraform = rec {

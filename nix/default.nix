@@ -24,7 +24,7 @@ let
         safe-inputs = make-defaults inputs; 
       in
       (super.integration-modules.eval {
-        modules = [./targets/environment-setup.nix] ++ safe-inputs.modules;
+        modules = safe-inputs.modules ++ [./targets/environment-setup.nix];
         args = { 
           inputs = safe-inputs; 
           pkgs = super.pkgs;
