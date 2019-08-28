@@ -1061,9 +1061,9 @@ items:
     name: backup-velero-all-ns
     namespace: eks
   spec:
-    schedule: '@every 5m'
+    schedule: '@every 1h'
     template:
-      ttl: 0h10m0s
+      ttl: 4h0m0s
 - apiVersion: velero.io/v1
   kind: VolumeSnapshotLocation
   metadata:
