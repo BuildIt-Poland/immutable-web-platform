@@ -3,10 +3,16 @@ let
   cfg = config; 
 
   namespace = project-config.kubernetes.namespace;
-  storage-ns = namespace.storage;
-  brigade-ns = namespace.brigade;
 
   provisioner = project-config.storage.provisioner;
+
+  create-cr = kind: {
+    inherit kind;
+
+    group = "velero.io";
+    version = "v1";
+    description = "";
+  };
 in
 {
   imports = with kubenix.modules; [ 
@@ -26,6 +32,30 @@ in
       };
     };
 
+    # FIXME ADD if backup enabled ...
+    kubernetes.helm.instances.backup = {
+      namespace = "eks";
+      chart = k8s-resources.velero;
+      values = {
+        # https://github.com/helm/charts/blob/master/stable/velero/templates/deployment.yaml#L27
+        podAnnotations = config.kubernetes.annotations.iam.backups;
+        # kube2aim
+        credentials.useSecret = false;
+        # FIXME should not be static -> terraform
+        configuration = {
+          provider = "aws";
+          backupStorageLocation = {
+            name = "aws";
+            bucket = project-config.storage.backup.bucket;
+            region = project-config.aws.region;
+          };
+          snapshotLocationConfig = {
+            region = project-config.aws.region;
+          };
+        };
+      };
+    };
+
     kubernetes.api.storageclasses = 
       let
         metadata = {
@@ -40,7 +70,6 @@ in
       {
         build-storage = {
           metadata = {
-            namespace = brigade-ns;
             name = "build-storage";
           } // metadata;
           provisioner = provisioner;
@@ -52,7 +81,6 @@ in
 
         cache-storage = {
           metadata = {
-            namespace = brigade-ns;
             name = "cache-storage";
           } // metadata;
           provisioner = provisioner;
@@ -62,5 +90,11 @@ in
           };
         };
       };
+
+    kubernetes.customResources = [
+     (create-cr "Backup")
+     (create-cr "VolumeSnapshotLocation")
+     (create-cr "BackupStorageLocation")
+    ];
   };
 }

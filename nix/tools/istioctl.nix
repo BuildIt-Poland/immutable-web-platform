@@ -8,7 +8,7 @@ in
 mkDerivation rec {
   inherit version;
 
-  name = "argocd";
+  name = "istioctl";
 
   src = pkgs.fetchurl {
     url = "https://github.com/istio/istio/releases/download/${version}/istio-${version}-${os}.tar.gz";

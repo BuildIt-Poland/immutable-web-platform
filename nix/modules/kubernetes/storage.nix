@@ -48,10 +48,12 @@ with kubenix.lib.helm;
   config = {
     kubernetes.api.namespaces."${storage-ns}"= {};
 
-    kubernetes.helm.instances.rook-ceph = {
-      namespace = storage-ns;
-      chart = k8s-resources.rook-ceph;
-    };
+    kubernetes.helm.instances = {
+      rook-ceph = {
+        namespace = storage-ns;
+        chart = k8s-resources.rook-ceph;
+      };
+    }; 
 
     kubernetes.api.storage-block-pools = 
       let
