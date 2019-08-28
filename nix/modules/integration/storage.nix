@@ -22,13 +22,15 @@ rec {
     };
 
     backup = {
+      schedules = mkOption {
+        default = {};
+      };
       enable = mkOption {
         default = true;
       };
       bucket = mkOption {
         default = "";
       };
-
     };
   };
 
