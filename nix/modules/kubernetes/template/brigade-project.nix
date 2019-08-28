@@ -13,6 +13,7 @@ let
 in
   {
     project-name ? "",
+    project-ref ? "",
     clone-url ?  "",
     pipeline-file ? "",
     overridings ? {},
@@ -24,7 +25,7 @@ in
     chart = k8s-resources.brigade-project;
     # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
     values = lib.recursiveUpdate {
-      project = project-name;
+      project = project-ref;
       repository = project-name; 
       cloneURL = clone-url;
       # repository.location is too long # TODO check if it would work with gateway now ...

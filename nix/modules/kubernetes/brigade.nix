@@ -74,6 +74,9 @@ in
             --selector release=${project} -n ${brigade-ns} \
             -o=jsonpath='{.items[?(@.type=="brigade.sh/project")].metadata.name}'
         '';
+
+        # data.sharedSecret
+        # FIXME take sops from modules/integration/lib
         inject-ssh-key = {project-name, ssh-key, ...}:
           (pkgs.writeScriptBin "patch-brigade-ssh-key-for-${project-name}" ''
             ${pkgs.lib.log.important "Patching Brigade project to pass ssh-key"}
@@ -81,9 +84,12 @@ in
             secret=$(${get-secret "${project-name}"})
             value=$(echo "${ssh-key}" | base64 | tr -d '\n')
 
+            hook=$(cat ${project-config.git-secrets.location} | ${pkgs.sops}/bin/sops --input-type json -d --extract '["bitbucket"]["hook"]' -d /dev/stdin)
+            hook_encoded=$(echo $hook | base64)
+
             ${pkgs.kubectl}/bin/kubectl patch \
               secret -n ${brigade-ns} $secret \
-              -p '{"data": {"sshKey": "'"$value"'"}}'
+              -p '{"data": {"sshKey": "'"$value"'", "sharedSecret": "'"$hook_encoded"'"}}'
           '');
       in
         [] ++ (builtins.map inject-ssh-key projects);
