@@ -134,38 +134,15 @@ items:
       \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
       \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
       \"2019-08-26T08:38:52Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:cAsxidvrx33aGGewYtyzntw47jgxd44hDVkxWoeM2mAMW1Z1IvZDrZlcbFWmeDmObXZMU9TSACM2o8qSfr0/JoVlsgiayI5DMDCUNoFVLxM17syLvZA9bMPob5uYn0AMn3OGnihveH9OuzpHQ47uLAKAiB1D66uP3ciOnOGk008=,iv:u1uS20qOhQVAcqlusVtylC7AhnDcQ8wT7Pee80b+peM=,tag:ykGwiusHj/QsGAAQTh8k/w==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-ec5efa62246084422c5b979fabd663794b041f06"}'
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-a53d6954d29d3365b54fb4e041606968c52fbd2f"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-dev-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-ec5efa62246084422c5b979fabd663794b041f06
+    worker.tag: brigade-worker-a53d6954d29d3365b54fb4e041606968c52fbd2f
     workerCommand: yarn build-start
   type: brigade.sh/project
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      chart: brigade-bitbucket-gateway-0.13.0
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: brigade-bitbucket-gateway
-      role: gateway
-      type: bitbucket
-    name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-    namespace: ci
-  spec:
-    ports:
-    - name: service
-      port: 7748
-      protocol: TCP
-      targetPort: 7748
-    selector:
-      app: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-      role: gateway
-      type: bitbucket
-    type: NodePort
 - apiVersion: v1
   kind: Service
   metadata:
@@ -208,16 +185,28 @@ items:
       release: brigade
     type: ClusterIP
 - apiVersion: v1
-  kind: ServiceAccount
+  kind: Service
   metadata:
     labels:
-      app: brigade-bitbucket-gateway-brigade-bitbucket-gateway
       chart: brigade-bitbucket-gateway-0.13.0
       heritage: Tiller
       kubenix/project-name: kubenix
-      release: brigade-bitbucket-gateway
-    name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+      release: extension
+      role: gateway
+      type: bitbucket
+    name: extension-brigade-bitbucket-gateway
     namespace: ci
+  spec:
+    ports:
+    - name: service
+      port: 7748
+      protocol: TCP
+      targetPort: 7748
+    selector:
+      app: extension-brigade-bitbucket-gateway
+      role: gateway
+      type: bitbucket
+    type: NodePort
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -262,52 +251,17 @@ items:
       kubenix/project-name: kubenix
     name: brigade-worker
     namespace: ci
-- apiVersion: extensions/v1beta1
-  kind: Deployment
+- apiVersion: v1
+  kind: ServiceAccount
   metadata:
     labels:
-      app: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+      app: extension-brigade-bitbucket-gateway
       chart: brigade-bitbucket-gateway-0.13.0
       heritage: Tiller
       kubenix/project-name: kubenix
-      release: brigade-bitbucket-gateway
-      role: gateway
-      type: bitbucket
-    name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+      release: extension
+    name: extension-brigade-bitbucket-gateway
     namespace: ci
-  spec:
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          app: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-          role: gateway
-          type: bitbucket
-      spec:
-        containers:
-        - env:
-          - name: BRIGADE_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: BRIGADE_bitbucket_GATEWAY_PORT
-            value: '7748'
-          image: lukepatrick/brigade-bitbucket-gateway:v0.13.0
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            tcpSocket:
-              port: 7748
-          name: brigade-bitbucket-gateway
-          ports:
-          - containerPort: 7748
-          readinessProbe:
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            tcpSocket:
-              port: 7748
-        serviceAccountName: brigade-bitbucket-gateway-brigade-bitbucket-gateway
 - apiVersion: extensions/v1beta1
   kind: Deployment
   metadata:
@@ -439,37 +393,52 @@ items:
         - configMap:
             name: brigade-kashti-nginx
           name: config-nginx
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
+- apiVersion: extensions/v1beta1
+  kind: Deployment
   metadata:
     labels:
-      app: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+      app: extension-brigade-bitbucket-gateway
       chart: brigade-bitbucket-gateway-0.13.0
       heritage: Tiller
       kubenix/project-name: kubenix
-      release: brigade-bitbucket-gateway
-    name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+      release: extension
+      role: gateway
+      type: bitbucket
+    name: extension-brigade-bitbucket-gateway
     namespace: ci
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - secrets
-    verbs:
-    - get
-    - list
-    - watch
-    - create
-    - update
-    - patch
-    - delete
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    verbs:
-    - list
-    - watch
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: extension-brigade-bitbucket-gateway
+          role: gateway
+          type: bitbucket
+      spec:
+        containers:
+        - env:
+          - name: BRIGADE_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: BRIGADE_bitbucket_GATEWAY_PORT
+            value: '7748'
+          image: lukepatrick/bitbucket-gateway:v0.13.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            tcpSocket:
+              port: 7748
+          name: brigade-bitbucket-gateway
+          ports:
+          - containerPort: 7748
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            tcpSocket:
+              port: 7748
+        serviceAccountName: extension-brigade-bitbucket-gateway
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role
   metadata:
@@ -585,23 +554,36 @@ items:
     - list
     - watch
 - apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
+  kind: Role
   metadata:
     labels:
-      app: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+      app: extension-brigade-bitbucket-gateway
       chart: brigade-bitbucket-gateway-0.13.0
       heritage: Tiller
       kubenix/project-name: kubenix
-      release: brigade-bitbucket-gateway
-    name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+      release: extension
+    name: extension-brigade-bitbucket-gateway
     namespace: ci
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
-  subjects:
-  - kind: ServiceAccount
-    name: brigade-bitbucket-gateway-brigade-bitbucket-gateway
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    verbs:
+    - list
+    - watch
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: RoleBinding
   metadata:
@@ -674,6 +656,24 @@ items:
   subjects:
   - kind: ServiceAccount
     name: brigade-worker
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app: extension-brigade-bitbucket-gateway
+      chart: brigade-bitbucket-gateway-0.13.0
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: extension
+    name: extension-brigade-bitbucket-gateway
+    namespace: ci
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: extension-brigade-bitbucket-gateway
+  subjects:
+  - kind: ServiceAccount
+    name: extension-brigade-bitbucket-gateway
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:

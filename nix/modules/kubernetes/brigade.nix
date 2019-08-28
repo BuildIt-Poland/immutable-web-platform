@@ -27,14 +27,14 @@ let
   helm-charts = {
     brigade-bitbucket-gateway = {
       namespace = "${brigade-ns}";
-      name = "brigade-bitbucket-gateway";
+      name = "extension";
       chart = k8s-resources.brigade-bitbucket;
       values = {
         rbac = {
           enabled = true;
         };
         bitbucket = {
-          name = "brigade-bitbucket-gateway";
+          name = "bitbucket-gateway";
           service = {
             name = "service";
             type = "NodePort";

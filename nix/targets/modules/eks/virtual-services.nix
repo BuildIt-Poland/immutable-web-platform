@@ -68,6 +68,7 @@ in
           (mk-domain "storage")
           (mk-domain "topology")
           (mk-domain "tracing")
+          (mk-domain "bitbucket-gateway")
         ];
       in
       {
@@ -161,7 +162,11 @@ in
           "brigade-kashti.${brigade-ns}.svc.cluster.local" 
           80;
 
-      # TODO add brigade gateway
+      VirtualService.brigade-gateway = 
+        create-virtual-service 
+          "bitbucket-gateway" 
+          "extension-brigade-bitbucket-gateway.${brigade-ns}.svc.cluster.local" 
+          7748;
     };
   };
 }
