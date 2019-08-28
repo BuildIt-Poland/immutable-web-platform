@@ -160,6 +160,8 @@ in
           "ci" 
           "brigade-kashti.${brigade-ns}.svc.cluster.local" 
           80;
+
+      # TODO add brigade gateway
     };
   };
 }

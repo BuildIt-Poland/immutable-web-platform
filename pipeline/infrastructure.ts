@@ -13,6 +13,7 @@ const createJob = (name) => {
       privileged: true,
       annotations: {
         // kube2iam
+        "backup.velero.io/backup-volumes": "brigade-data"
       },
       shell: 'bash',
       serviceAccount: "brigade-worker"

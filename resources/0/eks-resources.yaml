@@ -1030,7 +1030,10 @@ items:
       kubenix/project-name: kubenix
     name: default
     namespace: eks
-  spec: {}
+  spec:
+    config:
+      region: eu-west-2
+    provider: aws
 - apiVersion: velero.io/v1
   kind: BackupStorageLocation
   metadata:
@@ -1043,6 +1046,8 @@ items:
     name: default
     namespace: eks
   spec:
+    config:
+      region: eu-west-2
     objectStorage:
       bucket: future-is-comming-dev-backup
     provider: aws
@@ -1259,6 +1264,71 @@ items:
           name: sdsudspath
     updateStrategy:
       type: RollingUpdate
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.3
+      kubenix/project-name: kubenix
+    name: restic
+    namespace: eks
+  spec:
+    selector:
+      matchLabels:
+        name: restic
+    template:
+      metadata:
+        annotations:
+          iam.amazonaws.com/allowed-roles: '["future-is-comming-dev-cluster*"]'
+        labels:
+          app.kubernetes.io/instance: backup
+          app.kubernetes.io/managed-by: Tiller
+          app.kubernetes.io/name: velero
+          helm.sh/chart: velero-2.1.3
+          name: restic
+      spec:
+        containers:
+        - args:
+          - restic
+          - server
+          command:
+          - /velero
+          env:
+          - name: AWS_SHARED_CREDENTIALS_FILE
+            value: /credentials/cloud
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: VELERO_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: VELERO_SCRATCH_DIR
+            value: /scratch
+          image: gcr.io/heptio-images/velero:v1.0.0
+          imagePullPolicy: IfNotPresent
+          name: velero
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - mountPath: /host_pods
+            mountPropagation: HostToContainer
+            name: host-pods
+          - mountPath: /scratch
+            name: scratch
+        securityContext:
+          runAsUser: 0
+        serviceAccountName: backup-velero-server
+        volumes:
+        - hostPath:
+            path: /var/lib/rook
+          name: host-pods
+        - emptyDir: {}
+          name: scratch
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

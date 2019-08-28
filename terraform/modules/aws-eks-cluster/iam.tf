@@ -20,9 +20,15 @@ data "aws_iam_policy_document" "worker-role-policy" {
     resources = ["*"]
   }
 
-  # s3 for valero (https://velero.io/docs/v1.0.0/aws-config/)
+  # Valero backups (https://velero.io/docs/v1.0.0/aws-config/)
   statement {
     actions = [
+      "ec2:DescribeVolumes",
+      "ec2:DescribeSnapshots",
+      "ec2:CreateTags",
+      "ec2:CreateVolume",
+      "ec2:CreateSnapshot",
+      "ec2:DeleteSnapshot",
       "s3:GetObject",
       "s3:DeleteObject",
       "s3:PutObject",

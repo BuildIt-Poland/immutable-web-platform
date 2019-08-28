@@ -77,10 +77,10 @@ with kubenix.lib.helm;
           namespace = storage-ns;
         };
 
-        spec = {
+        spec = rec {
           # For the latest ceph images, see https://hub.docker.com/r/ceph/ceph/tags
           cephVersion.image = "ceph/ceph:v14.2";
-          dataDirHostPath = "/var/lib/rook";
+          dataDirHostPath = project-config.storage.dataDirHostPath;
           mon = {
             allowMultiplePerNode = true;
             count = 2;
@@ -95,7 +95,7 @@ with kubenix.lib.helm;
             useAllDevices = false;
             # Important: Directories should only be used in pre-production environments
             directories = [
-              { path =  "/var/lib/rook";}
+              { path =  dataDirHostPath;}
             ];
             config = {
               storeType = "filestore";

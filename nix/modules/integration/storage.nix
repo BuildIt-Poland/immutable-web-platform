@@ -17,6 +17,10 @@ rec {
       default = "ceph.rook.io/block";
     };
 
+    dataDirHostPath = mkOption {
+      default = "";
+    };
+
     backup = {
       enable = mkOption {
         default = true;

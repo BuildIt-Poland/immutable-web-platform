@@ -37,22 +37,24 @@ in
       namespace = "eks";
       chart = k8s-resources.velero;
       values = {
-        # https://github.com/helm/charts/blob/master/stable/velero/templates/deployment.yaml#L27
-        podAnnotations = config.kubernetes.annotations.iam.backups;
         # kube2aim
+        podAnnotations = config.kubernetes.annotations.iam.backups;
         credentials.useSecret = false;
-        # FIXME should not be static -> terraform
         configuration = {
           provider = "aws";
           backupStorageLocation = {
             name = "aws";
             bucket = project-config.storage.backup.bucket;
-            region = project-config.aws.region;
+            config.region = project-config.aws.region;
           };
-          snapshotLocationConfig = {
-            region = project-config.aws.region;
+          volumeSnapshotLocation = {
+            name = "aws";
+            config.region = project-config.aws.region;
           };
         };
+        deployRestic = true;
+        restic.podVolumePath = project-config.storage.dataDirHostPath;
+        restic.privileged = true;
       };
     };
 
