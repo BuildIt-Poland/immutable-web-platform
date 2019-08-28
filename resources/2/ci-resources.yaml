@@ -83,7 +83,7 @@ items:
   kind: Secret
   metadata:
     annotations:
-      projectName: embracing-nix-docker-k8s-helm-knative
+      projectName: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
     labels:
       app: brigade
       chart: brigade-project-1.0.0
@@ -91,7 +91,7 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: embracing-nix-docker-k8s-helm-knative
-    name: brigade-a2a013f22a364382e7dc23ce94145b1fcb31697724035cc4ff3624
+    name: brigade-94baa53dda4276e91cb84c8f38b5d98f55e623d800a055ebe8da29
     namespace: ci
   stringData:
     allowHostMounts: 'false'
@@ -129,18 +129,18 @@ items:
     kubernetes.cacheStorageClass: cache-storage
     repository: embracing-nix-docker-k8s-helm-knative
     secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
-      {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"\"\n\t},\n\t\"sops\":
+      {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"ENC[AES256_GCM,data:txkyPuRcL3UGM6+DIciLkPbGoBY2N3GR/uVhCBcpF8V73jzd,iv:3/tYgu8EwMgJ/e8MJURDu1UL0IsCtC6tV7U6RUN2ovM=,tag:3Tcsdk6hTotIzCbn8D+njA==,type:str]\"\n\t},\n\t\"sops\":
       {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:alias/future-is-comming-dev-buildit-consulting\",\n\t\t\t\t\"created_at\":
       \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
       \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
-      \"2019-08-26T08:38:52Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:cAsxidvrx33aGGewYtyzntw47jgxd44hDVkxWoeM2mAMW1Z1IvZDrZlcbFWmeDmObXZMU9TSACM2o8qSfr0/JoVlsgiayI5DMDCUNoFVLxM17syLvZA9bMPob5uYn0AMn3OGnihveH9OuzpHQ47uLAKAiB1D66uP3ciOnOGk008=,iv:u1uS20qOhQVAcqlusVtylC7AhnDcQ8wT7Pee80b+peM=,tag:ykGwiusHj/QsGAAQTh8k/w==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-77cd74c8954321209507bd60fa2325e7e7c5741b"}'
+      \"2019-08-28T14:38:33Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:BU9ybSTP8YQ6orvV5auJxeXGxQz61x00e/PEqDqr1hFlV9t85Ojl+gEpd17/PqM+fGF9uQJbWD+ZFp0irwePa76mDHtRfV5HiFUsB7zVmW5TwASsbKlRmt7GPll50s07FPhHF+wZyb/VFwZOCCEYZge9+63rjkhR3GasY2Qi16Q=,iv:GorWGFqSc/HvzmHpMvyL6lQpyJklSbqbD1bLMMjunH4=,tag:KhH25HN91nBoEZHzy3+4fw==,type:str]\",\n\t\t\"pgp\":
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-f5d4322275674fb9958c0ad0b4a0bd42d5caf225"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-dev-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-77cd74c8954321209507bd60fa2325e7e7c5741b
+    worker.tag: brigade-worker-f5d4322275674fb9958c0ad0b4a0bd42d5caf225
     workerCommand: yarn build-start
   type: brigade.sh/project
 - apiVersion: v1

@@ -84,6 +84,7 @@ in
       projects = {
         brigade-project = {
           project-name = "embracing-nix-docker-k8s-helm-knative";
+          project-ref = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative"; # like repo
           pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
           clone-url = config.project.repositories.code-repository;
           ssh-key = config.bitbucket.ssh-keys.priv;
@@ -118,9 +119,9 @@ in
     storage.dataDirHostPath = "/var/lib/rook";
     storage.backup.schedules = {
       all-ns = {
-        schedule = "@every 5m";
+        schedule = "@every 1h";
         template = {
-          ttl = "0h10m0s";
+          ttl = "4h0m0s";
         };
       };
     };

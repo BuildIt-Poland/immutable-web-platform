@@ -59,9 +59,9 @@ rec {
         brigadeterm
       ];
 
-      warnings = mkIf (cfg.brigade.secret-key == "") [
-        "You have to provide brigade shared secret to listen the repo hooks"
-      ];
+      # warnings = mkIf (cfg.brigade.secret-key == "") [
+      #   "You have to provide brigade shared secret to listen the repo hooks"
+      # ];
     })
   ]);
 }
