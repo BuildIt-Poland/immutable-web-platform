@@ -116,6 +116,13 @@ in
     };
 
     storage.dataDirHostPath = "/var/lib/rook";
+    storage.backup.schedules = {
+      all-ns = {
+        schedule = "2 * * * *";
+        template = ''
+        '';
+      };
+    };
 
     local-cluster.enable = inputs.kubernetes.target == "minikube";
 

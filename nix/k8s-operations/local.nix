@@ -16,7 +16,7 @@ let
 
   # TODO should be in config
   brigade-service = {
-    service = "brigade-bitbucket-gateway-brigade-bitbucket-gateway"; # INFO chart is so so and does not hanle name well ... investigate
+    service = "extension-brigade-bitbucket-gateway";
     namespace = brigade-ns;
   };
 

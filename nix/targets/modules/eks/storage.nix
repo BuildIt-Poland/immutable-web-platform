@@ -41,6 +41,7 @@ in
         podAnnotations = config.kubernetes.annotations.iam.backups;
         credentials.useSecret = false;
         configuration = {
+          # backupSyncPeriod = project-config.storage.backup.syncPeriod;
           provider = "aws";
           backupStorageLocation = {
             name = "aws";
@@ -52,6 +53,7 @@ in
             config.region = project-config.aws.region;
           };
         };
+        schedules = project-config.storage.backup.schedules;
         deployRestic = true;
         restic.podVolumePath = project-config.storage.dataDirHostPath;
         restic.privileged = true;
@@ -85,6 +87,7 @@ in
 
     kubernetes.customResources = [
      (create-cr "Backup")
+     (create-cr "Schedule")
      (create-cr "VolumeSnapshotLocation")
      (create-cr "BackupStorageLocation")
     ];
