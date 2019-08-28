@@ -75,7 +75,6 @@ in
             -o=jsonpath='{.items[?(@.type=="brigade.sh/project")].metadata.name}'
         '';
 
-        # data.sharedSecret
         # FIXME take sops from modules/integration/lib
         inject-ssh-key = {project-name, ssh-key, ...}:
           (pkgs.writeScriptBin "patch-brigade-ssh-key-for-${project-name}" ''
