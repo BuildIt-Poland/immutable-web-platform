@@ -21,8 +21,10 @@ const createJob = (name) => {
 
   t = t.withTasks([
     `cat ${t.cache.path}/test.file`,
+    `cat ${t.cache.path}/test2.file`,
     `echo "storage" > ${t.storage.path}/test.file`,
-    `echo "cache" > ${t.cache.path}/test.file`,
+    `echo "cache 1" > ${t.cache.path}/test.file`,
+    `echo "cache 2" > ${t.cache.path}/test2.file`,
     // `cat ${t.storage.path}/test.file`,
     // runShellCommand('push-k8s-resources-to-repo'),
   ])
@@ -62,6 +64,7 @@ events.on("exec", async (event, project) => {
   await test2.run()
 })
 
+// TODO
 events.on("push", (event, project) => {
   let test = createJob("test")
     .withSecrets(project.secrets)
