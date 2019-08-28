@@ -118,9 +118,10 @@ in
     storage.dataDirHostPath = "/var/lib/rook";
     storage.backup.schedules = {
       all-ns = {
-        schedule = "2 * * * *";
-        template = ''
-        '';
+        schedule = "@every 5m";
+        template = {
+          ttl = "0h10m0s";
+        };
       };
     };
 

@@ -21,7 +21,7 @@ provide full testing ability of infrastructure as well as on application level f
 * scale pods to `0` with `knative & istio`, scale based on concurrency level or resources level
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
 * building docker without daemon with `nix`
-* distributed storage with [`rook-ceph`](https://rook.io/)
+* distributed storage with [`rook-ceph`](https://rook.io/) and `backups` with `restic` and `velero`
 
 ### ... and more
 * `helm charts` without `helm` and `tiller`
@@ -101,15 +101,20 @@ provide full testing ability of infrastructure as well as on application level f
 
 {config, pkgs, lib, kubenix, integration-modules, inputs, ...}: 
 with pkgs.lib;
+let
+  functions = (import ./modules/functions.nix { inherit pkgs; });
+in
 {
   imports = with integration-modules.modules; [
+    ./kubernetes-modules.nix
     project-configuration
+    eks-cluster
     kubernetes
     kubernetes-resources
-    eks-cluster
     bitbucket-k8s-repo
     local-cluster
     docker
+    storage
     brigade
     bitbucket
     terraform
@@ -121,26 +126,40 @@ with pkgs.lib;
   config = {
     environment = {
       type = inputs.environment.type;
+      runtime = inputs.environment.runtime;
       vars = {
         PROJECT_NAME = config.project.name;
       };
     };
 
-    project = {
-      name = "future-is-comming";
+    project = rec {
+      name = inputs.project.name;
       author-email = "damian.baar@wipro.com";
+      # IMPORTANT you have to own it
+      domain = "buildit.consulting";
+      subdomains = ["*.services" "*.functions"];
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
       repositories = {
         k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
         code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
       };
+
+      # FIXME move me to somewhere else ... or not
+      make-sub-domain = 
+        name: 
+          (lib.concatStringsSep "." 
+            (builtins.filter (x: x != "") [
+              name
+              config.project.name
+              config.environment.type
+              config.project.domain
+            ]));
     };
 
     test.enable = inputs.tests.enable;
 
     docker = {
-      upload-images-type = ["functions" "cluster"];
       upload = inputs.docker.upload;
       namespace = "dev.local";
       # registry = "";
@@ -154,9 +173,11 @@ with pkgs.lib;
         config = ~/.aws/config;
       };
       s3-buckets = {
-        worker-cache = "${config.project.name}-worker-binary-store";
+        worker-cache = "${config.project.name}-${config.environment.type}-worker-binary-store";
       };
     };
+
+    storage.backup.bucket = "${config.project.name}-${config.environment.type}-backup";
 
     brigade = {
       enabled = true;
@@ -168,7 +189,12 @@ with pkgs.lib;
           clone-url = config.project.repositories.code-repository;
           ssh-key = config.bitbucket.ssh-keys.priv;
           # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
-          overridings = {};
+          overridings = {
+            kubernetes = {
+              cacheStorageClass = "cache-storage";
+              buildStorageClass = "build-storage";
+            };
+          };
         };
       };
     };
@@ -177,7 +203,29 @@ with pkgs.lib;
       location = ../../secrets.json;
     };
 
-    eks-cluster.enable = inputs.kubernetes.target == "eks";
+    eks-cluster = {
+      enable = inputs.kubernetes.target == "eks";
+      configuration = 
+        let
+          terraform-output = 
+            builtins.fromJSON 
+              (builtins.readFile config.terraform.stateFiles.aws_cluster); # actually I can merge these state files
+        in
+        {
+          bastion = terraform-output.bastion;
+        };
+    };
+
+    storage.dataDirHostPath = "/var/lib/rook";
+    storage.backup.schedules = {
+      all-ns = {
+        schedule = "@every 5m";
+        template = {
+          ttl = "10h0m0s";
+        };
+      };
+    };
+
     local-cluster.enable = inputs.kubernetes.target == "minikube";
 
     terraform = rec {
@@ -188,17 +236,17 @@ with pkgs.lib;
       vars = rec {
         region = config.aws.region;
         project_name = config.project.name;
+        domain = (config.project.make-sub-domain "");
         owner = config.project.author-email;
+        hash = config.project.hash;
         env = config.environment.type;
         cluster_name = config.kubernetes.cluster.name;
+        output_state_file = config.terraform.stateFiles;
         project_prefix = "${project_name}-${env}-${region}";
+        root_folder = toString ../..;
 
+        backup_bucket = config.storage.backup.bucket;
         worker_bucket   = "${config.aws.s3-buckets.worker-cache}";
-
-        # TODO bucket does not need to be prefixed - there will be folder inside
-        # no point to have tons of buckets
-        tf_state_bucket = "${project_prefix}-state";
-        tf_state_table  = tf_state_bucket;
       };
 
       backend-vars = {
@@ -210,44 +258,25 @@ with pkgs.lib;
 
     kubernetes = {
       target = inputs.kubernetes.target;
-      cluster = {
-        clean = inputs.kubernetes.clean;
-        name = "${config.project.name}-cluster";
-      };
-      patches.enable = inputs.kubernetes.patches;
-      resources = 
-        with kubenix.modules;
-        let
-          functions = (import ./functions.nix { inherit pkgs; });
-          resources = config.kubernetes.resources;
-          extra-resources = builtins.getAttr config.kubernetes.target {
-            eks = {
-              "${priority.high "eks-cluster"}"       = [ eks-cluster ];
-            };
-            minikube = {};
-          };
-          priority = resources.priority;
-          # TODO apply skip
-          modules = {
-            "${priority.high "istio"}"       = [ istio-service-mesh ];
-            "${priority.mid  "knative"}"     = [ knative ];
-            "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
-            "${priority.low  "gitops"}"      = [ argocd ];
-            "${priority.low  "ci"}"          = [ brigade ];
-            "${priority.low  "secrets"}"     = [ secrets ];
-          } // functions // extra-resources;
-          in
-          {
-            apply = inputs.kubernetes.update;
-            save = inputs.kubernetes.save;
-            list = modules;
-          };
 
       namespace = {
         functions = "functions";
+        argo = "gitops";
+        brigade = "ci";
+      };
+
+      cluster = {
+        clean = inputs.kubernetes.clean;
+        name = "${config.project.name}-${config.environment.type}-cluster";
+      };
+      patches.enable = inputs.kubernetes.patches;
+      resources = {
+        apply = inputs.kubernetes.update;
+        save = inputs.kubernetes.save;
       };
     };
 
+    # should be autogenerated from terraform for dev env
     bitbucket = {
       ssh-keys.location = ~/.ssh/bitbucket_webhook;
     };
