@@ -35,6 +35,13 @@ let
         -n ${kn-serving} \
         -p '{"data":{"registriesSkippingTagResolving":"${project-config.aws.account}.dkr.ecr.${project-config.aws.region}.amazonaws.com/${project-config.kubernetes.cluster.name}"}}'
     '';
+
+  setup-velero-namespace =
+    pkgs.writeScriptBin "setup-velero-namespace" ''
+      ${pkgs.lib.log.important "Patching Velero namespace"}
+
+      ${pkgs.velero}/bin/velero client config set namespace=${eks-ns}
+    '';
 in
 {
   imports = with kubenix.modules; [ 
@@ -50,6 +57,7 @@ in
   kubernetes.patches = [
     # update-eks-vpc-cni
     knative-not-resolve-tags
+    setup-velero-namespace
   ];
 
   kubernetes.annotations = {
