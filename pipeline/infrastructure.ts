@@ -26,6 +26,8 @@ const createJob = (name) => {
     `echo "cache 1" > ${t.cache.path}/test.file`,
     `echo "cache 2" > ${t.cache.path}/test2.file`,
     // `cat ${t.storage.path}/test.file`,
+    `cd /src`,
+    `./nix/run-tests.sh`
     // runShellCommand('push-k8s-resources-to-repo'),
   ])
 

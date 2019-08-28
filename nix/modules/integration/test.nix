@@ -1,6 +1,6 @@
 { lib, test, should, stubs, ... }:
 let
-  pkgs = import ./..;
+  pkgs = import ./../..;
   integration-modules = ((pkgs {}).callPackage ./default.nix {});
   eval-modules = modules: (integration-modules.eval { inherit modules; });
 in
