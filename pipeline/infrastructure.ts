@@ -34,6 +34,10 @@ const createJob = (name) => {
   return t
 }
 
+const handleRun = async (event, project) => {
+
+}
+
 events.on("exec", async (event, project) => {
   let test =
     createJob("test")

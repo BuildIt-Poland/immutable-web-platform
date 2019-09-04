@@ -76,7 +76,7 @@ in
           mixer.adapters.prometheus.enabled = false;
           # https://github.com/istio/istio/issues/7675#issuecomment-415447894
           # mixer.adapters.useAdapterCRDs = true;
-          grafana.enabled = false;
+          # grafana.enabled = true;
           pilot.autoscaleMin = 2;
           pilot.traceSampling = 100;
           global = {

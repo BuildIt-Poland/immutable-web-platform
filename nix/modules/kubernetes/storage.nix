@@ -70,6 +70,12 @@ with kubenix.lib.helm;
       in
         pools;
 
+    # require -> kubectl create -f cluster/examples/kubernetes/ceph/monitoring/rbac.yaml
+    # CRD -> https://github.com/rook/rook/blob/master/cluster/examples/kubernetes/ceph/monitoring/rbac.yaml
+    # https://github.com/rook/rook/blob/master/Documentation/ceph-monitoring.md#prometheus-alerts
+
+    # https://github.com/rook/rook/issues/3216
+    # https://github.com/rook/rook/issues/3204
     kubernetes.api.storage-cluster = {
       file-store = {
         metadata = {
@@ -88,7 +94,12 @@ with kubenix.lib.helm;
           dashboard = {
             enabled = true;
             port = 8443;
-            ssl = false; # soon
+            ssl = false; # not required
+          };
+          # this does not work!!!
+          monitoring = {
+            enabled = true;
+            rulesNamespace = "${storage-ns}";
           };
           storage = {
             useAllNodes = true;
@@ -99,7 +110,10 @@ with kubenix.lib.helm;
             ];
             config = {
               storeType = "filestore";
-              # mgr:
+              # mgr = {
+              #   # "prometheus.io/port" = "9283";
+              #   # "prometheus.io/scrape" = "true";
+              # };
               #   nodeAffinity:
               #   tolerations:
               # mon:

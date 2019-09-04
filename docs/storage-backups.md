@@ -18,3 +18,6 @@
 
 ### checking `restic` repository
 * `velero restic repo get`
+
+### Performance
+* https://medium.com/vescloud/kubernetes-storage-performance-comparison-9e993cb27271

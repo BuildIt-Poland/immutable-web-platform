@@ -110,7 +110,8 @@ items:
       \ ${t.cache.path}/test2.file`,\n    `echo \"storage\" > ${t.storage.path}/test.file`,\n\
       \    `echo \"cache 1\" > ${t.cache.path}/test.file`,\n    `echo \"cache 2\"\
       \ > ${t.cache.path}/test2.file`,\n    // `cat ${t.storage.path}/test.file`,\n\
-      \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
+      \    `cd /src`,\n    `./nix/run-tests.sh`\n    // runShellCommand('push-k8s-resources-to-repo'),\n\
+      \  ])\n\n  return t\n}\n\nconst handleRun = async (event, project) => {\n\n\
       }\n\nevents.on(\"exec\", async (event, project) => {\n  let test =\n    createJob(\"\
       test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
       \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
@@ -135,13 +136,13 @@ items:
       \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
       \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
       \"2019-08-28T14:38:33Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:BU9ybSTP8YQ6orvV5auJxeXGxQz61x00e/PEqDqr1hFlV9t85Ojl+gEpd17/PqM+fGF9uQJbWD+ZFp0irwePa76mDHtRfV5HiFUsB7zVmW5TwASsbKlRmt7GPll50s07FPhHF+wZyb/VFwZOCCEYZge9+63rjkhR3GasY2Qi16Q=,iv:GorWGFqSc/HvzmHpMvyL6lQpyJklSbqbD1bLMMjunH4=,tag:KhH25HN91nBoEZHzy3+4fw==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-ed3c9817cdbdab24651b5f96b5cd3727f66472b6"}'
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-707da9606ef4a30217093ed4155b1d398291a14d"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-dev-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-ed3c9817cdbdab24651b5f96b5cd3727f66472b6
+    worker.tag: brigade-worker-707da9606ef4a30217093ed4155b1d398291a14d
     workerCommand: yarn build-start
   type: brigade.sh/project
 - apiVersion: v1

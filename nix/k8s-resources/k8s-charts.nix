@@ -41,6 +41,12 @@ rec {
     sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
   };
 
+  grafana = fetch {
+    chart = "stable/grafana";
+    version = "3.8.7";
+    sha256 = "1wd4zadi7y5dd8kxkfm27kypd4mrk9rx5njbpjnh19jg3wxzk0q7";
+  };
+
   rook-ceph = fetch {
     chart = "rook-ceph";
     version = "1.0.5";
