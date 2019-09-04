@@ -1,3 +1,5 @@
+# INFO: this is a bit tricky piece since it override some tightly coupled things
+# goal is to add all grafana dashboard and extra datasource with prometheus
 { 
   pkgs,
   config, 
@@ -65,46 +67,56 @@ in
 
     kubernetes.api.configmaps = 
     let
-      make-dashboard = file: dir: {
+      make-dashboard = file: dir: mapper: {
         "${file}" = {
           metadata = {
             name = "${file}";
             namespace = "${knative-monitoring-ns}";
             labels.grafana_dashboard = "1";
           };
-          data."${file}" = builtins.readFile "${dir}/${file}";
+          data."${file}" = mapper (builtins.readFile "${dir}/${file}");
         };
       };
 
-      get-dashboards-from-folder = folder:
+      get-dashboards-from-folder = folder: mapper:
         lib.foldl (lib.mergeAttrs) {}
           (builtins.map 
-            (x: make-dashboard x folder) 
+            (x: make-dashboard x folder mapper) 
             (builtins.attrNames (builtins.readDir folder)));
 
-      istio-src = pkgs.fetchFromGitHub {
-        owner = "istio";
-        repo = "istio";
-        rev = "a0b1b397d9637a3308e0373d6df9ac3b5974a790";
-        sha256 = "1mdfsgp03x1bv55zzpsqjlzvnyamgpy70z8vwy17wpa04v74l7qc";
-      };
-      istio-dashboards-folder = "${istio-src}/install/kubernetes/helm/istio/charts/grafana/dashboards";
+      istio-dashboards-folder = "${k8s-resources.istio-src}/install/kubernetes/helm/istio/charts/grafana/dashboards";
 
-      istio-dashboards = get-dashboards-from-folder istio-dashboards-folder;
-      ceph-dashboards = get-dashboards-from-folder ./grafana;
+      override-datasource-if-exists = panel:
+        if builtins.hasAttr("datasource") panel 
+          then (panel // { datasource = "prometheus-istio"; })
+          else panel;
+
+      datasource-mapper = file:
+        let
+          dashboard = builtins.fromJSON file;
+          # make this more fancy with fold
+          altered = dashboard // ({
+            panels = builtins.map override-datasource-if-exists dashboard.panels;
+            templating.list = builtins.map override-datasource-if-exists dashboard.templating.list;
+          });
+        in
+          builtins.toJSON altered;
+
+      istio-dashboards = get-dashboards-from-folder istio-dashboards-folder datasource-mapper;
+      ceph-dashboards = get-dashboards-from-folder ./grafana datasource-mapper;
     in
       istio-dashboards // ceph-dashboards // {
         grafana-datasource = {
           metadata = {
-            name = "grafana-datasources";  
-            namespace = "${knative-monitoring-ns}";
+            name = "grafana-istio-datasource";  
+            namespace = knative-monitoring-ns;
             labels.grafana_datasource = "1";
           };
-          # FIXME there could be a clash betweet knative & istio (Prometheus vs prometheus)
+          # FIXME map istio datasource to prometheus-istio instead of Prometheus
           data."datasource.yaml" = ''
             apiVersion: 1
             datasources:
-            - name: Prometheus
+            - name: prometheus-istio
               access: proxy
               type: prometheus
               org_id: 1
