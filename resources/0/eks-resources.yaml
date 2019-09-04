@@ -488,6 +488,9 @@ items:
     mon:
       allowMultiplePerNode: true
       count: 2
+    monitoring:
+      enabled: true
+      rulesNamespace: storage
     storage:
       config:
         storeType: filestore

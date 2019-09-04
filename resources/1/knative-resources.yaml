@@ -13,13 +13,13 @@ items:
   metadata:
     labels:
       istio-injection: enabled
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: knative-serving
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: knative-serving-controller-admin
   roleRef:
     apiGroup: rbac.authorization.k8s.io
@@ -34,7 +34,7 @@ items:
   metadata:
     labels:
       autoscaling.knative.dev/metric-provider: custom-metrics
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: custom-metrics-auth-reader
     namespace: kube-system
   roleRef:
@@ -50,7 +50,7 @@ items:
   metadata:
     labels:
       networking.knative.dev/ingress-provider: istio
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: knative-ingress-gateway
     namespace: knative-serving
   spec:
@@ -76,7 +76,7 @@ items:
   metadata:
     labels:
       networking.knative.dev/ingress-provider: istio
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: cluster-local-gateway
     namespace: knative-serving
   spec:
@@ -94,7 +94,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: certificates.networking.internal.knative.dev
   spec:
     additionalPrinterColumns:
@@ -123,7 +123,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: clusteringresses.networking.internal.knative.dev
   spec:
     additionalPrinterColumns:
@@ -174,7 +174,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: ingresses.networking.internal.knative.dev
   spec:
     additionalPrinterColumns:
@@ -206,7 +206,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: metrics.autoscaling.internal.knative.dev
   spec:
     additionalPrinterColumns:
@@ -233,7 +233,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: podautoscalers.autoscaling.internal.knative.dev
   spec:
     additionalPrinterColumns:
@@ -267,7 +267,7 @@ items:
     labels:
       networking.knative.dev/ingress-provider: istio
       serving.knative.dev/controller: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: knative-serving-istio
   rules:
   - apiGroups:
@@ -288,7 +288,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: serverlessservices.networking.internal.knative.dev
   spec:
     additionalPrinterColumns:
@@ -329,7 +329,7 @@ items:
   metadata:
     labels:
       app: activator
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: activator-service
     namespace: knative-serving
   spec:
@@ -354,7 +354,7 @@ items:
   metadata:
     labels:
       app: controller
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: controller
     namespace: knative-serving
   spec:
@@ -370,7 +370,7 @@ items:
   metadata:
     labels:
       role: webhook
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: webhook
     namespace: knative-serving
   spec:
@@ -383,16 +383,16 @@ items:
   kind: Image
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: queue-proxy
     namespace: knative-serving
   spec:
-    image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:e0654305370cf3bbbd0f56f97789c92cf5215f752b70902eba5d5fc0e88c5aca
+    image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:317c90eaae2c473db96089588e6a91c14f2d9acef457b9d1071bbe120621138d
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: activator
     namespace: knative-serving
   spec:
@@ -408,7 +408,7 @@ items:
         labels:
           app: activator
           role: activator
-          serving.knative.dev/release: v0.8.0
+          serving.knative.dev/release: v0.8.1
       spec:
         containers:
         - args:
@@ -429,7 +429,7 @@ items:
             value: config-observability
           - name: METRICS_DOMAIN
             value: knative.dev/serving
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:88d864eb3c47881cf7ac058479d1c735cc3cf4f07a11aad0621cd36dcd9ae3c6
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:d253dc4c6cfa3ea0647a37e53fff1fe1f8b97a19699f6ec60deee99bcb9202a2
           livenessProbe:
             httpGet:
               httpHeaders:
@@ -486,7 +486,7 @@ items:
   metadata:
     labels:
       autoscaling.knative.dev/autoscaler-provider: hpa
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: autoscaler-hpa
     namespace: knative-serving
   spec:
@@ -500,7 +500,7 @@ items:
           sidecar.istio.io/inject: 'false'
         labels:
           app: autoscaler-hpa
-          serving.knative.dev/release: v0.8.0
+          serving.knative.dev/release: v0.8.1
       spec:
         containers:
         - env:
@@ -514,7 +514,7 @@ items:
             value: config-observability
           - name: METRICS_DOMAIN
             value: knative.dev/serving
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler-hpa@sha256:a7801c3cf4edecfa51b7bd2068f97941f6714f7922cb4806245377c2b336b723
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler-hpa@sha256:dc1a23770fe99ec1f9cf5ce8a8ea076df3de6fdcf31878b88fa01380e506a3eb
           name: autoscaler-hpa
           ports:
           - containerPort: 9090
@@ -534,7 +534,7 @@ items:
   metadata:
     labels:
       app: autoscaler
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: autoscaler
     namespace: knative-serving
   spec:
@@ -557,7 +557,7 @@ items:
   kind: Deployment
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: autoscaler
     namespace: knative-serving
   spec:
@@ -573,7 +573,7 @@ items:
           traffic.sidecar.istio.io/includeInboundPorts: 8080,9090
         labels:
           app: autoscaler
-          serving.knative.dev/release: v0.8.0
+          serving.knative.dev/release: v0.8.1
       spec:
         containers:
         - args:
@@ -590,7 +590,7 @@ items:
             value: config-observability
           - name: METRICS_DOMAIN
             value: knative.dev/serving
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:aeaacec4feedee309293ac21da13e71a05a2ad84b1d5fcc01ffecfa6cfbb2870
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:bc6e734197489da1e5b8e409b731d6faa296cb2a928c991424ed2fe725770424
           livenessProbe:
             httpGet:
               httpHeaders:
@@ -628,7 +628,7 @@ items:
   metadata:
     labels:
       autoscaling.knative.dev/metric-provider: custom-metrics
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: custom-metrics-server-resources
   rules:
   - apiGroups:
@@ -802,7 +802,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-autoscaler
     namespace: knative-serving
 - apiVersion: v1
@@ -907,7 +907,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-defaults
     namespace: knative-serving
 - apiVersion: v1
@@ -945,11 +945,11 @@ items:
       registriesSkippingTagResolving: "ko.local,dev.local"
 
       '
-    queueSidecarImage: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:e0654305370cf3bbbd0f56f97789c92cf5215f752b70902eba5d5fc0e88c5aca
+    queueSidecarImage: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:317c90eaae2c473db96089588e6a91c14f2d9acef457b9d1071bbe120621138d
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-deployment
     namespace: knative-serving
 - apiVersion: v1
@@ -974,7 +974,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-domain
     namespace: knative-serving
 - apiVersion: v1
@@ -1038,7 +1038,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-gc
     namespace: knative-serving
 - apiVersion: v1
@@ -1122,7 +1122,7 @@ items:
   metadata:
     labels:
       networking.knative.dev/ingress-provider: istio
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-istio
     namespace: knative-serving
 - apiVersion: v1
@@ -1150,7 +1150,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-logging
     namespace: knative-serving
 - apiVersion: v1
@@ -1379,7 +1379,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-network
     namespace: knative-serving
 - apiVersion: v1
@@ -1439,7 +1439,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-observability
     namespace: knative-serving
 - apiVersion: rbac.authorization.k8s.io/v1
@@ -1447,7 +1447,7 @@ items:
   metadata:
     labels:
       rbac.authorization.k8s.io/aggregate-to-admin: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: knative-serving-namespaced-admin
   rules:
   - apiGroups:
@@ -1514,14 +1514,14 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: config-tracing
     namespace: knative-serving
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: controller
     namespace: knative-serving
   spec:
@@ -1535,7 +1535,7 @@ items:
           sidecar.istio.io/inject: 'false'
         labels:
           app: controller
-          serving.knative.dev/release: v0.8.0
+          serving.knative.dev/release: v0.8.1
       spec:
         containers:
         - env:
@@ -1549,7 +1549,7 @@ items:
             value: config-observability
           - name: METRICS_DOMAIN
             value: knative.dev/serving
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:3b096e55fa907cff53d37dadc5d20c29cea9bb18ed9e921a588fee17beb937df
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:b912fee1e43bd7914515a4ff4a3eb26198962da6d16120edb177ae4f6e7fcf98
           name: controller
           ports:
           - containerPort: 9090
@@ -1569,7 +1569,7 @@ items:
   metadata:
     labels:
       autoscaling.knative.dev/metric-provider: custom-metrics
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: v1beta1.custom.metrics.k8s.io
   spec:
     group: custom.metrics.k8s.io
@@ -1585,7 +1585,7 @@ items:
   metadata:
     labels:
       networking.knative.dev/ingress-provider: istio
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: networking-istio
     namespace: knative-serving
   spec:
@@ -1612,7 +1612,7 @@ items:
             value: config-observability
           - name: METRICS_DOMAIN
             value: knative.dev/serving
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/networking/istio@sha256:057c999bccfe32e9889616b571dc8d389c742ff66f0b5516bad651f05459b7bc
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/networking/istio@sha256:4f1442bea0ea628f8f149b5743e82517383d8449170042b524ba6cbae3cc1564
           name: networking-istio
           ports:
           - containerPort: 9090
@@ -1631,7 +1631,7 @@ items:
   kind: Deployment
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: webhook
     namespace: knative-serving
   spec:
@@ -1648,7 +1648,7 @@ items:
         labels:
           app: webhook
           role: webhook
-          serving.knative.dev/release: v0.8.0
+          serving.knative.dev/release: v0.8.1
       spec:
         containers:
         - env:
@@ -1662,7 +1662,7 @@ items:
             value: config-observability
           - name: METRICS_DOMAIN
             value: knative.dev/serving
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/webhook@sha256:c2076674618933df53e90cf9ddd17f5ddbad513b8c95e955e45e37be7ca9e0e8
+          image: gcr.io/knative-releases/knative.dev/serving/cmd/webhook@sha256:ec5b85ce3bf0ffd7b096f89a6ef22ccabb5d477b81435b08019235ec67ee37e5
           name: webhook
           ports:
           - containerPort: 9090
@@ -1682,7 +1682,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: configurations.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -1722,7 +1722,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: revisions.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -1764,7 +1764,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: routes.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -1800,7 +1800,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: services.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -1846,7 +1846,7 @@ items:
   kind: ClusterRole
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: knative-serving-admin
   rules: []
 - apiVersion: rbac.authorization.k8s.io/v1
@@ -1854,7 +1854,7 @@ items:
   metadata:
     labels:
       serving.knative.dev/controller: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: knative-serving-core
   rules:
   - apiGroups:
@@ -1964,7 +1964,7 @@ items:
   kind: ServiceAccount
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: controller
     namespace: knative-serving
 - apiVersion: rbac.authorization.k8s.io/v1
@@ -1972,7 +1972,7 @@ items:
   metadata:
     labels:
       autoscaling.knative.dev/metric-provider: custom-metrics
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: custom-metrics:system:auth-delegator
   roleRef:
     apiGroup: rbac.authorization.k8s.io
@@ -1987,7 +1987,7 @@ items:
   metadata:
     labels:
       autoscaling.knative.dev/metric-provider: custom-metrics
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: hpa-controller-custom-metrics
   roleRef:
     apiGroup: rbac.authorization.k8s.io

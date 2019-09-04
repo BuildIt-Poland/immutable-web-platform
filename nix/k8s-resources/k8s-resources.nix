@@ -5,28 +5,30 @@ rec {
 
   knative-serving-json = helm.yaml-to-json {
     name = "knative-serving";
-    version = "0.8.0";
+    version = "0.8.1";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.8.0/serving.yaml;
-      sha256="1s4qdp9cikv1sjzw0xzxwzad2431cv5zp816nqbwfpcq1j0fham7";
+      url = https://github.com/knative/serving/releases/download/v0.8.1/serving.yaml;
+      sha256="1q2w8bgjy8l8g2ksi9xla7wwnja1kk1szrh8fzg8jypjkqs1lbmc";
     };
   };
 
   knative-crd-json = helm.yaml-to-json {
     name = "knative-crd";
-    version = "0.8.0";
+    version = "0.8.1";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.8.0/serving-beta-crds.yaml;
+      url = https://github.com/knative/serving/releases/download/v0.8.1/serving-beta-crds.yaml;
       sha256="17gcn52nch295sxy0lf2qr1alprj3jvnhm45v3yipxqr3jbcsw3x";
     };
   };
-  
+
+  # FIXME filter out prometheus
   knative-monitoring-json = helm.yaml-to-json {
     name = "knative-monitoring";
-    version = "0.8.0";
+    version = "0.8.1";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.8.0/monitoring.yaml;
-      sha256="0b37rv8a3ck8qx7a01nyjj5w0wf82yayw2a95dgi67vahdq84gjf";
+      # without prometheus
+      url = https://github.com/knative/serving/releases/download/v0.8.1/monitoring.yaml;
+      sha256="02x8hy9wrlkdnl6mz01v0dh7msmmx12zph9lpwpy7lf8fjv87435";
     };
   };
 
