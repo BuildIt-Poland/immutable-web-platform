@@ -162,12 +162,6 @@ in
           "brigade-kashti.${brigade-ns}.svc.cluster.local" 
           80;
 
-      # VirtualService.metrics =
-      #   create-virtual-service 
-      #     "metrics" 
-      #     "prometheus-operated.${storage-ns}.svc.cluster.local" 
-      #     9090;
-
       VirtualService.brigade-gateway = 
         create-virtual-service 
           "bitbucket-gateway" 
