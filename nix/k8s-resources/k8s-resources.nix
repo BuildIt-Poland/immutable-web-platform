@@ -3,6 +3,13 @@ with pkgs;
 with kubenix.lib;
 rec {
 
+  istio-src = pkgs.fetchFromGitHub {
+    owner = "istio";
+    repo = "istio";
+    rev = "a0b1b397d9637a3308e0373d6df9ac3b5974a790";
+    sha256 = "1mdfsgp03x1bv55zzpsqjlzvnyamgpy70z8vwy17wpa04v74l7qc";
+  };
+
   knative-serving-json = helm.yaml-to-json {
     name = "knative-serving";
     version = "0.8.1";
