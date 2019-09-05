@@ -21,3 +21,14 @@
 
 ### Performance
 * https://medium.com/vescloud/kubernetes-storage-performance-comparison-9e993cb27271
+
+### using `restic` cli
+* `restic check -r s3:s3.amazonaws.com/future-is-comming-dev-backup/restic/ci`
+
+### some other cli combination
+* velero restore create --include-namespaces=gitlab --include-resources persistentvolumeclaims,persistentvolumes --from-backup=velero-daily-20190827164509 --restore-volumes
+
+### restoring content to local folder
+* `velero backup create ci-6 --include-namespaces ci --wait`
+* `restic snapshots -r s3:s3.amazonaws.com/future-is-comming-dev-backup/restic/ci`
+* `restic restore f3c5db07 --target ./temp/test-recovery -r s3:s3.amazonaws.com/future-is-comming-dev-backup/restic/ci`

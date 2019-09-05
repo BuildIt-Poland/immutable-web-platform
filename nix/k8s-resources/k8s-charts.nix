@@ -54,10 +54,20 @@ rec {
     sha256 = "0136briq1aw36l25sbv8337al9a7x1bx1m3by78q5dsg4dk4rbl1";
   };
 
+  # Backups
   velero = fetch {
     chart = "stable/velero";
-    version = "2.1.3";
-    sha256 = "09n2csfjjw7g6qs867m944nkiqsciz699bc1a1wgifa7wpx4i2c7";
+    version = "2.1.4";
+    sha256 = "1yy2hmg8qadjy1qm7d22hpc84wcvy2rqsd77giqip9cg7v5lmqc1";
+  };
+
+  stash = fetch {
+    chart = "stash";
+    # version = "v0.9.0-rc.0";
+    version = "v0.7.0";
+    repo = "https://charts.appscode.com/stable/";
+    # sha256 = "178clqljrxp0wxqrlp56i1lzxn3ngd44acq7k5svb0ch3qdlsxgx";
+    sha256 = "1260ac7ikm5npfqxf8vzwc8g6fn4ag7cb96a05q8rfmdyakcqn9l";
   };
 
   external-dns = fetch {

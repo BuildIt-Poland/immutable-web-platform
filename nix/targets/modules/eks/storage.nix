@@ -38,10 +38,14 @@ in
       chart = k8s-resources.velero;
       values = {
         # kube2aim
+        image.tag = "v1.1.0";
         podAnnotations = config.kubernetes.annotations.iam.backups;
         credentials.useSecret = false;
+        # cleanUpCRDs = true;
+        snapshotsEnabled = true;
         configuration = {
           # backupSyncPeriod = project-config.storage.backup.syncPeriod;
+          resticTimeout = "6h";
           provider = "aws";
           backupStorageLocation = {
             name = "aws";
@@ -53,9 +57,12 @@ in
             config.region = project-config.aws.region;
           };
         };
+        metrics.enabled = true;
+        # metrics.serviceMonitor.enabled = true;
         schedules = project-config.storage.backup.schedules;
         deployRestic = true;
-        restic.podVolumePath = project-config.storage.dataDirHostPath;
+        # eks -> /var/lib/kubelet/pods -> default is correct
+        # restic.podVolumePath = project-config.storage.dataDirHostPath; # this is wrong
         restic.privileged = true;
       };
     };

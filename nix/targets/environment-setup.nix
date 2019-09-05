@@ -28,6 +28,9 @@ in
       runtime = inputs.environment.runtime;
       vars = {
         PROJECT_NAME = config.project.name;
+        RESTIC_PASSWORD_COMMAND = "get-restic-repo-password";
+        # s3:s3.amazonaws.com/future-is-comming-dev-backup/restic/ci
+        # RESTIC_REPOSITORY = "s3:s3.amazonaws.com/${}"
       };
     };
 

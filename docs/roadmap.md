@@ -1,5 +1,6 @@
 ## Today
 ### in progress
+* setup bastion on nixos -> restic, velero, kubectl
 * spin up bitbucket gateway with AWS LB - virtual service and SSL is there
 * velero - backups - auto at least before resources to rollback quickly
 * prometheus metrics and grafana dashboard for ceph
