@@ -110,18 +110,6 @@ with kubenix.lib.helm;
             ];
             config = {
               storeType = "filestore";
-              # mgr = {
-              #   # "prometheus.io/port" = "9283";
-              #   # "prometheus.io/scrape" = "true";
-              # };
-              #   nodeAffinity:
-              #   tolerations:
-              # mon:
-              #   nodeAffinity:
-              #   tolerations:
-              # osd:
-              #   nodeAffinity:
-              #   tolerations:
             };
           };
         };
@@ -132,21 +120,27 @@ with kubenix.lib.helm;
     ];
 
     kubernetes.patches = [
-      # (pkgs.writeScriptBin "patch-ceph-password" ''
-      #   ${pkgs.lib.log.important "Patching Ceph admin password"}
-
-      #   pass=${"$\{1:-admin}"}
-      #   encoded=$(echo $pass | tr -d ':\n' | base64)
-        
-      #   ${pkgs.kubectl}/bin/kubectl patch secret -n ${storage-ns} rook-ceph-dashboard-password \
-      #     -p '{"data": { "password": "'$encoded'"}}'
-      # '')
     ];
 
     module.scripts = [
       (pkgs.writeScriptBin "get-ceph-admin-password" ''
         ${pkgs.kubectl}/bin/kubectl -n ${storage-ns} get secret rook-ceph-dashboard-password \
           -o jsonpath="{['data']['password']}" | base64 --decode && echo
+      '')
+
+      (pkgs.writeShellScriptBin "get-restic-repo-password" ''
+        ${pkgs.kubectl}/bin/kubectl -n eks get secret velero-restic-credentials \
+          -o jsonpath="{.data.repository-password}" | base64 --decode && echo
+      '')
+
+      (pkgs.writeScriptBin "patch-ceph-password" ''
+        ${pkgs.lib.log.important "Patching Ceph admin password"}
+
+        pass=${"$\{1:-admin}"}
+        encoded=$(echo $pass | tr -d ':\n' | base64)
+        
+        ${pkgs.kubectl}/bin/kubectl patch secret -n ${storage-ns} rook-ceph-dashboard-password \
+          -p '{"data": { "password": "'$encoded'"}}'
       '')
     ];
 

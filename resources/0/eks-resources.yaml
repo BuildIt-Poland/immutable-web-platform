@@ -10,7 +10,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: backups.velero.io
     namespace: eks
@@ -31,7 +31,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: backupstoragelocations.velero.io
     namespace: eks
@@ -228,7 +228,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: deletebackuprequests.velero.io
     namespace: eks
@@ -249,7 +249,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: downloadrequests.velero.io
     namespace: eks
@@ -270,7 +270,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: podvolumebackups.velero.io
     namespace: eks
@@ -291,7 +291,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: podvolumerestores.velero.io
     namespace: eks
@@ -312,7 +312,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: resticrepositories.velero.io
     namespace: eks
@@ -333,7 +333,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: restores.velero.io
     namespace: eks
@@ -354,7 +354,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: schedules.velero.io
     namespace: eks
@@ -375,7 +375,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: serverstatusrequests.velero.io
     namespace: eks
@@ -414,7 +414,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: volumesnapshotlocations.velero.io
     namespace: eks
@@ -1059,7 +1059,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: backup-velero-all-ns
     namespace: eks
@@ -1074,7 +1074,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: default
     namespace: eks
@@ -1089,7 +1089,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: default
     namespace: eks
@@ -1319,7 +1319,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: restic
     namespace: eks
@@ -1335,7 +1335,7 @@ items:
           app.kubernetes.io/instance: backup
           app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: velero
-          helm.sh/chart: velero-2.1.3
+          helm.sh/chart: velero-2.1.4
           name: restic
       spec:
         containers:
@@ -1357,7 +1357,7 @@ items:
                 fieldPath: metadata.namespace
           - name: VELERO_SCRATCH_DIR
             value: /scratch
-          image: gcr.io/heptio-images/velero:v1.0.0
+          image: gcr.io/heptio-images/velero:v1.1.0
           imagePullPolicy: IfNotPresent
           name: velero
           securityContext:
@@ -1373,7 +1373,7 @@ items:
         serviceAccountName: backup-velero-server
         volumes:
         - hostPath:
-            path: /var/lib/rook
+            path: /var/lib/kubelet/pods
           name: host-pods
         - emptyDir: {}
           name: scratch
@@ -1384,7 +1384,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: backup-velero
     namespace: eks
@@ -1405,11 +1405,12 @@ items:
           app.kubernetes.io/instance: backup
           app.kubernetes.io/managed-by: Tiller
           app.kubernetes.io/name: velero
-          helm.sh/chart: velero-2.1.3
+          helm.sh/chart: velero-2.1.4
       spec:
         containers:
         - args:
           - server
+          - --restic-timeout=6h
           command:
           - /velero
           env:
@@ -1420,9 +1421,12 @@ items:
                 fieldPath: metadata.namespace
           - name: VELERO_SCRATCH_DIR
             value: /scratch
-          image: gcr.io/heptio-images/velero:v1.0.0
+          image: gcr.io/heptio-images/velero:v1.1.0
           imagePullPolicy: IfNotPresent
           name: velero
+          ports:
+          - containerPort: 8085
+            name: monitoring
           volumeMounts:
           - mountPath: /plugins
             name: plugins
@@ -3320,6 +3324,26 @@ items:
   kind: Service
   metadata:
     labels:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: velero
+      helm.sh/chart: velero-2.1.4
+      kubenix/project-name: kubenix
+    name: backup-velero
+    namespace: eks
+  spec:
+    ports:
+    - name: monitoring
+      port: 8085
+      targetPort: monitoring
+    selector:
+      app.kubernetes.io/instance: backup
+      app.kubernetes.io/name: velero
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
       app.kubernetes.io/instance: eks-cluster-autoscaler
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: aws-cluster-autoscaler
@@ -3546,7 +3570,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: backup-velero-server
     namespace: eks
@@ -4455,7 +4479,7 @@ items:
       app.kubernetes.io/instance: backup
       app.kubernetes.io/managed-by: Tiller
       app.kubernetes.io/name: velero
-      helm.sh/chart: velero-2.1.3
+      helm.sh/chart: velero-2.1.4
       kubenix/project-name: kubenix
     name: backup-velero-server
     namespace: eks

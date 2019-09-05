@@ -1,0 +1,21 @@
+# brigade cache snapshoter
+# move to brigade
+kind: Pod
+apiVersion: v1
+metadata:
+  name: volume-debugger
+  namespace: ci
+  annotations:
+    backup.velero.io/backup-volumes: volume-to-debug
+spec:
+  volumes:
+    - name: volume-to-debug
+      persistentVolumeClaim:
+        claimName: embracing-nix-docker-k8s-helm-knative-test
+  containers:
+    - name: debugger
+      image: busybox
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - mountPath: "/data"
+          name: volume-to-debug

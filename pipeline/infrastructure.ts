@@ -6,14 +6,18 @@ const { NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand 
 
 //#Node-Selectors:  beta.kubernetes.io/os=linux 
 // this.host.nodeSelector["kubernetes.io/lifecycle"] = "spot"
+
+// https://github.com/brigadecore/brigade/pull/777 - I will hide these details
 const createJob = (name) => {
   let t = new NixJob(name)
     .withExtraParams({
       streamLogs: true,
       privileged: true,
       annotations: {
-        // kube2iam
-        "backup.velero.io/backup-volumes": "brigade-data"
+        // FIXME kube2iam
+        // "iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";
+        // INFO as these are not running pods restic is not happy to do a backup
+        // "backup.velero.io/backup-volumes": `${project.name}-${name}`
       },
       shell: 'bash',
       serviceAccount: "brigade-worker"
