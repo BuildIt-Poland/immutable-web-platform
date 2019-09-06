@@ -25,10 +25,10 @@ rec {
 
     customization = {
       extension = mkOption {
-        default = pkgs.callPackage ../../../packages/brigade-extension/nix {}; 
+        default = pkgs.callPackage ../../../packages/brigade/brigade-extension/nix {}; 
       };
       remote-worker = mkOption {
-        default = pkgs.callPackage ../../remote-worker {};
+        default = pkgs.callPackage ../../../packages/brigade/remote-worker {};
       };
     };
   };

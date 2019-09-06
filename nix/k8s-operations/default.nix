@@ -59,7 +59,9 @@ rec {
             name = lib.last priority-name;
           in
             ''
-              location="${loc}/${priority}"
+              target="${project-config.kubernetes.target}"
+              env="${project-config.environment.type}"
+              location="${loc}/$target/$env/${priority}"
               file=${name}-${suffix}.yaml
 
               mkdir -p $location

@@ -69,6 +69,7 @@ in
           (mk-domain "topology")
           (mk-domain "tracing")
           (mk-domain "bitbucket-gateway")
+          (mk-domain "logs")
         ];
       in
       {
@@ -161,6 +162,12 @@ in
           "ci" 
           "brigade-kashti.${brigade-ns}.svc.cluster.local" 
           80;
+
+      VirtualService.logs =
+        create-virtual-service 
+          "logs" 
+          "kibana-logging.${knative-monitoring-ns}.svc.cluster.local" 
+          5601;
 
       VirtualService.brigade-gateway = 
         create-virtual-service 

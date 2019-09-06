@@ -12,13 +12,13 @@ items:
       istio: ingressgateway
     servers:
     - hosts:
-      - '*.functions.future-is-comming.dev.buildit.consulting'
+      - '*.functions.future-is-comming.dev.local'
       port:
         name: http-system
         number: 80
         protocol: HTTP
     - hosts:
-      - '*.functions.future-is-comming.dev.buildit.consulting'
+      - '*.functions.future-is-comming.dev.local'
       port:
         name: https-system
         number: 443
@@ -48,8 +48,8 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: dev.local/express-app:dev-build
-          imagePullPolicy: Never
+          image: docker.io/gatehub/local/express-app:dev-build
+          imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
               path: /healthz
@@ -77,7 +77,7 @@ items:
     namespace: knative-serving
 - apiVersion: v1
   data:
-    future-is-comming.dev.buildit.consulting: ''
+    future-is-comming.dev.local: ''
   kind: ConfigMap
   metadata:
     labels:

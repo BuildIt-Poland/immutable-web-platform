@@ -21,14 +21,10 @@ in
   config = {
     kubernetes.api.namespaces."${argo-ns}"= {};
 
-    # ARGO password:  https://github.com/argoproj/argo-cd/issues/829
-    kubernetes.patches = [
-      (pkgs.writeScriptBin "patch-argo-password" ''
-        ${pkgs.lib.log.important "Patching Argo CD admin password"}
-
-        pass=${"$\{1:-admin}"}
-        ${pkgs.kubectl}/bin/kubectl patch secret -n ${argo-ns} argocd-secret \
-          -p '{"stringData": { "admin.password": "'$(htpasswd -bnBC 10 "" $pass | tr -d ':\n')'"}}'
+    module.scripts = [
+      (pkgs.writeShellScriptBin "get-argo-cd-password" ''
+        ${pkgs.kubectl}/bin/kubectl -n ${argo-ns} get secret argocd-secret \
+          -o jsonpath="{.data.admin.password}" | base64 --decode && echo
       '')
     ];
 

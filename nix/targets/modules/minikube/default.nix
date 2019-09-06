@@ -22,9 +22,7 @@ with lib;
       };
 
       project = rec {
-        domain = "dev.local";
-        make-sub-domain = 
-          name: "${name}.${config.project.domain}";
+        domain = mkForce "local";
       };
 
       kubernetes.resources.list."${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
@@ -67,12 +65,12 @@ with lib;
 
     (mkIf config.kubernetes.tools.enabled {
       packages = with pkgs; [
-        knctl
-        kubectl-repl
+        kube-prompt
         kubernetes-helm
         hey
         istioctl
         minikube
+        knative
         kail
         kubectx
       ];
