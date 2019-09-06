@@ -73,6 +73,8 @@ with lib;
         istioctl
         minikube
         knative
+        krew
+        dig
         kail
         kubectx
       ];
