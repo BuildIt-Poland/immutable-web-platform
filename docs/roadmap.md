@@ -1,5 +1,6 @@
 ## Today
 ### in progress
+* expose kibana
 * setup bastion on nixos -> restic, velero, kubectl
 * spin up bitbucket gateway with AWS LB - virtual service and SSL is there
 * velero - backups - auto at least before resources to rollback quickly

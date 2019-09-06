@@ -48,8 +48,8 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-08f085df3e2a8041a4888c3ed16198f2a2d39c7c
-          imagePullPolicy: IfNotPresent
+          image: dev.local/express-app:dev-build
+          imagePullPolicy: Never
           livenessProbe:
             httpGet:
               path: /healthz

@@ -1,59 +1,60 @@
 {
-  "nixpkgs": {
-    "url": "https://github.com/NixOS/nixpkgs-channels/archive/20b993ef2c9e818a636582ade9597f71a485209d.tar.gz",
-    "owner": "NixOS",
-    "branch": "nixos-unstable",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
-    "repo": "nixpkgs-channels",
-    "type": "tarball",
-    "sha256": "0plb93vw662lwxpfac7karsqkkajwr6xp5pfgij2l67bn1if3xd6",
-    "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
-    "rev": "20b993ef2c9e818a636582ade9597f71a485209d"
-  },
-  "kubenix": {
-    "url": "https://github.com/damianbaar/kubenix/archive/365cae024cd7b6e8050dfc238a3da9f1a4b14964.tar.gz",
-    "owner": "damianbaar",
-    "branch": "kubenix-2.0",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
-    "repo": "kubenix",
-    "type": "tarball",
-    "sha256": "0kq3xbll2vbk0dfmkz339qcp7dvl8g05svrx1h2lj93ajn4i5kvi",
-    "description": "Kubernetes resource builder using nix",
-    "rev": "365cae024cd7b6e8050dfc238a3da9f1a4b14964"
-  },
-  "nixops": {
-    "homepage": "https://nixos.org/nixops",
-    "url": "https://github.com/nixos/nixops/archive/5cc73e2c42271c143fb1a11d670c8f8ba78ecdec.tar.gz",
-    "owner": "nixos",
-    "branch": "master",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
-    "repo": "nixops",
-    "type": "tarball",
-    "sha256": "1d2gk99igws5pavi7zkh652vcanl7nxp8nhxgd0g1dayd46bj1kp",
-    "description": "NixOps, the NixOS-based cloud deployment tool",
-    "rev": "5cc73e2c42271c143fb1a11d670c8f8ba78ecdec"
-  },
-  "yarn2nix": {
-    "url": "https://github.com/moretea/yarn2nix/archive/3cc020e384ce2a439813adb7a0cc772a034d90bb.tar.gz",
-    "owner": "moretea",
-    "branch": "master",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
-    "repo": "yarn2nix",
-    "type": "tarball",
-    "sha256": "0h2kzdfiw43rbiiffpqq9lkhvdv8mgzz2w29pzrxgv8d39x67vr9",
-    "description": "Generate nix expressions from a yarn.lock file",
-    "rev": "3cc020e384ce2a439813adb7a0cc772a034d90bb"
-  },
-  "niv": {
-    "homepage": "https://github.com/nmattia/niv",
-    "url": "https://github.com/nmattia/niv/archive/eb859c309e38450d70d458cf5ce06e6a2046f966.tar.gz",
-    "owner": "nmattia",
-    "branch": "master",
-    "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
-    "repo": "niv",
-    "type": "tarball",
-    "sha256": "11jf7fgj32m3aqhbn6fnxc323m4wl2wmca0am71ag8vrq6ayi6fs",
-    "description": "Easy dependency management for Nix projects",
-    "rev": "eb859c309e38450d70d458cf5ce06e6a2046f966"
-  }
+    "nixpkgs": {
+        "homepage": "https://github.com/NixOS/nixpkgs",
+        "url": "https://github.com/NixOS/nixpkgs-channels/archive/7d5375ebf4cd417465327d7ab453687fd19663c9.tar.gz",
+        "owner": "NixOS",
+        "branch": "nixos-unstable",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "nixpkgs-channels",
+        "type": "tarball",
+        "sha256": "18myjqws6mm4xsx4nx348yix793wyk76dyklls6dgyp9rg0gfcma",
+        "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
+        "rev": "7d5375ebf4cd417465327d7ab453687fd19663c9"
+    },
+    "kubenix": {
+        "url": "https://github.com/damianbaar/kubenix/archive/365cae024cd7b6e8050dfc238a3da9f1a4b14964.tar.gz",
+        "owner": "damianbaar",
+        "branch": "kubenix-2.0",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "kubenix",
+        "type": "tarball",
+        "sha256": "0kq3xbll2vbk0dfmkz339qcp7dvl8g05svrx1h2lj93ajn4i5kvi",
+        "description": "Kubernetes resource builder using nix",
+        "rev": "365cae024cd7b6e8050dfc238a3da9f1a4b14964"
+    },
+    "nixops": {
+        "homepage": "https://nixos.org/nixops",
+        "url": "https://github.com/nixos/nixops/archive/284924c223faa554131a8d1ace99fe6d5ccfeebb.tar.gz",
+        "owner": "nixos",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "nixops",
+        "type": "tarball",
+        "sha256": "13n9xbpip7m3plwlad953m5iy2nyvwhvjq5amajszhm7ssyqyk4y",
+        "description": "NixOps, the NixOS-based cloud deployment tool",
+        "rev": "284924c223faa554131a8d1ace99fe6d5ccfeebb"
+    },
+    "yarn2nix": {
+        "url": "https://github.com/moretea/yarn2nix/archive/3f2dbb08724bf8841609f932bfe1d61a78277232.tar.gz",
+        "owner": "moretea",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "yarn2nix",
+        "type": "tarball",
+        "sha256": "142av7dwviapsnahgj8r6779gs2zr17achzhr8b97s0hsl08dcl2",
+        "description": "Generate nix expressions from a yarn.lock file",
+        "rev": "3f2dbb08724bf8841609f932bfe1d61a78277232"
+    },
+    "niv": {
+        "homepage": "https://github.com/nmattia/niv",
+        "url": "https://github.com/nmattia/niv/archive/213315b65807ceae979da902875efaad1c53dc1d.tar.gz",
+        "owner": "nmattia",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "niv",
+        "type": "tarball",
+        "sha256": "1cczwqnmfs17i00gn8s9l7sf2s3h498gzlv7wrkdin4v31lydv08",
+        "description": "Easy dependency management for Nix projects",
+        "rev": "213315b65807ceae979da902875efaad1c53dc1d"
+    }
 }

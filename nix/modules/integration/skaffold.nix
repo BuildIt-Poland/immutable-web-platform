@@ -9,9 +9,12 @@ rec {
   ];
 
   options.skaffold = {
+    enable = mkOption {
+      default = false;
+    };
   };
 
-  config = mkIf (cfg.aws.enabled && cfg.environment.isLocal) (mkMerge [
+  config = mkIf cfg.skaffold.enable (mkMerge [
     ({
       checks = ["Enabling Skaffold for development"];
 

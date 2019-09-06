@@ -14,7 +14,7 @@ rec {
     };
   };
 
-  config = mkIf (cfg.git-secrets.enabled && cfg.environment.isLocal) (mkMerge [
+  config = mkIf cfg.git-secrets.enabled (mkMerge [
     ({
       checks = ["Enabling secret handling module"];
 

@@ -6,7 +6,7 @@ rec {
   domain = project-config.project.make-sub-domain label;
 
   cpu = 
-    if project-config.environment.isLocal
+    if project-config.kubernetes.target == "minikube"
       then "100m" 
       else "1000m";
 
