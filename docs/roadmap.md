@@ -1,10 +1,10 @@
 ## Today
-### in progress
+* build go packages instead of using binaries - required by targeting linux within bastion
 * expose kibana
+* finish minikube regression and do some smoke tests on eks
+### in progress
+* need to have hydra instance
 * setup bastion on nixos -> restic, velero, kubectl
-* spin up bitbucket gateway with AWS LB - virtual service and SSL is there
-* velero - backups - auto at least before resources to rollback quickly
-* prometheus metrics and grafana dashboard for ceph
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
 * shell for infra is necessary - nix shell infra first to bootstrap env and export outputs from terraform after that ... nix with resources
 * tests and functions should be run in spot instances
@@ -19,10 +19,13 @@
 ### regression:
 * SSL with istio and EKS - aws_route_53 - partially done
 * refactor env -> should be more like dev, staging, qa, prod - local and current usage is a bit unclear (i.e. it would be handy to use for ssl -> certificate -> lets encrypt)
-- (kubernetes.target (minikube/eks/aks), environement.runtime (local, ci), environement.type 'dev','staging','prod')
 * change integration-modules to configuration-modules, and kubenix-modules to kubernetes-modules, prepare virtual-services for local and cloud env (hosts related)
 
 ### works:
+- (kubernetes.target (minikube/eks/aks), environement.runtime (local, ci), environement.type 'dev','staging','prod')
+* prometheus metrics and grafana dashboard for ceph
+* velero - backups - auto at least before resources to rollback quickly
+* spin up bitbucket gateway with AWS LB - virtual service and SSL is there
 * virtual-services does not work
 * rook-ceph with dashboard
 * task to generate kubeconfig from terraform (

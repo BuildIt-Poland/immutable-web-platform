@@ -5,7 +5,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: configurations.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -48,7 +48,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: revisions.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -93,7 +93,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: routes.serving.knative.dev
   spec:
     additionalPrinterColumns:
@@ -132,7 +132,7 @@ items:
   metadata:
     labels:
       knative.dev/crd-install: 'true'
-      serving.knative.dev/release: v0.8.0
+      serving.knative.dev/release: v0.8.1
     name: services.serving.knative.dev
   spec:
     additionalPrinterColumns:

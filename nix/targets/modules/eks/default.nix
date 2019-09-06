@@ -29,23 +29,10 @@ in
   config = {
     kubernetes.resources.list."${priority.high "eks"}" = [ ./kubernetes ];
 
-    project = {
-      make-sub-domain = 
-        name: 
-          (lib.concatStringsSep "." 
-            (builtins.filter (x: x != "") [
-              name
-              config.project.name
-              config.environment.type
-              config.project.domain
-            ]));
-    };
-
     environment = {
       type = inputs.environment.type;
       runtime = inputs.environment.runtime;
       vars = {
-        PROJECT_NAME = config.project.name;
         RESTIC_PASSWORD_COMMAND = "get-restic-repo-password";
       };
     };

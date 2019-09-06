@@ -23,6 +23,9 @@ in
     environment = {
       type = inputs.environment.type;
       runtime = inputs.environment.runtime;
+      vars = {
+        PROJECT_NAME = config.project.name;
+      };
     };
 
     # FIXME based on target take from modules
@@ -36,6 +39,15 @@ in
         k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
         code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
       };
+      make-sub-domain = 
+        name: 
+          (lib.concatStringsSep "." 
+            (builtins.filter (x: x != "") [
+              name
+              config.project.name
+              config.environment.type
+              config.project.domain
+            ]));
     };
 
     test.enable = inputs.tests.enable;

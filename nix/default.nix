@@ -47,8 +47,8 @@ let
 
   overlays = [
     (import ./overlays/overridings.nix {inherit sources;})
-    (import ./overlays/tools.nix {inherit sources;})
     (import ./overlays/modules.nix {inherit sources;})
+    (import ./tools {inherit sources;})
     passthrough
     application
     nix-tests

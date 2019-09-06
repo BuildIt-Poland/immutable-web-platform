@@ -68,8 +68,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/argoproj/pkg";
-      rev =  "fb13aebbef1cc580a9f5bafa65bdad07fc89d803";
-      sha256 = "0pbxvz1k4xqa2i0ranq3430rwb2jq53rvkblr54yvf67b9rdfh0l";
+      rev =  "38dba6e98495680ff1f8225642b63db10a96bb06";
+      sha256 = "1jc1ai4jgbap7hxxcg8f97azn351a24xfa1hzildbg3va9gxqmbn";
     };
   }
   {
@@ -1024,6 +1024,15 @@
       url = "https://github.com/kubernetes/klog";
       rev =  "d98d8acdac006fb39831f1b25640813fef9c314f";
       sha256 = "1gk1jhhyzsqcb4wnb02hkp8fwmk3ac924yzk87hfc6sgz43jplpn";
+    };
+  }
+  {
+    goPackagePath  = "k8s.io/kube-aggregator";
+    fetch = {
+      type = "git";
+      url = "https://github.com/kubernetes/kube-aggregator";
+      rev =  "e80910364765199a4baebd4dec54c885fe52b680";
+      sha256 = "14wzsspxkaw8fkx117jx0arhlc2pq4w3qbwmpwyd6n5rmzdvzyz4";
     };
   }
   {
