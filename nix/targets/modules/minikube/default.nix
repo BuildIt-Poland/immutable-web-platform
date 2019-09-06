@@ -7,6 +7,7 @@ in
 with lib;
 {
   imports = with integration-modules.modules; [
+    ./docker-image-push.nix
     project-configuration
     kubernetes
     skaffold
@@ -17,7 +18,7 @@ with lib;
     ({
       docker = rec {
         namespace = "${config.project.name}";
-        imageName = mkForce (name: "${config.project.domain}/${name}");
+        imageName = mkForce (name: "${config.environment.type}.${config.project.domain}/${name}");
         imageTag = mkForce (name: "${config.docker.tag}");
       };
 

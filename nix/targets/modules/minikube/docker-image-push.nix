@@ -1,4 +1,4 @@
-{config, pkgs, lib, inputs, ...}:
+{config, pkgs, lib, inputs, integration-modules, ...}:
 with lib;
 let
   cfg = config;
@@ -18,16 +18,10 @@ let
 in
 rec {
   imports = [
-    ./docker.nix
+    integration-modules.modules.docker
   ];
 
-  options.local-cluster = {
-    enable = mkOption {
-      default = true;
-    };
-  };
-
-  config = mkIf (cfg.local-cluster.enable) (mkMerge [
+  config = (mkMerge [
     { checks = ["Enabling docker module for minikube"]; }
 
     ({
