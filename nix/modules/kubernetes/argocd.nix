@@ -24,7 +24,8 @@ in
     module.scripts = [
       (pkgs.writeShellScriptBin "get-argo-cd-password" ''
         ${pkgs.kubectl}/bin/kubectl -n ${argo-ns} get secret argocd-secret \
-          -o jsonpath="{.data.admin.password}" | base64 --decode && echo
+          -o 'go-template={{index .data "admin.password"}}' \
+        | base64 --decode && echo
       '')
     ];
 
