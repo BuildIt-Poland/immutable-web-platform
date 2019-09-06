@@ -41,6 +41,7 @@ in
       upload = inputs.docker.upload;
       namespace = mkForce cluster-name;
       tag = mkForce cfg.project.hash;
+      registry = ""; # CHECK THIS
       imageName = mkForce (name: "${namespace}");
       imageTag = mkForce (name: "${name}-${tag}");
     };
