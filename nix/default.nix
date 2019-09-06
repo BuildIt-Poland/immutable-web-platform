@@ -49,6 +49,7 @@ let
     (import ./overlays/overridings.nix {inherit sources;})
     (import ./overlays/modules.nix {inherit sources;})
     (import ./tools {inherit sources;})
+    (import ./lib {inherit sources;})
     passthrough
     application
     nix-tests

@@ -5,9 +5,7 @@ let
 in
 rec {
   # Terraform
-  terraform-with-plugins = super.callPackage ../terraform {};
-
-  lib = super.lib.recursiveUpdate super.lib (import ../helpers { callPackage = super.callPackage; });
+  terraform-with-plugins = super.callPackage ./terraform {};
 
   # Brigade
   brigade = super.callPackage ./brigade {};
