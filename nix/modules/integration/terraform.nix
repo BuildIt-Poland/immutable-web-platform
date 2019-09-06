@@ -27,7 +27,7 @@ rec {
 
   options.terraform = {
     enable = mkOption {
-      default = true;
+      default = false;
     };
 
     location = mkOption {

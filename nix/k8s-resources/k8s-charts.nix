@@ -5,14 +5,14 @@ rec {
     chart = "brigade";
     repo = "https://brigadecore.github.io/charts";
     version = "1.1.0";
-    sha256 = "0sw3g0c17klmqfzdal41916wxm90l53ki379vdngc388xk17251r";
+    sha256 = "0is2iqgzinlrx46nz1w30m8f1ggpnhl8ybb2d01fwhhhyvfcd0si";
   };
 
   brigade-project = fetch {
     chart = "brigade-project";
     repo = "https://brigadecore.github.io/charts";
     version = "1.0.0";
-    sha256 = "05q4vvl1h79xd5xk44x29dq3y2a06pjvan355qzh5xga1jiga934";
+    sha256 = "1mi4y5slj2pkbxf2dyckjsvj647ip9zaqkmp9cjfwq4b1gnpnd0h";
   };
 
   brigade-bitbucket = chart-from-git {
@@ -26,13 +26,13 @@ rec {
     chart = "istio";
     version = "1.2.4";
     repo = "https://storage.googleapis.com/istio-release/releases/1.2.4/charts";
-    sha256 = "1h269yj9whc49yiyqgzaz77nz2viwxillc1y3r9y507lk5wfg9m1";
+    sha256 = "12vrxf63ghdq8x2xrjc392ib36cakix5rd5yx9rwrg38vs1n6vmw";
   };
 
   weave-scope = fetch {
     chart = "stable/weave-scope";
     version = "1.1.2";
-    sha256 = "0x7nas78jj517znx448wsgzin70nzd91j7961zk9lnmjha5jxa0m";
+    sha256 = "0lh1p5gy3cf3yac2kvrg925aig22b4bn8249j8ak70qvc3q02zsm";
   };
 
   docker-registry = fetch {
@@ -44,7 +44,7 @@ rec {
   grafana = fetch {
     chart = "stable/grafana";
     version = "3.8.7";
-    sha256 = "1wd4zadi7y5dd8kxkfm27kypd4mrk9rx5njbpjnh19jg3wxzk0q7";
+    sha256 = "0i4b3yg5yjjhn34p9lxgbldcnbhr31cfgzn7m6n7nz5kdlz520bp";
   };
 
   rook-ceph = fetch {
@@ -59,15 +59,6 @@ rec {
     chart = "stable/velero";
     version = "2.1.4";
     sha256 = "1yy2hmg8qadjy1qm7d22hpc84wcvy2rqsd77giqip9cg7v5lmqc1";
-  };
-
-  stash = fetch {
-    chart = "stash";
-    # version = "v0.9.0-rc.0";
-    version = "v0.7.0";
-    repo = "https://charts.appscode.com/stable/";
-    # sha256 = "178clqljrxp0wxqrlp56i1lzxn3ngd44acq7k5svb0ch3qdlsxgx";
-    sha256 = "1260ac7ikm5npfqxf8vzwc8g6fn4ag7cb96a05q8rfmdyakcqn9l";
   };
 
   external-dns = fetch {
@@ -96,7 +87,7 @@ rec {
     chart = "istio-init";
     version = "1.2.4";
     repo = "https://storage.googleapis.com/istio-release/releases/1.2.4/charts";
-    sha256 = "1jpyfq4v6rp9l7jd2dcn0xdd6rrbkmxgzcr0q51r6fbcysvp0bwr";
+    sha256 = "04fw22zxsq9r0f9724ycv9k5x1f5jyhwf18zfk0y5i53cy0amysx";
   };
 
   istio-init-json = values: chart2json {

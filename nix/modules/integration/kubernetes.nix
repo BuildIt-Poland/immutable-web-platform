@@ -1,7 +1,6 @@
 {config, pkgs, lib, inputs, ...}:
 let
   cfg = config;
-  isLocalKubernetes = cfg.environment.isLocal && cfg.kubernetes.target == "minikube";
 in
 with pkgs;
 with lib;
@@ -89,26 +88,6 @@ rec {
         ];
       })
 
-      (mkIf (cfg.kubernetes.cluster.clean && isLocalKubernetes) {
-        packages = with k8s-operations.local; [
-          delete-local-cluster
-          create-local-cluster-if-not-exists
-        ];
-
-        actions.queue = [
-          { priority = cfg.actions.priority.cluster; 
-            action = ''
-              delete-local-cluster
-            '';
-          }
-          { priority = cfg.actions.priority.cluster; 
-            action = ''
-              create-local-cluster-if-not-exists
-            '';
-          }
-        ];
-      })
-
       ({
         packages = [ 
           k8s-operations.apply-crd 
@@ -156,32 +135,5 @@ rec {
         '';
       })
 
-      (mkIf isLocalKubernetes {
-        packages = [
-          k8s-operations.local.skaffold-build
-          k8s-operations.local.setup-env-vars
-        ];
-        actions.queue = [
-          { priority = cfg.actions.priority.docker + 1; # INFO before uploading docker images
-            action = ''
-              source setup-env-vars
-            '';
-          }
-        ];
-      })
-
-      (mkIf (cfg.kubernetes.tools.enabled && cfg.environment.isLocal) {
-        packages = with pkgs; [
-          knctl
-          kubectl-repl
-          kubernetes-helm
-          hey
-          istioctl
-          skaffold
-          minikube
-          kail
-          kubectx
-        ];
-      })
     ]);
 }

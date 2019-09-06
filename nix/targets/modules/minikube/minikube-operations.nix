@@ -1,12 +1,13 @@
+# FIXME this should live close to nix/target/minikube
 { 
   pkgs, 
   lib, 
   project-config, 
   kubenix,
   node-development-tools,
-  helpers
+  k8s-operations
 }:
-with helpers;
+with k8s-operations.helpers;
 let
   projectName = project-config.project.name;
 
@@ -30,6 +31,7 @@ let
     namespace = local-infra-ns;
   };
 
+  # FIXME most likely I can drop by using minikube tunnel
   localtunnel = "${node-development-tools}/bin/lt";
 in
 rec {
@@ -83,8 +85,6 @@ rec {
     ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${projectName}"
   '';
 
-  # export BRIGADE_PROJECT=${env-config.brigade.project-name}
-  # FIXME this is too late
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
     ${lib.log.message "Exporting env vars and evaluating minikube docker-env"}
     eval $(${pkgs.minikube}/bin/minikube docker-env -p ${projectName})

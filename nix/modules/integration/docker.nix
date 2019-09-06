@@ -27,6 +27,14 @@ rec {
       default = "docker.io/gatehub";
     };
 
+    imageName = mkOption {
+      default = name: name;
+    };
+
+    imageTag = mkOption {
+      default = name: name;
+    };
+
     destination = mkOption {
       default = "docker://damianbaar"; # skopeo path transport://repo
     };

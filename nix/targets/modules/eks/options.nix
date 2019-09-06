@@ -58,11 +58,7 @@ rec {
       };
 
       docker = {
-        namespace = mkForce cluster-name;
-        tag = mkForce cfg.project.hash;
-
         registry = mkForce registry-path;
-        destination = "docker://${registry-path}";
       };
 
       kubernetes = {

@@ -1,121 +1,119 @@
-# https://eksworkshop.com/scaling/deploy_hpa/
-{ 
-  config, 
-  pkgs,
-  lib, 
-  kubenix, 
-  k8s-resources ? pkgs.k8s-resources,
-  project-config,
-  ... 
-}:
+{config, pkgs, lib, kubenix, integration-modules, inputs, ...}: 
+with pkgs.lib;
 let
-  namespace = project-config.kubernetes.namespace;
-  eks-ns = "eks";
-  kn-serving = namespace.knative-serving;
-  istio-ns = namespace.istio;
-  functions-ns = namespace.functions;
-
-  update-eks-vpc-cni = 
-    pkgs.writeScriptBin "apply-aws-credentails-secret" ''
-      ${pkgs.lib.log.important "Patching AWS VPC CNI"}
-
-      ${pkgs.kubectl}/bin/kubectl patch daemonset aws-node \
-        -n kube-system \
-        -p '{"spec": {"template": {"spec": {"containers": [{"image": "602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon-k8s-cni:v1.5.1-rc1","name":"aws-node"}]}}}}'
-    '';
-
-  # https://knative.dev/docs/serving/tag-resolution/
-  # https://github.com/knative/serving/issues/4435#issuecomment-504108797 
-  # https://github.com/knative/serving/pull/4084
-  knative-not-resolve-tags =
-    pkgs.writeScriptBin "knative-not-resolve-tags" ''
-      ${pkgs.lib.log.important "Patching Knative serving"}
-
-      ${pkgs.kubectl}/bin/kubectl patch configmap config-deployment \
-        -n ${kn-serving} \
-        -p '{"data":{"registriesSkippingTagResolving":"${project-config.aws.account}.dkr.ecr.${project-config.aws.region}.amazonaws.com/${project-config.kubernetes.cluster.name}"}}'
-    '';
-
-  setup-velero-namespace =
-    pkgs.writeScriptBin "setup-velero-namespace" ''
-      ${pkgs.lib.log.important "Patching Velero namespace"}
-
-      ${pkgs.velero}/bin/velero client config set namespace=${eks-ns}
-    '';
+  resources = config.kubernetes.resources;
+  priority = resources.priority;
 in
 {
-  imports = with kubenix.modules; [ 
-    k8s
-    k8s-extension
-    helm
-    ./cert-manager.nix
-    ./service-mesh.nix
-    ./virtual-services.nix
-    ./storage.nix
+  imports = with integration-modules.modules; [
+    ./options.nix
+    project-configuration
+    kubernetes
+    kubernetes-resources
+    bitbucket-k8s-repo
+    docker
+    storage
+    brigade
+    bitbucket
+    terraform
+    git-secrets
+    aws
+    base
   ];
 
-  kubernetes.patches = [
-    # update-eks-vpc-cni
-    knative-not-resolve-tags
-    setup-velero-namespace
-  ];
+  config = {
+    imports = with integration-modules.modules; [
+      kubernetes
+    ];
 
-  kubernetes.annotations = {
-    instance-on-demand = {"kubernetes.io/lifecycle"= "on-demand";};
-    iam = { 
-      # FIXME these should be 2 separate roles
-      cluster = {"iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";};
-      backups = {"iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";};
+  config = {
+    kubernetes.resources.list."${priority.high "eks"}" = [ ./kubernetes ];
+
+    project = {
+      make-sub-domain = 
+        name: 
+          (lib.concatStringsSep "." 
+            (builtins.filter (x: x != "") [
+              name
+              config.project.name
+              config.environment.type
+              config.project.domain
+            ]));
     };
-  };
 
-  kubernetes.api.namespaces."${eks-ns}"= {
-    metadata.annotations = config.kubernetes.annotations.iam.cluster;
-  };
- 
-   # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/autoscaling.md
-  kubernetes.helm.instances.eks-cluster-autoscaler = {
-    namespace = "${eks-ns}";
-    chart = k8s-resources.cluster-autoscaler;
-    values = {
-      rbac.create = "true";
-      cloudProvider = "aws";
-      sslCertPath =  "/etc/ssl/certs/ca-bundle.crt"; # it is necessary in case of EKS
-      awsRegion = project-config.aws.region;
-      autoDiscovery = {
-        clusterName = "${project-config.kubernetes.cluster.name}";
-        enabled = true;
+    environment = {
+      type = inputs.environment.type;
+      runtime = inputs.environment.runtime;
+      vars = {
+        PROJECT_NAME = config.project.name;
+        RESTIC_PASSWORD_COMMAND = "get-restic-repo-password";
       };
-      nodeSelector = config.kubernetes.annotations.instance-on-demand;
     };
-  };
 
-  kubernetes.helm.instances.external-dns = {
-    namespace = "${eks-ns}";
-    chart = k8s-resources.external-dns;
-    values = {
-      provider = "aws"; 
-      istioIngressGateways = [
-        "istio-system/istio-ingressgateway"
-      ];
-      sources = ["service" "ingress" "istio-gateway"];
-      rbac.create = true;
-      policy = "upsert-only";
-      logLevel = "debug";
-      aws = {
-        region = project-config.aws.region;
+    docker = rec {
+      upload = inputs.docker.upload;
+      namespace = mkForce cluster-name;
+      tag = mkForce cfg.project.hash;
+      imageName = mkForce (name: "${namespace}");
+      imageTag = mkForce (name: "${name}-${tag}");
+    };
+
+    storage.backup.bucket = "${config.project.name}-${config.environment.type}-backup";
+
+    eks-cluster = {
+      enable = inputs.kubernetes.target == "eks";
+      configuration = 
+        let
+          terraform-output = 
+            builtins.fromJSON 
+              (builtins.readFile config.terraform.stateFiles.aws_cluster); # actually I can merge these state files
+        in
+        {
+          bastion = terraform-output.bastion;
+        };
+    };
+
+    storage.dataDirHostPath = "/var/lib/rook";
+    storage.backup.schedules = {
+      all-ns = {
+        schedule = "@every 1h";
+        template = {
+          ttl = "4h0m0s";
+        };
       };
-      domainFilters = [project-config.project.domain];
+    };
+
+    terraform = rec {
+      enable = true;
+
+      location = toString ../../terraform;
+
+      vars = rec {
+        region = config.aws.region;
+        project_name = config.project.name;
+        domain = (config.project.make-sub-domain "");
+        owner = config.project.author-email;
+        hash = config.project.hash;
+        env = config.environment.type;
+        cluster_name = config.kubernetes.cluster.name;
+        output_state_file = config.terraform.stateFiles;
+        project_prefix = "${project_name}-${env}-${region}";
+        root_folder = toString ../..;
+
+        backup_bucket = config.storage.backup.bucket;
+        worker_bucket   = "${config.aws.s3-buckets.worker-cache}";
+
+        # TODO bucket does not need to be prefixed - there will be folder inside
+        # no point to have tons of buckets
+        tf_state_bucket = "${project_prefix}-state";
+        tf_state_table  = tf_state_bucket;
+      };
+
+      backend-vars = {
+        bucket = vars.tf_state_bucket;
+        dynamodb_table = vars.tf_state_table;
+        region = vars.region;
+      };
     };
   };
-
-  kubernetes.helm.instances.kube2iam = {
-    namespace = "${eks-ns}";
-    chart = k8s-resources.kube2iam;
-    values = {
-      rbac.create = true;
-    };
-  };
-
-  # FIXME helm stable/k8s-spot-termination-handler
 }

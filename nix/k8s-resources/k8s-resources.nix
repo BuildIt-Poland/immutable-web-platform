@@ -24,7 +24,7 @@ rec {
     version = "0.8.1";
     src = pkgs.fetchurl {
       url = https://github.com/knative/serving/releases/download/v0.8.1/serving-beta-crds.yaml;
-      sha256="17gcn52nch295sxy0lf2qr1alprj3jvnhm45v3yipxqr3jbcsw3x";
+      sha256="1q9w4j81rmpgjyi1j0jniavw10f852pnvrzwvdia6a00rn568plx";
     };
   };
 

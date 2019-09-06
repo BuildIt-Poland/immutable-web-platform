@@ -14,7 +14,7 @@ let
   };
 in
 pkgs.dockerTools.buildImage ({
-  name = project-config.docker.namespace;
+  name = project-config.docker.imageName fn-config.label;
 
   fromImage = base;
   # maxLayers = 120;
@@ -34,4 +34,4 @@ pkgs.dockerTools.buildImage ({
       "${toString fn-config.port}/tcp" = {};
     };
   };
-} // {tag = "${fn-config.label}-${project-config.docker.tag}";})
+} // { tag = project-config.docker.imageTag fn-config.label; })

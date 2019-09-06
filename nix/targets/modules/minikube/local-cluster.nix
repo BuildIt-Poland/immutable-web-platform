@@ -1,4 +1,5 @@
 {config, pkgs, lib, inputs, ...}:
+with lib;
 let
   cfg = config;
 
@@ -9,13 +10,12 @@ let
           docker = desc.value;
         in
         ''
-          ${pkgs.log.info "Pushing docker image, for ${desc.name} to docker daemon: ${docker.name}:${docker.tag}"}
+          ${log.info "Pushing docker image, for ${desc.name} to docker daemon: ${docker.name}:${docker.tag}"}
           ${pkgs.docker}/bin/docker load -i ${docker.image}
         '');
     in
       pkgs.writeScriptBin "push-docker-images-to-docker-deamon" images;
 in
-with lib;
 rec {
   imports = [
     ./docker.nix

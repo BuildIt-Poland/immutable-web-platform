@@ -17,11 +17,6 @@ in
       type = enum ["local-shell" "ci-shell"];
     };
 
-    # FIXME remove this
-    isLocal = mkOption {
-      default = true;
-    };
-
     vars = mkOption {
       default = {};
     };
@@ -91,8 +86,6 @@ in
 
   config = mkMerge [
     ({
-      environment.isLocal = config.environment.runtime == "local-shell";
-
       packages = 
         let
           get-help = pkgs.writeScriptBin "get-help" ''

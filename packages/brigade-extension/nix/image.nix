@@ -15,7 +15,7 @@ let
 in
 # INFO: this image is required to embed custom scripts
 pkgs.dockerTools.buildImage ({
-  name = project-config.docker.namespace ;
+  name = project-config.docker.imageName "brigade-worker";
 
   fromImage = base-docker;
 
@@ -33,4 +33,4 @@ pkgs.dockerTools.buildImage ({
   };
 
   contents = [];
-} // { tag = "brigade-worker-${project-config.docker.tag}"; })
+} // { tag = project-config.docker.imageTag "brigade-worker"; })

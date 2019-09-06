@@ -5,17 +5,6 @@ let
   priority = resources.priority;
 
   functions = (import ./modules/functions.nix { inherit pkgs; });
-
-  platform-specific = builtins.getAttr config.kubernetes.target {
-    eks = {
-      "${priority.high "eks"}" = [ ./modules/eks ];
-    };
-    minikube = {
-      "${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
-    };
-    gcp = {};
-    aks = {};
-  };
 in
 {
   imports = with integration-modules.modules; [
@@ -31,6 +20,6 @@ in
         "${priority.low  "gitops"}"      = [ argocd ];
         "${priority.low  "ci"}"          = [ brigade ];
         "${priority.skip "secrets"}"     = [ secrets ];
-      } // functions // platform-specific;
+      } // functions;
   };
 }

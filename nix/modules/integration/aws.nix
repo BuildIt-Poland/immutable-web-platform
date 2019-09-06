@@ -39,7 +39,6 @@ rec {
 
     profile = mkOption {
       default = "default";
-      type = types.string;
     };
 
     account = mkOption {
@@ -56,11 +55,10 @@ rec {
 
     region = mkOption {
       default = "";
-      type = types.string;
     };
   };
 
-  config = mkIf (cfg.aws.enabled && cfg.environment.isLocal) (mkMerge [
+  config = mkIf cfg.aws.enabled (mkMerge [
     ({
       checks = ["Enabling AWS config module"];
 

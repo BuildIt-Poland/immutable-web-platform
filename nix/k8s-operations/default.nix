@@ -34,7 +34,6 @@ let
   };
 
   helpers = callPackage ./helpers.nix {};
-  local = callPackage ./local.nix { inherit helpers; };
 
   should-skip-resource = ok: fail: {name, value}@arg: 
     let
@@ -46,7 +45,6 @@ let
 in
 with helpers;
 rec {
-  inherit local;
   inherit helpers;
 
   save-resources = 
