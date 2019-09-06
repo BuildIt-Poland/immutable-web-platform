@@ -18,6 +18,7 @@ with lib;
     ({
       docker = rec {
         namespace = "${config.project.name}";
+        registry = mkForce "";
         imageName = mkForce (name: "${config.environment.type}.${config.project.domain}/${name}");
         imageTag = mkForce (name: "${config.docker.tag}");
       };

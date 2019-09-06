@@ -48,8 +48,8 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: docker.io/gatehub/local/express-app:dev-build
-          imagePullPolicy: IfNotPresent
+          image: dev.local/express-app:dev-build
+          imagePullPolicy: Never
           livenessProbe:
             httpGet:
               path: /healthz
