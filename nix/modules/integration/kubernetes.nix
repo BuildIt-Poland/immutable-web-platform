@@ -45,10 +45,6 @@ rec {
       default = true;
     };
 
-    tools.enabled = mkOption {
-      default = true;
-    };
-
     resources = {
       apply = mkOption {
         default = true;

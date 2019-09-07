@@ -67,7 +67,7 @@ rec {
               mkdir -p $location
 
               ${log.info "Saving crd for ${name}, to: $location/$file"}
-              cat ${desc.value} | ${drop-hash} > $location/$file
+              cat ${desc.value} | ${drop-hash}  > $location/$file
             '';
 
       crds = crds-command (save-any-resource "crd");

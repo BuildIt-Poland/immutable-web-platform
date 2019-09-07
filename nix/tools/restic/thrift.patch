@@ -1,0 +1,25 @@
+diff --git a/go.mod b/go.mod
+index c11bd85f..672effd9 100644
+--- a/go.mod
++++ b/go.mod
+@@ -48,3 +48,5 @@ require (
+ 	gopkg.in/ini.v1 v1.41.0 // indirect
+ 	gopkg.in/tomb.v2 v2.0.0-20161208151619-d5d1b5820637
+ )
++
++replace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999
+diff --git a/go.sum b/go.sum
+index 4288c64b..98a02e28 100644
+--- a/go.sum
++++ b/go.sum
+@@ -11,8 +11,8 @@ dmitri.shuralyov.com/app/changes v0.0.0-20180602232624-0a106ad413e3/go.mod h1:Yl
+ dmitri.shuralyov.com/html/belt v0.0.0-20180602232347-f7d459c86be0/go.mod h1:JLBrvjyP0v+ecvNYvCpyZgu5/xkfAUhi6wJj28eUfSU=
+ dmitri.shuralyov.com/service/change v0.0.0-20181023043359-a85b471d5412/go.mod h1:a1inKt/atXimZ4Mv927x+r7UpyzRUf4emIoiiSC2TN4=
+ dmitri.shuralyov.com/state v0.0.0-20180228185332-28bcc343414c/go.mod h1:0PRwlb0D6DFvNNtx+9ybjezNCa8XF0xaYcETyp6rHWU=
+-git.apache.org/thrift.git v0.0.0-20180902110319-2566ecd5d999/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
+-git.apache.org/thrift.git v0.0.0-20181218151757-9b75e4fe745a/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
++github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
++github.com/apache/thrift v0.0.0-20181218151757-9b75e4fe745a/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
+ github.com/Azure/azure-sdk-for-go v26.4.0+incompatible h1:ISw3xYFYPGBmcwP7CQjzQDoYhkywcIVfYzo4CHgQzOw=
+ github.com/Azure/azure-sdk-for-go v26.4.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
+ github.com/Azure/go-autorest v11.4.0+incompatible h1:z3Yr6KYqs0nhSNwqGXEBpWK977hxVqsLv2n9PVYcixY=
