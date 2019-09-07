@@ -1,0 +1,27 @@
+diff --git a/go.mod b/go.mod
+index a0251f0..ed9c385 100644
+--- a/go.mod
++++ b/go.mod
+@@ -23,6 +23,7 @@ replace (
+ 	k8s.io/legacy-cloud-providers => k8s.io/legacy-cloud-providers v0.0.0-20190620090156-2138f2c9de18
+ 	k8s.io/metrics => k8s.io/metrics v0.0.0-20190620085625-3b22d835f165
+ 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.0.0-20190620085408-1aef9010884e
++  git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999
+ )
+ 
+ require (
+diff --git a/go.sum b/go.sum
+index d8a6758..cadb0b5 100644
+--- a/go.sum
++++ b/go.sum
+@@ -3,8 +3,8 @@ cloud.google.com/go v0.34.0 h1:eOI3/cP2VTU6uZLDYAoic+eyzzB9YyGmJ7eIjl8rOPg=
+ cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+ contrib.go.opencensus.io/exporter/ocagent v0.4.3 h1:QjNm697iO7CZ09IxxSiCUzOhALENIsLsixdPwjV1yGs=
+ contrib.go.opencensus.io/exporter/ocagent v0.4.3/go.mod h1:YuG83h+XWwqWjvCqn7vK4KSyLKhThY3+gNGQ37iS2V0=
+-git.apache.org/thrift.git v0.0.0-20180902110319-2566ecd5d999/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
+-git.apache.org/thrift.git v0.0.0-20181218151757-9b75e4fe745a/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
++github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
++github.com/apache/thrift v0.0.0-20181218151757-9b75e4fe745a/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
+ github.com/Azure/go-autorest v11.1.2+incompatible/go.mod h1:r+4oMnoxhatjLLJ6zxSWATqVooLgysK6ZNox3g/xq24=
+ github.com/Azure/go-autorest v11.5.0+incompatible h1:zp9GQJhEX+EBqEYC2MEGQ+gjKFEPRAWtfwcmstS2hGk=
+ github.com/Azure/go-autorest v11.5.0+incompatible/go.mod h1:r+4oMnoxhatjLLJ6zxSWATqVooLgysK6ZNox3g/xq24=

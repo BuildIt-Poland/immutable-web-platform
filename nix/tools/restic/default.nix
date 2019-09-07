@@ -2,17 +2,22 @@
 
 buildGoModule rec {
   name = "restic-${version}";
-  version = "0.9.4";
+  version = "0.9.5";
 
   src = fetchFromGitHub {
     owner = "restic";
     repo = "restic";
     rev = "v${version}";
-    sha256 = "15lx01w46bwn3hjwpmm8xy71m7ml9wdwddbbfvmk5in61gv1acr5";
+    sha256 = "1bhn3xwlycpnjg2qbqblwxn3apj43lr5cakgkmrblk13yfwfv5xv";
   };
 
+  subPackages = ["cmd/restic"];
   goPackagePath = "github.com/restic/restic";
-  modSha256 = "0sgdvvl2cc1wbw30b4i4xhh8h7pa2br85lcx381hm75fg2m7lxim";
+  modSha256 = "1xgzvh8dvjpmqxjk61bl29rqldy0q5ggxg2jgy2k8wglrd0qmfmj";
+
+  patches = [
+    ./thrift.patch 
+  ];
 
   meta = with lib; {
     description = "Restic is a backup program that is fast, efficient and secure. It supports the three major operating systems (Linux, macOS, Windows) and a few smaller ones (FreeBSD, OpenBSD).";

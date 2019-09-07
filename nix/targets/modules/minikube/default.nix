@@ -23,6 +23,10 @@ with lib;
         imageTag = mkForce (name: "${config.docker.tag}");
       };
 
+      packages = with pkgs; [
+        minikube
+      ];
+
       project = rec {
         domain = mkForce "local";
       };
@@ -62,21 +66,6 @@ with lib;
             source setup-env-vars
           '';
         }
-      ];
-    })
-
-    (mkIf config.kubernetes.tools.enabled {
-      packages = with pkgs; [
-        kube-prompt
-        kubernetes-helm
-        hey
-        istioctl
-        minikube
-        knative
-        krew
-        dig
-        kail
-        kubectx
       ];
     })
 

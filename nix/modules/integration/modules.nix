@@ -2,6 +2,7 @@
   base = ./base.nix;
   project-configuration = ./project-configuration.nix;
   kubernetes = ./kubernetes.nix;
+  kubernetes-tools = ./kubernetes-tools.nix;
   docker = ./docker.nix;
   aws = ./aws.nix;
   brigade = ./brigade.nix;

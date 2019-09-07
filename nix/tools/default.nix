@@ -31,8 +31,11 @@ rec {
 
   # gitops
   argocd = super.callPackage ./argocd {};
+
+  popeye = super.callPackage ./popeye {};
   krew = super.callPackage ./kubectl-plugins/krew.nix {};
   dig = super.callPackage ./kubectl-plugins/dig.nix {};
+  debug = super.callPackage ./kubectl-plugins/debug.nix {};
 
   yarn2nix = super.callPackage sources.yarn2nix {};
 

@@ -9,6 +9,7 @@ in
     project-configuration
     kubernetes
     kubernetes-resources
+    kubernetes-tools
     bitbucket-k8s-repo
     docker
     storage
