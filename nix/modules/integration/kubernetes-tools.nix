@@ -10,7 +10,7 @@ let
 
     for (( idx=0; idx<length; idx++ ))
     do
-      cat $resource | yq '.items['"$idx"']' | conftest test -
+      cat $resource | yq '.items['"$idx"']' | ${pkgs.conftest}/bin/conftest -o tap test -
     done
   '';
 in
