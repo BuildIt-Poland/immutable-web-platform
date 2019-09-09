@@ -13,5 +13,6 @@
   bitbucket-k8s-repo = ./bitbucket-k8s-repo.nix;
   storage = ./storage.nix;
   skaffold = ./skaffold.nix;
+  shell-tools = ./shell-tools.nix;
   service-mesh = ./service-mesh.nix;
 }
