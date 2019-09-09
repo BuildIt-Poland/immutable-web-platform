@@ -99,6 +99,7 @@ in
 
     kubernetes = {
       target = inputs.kubernetes.target;
+      tools.enable = inputs.kubernetes.tools;
 
       namespace = {
         functions = "functions";
