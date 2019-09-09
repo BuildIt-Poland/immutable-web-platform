@@ -1,0 +1,24 @@
+diff --git a/go.mod b/go.mod
+index bb769e8..af768e9 100644
+--- a/go.mod
++++ b/go.mod
+@@ -84,3 +84,5 @@ require (
+ 	k8s.io/utils v0.0.0-20181115163542-0d26856f57b3
+ 	sigs.k8s.io/yaml v1.1.0
+ )
++
++replace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999
+\ No newline at end of file
+diff --git a/go.sum b/go.sum
+index 9a6d6cc..2991ba5 100644
+--- a/go.sum
++++ b/go.sum
+@@ -3,7 +3,7 @@ cloud.google.com/go v0.34.0 h1:eOI3/cP2VTU6uZLDYAoic+eyzzB9YyGmJ7eIjl8rOPg=
+ cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+ contrib.go.opencensus.io/exporter/ocagent v0.2.0 h1:Q/jXnVbliDYozuWJni9452xsSUuo+y8yrioxRgofBhE=
+ contrib.go.opencensus.io/exporter/ocagent v0.2.0/go.mod h1:0fnkYHF+ORKj7HWzOExKkUHeFX79gXSKUQbpnAM+wzo=
+-git.apache.org/thrift.git v0.0.0-20180902110319-2566ecd5d999/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
++github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
+ github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 h1:w+iIsaOQNcT7OZ575w+acHgRric5iCyQh+xv+KJ4HB8=
+ github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78/go.mod h1:LmzpDX56iTiv29bbRTIsUNlaFfuhWRQBWjQdVyAevI8=
+ github.com/Azure/go-autorest v11.2.8+incompatible h1:Q2feRPMlcfVcqz3pF87PJzkm5lZrL+x6BDtzhODzNJM=

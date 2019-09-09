@@ -1,5 +1,5 @@
-### Testing worker shell
-* just run `nix-shell` all what is available in normal shell here would be available as well
+### Testing worker shell localy
+* just run `nix-shell --arg local true` all what is available in normal shell here would be available as well
 
 ### Running pipeline
 * `brig run -f pipeline/infrastructure.js  $BRIGADE_PROJECT`

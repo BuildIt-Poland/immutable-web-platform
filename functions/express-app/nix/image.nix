@@ -1,21 +1,28 @@
-{ linux-pkgs, env-config, callPackage }:
+{ linux-pkgs, project-config, callPackage }:
 let
   pkgs = linux-pkgs;
   express-app = callPackage ./package.nix {
     inherit pkgs;
    };
   fn-config = callPackage ./config.nix {};
-
-  # as we are pusing to kind local cluster we don't want to create new image each time
-  # TODO take from env-config -> and use other tag than latest to avoid imagePullPolicy to Always
+  base = pkgs.dockerTools.pullImage {
+    imageName = "mhart/alpine-node";
+    sha256 = "00nvrgp7s3c17ywhsanra1w3lrms0r8bfbd5zyg2jkq96bmbpiyf";
+    imageDigest = "sha256:66ef5938c6a8a8793741ac7049395ea52c25ee825f49baabf7e347d9b9b97abe";
+    os = "linux";
+    arch = "amd64";
+  };
 in
-pkgs.dockerTools.buildLayeredImage ({
-  name = fn-config.docker-label;
+pkgs.dockerTools.buildImage ({
+  name = project-config.docker.imageName fn-config.label;
+
+  fromImage = base;
+  # maxLayers = 120;
 
   contents = [ 
-    pkgs.nodejs-slim-11_x
-    pkgs.bash
-    pkgs.coreutils
+    # pkgs.coreutils
+    # pkgs.bash
+    # pkgs.nodejs-slim-11_x
     express-app # application
   ];
 
@@ -27,4 +34,4 @@ pkgs.dockerTools.buildLayeredImage ({
       "${toString fn-config.port}/tcp" = {};
     };
   };
-} // env-config.docker.tag)
+} // { tag = project-config.docker.imageTag fn-config.label; })

@@ -1,0 +1,20 @@
+apiVersion: skaffold/v1beta13
+kind: Config
+build:
+  local:
+    push: false
+  tagPolicy:
+    sha256: {}
+  artifacts:
+    - image: dev.local/express-app
+      custom:
+        # script is located in /nix/k8s-local.nix
+        buildCommand: skaffold-build
+        dependencies:
+          paths:
+            - /src
+            - /nix
+deploy:
+  kubectl:
+    manifests:
+      - ./result/k8s-*

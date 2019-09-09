@@ -10,3 +10,14 @@
 
 * if your cluster is dying it seems that you have not sufficient resources for docker
 > solution: https://bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative/issues/1/required-docker-resources-for-local
+
+* Error getting host status: state: docker-machine-driver-hyperkit needs to run with elevated permissions. > solution: Please run the following command, then try again: sudo chown root:wheel /nix/store/3l4b2dqvdrlbikmdd7xiawmbrwiqgz3j-minikube-1.0.1-bin/bin/docker-machine-driver-hyperkit && sudo chmod u+s /nix/store/3l4b2dqvdrlbikmdd7xiawmbrwiqgz3j-minikube-1.0.1-bin/bin/docker-machine-driver-hyperkit
+
+* building with kaniko and nix on mac os require adding /nix to shared path in docker
+
+* brigade.js got stuck and getting pending status when `kubectl get pv -A`
+> minikube addons enable storage-provisioner -p $PROJECT_NAME
+
+* aws skewed response -> https://github.com/orbs-network/orbs-network-go/issues/1072
+
+* when terraform cannot delete subnets and ig - clean ELB first - don't know yet how to remove them automatically since they are requested from kubernetes context

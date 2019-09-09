@@ -1,4 +1,5 @@
 node_modules
+*/node_modules/*
 result*
 .helm
 dist
@@ -8,8 +9,16 @@ yarn-error.*
 *.nixops-shm
 *.nixops-wal
 cdk.out/*
+resources/brigade-aws-secret.yaml
 .temp
 temp.*
-resources/*.yaml
 temp/
 /.gtm/
+cdk.out
+functions/express-app/k8s-resource.yaml
+*.generated.tf.json
+*.generated.*
+.terraform
+.kube/*
+**/.kube
+*vars.json
