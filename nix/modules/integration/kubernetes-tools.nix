@@ -70,12 +70,9 @@ with lib;
 
       (mkIf cfg.kubernetes.validation.enable {
         packages = with pkgs; [
-          kubeval
           conftest
           validate
         ];
-
-        shellHook = '''';
       })
   ]);
 }
