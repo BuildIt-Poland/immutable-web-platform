@@ -1,11 +1,12 @@
-{env-config}: 
+{project-config, lib}: 
 rec {
   port = 8080;
   label = "express-app";
-  docker-label = "${env-config.docker.namespace}/${label}";
+
+  domain = project-config.project.make-sub-domain label;
 
   cpu = 
-    if env-config.is-dev 
+    if project-config.kubernetes.target == "minikube"
       then "100m" 
       else "1000m";
 

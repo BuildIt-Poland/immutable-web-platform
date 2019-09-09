@@ -55,3 +55,25 @@ required changes to kind:
 # preload is not necessary!!!
 # crictl pull dev.local/dev/express-app:dev-build
 ```
+droping kind to use minikube as is more mature and better for local development.
+
+### kvm
+* kvm is necessary to run nixos tests - there is no chance to run it on aws (except i3.metal) or locally on mac
+* packet.net integration to run kvm https://github.com/input-output-hk/nixops/commit/786258da019577b20f76fc3b1d261488e13882ee
+
+### ecr
+* https://stackoverflow.com/questions/36702439/kubernetes-authentication-issues-pulling-ecr-images
+* https://github.com/knative/serving/pull/4084 ...
+
+### unable to delete brigade pvc 
+* https://stackoverflow.com/questions/51358856/kubernetes-cant-delete-persistentvolumeclaim-pvc
+
+### NLB and route53
+* if there is nlb balancer, this is, service is annotate as `nlb` then route53 seems that is not able to add dns entries
+
+### Let's encrypt and limits
+> If you’ve hit a rate limit, we don’t have a way to temporarily reset it. You’ll need to wait until the rate limit expires after a week. 
+solution: https://letsencrypt.org/docs/staging-environment/
+
+### Issues with DNS on mac
+* `sudo killall -HUP mDNSResponder; sleep 2;` - if host cannot be resolved 

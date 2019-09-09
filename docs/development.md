@@ -2,7 +2,7 @@
 ### Running clean cluster
 * `nix-shell --arg uploadDockerImages true --arg fresh true --arg updateResources true`
 
-> These ... below are already integrated with nix-shell! in case of local environment cluster is provisioned automatically, you can rerun using `push-docker-images-to-local-cluster`
+> These ... below are already integrated with nix-shell! in case of local environment cluster is provisioned automatically, you can rerun using `push-docker-images-to-docker-deamon`
 
 ### Setup brigade
 * generate `ssh-key` only for your `bitbucket` hook. named your key as `bitbucket-webook` and place in `~/.ssh/` folder - (no worries, it can be changed in `nix/default.nix`)

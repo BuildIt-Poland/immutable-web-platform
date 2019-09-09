@@ -11,29 +11,34 @@ provide full testing ability of infrastructure as well as on application level f
 * [gitops](https://www.weave.works/blog/gitops-operations-by-pull-request)
 * [argo cd](https://argoproj.github.io/argo-cd/)
 * `nix` - [ecosystem](https://www.youtube.com/watch?v=YbUPdv03ciI), [features overview](https://www.youtube.com/watch?v=D5Gq2wkRXpU), [kubernetes](https://www.youtube.com/watch?v=XgZWbrBLP4I)
+* [nix - sales pitch](https://gist.github.com/joepie91/9fdaf8244b0a83afcce204e6da127c7d)
 
 ### What is super hot!
-* `helm charts` without `helm` and `tiller`
-* scale to `0` with `knative & istio`, scale based on concurrency level or resources level
+* development with [`skaffold`](https://github.com/GoogleContainerTools/skaffold)
+* gitops - infrastructure and applications described as generated from `nix` `yamls` and stored in `git`
+* full determinism of results
+* monitoring tools with predefined dashboards
+* scale pods to `0` with `knative & istio`, scale based on concurrency level or resources level
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
+* building docker without daemon with `nix`
+* distributed storage with [`rook-ceph`](https://rook.io/) and `backups` with `restic` and `velero`
+
+### ... and more
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
 * `nix` in charge of building and pushing docker images to `docker repository`
 * full composability of components and configs
-* full determinism of results
 * all parts of project are sharable - `nix` is everywhere, in `local` env, `ci worker` or at `system` level - all scripts and libraries can be used in every context
 * incremental builds! - if there were no change, artifact, docker or any other thing won't be builded
+* `helm charts` without `helm` and `tiller`
 * diverged targeted builds - `darwin` and `linux` in the same time within nested closures - required for local docker provisioning
 * distributed build cache and sharing intermediate states between builds - remote stores to speed up provisioning and `ci` results - work in progress
 * `nixops` is provisioning `ec2` or `virtualbox` instances based upon `declarative` nix file
 * custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docs](/packages/remote-state/README.md))
-* gitops - infrastructure and applications described as generated from `nix` `yamls` and stored in `git`
-* monitoring tools with predefined dashboards
-* local docker registry - can be used in `s3` or any other storage
+* terraform provisioning of infra and deployment of nixos configurations with 4 simple steps
+* follows and assumes https://12factor.net/
 
-### Running locally
-* download [`nixpkgs`](https://nixos.org/nix/download.html)
-* clone this repo
-* run `./run-shell-with-worker.sh`
+### How to start
+Start from [start guide first.](/docs/start.md)
 
 ### How to connect the dots
 * interactive [mode](https://miro.com/app/board/o9J_kxbrjxg=/)
@@ -59,13 +64,13 @@ provide full testing ability of infrastructure as well as on application level f
 * [`nix & kubernetes`](https://rzetterberg.github.io/kubernetes-nixos.html)
 
 ### Docs
+* [Stack - `tools` and such](/docs/stack.md)
 * [How gitops work](/docs/gitops.md)
 * [How brigade work](/docs/brigade.md)
 * [How cache is handled](/docs/cache.md)
 * [How to debug](/docs/debugging.md)
 * [How to setup local development](/docs/development.md)
 * [What kind of errors you can expect](/docs/errors.md)
-* [What I have learnt down the road](/docs/lessons-learnt.md)
 * [How secrets are handled](/docs/secrets.md)
 * [What is the technology stack](/docs/stack.md)
 * [Some tips and tricks](/docs/tips-and-tricks.md)
@@ -75,25 +80,12 @@ provide full testing ability of infrastructure as well as on application level f
 * [Some good reads](/docs/reads.md)
 * [`nix-darwin` and `remote-builders`](/docs/linux-darwin-builds.md)
 * [Build `go` package](/docs/building-go-packages.md)
-
-### How to start
-
-#### You need to install these
-* get [`docker`](https://www.docker.com/products/docker-desktop) - for [`kind`](https://kind.sigs.k8s.io/)
-* get [`nix`](https://nixos.org/nix/download.html) - creating isolated local environment
-* run `nix-shell` - if you encounter any issues check [docs](/docs/)
+* [What I have learnt down the road](/docs/lessons-learnt.md)
 
 #### Monitoring
-* `grafana`
-![grafana](https://bitbucket.org/repo/6zKBnz9/images/1943034243-Screenshot%202019-06-19%20at%2013.45.21.png)
-
-* `weavescope`
-![weavescope](https://bitbucket.org/repo/6zKBnz9/images/3906895708-Screenshot%202019-06-19%20at%2013.45.55.png)
-
-* `zipkin`
-![zipkin](https://bitbucket.org/repo/6zKBnz9/images/573168924-Screenshot%202019-07-10%20at%2013.30.58.png)
-
+* [`grafana`](https://bitbucket.org/repo/6zKBnz9/images/1943034243-Screenshot%202019-06-19%20at%2013.45.21.png)
+* [weavescope](https://bitbucket.org/repo/6zKBnz9/images/3906895708-Screenshot%202019-06-19%20at%2013.45.55.png)
+* [zipkin](https://bitbucket.org/repo/6zKBnz9/images/573168924-Screenshot%202019-07-10%20at%2013.30.58.png)
 #### Gitops
 * [ifra repo](https://bitbucket.org/damian_baar/k8s-infra-descriptors/src/master/)
-* `argo cd`
-![gitops](https://bitbucket.org/repo/6zKBnz9/images/1558410695-Screenshot%202019-07-10%20at%2010.38.17.png)
+* [argo-cd](https://bitbucket.org/repo/6zKBnz9/images/1558410695-Screenshot%202019-07-10%20at%2010.38.17.png)

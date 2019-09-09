@@ -1,0 +1,699 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: ci
+    namespace: default
+- apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+      role: vacuum
+    name: brigade-brigade-vacuum
+    namespace: ci
+  spec:
+    failedJobsHistoryLimit: 10
+    jobTemplate:
+      spec:
+        template:
+          metadata:
+            labels:
+              app.kubernetes.io/name: brigade-brigade
+              role: vacuum
+          spec:
+            containers:
+            - env:
+              - name: BRIGADE_NAMESPACE
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.namespace
+              - name: VACUUM_AGE
+                value: 720h
+              - name: VACUUM_MAX_BUILDS
+                value: '-1'
+              - name: VACUUM_SKIP_RUNNING_BUILDS
+                value: 'false'
+              image: brigadecore/brigade-vacuum:v1.1.0
+              imagePullPolicy: IfNotPresent
+              name: brigade-vacuum
+            restartPolicy: OnFailure
+            serviceAccountName: brigade-vacuum
+    schedule: '@hourly'
+    successfulJobsHistoryLimit: 10
+- apiVersion: v1
+  data:
+    settings.js: 'var brigadeApiURL = ''//'' + location.host; ''http://brigade-brigade-api:7745'';
+
+      // End'
+  kind: ConfigMap
+  metadata:
+    labels:
+      chart: kashti-0.1.1
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: brigade
+    name: brigade-kashti-js
+    namespace: ci
+- apiVersion: v1
+  data:
+    default.conf: "server {\n    listen       80;\n    server_name  localhost;\n\n\
+      \    # Proxy to API server\n    location /v1/ {\n        proxy_pass http://brigade-brigade-api:7745/v1/;\n\
+      \    }\n\n    location / {\n        root   /usr/share/nginx/html;\n        index\
+      \  index.html index.htm;\n        try_files $uri $uri/ /index.html;\n    }\n\
+      \    \n    error_page   500 502 503 504  /50x.html;\n    location = /50x.html\
+      \ {\n        root   /usr/share/nginx/html;\n    }\n}"
+  kind: ConfigMap
+  metadata:
+    labels:
+      chart: kashti-0.1.1
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: brigade
+    name: brigade-kashti-nginx
+    namespace: ci
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
+      projectName: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
+    labels:
+      app: brigade
+      chart: brigade-project-1.0.0
+      component: project
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: embracing-nix-docker-k8s-helm-knative
+    name: brigade-94baa53dda4276e91cb84c8f38b5d98f55e623d800a055ebe8da29
+    namespace: ci
+  stringData:
+    allowHostMounts: 'false'
+    allowPrivilegedJobs: 'true'
+    cloneURL: git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
+    defaultScript: "const { events, Job, Group } = require(\"brigadier\")\nconst {\
+      \ NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand }\
+      \ = require('brigade-extension')\n\n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts\
+      \ <project_name> --ref <branch>\n\n//#Node-Selectors:  beta.kubernetes.io/os=linux\
+      \ \n// this.host.nodeSelector[\"kubernetes.io/lifecycle\"] = \"spot\"\n\n//\
+      \ https://github.com/brigadecore/brigade/pull/777 - I will hide these details\n\
+      const createJob = (name) => {\n  let t = new NixJob(name)\n    .withExtraParams({\n\
+      \      streamLogs: true,\n      privileged: true,\n      annotations: {\n  \
+      \      // FIXME kube2iam\n        // \"iam.amazonaws.com/allowed-roles\" = \"\
+      [\\\"${project-config.kubernetes.cluster.name}*\\\"]\";\n        // INFO as\
+      \ these are not running pods restic is not happy to do a backup\n        //\
+      \ \"backup.velero.io/backup-volumes\": `${project.name}-${name}`\n      },\n\
+      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n\n\
+      \  t = t.withTasks([\n    `cat ${t.cache.path}/test.file`,\n    `cat ${t.cache.path}/test2.file`,\n\
+      \    `echo \"storage\" > ${t.storage.path}/test.file`,\n    `echo \"cache 1\"\
+      \ > ${t.cache.path}/test.file`,\n    `echo \"cache 2\" > ${t.cache.path}/test2.file`,\n\
+      \    // `cat ${t.storage.path}/test.file`,\n    `cd /src`,\n    `./nix/run-tests.sh`\n\
+      \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
+      }\n\nconst handleRun = async (event, project) => {\n\n}\n\nevents.on(\"exec\"\
+      , async (event, project) => {\n  let test =\n    createJob(\"test\")\n     \
+      \ .withSecrets(project.secrets)\n      .withEnvVars({\n        BUILD_ID: event.buildID\
+      \ || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n      })\n\
+      \n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
+      \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
+      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  test2 = test2\n    .withTasks([\n\
+      \      `cat ${test2.storage.path}/test.file`,\n      // `cat ${test2.cache.path}/test.file`,\n\
+      \    ])\n  // i don't like it, not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
+      \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  // test.run()\n\
+      \  await test.run()\n  await test2.run()\n})\n\n// TODO\nevents.on(\"push\"\
+      , (event, project) => {\n  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\
+      \n  test.run()\n})\n"
+    genericGatewaySecret: mygenericsecret
+    initGitSubmodules: 'false'
+    kubernetes.allowSecretKeyRef: 'true'
+    kubernetes.buildStorageClass: build-storage
+    kubernetes.cacheStorageClass: cache-storage
+    repository: embracing-nix-docker-k8s-helm-knative
+    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
+      {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"ENC[AES256_GCM,data:txkyPuRcL3UGM6+DIciLkPbGoBY2N3GR/uVhCBcpF8V73jzd,iv:3/tYgu8EwMgJ/e8MJURDu1UL0IsCtC6tV7U6RUN2ovM=,tag:3Tcsdk6hTotIzCbn8D+njA==,type:str]\"\n\t},\n\t\"sops\":
+      {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:alias/future-is-comming-dev-buildit-consulting\",\n\t\t\t\t\"created_at\":
+      \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
+      \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
+      \"2019-08-28T14:38:33Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:BU9ybSTP8YQ6orvV5auJxeXGxQz61x00e/PEqDqr1hFlV9t85Ojl+gEpd17/PqM+fGF9uQJbWD+ZFp0irwePa76mDHtRfV5HiFUsB7zVmW5TwASsbKlRmt7GPll50s07FPhHF+wZyb/VFwZOCCEYZge9+63rjkhR3GasY2Qi16Q=,iv:GorWGFqSc/HvzmHpMvyL6lQpyJklSbqbD1bLMMjunH4=,tag:KhH25HN91nBoEZHzy3+4fw==,type:str]\",\n\t\t\"pgp\":
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"dev.local/remote-worker:dev-build"}'
+    sharedSecret: ''
+    vcsSidecar: brigadecore/git-sidecar:latest
+    worker.name: dev.local/brigade-worker
+    worker.pullPolicy: IfNotPresent
+    worker.registry: ''
+    worker.tag: dev-build
+    workerCommand: yarn build-start
+  type: brigade.sh/project
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+      role: api
+    name: brigade-brigade-api
+    namespace: ci
+  spec:
+    ports:
+    - name: brigade-api
+      port: 7745
+      protocol: TCP
+      targetPort: 7745
+    selector:
+      app.kubernetes.io/name: brigade-brigade-api
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: kashti
+      chart: kashti-0.1.1
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: brigade
+    name: brigade-kashti
+    namespace: ci
+  spec:
+    ports:
+    - name: kashti
+      port: 80
+      protocol: TCP
+      targetPort: 80
+    selector:
+      app: kashti
+      release: brigade
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      chart: brigade-bitbucket-gateway-0.13.0
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: extension
+      role: gateway
+      type: bitbucket
+    name: extension-brigade-bitbucket-gateway
+    namespace: ci
+  spec:
+    ports:
+    - name: service
+      port: 7748
+      protocol: TCP
+      targetPort: 7748
+    selector:
+      app: extension-brigade-bitbucket-gateway
+      role: gateway
+      type: bitbucket
+    type: NodePort
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-api
+    namespace: ci
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-ctrl
+    namespace: ci
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-vacuum
+    namespace: ci
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-worker
+    namespace: ci
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app: extension-brigade-bitbucket-gateway
+      chart: brigade-bitbucket-gateway-0.13.0
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: extension
+    name: extension-brigade-bitbucket-gateway
+    namespace: ci
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade-api
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+      role: api
+    name: brigade-brigade-api
+    namespace: ci
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: brigade-brigade-api
+          app.kubernetes.io/name: brigade-brigade-api
+          role: api
+      spec:
+        containers:
+        - env:
+          - name: BRIGADE_API_PORT
+            value: '7745'
+          - name: BRIGADE_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          image: brigadecore/brigade-api:v1.1.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 7745
+          name: brigade
+          ports:
+          - containerPort: 7745
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 7745
+        serviceAccountName: brigade-brigade-api
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade-ctrl
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+      role: controller
+    name: brigade-brigade-ctrl
+    namespace: ci
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: brigade-brigade-ctrl
+          app.kubernetes.io/name: brigade-brigade-ctrl
+          role: controller
+      spec:
+        containers:
+        - command:
+          - /usr/bin/brigade-controller
+          env:
+          - name: BRIGADE_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: BRIGADE_WORKER_IMAGE
+            value: brigadecore/brigade-worker:v1.1.0
+          - name: BRIGADE_WORKER_PULL_POLICY
+            value: IfNotPresent
+          - name: BRIGADE_WORKER_SERVICE_ACCOUNT
+            value: brigade-worker
+          image: brigadecore/brigade-controller:v1.1.0
+          imagePullPolicy: IfNotPresent
+          name: brigade
+        serviceAccountName: brigade-brigade-ctrl
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: kashti
+      chart: kashti-0.1.1
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: brigade
+    name: brigade-kashti
+    namespace: ci
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        annotations:
+          checksum/config-js: 9cde6c482cde51f90bedd39f3e0ff4c2b2efb8bb4b9371d40d524d43e9177c75
+          checksum/config-nginx: bbee88e5bed89e1b1e9a49db9acae7fe7feeeb4dfe59b9690bd7e54287dcd6b9
+        labels:
+          app: kashti
+          release: brigade
+      spec:
+        containers:
+        - image: brigadecore/kashti:latest
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          name: kashti
+          ports:
+          - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          resources: {}
+          volumeMounts:
+          - mountPath: /etc/nginx/conf.d
+            name: config-nginx
+          - mountPath: /usr/share/nginx/html/assets/js/settings
+            name: config-js
+        volumes:
+        - configMap:
+            name: brigade-kashti-js
+          name: config-js
+        - configMap:
+            name: brigade-kashti-nginx
+          name: config-nginx
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: extension-brigade-bitbucket-gateway
+      chart: brigade-bitbucket-gateway-0.13.0
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: extension
+      role: gateway
+      type: bitbucket
+    name: extension-brigade-bitbucket-gateway
+    namespace: ci
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: extension-brigade-bitbucket-gateway
+          role: gateway
+          type: bitbucket
+      spec:
+        containers:
+        - env:
+          - name: BRIGADE_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: BRIGADE_bitbucket_GATEWAY_PORT
+            value: '7748'
+          image: lukepatrick/brigade-bitbucket-gateway:v0.13.0
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            tcpSocket:
+              port: 7748
+          name: brigade-bitbucket-gateway
+          ports:
+          - containerPort: 7748
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            tcpSocket:
+              port: 7748
+        serviceAccountName: extension-brigade-bitbucket-gateway
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-api
+    namespace: ci
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - secrets
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-ctrl
+    namespace: ci
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - secrets
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-vacuum
+    namespace: ci
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - secrets
+    - persistentvolumeclaims
+    verbs:
+    - get
+    - list
+    - watch
+    - delete
+  - apiGroups:
+    - ''
+    resources:
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-wrk
+    namespace: ci
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - secrets
+    - persistentvolumeclaims
+    - configmaps
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - ''
+    resources:
+    - pods/log
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: Role
+  metadata:
+    labels:
+      app: extension-brigade-bitbucket-gateway
+      chart: brigade-bitbucket-gateway-0.13.0
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: extension
+    name: extension-brigade-bitbucket-gateway
+    namespace: ci
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    verbs:
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-api
+    namespace: ci
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: brigade-brigade-api
+  subjects:
+  - kind: ServiceAccount
+    name: brigade-brigade-api
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-ctrl
+    namespace: ci
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: brigade-brigade-ctrl
+  subjects:
+  - kind: ServiceAccount
+    name: brigade-brigade-ctrl
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-vacuum
+    namespace: ci
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: brigade-brigade-vacuum
+  subjects:
+  - kind: ServiceAccount
+    name: brigade-vacuum
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app.kubernetes.io/instance: brigade
+      app.kubernetes.io/managed-by: Tiller
+      app.kubernetes.io/name: brigade-brigade
+      helm.sh/chart: brigade-1.1.0
+      kubenix/project-name: kubenix
+    name: brigade-brigade-wrk
+    namespace: ci
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: brigade-brigade-wrk
+  subjects:
+  - kind: ServiceAccount
+    name: brigade-worker
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: RoleBinding
+  metadata:
+    labels:
+      app: extension-brigade-bitbucket-gateway
+      chart: brigade-bitbucket-gateway-0.13.0
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: extension
+    name: extension-brigade-bitbucket-gateway
+    namespace: ci
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: extension-brigade-bitbucket-gateway
+  subjects:
+  - kind: ServiceAccount
+    name: extension-brigade-bitbucket-gateway
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: brigade-admin-privileges
+    namespace: default
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+  - kind: ServiceAccount
+    name: brigade-worker
+    namespace: ci
+kind: List
+labels:

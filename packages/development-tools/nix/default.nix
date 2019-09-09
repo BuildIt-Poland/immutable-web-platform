@@ -1,7 +1,7 @@
-{ pkgs, env-config }:
+{ pkgs, gitignore }:
 pkgs.yarn2nix.mkYarnPackage {
   name = "development-tools";
-  src = env-config.gitignore ./..;
+  src = gitignore ./..;
   packageJson = ../package.json;
   publishBinsFor = ["localtunnel"];
   yarnLock = ../yarn.lock;

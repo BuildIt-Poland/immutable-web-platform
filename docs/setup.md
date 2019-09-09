@@ -1,5 +1,7 @@
 ### TODO!!!
 
+* run `apply-aws-credentails-secret`
+
 ### bitbucket
 - create access key - ssh
 - create app password (check if app can be used istead of access key by brigade)
