@@ -11,6 +11,7 @@ in
     kubernetes-resources
     kubernetes-tools
     bitbucket-k8s-repo
+    shell-tools
     docker
     storage
     brigade
