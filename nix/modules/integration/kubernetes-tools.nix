@@ -72,6 +72,7 @@ with lib;
         packages = with pkgs; [
           conftest
           validate
+          opa
         ];
       })
   ]);

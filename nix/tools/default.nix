@@ -33,6 +33,7 @@ rec {
   argocd = super.callPackage ./argocd {};
 
   conftest = super.callPackage ./conftest {};
+  opa = super.callPackage ./opa {};
   popeye = super.callPackage ./popeye {};
   krew = super.callPackage ./kubectl-plugins/krew.nix {};
   dig = super.callPackage ./kubectl-plugins/dig.nix {};
