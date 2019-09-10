@@ -1,15 +1,15 @@
 {
     "nixpkgs": {
         "homepage": "https://github.com/NixOS/nixpkgs",
-        "url": "https://github.com/NixOS/nixpkgs-channels/archive/7d5375ebf4cd417465327d7ab453687fd19663c9.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs-channels/archive/e19054ab3cd5b7cc9a01d0efc71c8fe310541065.tar.gz",
         "owner": "NixOS",
         "branch": "nixos-unstable",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "nixpkgs-channels",
         "type": "tarball",
-        "sha256": "18myjqws6mm4xsx4nx348yix793wyk76dyklls6dgyp9rg0gfcma",
+        "sha256": "0b92yhkj3pq58svyrx7jp0njhaykwr29079izqn6qs638v8zvhl2",
         "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
-        "rev": "7d5375ebf4cd417465327d7ab453687fd19663c9"
+        "rev": "e19054ab3cd5b7cc9a01d0efc71c8fe310541065"
     },
     "kubenix": {
         "url": "https://github.com/damianbaar/kubenix/archive/365cae024cd7b6e8050dfc238a3da9f1a4b14964.tar.gz",
@@ -35,26 +35,26 @@
         "rev": "284924c223faa554131a8d1ace99fe6d5ccfeebb"
     },
     "yarn2nix": {
-        "url": "https://github.com/moretea/yarn2nix/archive/3f2dbb08724bf8841609f932bfe1d61a78277232.tar.gz",
+        "url": "https://github.com/moretea/yarn2nix/archive/7effadded30d611a460e212cb73614506ef61c52.tar.gz",
         "owner": "moretea",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "yarn2nix",
         "type": "tarball",
-        "sha256": "142av7dwviapsnahgj8r6779gs2zr17achzhr8b97s0hsl08dcl2",
+        "sha256": "0r4ww3mjx3n7bn2v1iav33liyphyr2x005ak6644qs15bp4bn3cr",
         "description": "Generate nix expressions from a yarn.lock file",
-        "rev": "3f2dbb08724bf8841609f932bfe1d61a78277232"
+        "rev": "7effadded30d611a460e212cb73614506ef61c52"
     },
     "niv": {
         "homepage": "https://github.com/nmattia/niv",
-        "url": "https://github.com/nmattia/niv/archive/213315b65807ceae979da902875efaad1c53dc1d.tar.gz",
+        "url": "https://github.com/nmattia/niv/archive/5e9671a9a87c240b1c6ce981d04ad23ba4291451.tar.gz",
         "owner": "nmattia",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "niv",
         "type": "tarball",
-        "sha256": "1cczwqnmfs17i00gn8s9l7sf2s3h498gzlv7wrkdin4v31lydv08",
+        "sha256": "08j7msxkv452pyxnh0sgn6h9930i5mk9mszba49bj5401gzmfb8a",
         "description": "Easy dependency management for Nix projects",
-        "rev": "213315b65807ceae979da902875efaad1c53dc1d"
+        "rev": "5e9671a9a87c240b1c6ce981d04ad23ba4291451"
     }
 }

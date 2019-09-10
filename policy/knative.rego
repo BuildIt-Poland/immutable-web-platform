@@ -1,5 +1,5 @@
 # https://www.openpolicyagent.org/docs/latest/how-do-i-write-policies/
-package knative
+package main
 
 deny[msg] {
   input.kind = "Service"
