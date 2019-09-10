@@ -1,25 +1,32 @@
-node_modules
-*/node_modules/*
 result*
 .helm
-dist
-yarn-error.*
 # nixops state - super crucial
 *.nixops
 *.nixops-shm
 *.nixops-wal
 cdk.out/*
 resources/brigade-aws-secret.yaml
-.temp
-temp.*
-temp/
 /.gtm/
 cdk.out
 functions/express-app/k8s-resource.yaml
-*.generated.tf.json
-*.generated.*
+*vars.json
+
+# terraform
+*.tfplan
 .terraform
 */.terraform
 .kube/*
 **/.kube
-*vars.json
+*.generated.tf.json
+*.generated.*
+
+# node
+node_modules
+*/node_modules/*
+dist
+yarn-error.*
+
+# temp
+.temp
+temp.*
+temp/
