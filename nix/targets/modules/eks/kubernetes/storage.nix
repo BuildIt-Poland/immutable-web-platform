@@ -18,6 +18,7 @@ in
   imports = with kubenix.modules; [ 
     k8s
     k8s-extension
+    ./cert-manager.nix
     helm
     storage
   ];

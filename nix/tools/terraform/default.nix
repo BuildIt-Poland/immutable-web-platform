@@ -1,8 +1,6 @@
 {pkgs, lib, callPackage, buildGoPackage, fetchFromGitHub, project-config}:
 let
-  nix-terraform = callPackage ./terraform-provider-nix.nix {};
-  nix-provider-nix = nix-terraform;
-  terraform = pkgs.terraform_0_12.withPlugins (plugins: [
+  terraform = (pkgs.terraform_0_12.withPlugins (plugins: [
     plugins.aws
     plugins.null
     plugins.random
@@ -10,8 +8,9 @@ let
     plugins.template
     plugins.archive
     plugins.external
-    nix-provider-nix
-  ]);
+  ])).overrideAttrs (x: {
+    patches = [./thrift.patch];
+  });
 
   vars = project-config.terraform.vars;
   backend-vars = project-config.terraform.backend-vars;
@@ -44,7 +43,6 @@ let
     cat ${vars-file}
   '';
 
-  # cat ${vars-file} > vars.generated.tfvars
   save-vars-to-cwd = ''
     echo '${lib.generators.toJSON {} generate-var-file}' | jq . > vars.generated.tf.json
   '';

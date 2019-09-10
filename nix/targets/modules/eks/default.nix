@@ -3,6 +3,7 @@ with pkgs.lib;
 let
   resources = config.kubernetes.resources;
   priority = resources.priority;
+  cluster-name = config.kubernetes.cluster.name;
 in
 {
   imports = with integration-modules.modules; [
@@ -22,11 +23,6 @@ in
   ];
 
   config = {
-    imports = with integration-modules.modules; [
-      kubernetes
-    ];
-
-  config = {
     kubernetes.resources.list."${priority.high "eks"}" = [ ./kubernetes ];
 
     environment = {
@@ -40,10 +36,10 @@ in
     docker = rec {
       upload = inputs.docker.upload;
       namespace = mkForce cluster-name;
-      tag = mkForce cfg.project.hash;
+      tag = mkForce config.project.hash;
       registry = ""; # CHECK THIS
-      imageName = mkForce (name: "${namespace}");
-      imageTag = mkForce (name: "${name}-${tag}");
+      imageName = mkForce (name: "${cluster-name}");
+      imageTag = mkForce (name: "${name}-${config.docker.tag}");
     };
 
     storage.backup.bucket = "${config.project.name}-${config.environment.type}-backup";
