@@ -3,14 +3,12 @@ let
   cfg = config;
 
   validate = pkgs.writeScriptBin "validate-kubernetes-resource" ''
-    ${pkgs.lib.log.message "Validating kubernetes resource"}
-
     resource=$1
     length=$(cat $1 | yq 'length')
 
     for (( idx=0; idx<length; idx++ ))
     do
-      cat $resource | yq '.items['"$idx"']' | ${pkgs.conftest}/bin/conftest -o tap test -
+      cat $resource | yq '.items['"$idx"']' | ${pkgs.conftest}/bin/conftest -o tap test $* -
     done
   '';
 in
@@ -60,12 +58,12 @@ with lib;
           plugin-install = name: "${pkgs.kubectl}/bin/kubectl krew install ${name}";
           commands = lib.concatStringsSep "\n" (builtins.map plugin-install plugins);
         in 
-        ''
-          ${pkgs.lib.log.message "Installing kubectl plugins"}
+          ''
+            ${pkgs.lib.log.message "Installing kubectl plugins"}
 
-          ${pkgs.kubectl}/bin/kubectl krew update
-          ${commands}
-        '';
+            ${pkgs.kubectl}/bin/kubectl krew update
+            ${commands}
+          '';
       })
 
       (mkIf cfg.kubernetes.validation.enable {
@@ -73,6 +71,30 @@ with lib;
           conftest
           validate
           opa
+        ];
+
+        actions.queue = [
+          { priority = cfg.actions.priority.low; 
+
+            action = 
+              let
+                resources = 
+                  builtins.mapAttrs 
+                    (x: y: {name = x; to-validate = y.yaml.objects;})
+                    config.modules.kubernetes;
+
+                yamls = builtins.attrValues resources;
+                validate-resource = file: ''
+                  ${pkgs.lib.log.message "OPA validation for: ${file.name}"}
+                  ${validate}/bin/${validate.name} ${file.to-validate} -p $PWD/policy/kubernetes
+                '';
+                commands = lib.concatStringsSep "\n" (builtins.map validate-resource yamls);
+              in
+              ''
+                ${pkgs.lib.log.info "Running kubernetes resources validation"}
+                ${commands}
+              '';
+          }
         ];
       })
   ]);
