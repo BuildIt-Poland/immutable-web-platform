@@ -1,4 +1,4 @@
-package knative
+package main
 
 test_metadata_name_defined {
   allow with input as {"metadata": {"name": "test"}}

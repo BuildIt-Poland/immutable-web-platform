@@ -70,7 +70,7 @@ in
     terraform = rec {
       enable = true;
 
-      location = toString ../../terraform;
+      location = toString ../../../../terraform;
 
       vars = rec {
         region = config.aws.region;

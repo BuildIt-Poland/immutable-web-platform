@@ -36,7 +36,7 @@ provide full testing ability of infrastructure as well as on application level f
 * custom tool to manage remote state for deployments called `remote-state` (check `infra/shell.nix` for usage or it's [docs](/packages/remote-state/README.md))
 * terraform provisioning of infra and deployment of nixos configurations with 4 simple steps
 * follows and assumes https://12factor.net/
-* [opa](https://github.com/open-policy-agent/opa) for resource validation
+* [conftest](https://github.com/instrumenta/conftest) & [opa](https://github.com/open-policy-agent/opa) for resource validation
 
 ### How to start
 Start from [start guide first.](/docs/start.md)
