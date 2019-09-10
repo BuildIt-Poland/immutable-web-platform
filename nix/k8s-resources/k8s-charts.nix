@@ -51,20 +51,20 @@ rec {
     chart = "rook-ceph";
     version = "1.0.5";
     repo = "https://charts.rook.io/release";
-    sha256 = "0136briq1aw36l25sbv8337al9a7x1bx1m3by78q5dsg4dk4rbl1";
+    sha256 = "0zza206wagv6fabmj7zr0zjpjn44hadb2qn3v3hk8wyvi5ylzhib";
   };
 
   # Backups
   velero = fetch {
     chart = "stable/velero";
     version = "2.1.4";
-    sha256 = "1yy2hmg8qadjy1qm7d22hpc84wcvy2rqsd77giqip9cg7v5lmqc1";
+    sha256 = "1inhi72jk87xxl1ld95d96kahgzmjn5k77i7p8plxb4g0bjkc8ks";
   };
 
   external-dns = fetch {
     chart = "stable/external-dns";
     version = "2.5.4";
-    sha256 = "1s7474ip77j06y8hmlh592rhgvbmyqy8mvpcp7jwsxd3xipahmiv";
+    sha256 = "1zdlm3h3nx59svaksq3f2skfv5hkv4lpdp2v0zj3v0b5yffsk68f";
   };
 
   cert-manager = fetch {
@@ -101,13 +101,13 @@ rec {
   kube2iam = fetch {
     chart = "stable/kube2iam";
     version = "2.0.1";
-    sha256 = "1c4dw9681p8gkapwgmvhdgrhh5x1f94lqhc1rl050wv993zzqy2g";
+    sha256 = "0xj22mkhripa3pd4fd02i05q3v7wyhhfk2bmf8x7927bsjr35wb4";
   };
 
   cluster-autoscaler = fetch {
     chart = "stable/cluster-autoscaler";
     version = "3.2.0";
-    sha256 = "1vqcdd186csknkz0dsrm1mvbpiqhd4wjnz61sx0vpdg8l5lrkb13";
+    sha256 = "0wmx7wfg3s4s4hbq6qq85s0n6408yqgnwyzwyjwbznkl54xyslak";
   };
 
 }
