@@ -57,6 +57,11 @@ let
     ${terraform}/bin/terraform $* $extraArgs
   '';
 in 
+  # https://www.terraform.io/docs/configuration/providers.html#plugin-names-and-versions
+  # export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+  # https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/networking/cluster/terraform/default.nix
+  # actualPlugins = plugins terraform.plugins;
+  # --set NIX_TERRAFORM_PLUGIN_DIR "${buildEnv { name = "tf-plugin-env"; paths = actualPlugins; }}/bin" \
   pkgs.runCommand "terraform" { buildInputs = [pkgs.makeWrapper]; } ''
     mkdir -p $out/bin
     makeWrapper ${wrap-terraform-init} $out/bin/terraform
