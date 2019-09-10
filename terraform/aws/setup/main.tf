@@ -41,10 +41,10 @@ module "docker-registry" {
   common_tags  = local.common_tags
 }
 
-output "kms" {
-  value = module.secrets.secrets-kms-key.arn
-}
-
-output "docker_registry" {
-  value = module.docker-registry.ecr.repository_url
+# TODO move this to setup
+# https://velero.io/docs/v1.0.0/aws-config/
+module "backup" {
+  source       = "../../modules/backup"
+  bucket_name = var.backup_bucket
+  common_tags  = local.common_tags
 }

@@ -1,9 +1,7 @@
 ## Today
-* build go packages instead of using binaries - required by targeting linux within bastion
+* spinup binary cache - after building go packages it takes time ... -> need to have hydra instance
 * expose kibana
-* finish minikube regression and do some smoke tests on eks
 ### in progress
-* need to have hydra instance
 * setup bastion on nixos -> restic, velero, kubectl
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
 * shell for infra is necessary - nix shell infra first to bootstrap env and export outputs from terraform after that ... nix with resources
@@ -16,12 +14,16 @@
 - add taints - think about best strategy for testing and app perfomance
 - make PR to brigade to be able to select nodeSelector - required to spawn tests on spot instances
 
+### doing
+* finish minikube regression and do some smoke tests on eks
+
 ### regression:
 * SSL with istio and EKS - aws_route_53 - partially done
 * refactor env -> should be more like dev, staging, qa, prod - local and current usage is a bit unclear (i.e. it would be handy to use for ssl -> certificate -> lets encrypt)
 * change integration-modules to configuration-modules, and kubenix-modules to kubernetes-modules, prepare virtual-services for local and cloud env (hosts related)
 
 ### works:
+- build go packages instead of using binaries - required by targeting linux within bastion - all go packages are built thru nix
 - (kubernetes.target (minikube/eks/aks), environement.runtime (local, ci), environement.type 'dev','staging','prod')
 * prometheus metrics and grafana dashboard for ceph
 * velero - backups - auto at least before resources to rollback quickly

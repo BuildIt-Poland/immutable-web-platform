@@ -75,10 +75,3 @@ module "bastion" {
   ssh_pub_key  = var.ssh_pub_key
   vpc          = module.cluster.vpc
 }
-
-# https://velero.io/docs/v1.0.0/aws-config/
-module "backup" {
-  source       = "../../modules/backup"
-  bucket_name = var.backup_bucket
-  common_tags  = local.common_tags
-}
