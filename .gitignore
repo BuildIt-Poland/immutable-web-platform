@@ -19,6 +19,7 @@ functions/express-app/k8s-resource.yaml
 *.generated.tf.json
 *.generated.*
 .terraform
+*/.terraform
 .kube/*
 **/.kube
 *vars.json
