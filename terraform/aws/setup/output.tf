@@ -1,4 +1,5 @@
-output "secrets_kms" {
+
+output "kms" {
   value = module.secrets.secrets-kms-key.arn
 }
 
