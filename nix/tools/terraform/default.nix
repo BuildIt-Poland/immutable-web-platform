@@ -1,6 +1,6 @@
-{pkgs, lib, callPackage, buildGoPackage, fetchFromGitHub, project-config}:
+{pkgs, lib, callPackage, buildGoPackage, fetchFromGitHub, project-config,  buildEnv, terraform-providers}:
 let
-  terraform = (pkgs.terraform_0_12.withPlugins (plugins: [
+  pluginList = plugins: [
     plugins.aws
     plugins.null
     plugins.random
@@ -8,9 +8,12 @@ let
     plugins.template
     plugins.archive
     plugins.external
-  ])).overrideAttrs (x: {
-    patches = [./thrift.patch];
-  });
+  ];
+
+  plugins = plugins terraform-providers; 
+
+  terraform = (pkgs.terraform_0_12).withPlugins pluginList;
+  # .overrideAttrs (x: { patches = [./thrift.patch]; });
 
   vars = project-config.terraform.vars;
   backend-vars = project-config.terraform.backend-vars;
