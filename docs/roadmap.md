@@ -1,6 +1,10 @@
 ## Today
+* https://github.com/open-policy-agent/opa-istio-plugin
+* consider to use kubernetes patches like this https://www.diycode.cc/projects/Azure/kubernetes-policy-controller
 * spinup binary cache - after building go packages it takes time ... -> need to have hydra instance
 * expose kibana
+* add metadata.env
+* add namespace for functions
 ### in progress
 * setup bastion on nixos -> restic, velero, kubectl
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
