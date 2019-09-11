@@ -12,4 +12,5 @@
   knative-monitoring = ./knative-monitoring.nix;
   secrets = ./secrets.nix;
   storage = ./storage.nix;
+  opa = ./opa.nix;
 }

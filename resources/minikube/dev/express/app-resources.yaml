@@ -12,13 +12,13 @@ items:
       istio: ingressgateway
     servers:
     - hosts:
-      - '*.functions.future-is-comming.dev.local'
+      - '*.dev-functions.future-is-comming.dev.local'
       port:
         name: http-system
         number: 80
         protocol: HTTP
     - hosts:
-      - '*.functions.future-is-comming.dev.local'
+      - '*.dev-functions.future-is-comming.dev.local'
       port:
         name: https-system
         number: 443
@@ -28,36 +28,36 @@ items:
         mode: SIMPLE
         privateKey: sds
         serverCertificate: sds
-apiVersion: serving.knative.dev/v1alpha1
-kind: Service
-metadata:
-  labels:
-    kubenix/project-name: kubenix
-  name: express-app
-  namespace: functions
-spec:
-  template:
-    metadata:
-      annotations:
-        autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
-        autoscaling.knative.dev/maxScale: '100'
-        autoscaling.knative.dev/metric: concurrency
-        autoscaling.knative.dev/target: '5'
-    spec:
-      containers:
-      - env:
-        - name: TARGET
-          value: Node.js Sample v1
-        image: dev.local/express-app:dev-build
-        imagePullPolicy: Never
-        livenessProbe:
-          httpGet:
-            path: /healthz
-          initialDelaySeconds: 3
-          periodSeconds: 3
-        resources:
-          requests:
-            cpu: 100m
+- apiVersion: serving.knative.dev/v1alpha1
+  kind: Service
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: express-app
+    namespace: dev-functions
+  spec:
+    template:
+      metadata:
+        annotations:
+          autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
+          autoscaling.knative.dev/maxScale: '100'
+          autoscaling.knative.dev/metric: concurrency
+          autoscaling.knative.dev/target: '5'
+      spec:
+        containers:
+        - env:
+          - name: TARGET
+            value: Node.js Sample v1
+          image: dev.local/express-app:dev-build
+          imagePullPolicy: Never
+          livenessProbe:
+            httpGet:
+              path: /healthz
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          resources:
+            requests:
+              cpu: 100m
 - apiVersion: v1
   data:
     autoTLS: Enabled

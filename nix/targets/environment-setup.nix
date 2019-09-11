@@ -24,7 +24,7 @@ in
   config = {
     environment = {
       type = inputs.environment.type;
-      runtime = inputs.environment.runtime;
+      perspective = inputs.environment.perspective;
       vars = {
         PROJECT_NAME = config.project.name;
       };

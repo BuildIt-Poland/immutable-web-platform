@@ -66,7 +66,7 @@ rec {
     let
       mkNamespaceOption = name: {
         name = mkOption {
-          default = "functions";
+          default = name;
         };
         metadata = mkOption {
           default = {};

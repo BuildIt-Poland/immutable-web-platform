@@ -1,25 +1,20 @@
 {
   local ? false
+  target ? "eks"
 }:
 let
   pkgs = (import ../nix { 
     inputs = {
-      environment.runtime = "ci-shell"; 
-      environment.type = "dev"; 
-      tests.enable = false;
+      environment = {
+        type = "dev"; 
+        perspective = "builder";
+      };
       kubernetes = {
+        inherit target;
+
         save = false;
         patches = false;
       };
-
-      modules = [
-        {
-          bitbucket.k8s-resources = {
-            enable = true;
-            repository = "k8s-infra-descriptors";
-          };
-        }
-      ];
     };
   });
 in

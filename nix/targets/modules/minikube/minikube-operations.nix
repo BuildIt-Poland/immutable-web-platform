@@ -12,8 +12,8 @@ let
   projectName = project-config.project.name;
 
   namespace = project-config.kubernetes.namespace;
-  brigade-ns = namespace.brigade;
-  istio-ns = namespace.istio;
+  brigade-ns = namespace.brigade.name;
+  istio-ns = namespace.istio.name;
 
   # TODO should be in config
   brigade-service = {

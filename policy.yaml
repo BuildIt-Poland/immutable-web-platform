@@ -1,0 +1,49 @@
+apiVersion: config.istio.io/v1alpha2
+kind: instance
+metadata:
+  name: authzinstance
+  namespace: istio-system
+spec:
+  compiledTemplate: authorization
+  params:
+    subject:
+      user: request.auth.claims["sub"] | request.auth.principal | source.principal | ""
+      groups: request.auth.claims["groups"] | ""
+      properties:
+        iss: request.auth.claims["iss"] | ""
+    action:
+      namespace: destination.namespace | "default"
+      service: destination.service.host | ""
+      path: request.path | "/"
+      method: request.method | ""
+      properties:
+        version: destination.labels["version"] | ""
+---
+apiVersion: config.istio.io/v1alpha2
+kind: handler
+metadata:
+  name: opa
+  namespace: istio-system
+spec:
+  compiledAdapter: opa
+  params:
+    policy:
+      - |+
+        package mixerauthz
+
+        default allow = false
+    checkMethod: "data.mixerauthz.allow"
+    failClose: true
+---
+apiVersion: config.istio.io/v1alpha2
+kind: rule
+metadata:
+  name: authorization
+  namespace: istio-system
+spec:
+  actions:
+    - handler: opa.istio-system
+      instances:
+        - authzinstance
+---
+

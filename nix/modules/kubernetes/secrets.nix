@@ -17,8 +17,8 @@ let
     in
     pkgs.writeScriptBin "apply-aws-credentails-secret" ''
       ${pkgs.lib.log.important "Creating AWS secret"}
-      AWS_KEY=$(aws configure get aws_access_key_id | base64)
-      AWS_SECRET=$(aws configure get aws_secret_access_key | base64)
+      AWS_KEY=$(${pkgs.awscli}/bin/aws configure get aws_access_key_id | base64)
+      AWS_SECRET=$(${pkgs.awscli}/bin/aws configure get aws_secret_access_key | base64)
 
       eval "echo \"$(cat ${secret-ref.yaml.objects})\"" | ${pkgs.kubectl}/bin/kubectl apply -f -
     '';

@@ -29,12 +29,6 @@ in
       certmanager.enabled = true;
     };
 
-    namespace = {
-      metadata.annotations = {
-        "iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";
-      };
-    };
-
     helm = {
       gateways = {
         istio-ingressgateway = {
