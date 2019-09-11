@@ -5,9 +5,11 @@ metadata:
   namespace: istio-system
 spec:
   compiledTemplate: authorization
+  # https://istio.io/docs/reference/config/policy-and-telemetry/templates/analytics/
   params:
     subject:
-      user: request.auth.claims["sub"] | request.auth.principal | source.principal | ""
+      # user: request.auth.claims["sub"] | request.auth.principal | source.principal | request.user | ""
+      user: request.headers["user"] | ""
       groups: request.auth.claims["groups"] | ""
       properties:
         iss: request.auth.claims["iss"] | ""
@@ -32,8 +34,13 @@ spec:
         package mixerauthz
 
         default allow = false
+        allow {
+          input.subject.user == "damian"
+        }
     checkMethod: "data.mixerauthz.allow"
     failClose: true
+    # input.subject.user
+    # input.action.method == "POST"
 ---
 apiVersion: config.istio.io/v1alpha2
 kind: rule
