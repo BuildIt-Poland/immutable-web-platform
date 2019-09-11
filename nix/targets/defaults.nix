@@ -3,8 +3,16 @@ with pkgs;
   input:  
     let
       result = (lib.recursiveUpdate {
-        environment = { type = "dev"; runtime = "local-shell"; };
-        kubernetes = { target="eks"; clean = false; update = false; save = false; patches = false; tools = false;};
+        environment = { type = "dev"; perspective = "root"; };
+        kubernetes = { 
+          target="eks"; 
+          clean = false; 
+          update = false; 
+          save = false; 
+          patches = false; 
+          tools = false;
+        };
+        opa = { validation = false; };
         docker = { upload = false; tag = "dev-build"; };
         project = { name = "future-is-comming"; };
         brigade = { secret = ""; };

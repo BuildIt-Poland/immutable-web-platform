@@ -12,9 +12,9 @@ in
       type = enum ["dev" "staging" "qa" "prod"];
     };
 
-    runtime = with types; mkOption {
-      default = "local-shell";
-      type = enum ["local-shell" "ci-shell"];
+    perspective = with types; mkOption {
+      default = "root";
+      type = enum ["root" "operator" "developer" "builder"];
     };
 
     vars = mkOption {
@@ -118,7 +118,7 @@ in
             ${log.info "Your kubernetes target is: ${config.kubernetes.target}"}
             ${log.info "Your build hash is: ${config.project.hash}"}
             ${log.info "Your domain is: ${config.project.domain}"}
-            ${log.info "Your runtime is: ${config.environment.runtime}"}
+            ${log.info "Your runtime perspective is: ${config.environment.perspective}"}
           '';
 
           footer = ''

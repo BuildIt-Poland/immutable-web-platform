@@ -14,6 +14,7 @@ with lib;
       --output 'jsonpath={.spec.ports[${if port != "" then "?(@.port==${port})" else toString index}].${type}}'
   '';
 
+  # depreciated: there is kubectl debug port-forward
   port-forward = 
     let
       # INFO to filter out grep from ps

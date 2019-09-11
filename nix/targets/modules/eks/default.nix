@@ -23,13 +23,17 @@ in
   ];
 
   config = {
-    kubernetes.resources.list."${priority.high "eks"}" = [ ./kubernetes ];
 
-    environment = {
-      type = inputs.environment.type;
-      runtime = inputs.environment.runtime;
-      vars = {
-        RESTIC_PASSWORD_COMMAND = "get-restic-repo-password";
+    kubernetes = {
+      resources.list."${priority.high "eks"}" = [ ./kubernetes ];
+
+      namespace = {
+        istio = {
+          name = "${config.environment.type}-functions";
+          metadata.annotations = {
+            "iam.amazonaws.com/allowed-roles" = "[\"${config.kubernetes.cluster.name}*\"]";
+          };
+        };
       };
     };
 

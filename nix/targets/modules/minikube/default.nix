@@ -25,6 +25,8 @@ with lib;
 
       packages = with pkgs; [
         minikube
+        # FIXME remove me
+        istioctl
       ];
 
       project = rec {
@@ -32,6 +34,9 @@ with lib;
       };
 
       kubernetes.resources.list."${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
+      # INFO: this is an example how to can test module locally first - eks is not enabled yet
+      kubernetes.resources.list."${priority.high "policy"}" = [ kubenix.modules.opa ];
+
       skaffold.enable = true;
     })
 

@@ -18,15 +18,6 @@ in
     istio
   ];
 
-  options = {
-    ssl = {
-      default = true;
-    };
-    hosts = lib.mkOption {
-      default = [];
-    };
-  };
-
   config = {
     kubernetes.customResources = [
       {

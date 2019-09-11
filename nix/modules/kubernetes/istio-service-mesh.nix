@@ -44,7 +44,9 @@ in
   };
 
   config = (lib.mkIf config.kubernetes.network-mesh.enable {
-    kubernetes.api.namespaces."${istio-ns}" = service-mesh-config.namespace;
+    kubernetes.api.namespaces."${istio-ns}" = {
+      metadata = namespace.istio.metadata;
+    };
 
     kubernetes.crd = [
       (k8s-resources.istio-init-json service-mesh-config.crd)
@@ -71,15 +73,19 @@ in
           };
 
           istio_cni.enabled = false;
-          mixer.policy.enabled = false;
-          mixer.telemetry.enabled = true;
-          mixer.adapters.prometheus.enabled = false;
-          # https://github.com/istio/istio/issues/7675#issuecomment-415447894
+
+          ## FIXME IF OPA enabled
+          mixer.policy.enabled = true;
           # mixer.adapters.useAdapterCRDs = true;
+          mixer.adapters.opa.enabled = true;
+
+          mixer.telemetry.enabled = true;
+          # https://github.com/istio/istio/issues/7675#issuecomment-415447894
           # grafana.enabled = true;
           pilot.autoscaleMin = 2;
           pilot.traceSampling = 100;
           global = {
+            disablePolicyChecks = false;
             proxy.autoInject = "disabled";
             sidecarInjectorWebhook.enabled = true;
             sidecarInjectorWebhook.enableNamespacesByDefault = true;
