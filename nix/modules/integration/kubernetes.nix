@@ -62,16 +62,27 @@ rec {
       default = "IfNotPresent";
     };
 
-    namespace = with types; {
-      functions = mkOption { default = "functions";};
-      infra = mkOption { default = "local-infra";};
-      brigade = mkOption { default = "brigade";};
-      istio = mkOption { default = "istio-system";};
-      knative-monitoring = mkOption { default = "knative-monitoring";};
-      knative-serving = mkOption { default = "knative-serving";};
-      argo = mkOption { default = "argocd";};
-      system = mkOption { default = "system";};
-      storage = mkOption { default = "storage";};
+    namespace = with types; 
+    let
+      mkNamespaceOption = name: {
+        name = mkOption {
+          default = "functions";
+        };
+        metadata = mkOption {
+          default = {};
+        };
+      };
+    in
+    {
+      functions = mkNamespaceOption "functions";
+      infra = mkNamespaceOption "local-infra";
+      brigade = mkNamespaceOption "brigade";
+      istio = mkNamespaceOption "istio-system";
+      knative-monitoring = mkNamespaceOption "knative-monitoring";
+      knative-serving = mkNamespaceOption "knative-serving";
+      argo = mkNamespaceOption "argocd";
+      system = mkNamespaceOption "system";
+      storage = mkNamespaceOption "storage";
     };
   };
 

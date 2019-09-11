@@ -2,7 +2,7 @@
 with pkgs;
 let
   namespace = project-config.kubernetes.namespace;
-  brigade-ns = namespace.brigade;
+  brigade-ns = namespace.brigade.name;
 
   aws = project-config.aws;
   bitbucket = project-config.bitbucket;

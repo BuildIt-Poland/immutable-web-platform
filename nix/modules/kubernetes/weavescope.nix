@@ -9,7 +9,7 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  istio-ns = namespace.istio;
+  istio-ns = namespace.istio.name;
 in
 {
   imports = with kubenix.modules; [ 

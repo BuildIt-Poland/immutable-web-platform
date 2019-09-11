@@ -9,7 +9,7 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  istio-ns = namespace.istio;
+  istio-ns = namespace.istio.name;
   service-mesh-config = config.kubernetes.network-mesh;
 
   create-istio-cr = kind: {

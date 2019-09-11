@@ -1,5 +1,6 @@
 ## Today
 * https://github.com/open-policy-agent/opa-istio-plugin
+* think about keeping pipeline close to project itself -> allow to inject module from function pespective
 * consider to use kubernetes patches like this https://www.diycode.cc/projects/Azure/kubernetes-policy-controller
 * spinup binary cache - after building go packages it takes time ... -> need to have hydra instance
 * expose kibana
