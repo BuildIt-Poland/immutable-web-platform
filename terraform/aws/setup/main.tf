@@ -44,7 +44,7 @@ module "docker-registry" {
 # TODO move this to setup
 # https://velero.io/docs/v1.0.0/aws-config/
 module "backup" {
-  source       = "../../modules/backup"
+  source      = "../../modules/backup"
   bucket_name = var.backup_bucket
-  common_tags  = local.common_tags
+  common_tags = local.common_tags
 }
