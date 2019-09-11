@@ -103,9 +103,16 @@ in
       tools.enable = inputs.kubernetes.tools;
 
       namespace = {
-        functions = "functions";
-        argo = "gitops";
-        brigade = "ci";
+        functions = {
+          name = "${config.environment.type}-functions";
+          metadata.labels = {
+            "istio-injection" = "enabled";
+            # FIXME should be in opa
+            "opa-istio-injection" = "enabled";
+          };
+        };
+        argo.name = "gitops";
+        brigade.name = "ci";
       };
 
       cluster = {

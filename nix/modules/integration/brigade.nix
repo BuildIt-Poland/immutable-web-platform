@@ -38,7 +38,7 @@ rec {
 
     ({
       environment.vars = {
-        BRIGADE_NAMESPACE = cfg.kubernetes.namespace.brigade;
+        BRIGADE_NAMESPACE = cfg.kubernetes.namespace.brigade.name;
       };
 
       packages = with pkgs;[

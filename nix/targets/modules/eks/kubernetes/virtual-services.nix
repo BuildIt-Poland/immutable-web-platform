@@ -8,12 +8,12 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  istio-ns = namespace.istio;
-  knative-monitoring-ns = namespace.knative-monitoring;
-  argo-ns = namespace.argo;
-  brigade-ns = namespace.brigade;
-  system-ns = namespace.system;
-  storage-ns = namespace.storage;
+  istio-ns = namespace.istio.name;
+  knative-monitoring-ns = namespace.knative-monitoring.name;
+  argo-ns = namespace.argo.name;
+  brigade-ns = namespace.brigade.name;
+  system-ns = namespace.system.name;
+  storage-ns = namespace.storage.name;
 
   mk-domain = name: project-config.project.make-sub-domain "${name}.services";
 

@@ -9,7 +9,7 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  argo-ns = namespace.argo;
+  argo-ns = namespace.argo.name;
 in
 {
   imports = with kubenix.modules; [ 
@@ -19,7 +19,9 @@ in
   ];
 
   config = {
-    kubernetes.api.namespaces."${argo-ns}"= {};
+    kubernetes.api.namespaces."${argo-ns}"= {
+      metadata = lib.recursiveUpdate {} namespace.argo.metadata;
+    };
 
     module.scripts = [
       (pkgs.writeShellScriptBin "get-argo-cd-password" ''

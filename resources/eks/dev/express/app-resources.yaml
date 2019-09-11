@@ -6,19 +6,19 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: knative-ingress-gateway
-    namespace: knative-serving
+    namespace: functions
   spec:
     selector:
       istio: ingressgateway
     servers:
     - hosts:
-      - '*.functions.future-is-comming.dev.buildit.consulting'
+      - '*.dev-functions.future-is-comming.dev.buildit.consulting'
       port:
         name: http-system
         number: 80
         protocol: HTTP
     - hosts:
-      - '*.functions.future-is-comming.dev.buildit.consulting'
+      - '*.dev-functions.future-is-comming.dev.buildit.consulting'
       port:
         name: https-system
         number: 443
@@ -34,7 +34,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: express-app
-    namespace: functions
+    namespace: dev-functions
   spec:
     template:
       metadata:
@@ -48,7 +48,7 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-42d75fc1940865039640a157b743c14ec2a4ba57
+          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-436698cfee92e15c7f5e95bdefb996bf4d1a1a3d
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
@@ -74,7 +74,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: config-certmanager
-    namespace: knative-serving
+    namespace: functions
 - apiVersion: v1
   data:
     future-is-comming.dev.buildit.consulting: ''
@@ -83,6 +83,6 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: config-domain
-    namespace: knative-serving
+    namespace: functions
 kind: List
 labels:

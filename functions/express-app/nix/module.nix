@@ -15,12 +15,13 @@ let
   scripts = import ./scripts { inherit pkgs; };
 
   namespaces= project-config.kubernetes.namespace;
+  functions-ns = namespaces.functions.name;
 
   # FIXME ingress port for isio - instead of 31380
   # FIXME for hosted cluster it is not necessary
   call-function = 
     (pkgs.writeScriptBin "call-express-app-function-minikube" ''
-      ${pkgs.curl}/bin/curl '-sS' '-H' 'Host: ${fn-config.label}.${namespaces.functions}.${fn-config.domain}' \
+      ${pkgs.curl}/bin/curl '-sS' '-H' 'Host: ${fn-config.label}.${functions-ns}.${fn-config.domain}' \
         http://$(${pkgs.minikube}/bin/minikube ip -p ${project-config.project.name}):31380 -v
     '');
 in
@@ -48,7 +49,7 @@ in
     "${fn-config.label}" = {
       metadata = {
         name = fn-config.label;
-        namespace = namespaces.functions;
+        namespace = functions-ns;
       };
       spec = {
         template = {

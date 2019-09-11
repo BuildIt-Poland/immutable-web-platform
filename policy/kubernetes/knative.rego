@@ -1,6 +1,9 @@
 # https://www.openpolicyagent.org/docs/latest/how-do-i-write-policies/
 package main
 
+# TODO: point of contact tag
+# TODO: domain check
+
 deny[msg] {
   match
   not any_name

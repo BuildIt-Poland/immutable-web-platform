@@ -17,8 +17,8 @@ let
 
   namespace = project-config.kubernetes.namespace;
 
-  brigade-ns = namespace.brigade;
-  system-ns = namespace.system;
+  brigade-ns = namespace.brigade.name;
+  system-ns = namespace.system.name;
 
   project-template = pkgs.callPackage ./template/brigade-project.nix {
     inherit config;

@@ -48,7 +48,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: cephblockpools.ceph.rook.io
-    namespace: storage
+    namespace: functions
   spec:
     group: ceph.rook.io
     names:
@@ -64,7 +64,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: cephclusters.ceph.rook.io
-    namespace: storage
+    namespace: functions
   spec:
     additionalPrinterColumns:
     - JSONPath: .spec.dataDirHostPath
@@ -147,7 +147,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: cephfilesystems.ceph.rook.io
-    namespace: storage
+    namespace: functions
   spec:
     additionalPrinterColumns:
     - JSONPath: .spec.metadataServer.activeCount
@@ -171,7 +171,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: cephnfses.ceph.rook.io
-    namespace: storage
+    namespace: functions
   spec:
     group: ceph.rook.io
     names:
@@ -189,7 +189,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: cephobjectstores.ceph.rook.io
-    namespace: storage
+    namespace: functions
   spec:
     group: ceph.rook.io
     names:
@@ -205,7 +205,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: cephobjectstoreusers.ceph.rook.io
-    namespace: storage
+    namespace: functions
   spec:
     group: ceph.rook.io
     names:
@@ -392,7 +392,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: volumes.rook.io
-    namespace: storage
+    namespace: functions
   spec:
     group: rook.io
     names:
@@ -441,14 +441,7 @@ items:
       iam.amazonaws.com/allowed-roles: '["future-is-comming-dev-cluster*"]'
     labels:
       kubenix/project-name: kubenix
-    name: istio-system
-    namespace: default
-- apiVersion: v1
-  kind: Namespace
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: storage
+    name: functions
     namespace: default
 - apiVersion: ceph.rook.io/v1
   kind: CephBlockPool
@@ -456,7 +449,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: brigade-cache
-    namespace: storage
+    namespace: functions
   spec:
     replicated:
       size: 1
@@ -466,7 +459,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: brigade-storage
-    namespace: storage
+    namespace: functions
   spec:
     replicated:
       size: 1
@@ -476,7 +469,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph
-    namespace: storage
+    namespace: functions
   spec:
     cephVersion:
       image: ceph/ceph:v14.2
@@ -490,7 +483,7 @@ items:
       count: 2
     monitoring:
       enabled: true
-      rulesNamespace: storage
+      rulesNamespace: functions
     storage:
       config:
         storeType: filestore
@@ -524,7 +517,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: ingress-cert
-    namespace: istio-system
+    namespace: functions
   spec:
     acme:
       config:
@@ -566,7 +559,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: letsencrypt
-    namespace: istio-system
+    namespace: functions
   spec:
     acme:
       email: damian.baar@wipro.com
@@ -584,7 +577,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: letsencrypt-staging
-    namespace: istio-system
+    namespace: functions
   spec:
     acme:
       email: damian.baar@wipro.com
@@ -602,9 +595,9 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-telemetry
-    namespace: istio-system
+    namespace: functions
   spec:
-    host: istio-telemetry.istio-system.svc.cluster.local
+    host: istio-telemetry.functions.svc.cluster.local
     trafficPolicy:
       connectionPool:
         http:
@@ -618,7 +611,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: virtual-services-gateway
-    namespace: istio-system
+    namespace: functions
   spec:
     selector:
       istio: ingressgateway
@@ -668,7 +661,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: bitbucket-gateway-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -696,7 +689,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: ci-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -724,7 +717,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: gitops-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -752,7 +745,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: monitoring-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -761,7 +754,7 @@ items:
     http:
     - route:
       - destination:
-          host: grafana.knative-monitoring.svc.cluster.local
+          host: grafana.functions.svc.cluster.local
           port:
             number: 30802
     tls:
@@ -771,7 +764,7 @@ items:
         - monitoring.services.future-is-comming.dev.buildit.consulting
       route:
       - destination:
-          host: grafana.knative-monitoring.svc.cluster.local
+          host: grafana.functions.svc.cluster.local
           port:
             number: 30802
 - apiVersion: networking.istio.io/v1alpha3
@@ -780,7 +773,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: logs-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -789,7 +782,7 @@ items:
     http:
     - route:
       - destination:
-          host: kibana-logging.knative-monitoring.svc.cluster.local
+          host: kibana-logging.functions.svc.cluster.local
           port:
             number: 5601
     tls:
@@ -799,7 +792,7 @@ items:
         - logs.services.future-is-comming.dev.buildit.consulting
       route:
       - destination:
-          host: kibana-logging.knative-monitoring.svc.cluster.local
+          host: kibana-logging.functions.svc.cluster.local
           port:
             number: 5601
 - apiVersion: networking.istio.io/v1alpha3
@@ -808,7 +801,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: storage-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -817,7 +810,7 @@ items:
     http:
     - route:
       - destination:
-          host: rook-ceph-mgr-dashboard.storage.svc.cluster.local
+          host: rook-ceph-mgr-dashboard.functions.svc.cluster.local
           port:
             number: 8443
     tls:
@@ -827,7 +820,7 @@ items:
         - storage.services.future-is-comming.dev.buildit.consulting
       route:
       - destination:
-          host: rook-ceph-mgr-dashboard.storage.svc.cluster.local
+          host: rook-ceph-mgr-dashboard.functions.svc.cluster.local
           port:
             number: 8443
 - apiVersion: networking.istio.io/v1alpha3
@@ -836,7 +829,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: topology-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -845,7 +838,7 @@ items:
     http:
     - route:
       - destination:
-          host: weave-scope-app.istio-system.svc.cluster.local
+          host: weave-scope-app.functions.svc.cluster.local
           port:
             number: 80
     tls:
@@ -855,7 +848,7 @@ items:
         - topology.services.future-is-comming.dev.buildit.consulting
       route:
       - destination:
-          host: weave-scope-app.istio-system.svc.cluster.local
+          host: weave-scope-app.functions.svc.cluster.local
           port:
             number: 80
 - apiVersion: networking.istio.io/v1alpha3
@@ -864,7 +857,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: tracing-services
-    namespace: istio-system
+    namespace: functions
   spec:
     gateways:
     - virtual-services-gateway
@@ -873,7 +866,7 @@ items:
     http:
     - route:
       - destination:
-          host: zipkin.istio-system.svc.cluster.local
+          host: zipkin.functions.svc.cluster.local
           port:
             number: 9411
     tls:
@@ -883,7 +876,7 @@ items:
         - tracing.services.future-is-comming.dev.buildit.consulting
       route:
       - destination:
-          host: zipkin.istio-system.svc.cluster.local
+          host: zipkin.functions.svc.cluster.local
           port:
             number: 9411
 - apiVersion: config.istio.io/v1alpha2
@@ -896,7 +889,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istioproxy
-    namespace: istio-system
+    namespace: functions
   spec:
     attributes:
       api.operation:
@@ -1035,7 +1028,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: kubernetes
-    namespace: istio-system
+    namespace: functions
   spec:
     attributes:
       destination.container.name:
@@ -1100,7 +1093,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: kubeattrgenrulerule
-    namespace: istio-system
+    namespace: functions
   spec:
     actions:
     - handler: kubernetesenv
@@ -1116,7 +1109,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: tcpkubeattrgenrulerule
-    namespace: istio-system
+    namespace: functions
   spec:
     actions:
     - handler: kubernetesenv
@@ -1133,7 +1126,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: kubernetesenv
-    namespace: istio-system
+    namespace: functions
   spec:
     compiledAdapter: kubernetesenv
 - apiVersion: config.istio.io/v1alpha2
@@ -1146,7 +1139,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: attributes
-    namespace: istio-system
+    namespace: functions
   spec:
     attributeBindings:
       destination.container.name: $out.destination_container_name | "unknown"
@@ -1233,13 +1226,13 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-sidecar-injector
-    namespace: istio-system
+    namespace: functions
   webhooks:
   - clientConfig:
       caBundle: ''
       service:
         name: istio-sidecar-injector
-        namespace: istio-system
+        namespace: functions
         path: /inject
     failurePolicy: Fail
     name: sidecar-injector.istio.io
@@ -1266,7 +1259,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-nodeagent
-    namespace: istio-system
+    namespace: functions
   spec:
     selector:
       matchLabels:
@@ -1475,7 +1468,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: certmanager
-    namespace: istio-system
+    namespace: functions
   spec:
     replicas: 1
     selector:
@@ -1618,7 +1611,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-citadel
-    namespace: istio-system
+    namespace: functions
   spec:
     replicas: 1
     selector:
@@ -1677,8 +1670,8 @@ items:
           - --sds-enabled=true
           - --append-dns-names=true
           - --grpc-port=8060
-          - --citadel-storage-namespace=istio-system
-          - --custom-dns-names=istio-pilot-service-account.istio-system:istio-pilot.istio-system
+          - --citadel-storage-namespace=functions
+          - --custom-dns-names=istio-pilot-service-account.functions:istio-pilot.functions
           - --monitoring-port=15014
           - --self-signed-ca=true
           - --workload-cert-ttl=2160h
@@ -1700,7 +1693,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-galley
-    namespace: istio-system
+    namespace: functions
   spec:
     replicas: 1
     selector:
@@ -1763,7 +1756,7 @@ items:
           - --livenessProbePath=/healthliveness
           - --readinessProbePath=/healthready
           - --readinessProbeInterval=1s
-          - --deployment-namespace=istio-system
+          - --deployment-namespace=functions
           - --insecure=true
           - --validation-webhook-config-file
           - /etc/config/validatingwebhookconfiguration.yaml
@@ -1829,7 +1822,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-ingressgateway
-    namespace: istio-system
+    namespace: functions
   spec:
     selector:
       matchLabels:
@@ -2046,7 +2039,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-pilot
-    namespace: istio-system
+    namespace: functions
   spec:
     selector:
       matchLabels:
@@ -2223,7 +2216,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-sidecar-injector
-    namespace: istio-system
+    namespace: functions
   spec:
     replicas: 1
     selector:
@@ -2347,7 +2340,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-telemetry
-    namespace: istio-system
+    namespace: functions
   spec:
     selector:
       matchLabels:
@@ -2459,11 +2452,11 @@ items:
           - --address
           - unix:///sock/mixer.socket
           - --log_output_level=default:info
-          - --configStoreURL=mcp://istio-galley.istio-system.svc:9901
-          - --configDefaultNamespace=istio-system
+          - --configStoreURL=mcp://istio-galley.functions.svc:9901
+          - --configDefaultNamespace=functions
           - --useAdapterCRDs=false
           - --useTemplateCRDs=false
-          - --trace_zipkin_url=http://zipkin.istio-system:9411/api/v1/spans
+          - --trace_zipkin_url=http://zipkin.functions:9411/api/v1/spans
           - --averageLatencyThreshold
           - 100ms
           - --loadsheddingMode
@@ -2526,7 +2519,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: prometheus
-    namespace: istio-system
+    namespace: functions
   spec:
     replicas: 1
     selector:
@@ -2619,7 +2612,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-operator
-    namespace: storage
+    namespace: functions
   spec:
     replicas: 1
     selector:
@@ -2682,7 +2675,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-ingressgateway
-    namespace: istio-system
+    namespace: functions
   spec:
     maxReplicas: 1
     metrics:
@@ -2705,7 +2698,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-pilot
-    namespace: istio-system
+    namespace: functions
   spec:
     maxReplicas: 5
     metrics:
@@ -2728,7 +2721,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-telemetry
-    namespace: istio-system
+    namespace: functions
   spec:
     maxReplicas: 5
     metrics:
@@ -2755,7 +2748,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-cleanup-secrets-1.2.4
-    namespace: istio-system
+    namespace: functions
   spec:
     template:
       metadata:
@@ -2825,7 +2818,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-security-post-install-1.2.4
-    namespace: istio-system
+    namespace: functions
   spec:
     template:
       metadata:
@@ -2898,7 +2891,7 @@ items:
       # example: '{\"start_time\": \"%START_TIME%\", \"req_method\": \"%REQ(:METHOD)%\"\
       }'\n# Leave empty to use default log format\naccessLogFormat: \"\"\n\n# Set\
       \ accessLogEncoding to JSON or TEXT to configure sidecar access log\naccessLogEncoding:\
-      \ 'TEXT'\nmixerReportServer: istio-telemetry.istio-system.svc.cluster.local:9091\n\
+      \ 'TEXT'\nmixerReportServer: istio-telemetry.functions.svc.cluster.local:9091\n\
       # Let Pilot give ingresses the public IP of the Istio ingressgateway\ningressService:\
       \ istio-ingressgateway\n\n# Default connect timeout for dynamic clusters generated\
       \ by Pilot and returned via XDS\nconnectTimeout: 10s\n\n# DNS refresh rate for\
@@ -2924,37 +2917,35 @@ items:
       \ defined in the service registry as well\n#   as those defined through ServiceEntries\
       \  \noutboundTrafficPolicy:\n  mode: ALLOW_ANY\n\nlocalityLbSetting:\n  {}\n\
       \  \n\n# The namespace to treat as the administrative root namespace for istio\n\
-      # configuration.    \nrootNamespace: istio-system\nconfigSources:\n- address:\
-      \ istio-galley.istio-system.svc:9901\n\ndefaultConfig:\n  #\n  # TCP connection\
-      \ timeout between Envoy & the application, and between Envoys.  Used for static\
-      \ clusters\n  # defined in Envoy's configuration file\n  connectTimeout: 10s\n\
-      \  #\n  ### ADVANCED SETTINGS #############\n  # Where should envoy's configuration\
-      \ be stored in the istio-proxy container\n  configPath: \"/etc/istio/proxy\"\
-      \n  binaryPath: \"/usr/local/bin/envoy\"\n  # The pseudo service name used for\
-      \ Envoy.\n  serviceCluster: istio-proxy\n  # These settings that determine how\
-      \ long an old Envoy\n  # process should be kept alive after an occasional reload.\n\
-      \  drainDuration: 45s\n  parentShutdownDuration: 1m0s\n  #\n  # The mode used\
-      \ to redirect inbound connections to Envoy. This setting\n  # has no effect\
-      \ on outbound traffic: iptables REDIRECT is always used for\n  # outbound connections.\n\
-      \  # If \"REDIRECT\", use iptables REDIRECT to NAT and redirect to Envoy.\n\
-      \  # The \"REDIRECT\" mode loses source addresses during redirection.\n  # If\
-      \ \"TPROXY\", use iptables TPROXY to redirect to Envoy.\n  # The \"TPROXY\"\
-      \ mode preserves both the source and destination IP\n  # addresses and ports,\
-      \ so that they can be used for advanced filtering\n  # and manipulation.\n \
-      \ # The \"TPROXY\" mode also configures the sidecar to run with the\n  # CAP_NET_ADMIN\
-      \ capability, which is required to use TPROXY.\n  #interceptionMode: REDIRECT\n\
-      \  #\n  # Port where Envoy listens (on local host) for admin commands\n  # You\
-      \ can exec into the istio-proxy container in a pod and\n  # curl the admin port\
-      \ (curl http://localhost:15000/) to obtain\n  # diagnostic information from\
-      \ Envoy. See\n  # https://lyft.github.io/envoy/docs/operations/admin.html\n\
+      # configuration.    \nrootNamespace: functions\nconfigSources:\n- address: istio-galley.functions.svc:9901\n\
+      \ndefaultConfig:\n  #\n  # TCP connection timeout between Envoy & the application,\
+      \ and between Envoys.  Used for static clusters\n  # defined in Envoy's configuration\
+      \ file\n  connectTimeout: 10s\n  #\n  ### ADVANCED SETTINGS #############\n\
+      \  # Where should envoy's configuration be stored in the istio-proxy container\n\
+      \  configPath: \"/etc/istio/proxy\"\n  binaryPath: \"/usr/local/bin/envoy\"\n\
+      \  # The pseudo service name used for Envoy.\n  serviceCluster: istio-proxy\n\
+      \  # These settings that determine how long an old Envoy\n  # process should\
+      \ be kept alive after an occasional reload.\n  drainDuration: 45s\n  parentShutdownDuration:\
+      \ 1m0s\n  #\n  # The mode used to redirect inbound connections to Envoy. This\
+      \ setting\n  # has no effect on outbound traffic: iptables REDIRECT is always\
+      \ used for\n  # outbound connections.\n  # If \"REDIRECT\", use iptables REDIRECT\
+      \ to NAT and redirect to Envoy.\n  # The \"REDIRECT\" mode loses source addresses\
+      \ during redirection.\n  # If \"TPROXY\", use iptables TPROXY to redirect to\
+      \ Envoy.\n  # The \"TPROXY\" mode preserves both the source and destination\
+      \ IP\n  # addresses and ports, so that they can be used for advanced filtering\n\
+      \  # and manipulation.\n  # The \"TPROXY\" mode also configures the sidecar\
+      \ to run with the\n  # CAP_NET_ADMIN capability, which is required to use TPROXY.\n\
+      \  #interceptionMode: REDIRECT\n  #\n  # Port where Envoy listens (on local\
+      \ host) for admin commands\n  # You can exec into the istio-proxy container\
+      \ in a pod and\n  # curl the admin port (curl http://localhost:15000/) to obtain\n\
+      \  # diagnostic information from Envoy. See\n  # https://lyft.github.io/envoy/docs/operations/admin.html\n\
       \  # for more details\n  proxyAdminPort: 15000\n  #\n  # Set concurrency to\
       \ a specific number to control the number of Proxy worker threads.\n  # If set\
       \ to 0 (default), then start worker thread for each CPU thread/core.\n  concurrency:\
       \ 2\n  #\n  tracing:\n    zipkin:\n      # Address of the Zipkin collector\n\
-      \      address: zipkin.istio-system:9411\n  #\n  # Mutual TLS authentication\
-      \ between sidecars and istio control plane.\n  controlPlaneAuthPolicy: NONE\n\
-      \  #\n  # Address where istio Pilot service is running\n  discoveryAddress:\
-      \ istio-pilot.istio-system:15010"
+      \      address: zipkin.functions:9411\n  #\n  # Mutual TLS authentication between\
+      \ sidecars and istio control plane.\n  controlPlaneAuthPolicy: NONE\n  #\n \
+      \ # Address where istio Pilot service is running\n  discoveryAddress: istio-pilot.functions:15010"
     meshNetworks: 'networks: {}'
   kind: ConfigMap
   metadata:
@@ -2965,14 +2956,14 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   data:
     validatingwebhookconfiguration.yaml: "apiVersion: admissionregistration.k8s.io/v1beta1\n\
       kind: ValidatingWebhookConfiguration\nmetadata:\n  name: istio-galley\n  labels:\n\
       \    app: galley\n    chart: galley\n    heritage: Tiller\n    release: istio\n\
       \    istio: galley\nwebhooks:\n  - name: pilot.validation.istio.io\n    clientConfig:\n\
-      \      service:\n        name: istio-galley\n        namespace: istio-system\n\
+      \      service:\n        name: istio-galley\n        namespace: functions\n\
       \        path: \"/admitpilot\"\n      caBundle: \"\"\n    rules:\n      - operations:\n\
       \        - CREATE\n        - UPDATE\n        apiGroups:\n        - config.istio.io\n\
       \        apiVersions:\n        - v1alpha2\n        resources:\n        - httpapispecs\n\
@@ -2987,9 +2978,9 @@ items:
       \        - envoyfilters\n        - gateways\n        - serviceentries\n    \
       \    - sidecars\n        - virtualservices\n    failurePolicy: Fail\n    sideEffects:\
       \ None\n  - name: mixer.validation.istio.io\n    clientConfig:\n      service:\n\
-      \        name: istio-galley\n        namespace: istio-system\n        path:\
-      \ \"/admitmixer\"\n      caBundle: \"\"\n    rules:\n      - operations:\n \
-      \       - CREATE\n        - UPDATE\n        apiGroups:\n        - config.istio.io\n\
+      \        name: istio-galley\n        namespace: functions\n        path: \"\
+      /admitmixer\"\n      caBundle: \"\"\n    rules:\n      - operations:\n     \
+      \   - CREATE\n        - UPDATE\n        apiGroups:\n        - config.istio.io\n\
       \        apiVersions:\n        - v1alpha2\n        resources:\n        - rules\n\
       \        - attributemanifests\n        - circonuses\n        - deniers\n   \
       \     - fluentds\n        - kubernetesenvs\n        - listcheckers\n       \
@@ -3011,7 +3002,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-galley-configuration
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   data:
     custom-resources.yaml: "# Authentication policy to enable permissive mode for\
@@ -3024,9 +3015,9 @@ items:
       \nkubectl get validatingwebhookconfiguration istio-galley 2>/dev/null\nif [\
       \ \"$?\" -eq 0 ]; then\n    echo \"istio-galley validatingwebhookconfiguration\
       \ found - waiting for istio-galley deployment to be ready\"\n    while true;\
-      \ do\n        kubectl -n istio-system get deployment istio-galley 2>/dev/null\n\
+      \ do\n        kubectl -n functions get deployment istio-galley 2>/dev/null\n\
       \        if [ \"$?\" -eq 0 ]; then\n            break\n        fi\n        sleep\
-      \ 1\n    done\n    kubectl -n istio-system rollout status deployment istio-galley\n\
+      \ 1\n    done\n    kubectl -n functions rollout status deployment istio-galley\n\
       \    if [ \"$?\" -ne 0 ]; then\n        echo \"istio-galley deployment rollout\
       \ status check failed\"\n        exit 1\n    fi\n    echo \"istio-galley deployment\
       \ ready for configuration validation\"\nfi\nsleep 5\nkubectl apply -f ${pathToResourceYAML}"
@@ -3040,7 +3031,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-security-custom-resources
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   data:
     config: "policy: disabled\nalwaysInjectSelector:\n  []\n  \nneverInjectSelector:\n\
@@ -3227,41 +3218,39 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-sidecar-injector
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   data:
     prometheus.yml: "global:\n  scrape_interval: 15s\nscrape_configs:\n\n- job_name:\
       \ 'istio-mesh'\n  kubernetes_sd_configs:\n  - role: endpoints\n    namespaces:\n\
-      \      names:\n      - istio-system\n\n  relabel_configs:\n  - source_labels:\
-      \ [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]\n \
-      \   action: keep\n    regex: istio-telemetry;prometheus\n\n# Scrape config for\
-      \ envoy stats\n- job_name: 'envoy-stats'\n  metrics_path: /stats/prometheus\n\
-      \  kubernetes_sd_configs:\n  - role: pod\n\n  relabel_configs:\n  - source_labels:\
-      \ [__meta_kubernetes_pod_container_port_name]\n    action: keep\n    regex:\
-      \ '.*-envoy-prom'\n  - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]\n\
+      \      names:\n      - functions\n\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_service_name,\
+      \ __meta_kubernetes_endpoint_port_name]\n    action: keep\n    regex: istio-telemetry;prometheus\n\
+      \n# Scrape config for envoy stats\n- job_name: 'envoy-stats'\n  metrics_path:\
+      \ /stats/prometheus\n  kubernetes_sd_configs:\n  - role: pod\n\n  relabel_configs:\n\
+      \  - source_labels: [__meta_kubernetes_pod_container_port_name]\n    action:\
+      \ keep\n    regex: '.*-envoy-prom'\n  - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]\n\
       \    action: replace\n    regex: ([^:]+)(?::\\d+)?;(\\d+)\n    replacement:\
       \ $1:15090\n    target_label: __address__\n  - action: labelmap\n    regex:\
       \ __meta_kubernetes_pod_label_(.+)\n  - source_labels: [__meta_kubernetes_namespace]\n\
       \    action: replace\n    target_label: namespace\n  - source_labels: [__meta_kubernetes_pod_name]\n\
       \    action: replace\n    target_label: pod_name\n\n- job_name: 'istio-policy'\n\
       \  kubernetes_sd_configs:\n  - role: endpoints\n    namespaces:\n      names:\n\
-      \      - istio-system\n\n\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_service_name,\
+      \      - functions\n\n\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_service_name,\
       \ __meta_kubernetes_endpoint_port_name]\n    action: keep\n    regex: istio-policy;http-monitoring\n\
       \n- job_name: 'istio-telemetry'\n  kubernetes_sd_configs:\n  - role: endpoints\n\
-      \    namespaces:\n      names:\n      - istio-system\n\n  relabel_configs:\n\
-      \  - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]\n\
+      \    namespaces:\n      names:\n      - functions\n\n  relabel_configs:\n  -\
+      \ source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]\n\
       \    action: keep\n    regex: istio-telemetry;http-monitoring\n\n- job_name:\
       \ 'pilot'\n  kubernetes_sd_configs:\n  - role: endpoints\n    namespaces:\n\
-      \      names:\n      - istio-system\n\n  relabel_configs:\n  - source_labels:\
-      \ [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]\n \
-      \   action: keep\n    regex: istio-pilot;http-monitoring\n\n- job_name: 'galley'\n\
-      \  kubernetes_sd_configs:\n  - role: endpoints\n    namespaces:\n      names:\n\
-      \      - istio-system\n\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_service_name,\
+      \      names:\n      - functions\n\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_service_name,\
+      \ __meta_kubernetes_endpoint_port_name]\n    action: keep\n    regex: istio-pilot;http-monitoring\n\
+      \n- job_name: 'galley'\n  kubernetes_sd_configs:\n  - role: endpoints\n    namespaces:\n\
+      \      names:\n      - functions\n\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_service_name,\
       \ __meta_kubernetes_endpoint_port_name]\n    action: keep\n    regex: istio-galley;http-monitoring\n\
       \n- job_name: 'citadel'\n  kubernetes_sd_configs:\n  - role: endpoints\n   \
-      \ namespaces:\n      names:\n      - istio-system\n\n  relabel_configs:\n  -\
-      \ source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]\n\
-      \    action: keep\n    regex: istio-citadel;http-monitoring\n\n# scrape config\
+      \ namespaces:\n      names:\n      - functions\n\n  relabel_configs:\n  - source_labels:\
+      \ [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]\n \
+      \   action: keep\n    regex: istio-citadel;http-monitoring\n\n# scrape config\
       \ for API servers\n- job_name: 'kubernetes-apiservers'\n  kubernetes_sd_configs:\n\
       \  - role: endpoints\n    namespaces:\n      names:\n      - default\n  scheme:\
       \ https\n  tls_config:\n    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt\n\
@@ -3347,7 +3336,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: prometheus
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: Service
   metadata:
@@ -3421,7 +3410,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-citadel
-    namespace: istio-system
+    namespace: functions
   spec:
     ports:
     - name: http-monitoring
@@ -3443,7 +3432,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-galley
-    namespace: istio-system
+    namespace: functions
   spec:
     ports:
     - name: http-monitoring
@@ -3467,7 +3456,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-ingressgateway
-    namespace: istio-system
+    namespace: functions
   spec:
     ports:
     - name: status-port
@@ -3514,7 +3503,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-pilot
-    namespace: istio-system
+    namespace: functions
   spec:
     ports:
     - name: grpc-xds
@@ -3538,7 +3527,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-sidecar-injector
-    namespace: istio-system
+    namespace: functions
   spec:
     ports:
     - port: 443
@@ -3557,7 +3546,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-telemetry
-    namespace: istio-system
+    namespace: functions
   spec:
     ports:
     - name: grpc-mixer-mtls
@@ -3583,7 +3572,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: prometheus
-    namespace: istio-system
+    namespace: functions
   spec:
     ports:
     - name: http-prometheus
@@ -3612,7 +3601,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: certmanager
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3645,7 +3634,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-citadel-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3660,7 +3649,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-cleanup-secrets-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3671,7 +3660,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-galley-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3682,7 +3671,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-ingressgateway-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3693,14 +3682,14 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-mixer-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
     labels:
       kubenix/project-name: kubenix
     name: istio-multi
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3711,7 +3700,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-nodeagent-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3722,7 +3711,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-pilot-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3733,7 +3722,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-security-post-install-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3745,7 +3734,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-sidecar-injector-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3767,7 +3756,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: prometheus
-    namespace: istio-system
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3777,7 +3766,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-mgr
-    namespace: storage
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3787,7 +3776,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-osd
-    namespace: storage
+    namespace: functions
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -3797,7 +3786,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-system
-    namespace: storage
+    namespace: functions
 - apiVersion: extensions/v1beta1
   kind: DaemonSet
   metadata:
@@ -3922,7 +3911,7 @@ items:
       release: istio
       version: 1.2.4
     name: certmanager
-    namespace: istio-system
+    namespace: functions
   spec:
     minAvailable: 1
     selector:
@@ -3957,7 +3946,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-galley
-    namespace: istio-system
+    namespace: functions
   spec:
     minAvailable: 1
     selector:
@@ -3976,7 +3965,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-ingressgateway
-    namespace: istio-system
+    namespace: functions
   spec:
     minAvailable: 1
     selector:
@@ -3995,7 +3984,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-pilot
-    namespace: istio-system
+    namespace: functions
   spec:
     minAvailable: 1
     selector:
@@ -4012,7 +4001,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: istio-sidecar-injector
-    namespace: istio-system
+    namespace: functions
   spec:
     minAvailable: 1
     selector:
@@ -4033,7 +4022,7 @@ items:
       release: istio
       version: 1.2.4
     name: istio-telemetry
-    namespace: istio-system
+    namespace: functions
   spec:
     minAvailable: 1
     selector:
@@ -4048,7 +4037,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: 00-rook-ceph-operator
-    namespace: storage
+    namespace: functions
   spec:
     allowedCapabilities:
     - '*'
@@ -4076,7 +4065,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: certmanager
-    namespace: istio-system
+    namespace: functions
   rules:
   - apiGroups:
     - certmanager.k8s.io
@@ -4115,8 +4104,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-citadel-istio-system
-    namespace: istio-system
+    name: istio-citadel-functions
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -4165,8 +4154,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-cleanup-secrets-istio-system
-    namespace: istio-system
+    name: istio-cleanup-secrets-functions
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -4184,8 +4173,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-galley-istio-system
-    namespace: istio-system
+    name: istio-galley-functions
+    namespace: functions
   rules:
   - apiGroups:
     - admissionregistration.k8s.io
@@ -4270,8 +4259,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-mixer-istio-system
-    namespace: istio-system
+    name: istio-mixer-functions
+    namespace: functions
   rules:
   - apiGroups:
     - config.istio.io
@@ -4323,8 +4312,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-nodeagent-istio-system
-    namespace: istio-system
+    name: istio-nodeagent-functions
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -4341,8 +4330,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-pilot-istio-system
-    namespace: istio-system
+    name: istio-pilot-functions
+    namespace: functions
   rules:
   - apiGroups:
     - config.istio.io
@@ -4412,7 +4401,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: istio-reader
-    namespace: istio-system
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -4445,8 +4434,8 @@ items:
       istio: sidecar-injector
       kubenix/project-name: kubenix
       release: istio
-    name: istio-sidecar-injector-istio-system
-    namespace: istio-system
+    name: istio-sidecar-injector-functions
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -4474,8 +4463,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: prometheus-istio-system
-    namespace: istio-system
+    name: prometheus-functions
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -4529,7 +4518,7 @@ items:
       kubenix/project-name: kubenix
       release: istio
     name: certmanager
-    namespace: istio-system
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -4537,7 +4526,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: certmanager
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4547,16 +4536,16 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-citadel-istio-system
-    namespace: istio-system
+    name: istio-citadel-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-citadel-istio-system
+    name: istio-citadel-functions
   subjects:
   - kind: ServiceAccount
     name: istio-citadel-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4570,16 +4559,16 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-cleanup-secrets-istio-system
-    namespace: istio-system
+    name: istio-cleanup-secrets-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-cleanup-secrets-istio-system
+    name: istio-cleanup-secrets-functions
   subjects:
   - kind: ServiceAccount
     name: istio-cleanup-secrets-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4589,16 +4578,16 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-galley-admin-role-binding-istio-system
-    namespace: istio-system
+    name: istio-galley-admin-role-binding-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-galley-istio-system
+    name: istio-galley-functions
   subjects:
   - kind: ServiceAccount
     name: istio-galley-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4608,16 +4597,16 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-mixer-admin-role-binding-istio-system
-    namespace: istio-system
+    name: istio-mixer-admin-role-binding-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-mixer-istio-system
+    name: istio-mixer-functions
   subjects:
   - kind: ServiceAccount
     name: istio-mixer-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4625,7 +4614,7 @@ items:
       chart: istio-1.2.4
       kubenix/project-name: kubenix
     name: istio-multi
-    namespace: istio-system
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -4633,7 +4622,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: istio-multi
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4643,16 +4632,16 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-nodeagent-istio-system
-    namespace: istio-system
+    name: istio-nodeagent-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-nodeagent-istio-system
+    name: istio-nodeagent-functions
   subjects:
   - kind: ServiceAccount
     name: istio-nodeagent-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4662,16 +4651,16 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-pilot-istio-system
-    namespace: istio-system
+    name: istio-pilot-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-pilot-istio-system
+    name: istio-pilot-functions
   subjects:
   - kind: ServiceAccount
     name: istio-pilot-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4682,16 +4671,16 @@ items:
       istio: sidecar-injector
       kubenix/project-name: kubenix
       release: istio
-    name: istio-sidecar-injector-admin-role-binding-istio-system
-    namespace: istio-system
+    name: istio-sidecar-injector-admin-role-binding-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-sidecar-injector-istio-system
+    name: istio-sidecar-injector-functions
   subjects:
   - kind: ServiceAccount
     name: istio-sidecar-injector-service-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
@@ -4701,23 +4690,23 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: prometheus-istio-system
-    namespace: istio-system
+    name: prometheus-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: prometheus-istio-system
+    name: prometheus-functions
   subjects:
   - kind: ServiceAccount
     name: prometheus
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
     labels:
       kubenix/project-name: kubenix
     name: istio-ingressgateway-sds
-    namespace: istio-system
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -4733,7 +4722,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: istio-ingressgateway-sds
-    namespace: istio-system
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -4909,8 +4898,8 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-security-post-install-istio-system
-    namespace: istio-system
+    name: istio-security-post-install-functions
+    namespace: functions
   rules:
   - apiGroups:
     - authentication.istio.io
@@ -4973,7 +4962,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-cluster-mgmt
-    namespace: storage
+    namespace: functions
   rules: []
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
@@ -4984,7 +4973,7 @@ items:
       rbac.rook.ceph.io/aggregate-to-rook-ceph-cluster-mgmt: 'true'
       storage-backend: ceph
     name: rook-ceph-cluster-mgmt-rules
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -5026,7 +5015,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-global
-    namespace: storage
+    namespace: functions
   rules: []
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
@@ -5037,7 +5026,7 @@ items:
       rbac.ceph.rook.io/aggregate-to-rook-ceph-global: 'true'
       storage-backend: ceph
     name: rook-ceph-global-rules
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -5107,7 +5096,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-mgr-cluster
-    namespace: storage
+    namespace: functions
   rules: []
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
@@ -5118,7 +5107,7 @@ items:
       rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-cluster: 'true'
       storage-backend: ceph
     name: rook-ceph-mgr-cluster-rules
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -5140,7 +5129,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-mgr-system
-    namespace: storage
+    namespace: functions
   rules: []
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
@@ -5149,7 +5138,7 @@ items:
       kubenix/project-name: kubenix
       rbac.ceph.rook.io/aggregate-to-rook-ceph-mgr-system: 'true'
     name: rook-ceph-mgr-system-rules
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -5172,7 +5161,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-system-psp-user
-    namespace: storage
+    namespace: functions
   rules: []
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
@@ -5184,7 +5173,7 @@ items:
       rbac.ceph.rook.io/aggregate-to-rook-ceph-system-psp-user: 'true'
       storage-backend: ceph
     name: rook-ceph-system-psp-user-rules
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - apps
@@ -5241,16 +5230,16 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: istio
-    name: istio-security-post-install-role-binding-istio-system
-    namespace: istio-system
+    name: istio-security-post-install-role-binding-functions
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: istio-security-post-install-istio-system
+    name: istio-security-post-install-functions
   subjects:
   - kind: ServiceAccount
     name: istio-security-post-install-account
-    namespace: istio-system
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
@@ -5279,7 +5268,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-global
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -5287,14 +5276,14 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-system
-    namespace: storage
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-mgr-cluster
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -5302,7 +5291,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-mgr
-    namespace: storage
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRoleBinding
   metadata:
@@ -5312,7 +5301,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-system-psp-users
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -5320,7 +5309,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-system
-    namespace: storage
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role
   metadata:
@@ -5355,7 +5344,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-mgr
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -5389,7 +5378,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-osd
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -5410,7 +5399,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-system
-    namespace: storage
+    namespace: functions
   rules:
   - apiGroups:
     - ''
@@ -5463,7 +5452,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-cluster-mgmt
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -5471,14 +5460,14 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-system
-    namespace: storage
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: RoleBinding
   metadata:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-mgr
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -5486,14 +5475,14 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-mgr
-    namespace: storage
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: RoleBinding
   metadata:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-mgr-system
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -5501,14 +5490,14 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-mgr
-    namespace: storage
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: RoleBinding
   metadata:
     labels:
       kubenix/project-name: kubenix
     name: rook-ceph-osd
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -5516,7 +5505,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-osd
-    namespace: storage
+    namespace: functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: RoleBinding
   metadata:
@@ -5525,7 +5514,7 @@ items:
       operator: rook
       storage-backend: ceph
     name: rook-ceph-system
-    namespace: storage
+    namespace: functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -5533,7 +5522,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: rook-ceph-system
-    namespace: storage
+    namespace: functions
 - apiVersion: storage.k8s.io/v1
   kind: StorageClass
   metadata:
@@ -5543,7 +5532,7 @@ items:
     namespace: default
   parameters:
     blockPool: brigade-storage
-    clusterNamespace: storage
+    clusterNamespace: functions
   provisioner: ceph.rook.io/block
 - apiVersion: storage.k8s.io/v1
   kind: StorageClass
@@ -5554,7 +5543,7 @@ items:
     namespace: default
   parameters:
     blockPool: brigade-cache
-    clusterNamespace: storage
+    clusterNamespace: functions
   provisioner: ceph.rook.io/block
 - apiVersion: apps/v1
   kind: Deployment
@@ -5562,7 +5551,7 @@ items:
     labels:
       app: rook-ceph-tools
     name: rook-ceph-tools
-    namespace: storage
+    namespace: functions
   spec:
     replicas: 1
     selector:

@@ -12,7 +12,7 @@
 with kubenix.lib.helm;
 let
   namespace = project-config.kubernetes.namespace;
-  knative-monitoring-ns = namespace.knative-monitoring;
+  knative-monitoring-ns = namespace.knative-monitoring.name;
 
   override-namespace = 
       override-static-yaml 

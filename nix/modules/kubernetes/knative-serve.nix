@@ -7,9 +7,9 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  functions-ns = namespace.functions;
-  knative-monitoring-ns = namespace.knative-monitoring;
-  kn-ns = namespace.knative-serving;
+  functions-ns = namespace.functions.name;
+  knative-monitoring-ns = namespace.knative-monitoring.name;
+  kn-ns = namespace.knative-serving.name;
   mk-domain = project-config.project.make-sub-domain;
 in
 {
