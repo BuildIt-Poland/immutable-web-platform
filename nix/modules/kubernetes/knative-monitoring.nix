@@ -42,6 +42,7 @@ in
       (override k8s-resources.knative-monitoring-json (v: 
           if (v.kind == "Deployment" && v.metadata.name == "grafana") then null
           else if (v.kind == "Deployment" && v.metadata.name == "kibana-logging") then null
+          else if (v.kind == "Service" && v.metadata.name == "kibana-logging") then null
           # else if (v.kind == "DaemonSet" && v.metadata.name == "fluentd-ds") then 
           else if (lib.hasPrefix "grafana-dashboard" v.metadata.name) then 
             (lib.recursiveUpdate v { metadata.labels.grafana_dashboard = "1"; })
@@ -83,15 +84,14 @@ in
       values = {
         image = {
           repository = "docker.elastic.co/kibana/kibana";
-          tag = "5.6.4"; # has to be compatibile with ES from knative
+          tag = "5.6.16"; # has to be compatibile with ES from knative
         };
         service.type = "NodePort";
-        # plugins.enabled = true;
         files."kibana.yml" = {
-          "elasticsearch.hosts" = null; # older version does not support this prop
           "logging.verbose" = "true";
           "server.name" = "kibana";
           "server.host" = "0";
+          "elasticsearch.hosts" = null; # older version does not support this prop
           "elasticsearch.url" = "http://elasticsearch-logging:9200";
         };
       };

@@ -30,7 +30,7 @@ items:
           release: kibana
       spec:
         containers:
-        - image: docker.elastic.co/kibana/kibana:5.6.4
+        - image: docker.elastic.co/kibana/kibana:5.6.16
           imagePullPolicy: IfNotPresent
           name: kibana
           ports:
@@ -7358,24 +7358,6 @@ items:
       port: 9411
     selector:
       app: zipkin
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      addonmanager.kubernetes.io/mode: Reconcile
-      app: kibana-logging
-      kubernetes.io/cluster-service: 'true'
-      kubernetes.io/name: Kibana
-    name: kibana-logging
-    namespace: knative-monitoring
-  spec:
-    ports:
-    - port: 5601
-      protocol: TCP
-      targetPort: ui
-    selector:
-      app: kibana-logging
-    type: NodePort
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
