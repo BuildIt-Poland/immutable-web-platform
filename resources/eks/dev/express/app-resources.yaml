@@ -6,7 +6,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: knative-ingress-gateway
-    namespace: functions
+    namespace: knative-serving
   spec:
     selector:
       istio: ingressgateway
@@ -48,7 +48,7 @@ items:
         - env:
           - name: TARGET
             value: Node.js Sample v1
-          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-436698cfee92e15c7f5e95bdefb996bf4d1a1a3d
+          image: 006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:express-app-c27b72f963276e82b4431d9ea037c15b7457f217
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
@@ -74,7 +74,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: config-certmanager
-    namespace: functions
+    namespace: knative-serving
 - apiVersion: v1
   data:
     future-is-comming.dev.buildit.consulting: ''
@@ -83,6 +83,6 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: config-domain
-    namespace: functions
+    namespace: knative-serving
 kind: List
 labels:

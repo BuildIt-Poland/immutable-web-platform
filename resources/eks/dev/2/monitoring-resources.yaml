@@ -5,8 +5,49 @@ items:
   metadata:
     labels:
       kubenix/project-name: kubenix
-    name: functions
+    name: knative-monitoring
     namespace: default
+- apiVersion: apps/v1beta1
+  kind: Deployment
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 3
+    template:
+      metadata:
+        annotations:
+          checksum/config: 2e63ae7ed845491b7ba71bbc16d2c4357494cf2aa7898c93a56188b2a1de16a1
+        labels:
+          app: kibana
+          release: kibana
+      spec:
+        containers:
+        - image: docker.elastic.co/kibana/kibana:5.6.16
+          imagePullPolicy: IfNotPresent
+          name: kibana
+          ports:
+          - containerPort: 5601
+            name: kibana
+            protocol: TCP
+          resources: {}
+          volumeMounts:
+          - mountPath: /usr/share/kibana/config/kibana.yml
+            name: kibana
+            subPath: kibana.yml
+        serviceAccountName: default
+        tolerations: []
+        volumes:
+        - configMap:
+            name: kibana
+          name: kibana
 - apiVersion: apps/v1beta1
   kind: Deployment
   metadata:
@@ -23,7 +64,7 @@ items:
       kubenix/project-name: kubenix
       release: weave-scope
     name: weave-scope-frontend-weave-scope
-    namespace: functions
+    namespace: dev-functions
   spec:
     replicas: 1
     selector:
@@ -60,7 +101,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
   spec:
     replicas: 1
     selector:
@@ -72,10 +113,10 @@ items:
     template:
       metadata:
         annotations:
-          checksum/config: 3724e82c842c131a8bfe82850ce4036392ef9ea9d3981f0ad1b7972e5e47ceb9
+          checksum/config: 00957712bb25e533b78dde0c8ac465722519bfe1b2208d49c9c19f0e8b1a1a5f
           checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
-          checksum/sc-dashboard-provider-config: d6906dde861d1856c9d6fdc2d47f9d1d188563bb62579b81d917155e1d439a65
-          checksum/secret: 32d9de29cd75dfffb49eda02fe1e21983402981cdb400c5870b51653f7d2d782
+          checksum/sc-dashboard-provider-config: 263e72d9991ee094304493e8397218680ed85e034dc2ac173727b7348ce05118
+          checksum/secret: 8c2ab9bca9ac1ebc2f7b9ecc76571ef9f2cded80bb0ee972cbbb5e405dfb9b78
         labels:
           app: grafana
           release: grafana
@@ -218,7 +259,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     provider.yaml: "apiVersion: 1\nproviders:\n- name: 'sidecarProvider'\n  orgId:\
@@ -233,7 +274,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-config-dashboards
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     run.sh: "@test \"Test Health\" {\n  url=\"http://grafana/api/health\"\n\n  code=$(curl\
@@ -248,11 +289,52 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-test
-    namespace: functions
+    namespace: knative-monitoring
+- apiVersion: v1
+  data:
+    kibana.yml: 'elasticsearch.url: http://elasticsearch-logging:9200
+
+      logging.verbose: "true"
+
+      server.host: "0"
+
+      server.name: kibana
+
+      '
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+- apiVersion: v1
+  data:
+    run.sh: "@test \"Test Status\" {\n  url=\"http://kibana:443/api/status\"\n\n \
+      \ # retry for 1 minute\n  run curl -s -o /dev/null -I -w \"%{http_code}\" --retry\
+      \ 30 --retry-delay 2 $url\n\n  code=$(curl -s -o /dev/null -I -w \"%{http_code}\"\
+      \ $url)\n  body=$(curl $url)\n  if [ \"$code\" == \"503\" ]\n  then\n    skip\
+      \ \"Kibana Unavailable (503), can't get status - see pod logs: $body\"\n  fi\n\
+      \n  result=$(echo $body | jq -cr '.status.statuses[]')\n  [ \"$result\" != \"\
+      \" ]\n\n  result=$(echo $body | jq -cr '.status.statuses[] | select(.state !=\
+      \ \"green\")')\n  [ \"$result\" == \"\" ]\n}"
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana-test
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     run.sh: "\n@test \"Testing Weave Scope UI is accessible\" {\n  curl --retry 12\
-      \ --retry-delay 10 http://weave-scope-app.functions.svc:80\n}"
+      \ --retry-delay 10 http://weave-scope-app.dev-functions.svc:80\n}"
   kind: ConfigMap
   metadata:
     labels:
@@ -262,7 +344,7 @@ items:
       kubenix/project-name: kubenix
       release: weave-scope
     name: weave-scope-weave-scope-tests
-    namespace: functions
+    namespace: dev-functions
 - apiVersion: v1
   kind: Pod
   metadata:
@@ -275,7 +357,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-test
-    namespace: functions
+    namespace: knative-monitoring
   spec:
     containers:
     - command:
@@ -320,13 +402,63 @@ items:
     annotations:
       helm.sh/hook: test-success
     labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana-test
+    namespace: knative-monitoring
+  spec:
+    containers:
+    - command:
+      - /tools/bats/bats
+      - -t
+      - /tests/run.sh
+      image: dwdraju/alpine-curl-jq
+      name: kibana-test
+      volumeMounts:
+      - mountPath: /tests
+        name: tests
+        readOnly: true
+      - mountPath: /tools
+        name: tools
+    initContainers:
+    - command:
+      - bash
+      - -c
+      - 'set -ex
+
+        # copy bats to tools dir
+
+        cp -R /usr/local/libexec/ /tools/bats/
+
+        '
+      image: dduportal/bats:0.4.0
+      name: test-framework
+      volumeMounts:
+      - mountPath: /tools
+        name: tools
+    restartPolicy: Never
+    volumes:
+    - configMap:
+        name: kibana-test
+      name: tests
+    - emptyDir: {}
+      name: tools
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      helm.sh/hook: test-success
+    labels:
       app: weave-scope
       chart: weave-scope-1.1.2
       heritage: Tiller
       kubenix/project-name: kubenix
       release: weave-scope
-    name: weave-scope-ui-test-6u0vm
-    namespace: functions
+    name: weave-scope-ui-test-voxi2
+    namespace: dev-functions
   spec:
     containers:
     - command:
@@ -366,7 +498,7 @@ items:
       name: tools
 - apiVersion: v1
   data:
-    admin-password: RVdFVURGRWt5bXphbnlkT2xTcUJsR2h1QnJLczhqUHlJV00yUEh2OQ==
+    admin-password: cTl1cGxlWHBLd2ZNQ3VoWEt5UjVtdzN2OXV4MnV2cjBPVzJPNzRuUQ==
     admin-user: YWRtaW4=
     ldap-toml: ''
   kind: Secret
@@ -378,7 +510,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
   type: Opaque
 - apiVersion: v1
   kind: Service
@@ -390,7 +522,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
   spec:
     ports:
     - name: service
@@ -401,6 +533,26 @@ items:
       app: grafana
       release: grafana
     type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+  spec:
+    ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 5601
+    selector:
+      app: kibana
+      release: kibana
+    type: NodePort
 - apiVersion: v1
   kind: Service
   metadata:
@@ -417,7 +569,7 @@ items:
       kubenix/project-name: kubenix
       release: weave-scope
     name: weave-scope-app
-    namespace: functions
+    namespace: dev-functions
   spec:
     ports:
     - name: http
@@ -439,7 +591,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -450,7 +602,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-test
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
@@ -467,7 +619,7 @@ items:
       kubenix/project-name: kubenix
       release: weave-scope
     name: weave-scope-agent-weave-scope
-    namespace: functions
+    namespace: dev-functions
 - apiVersion: extensions/v1beta1
   kind: DaemonSet
   metadata:
@@ -484,7 +636,7 @@ items:
       kubenix/project-name: kubenix
       release: weave-scope
     name: weave-scope-agent-weave-scope
-    namespace: functions
+    namespace: dev-functions
   spec:
     selector:
       matchLabels:
@@ -506,7 +658,7 @@ items:
           - --probe.docker.bridge=docker0
           - --probe.docker=true
           - --probe.kubernetes=true
-          - weave-scope-app.functions.svc:80
+          - weave-scope-app.dev-functions.svc:80
           image: weaveworks/scope:1.11.2
           imagePullPolicy: IfNotPresent
           name: weave-scope-agent
@@ -553,7 +705,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
   spec:
     allowPrivilegeEscalation: false
     fsGroup:
@@ -599,7 +751,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-test
-    namespace: functions
+    namespace: knative-monitoring
   spec:
     allowPrivilegeEscalation: true
     fsGroup:
@@ -630,7 +782,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-clusterrole
-    namespace: functions
+    namespace: knative-monitoring
   rules:
   - apiGroups:
     - ''
@@ -651,7 +803,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-clusterrolebinding
-    namespace: functions
+    namespace: knative-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -659,7 +811,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
@@ -670,7 +822,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-test
-    namespace: functions
+    namespace: knative-monitoring
   rules:
   - apiGroups:
     - policy
@@ -690,7 +842,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana-test
-    namespace: functions
+    namespace: knative-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -698,7 +850,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: grafana-test
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: ClusterRole
   metadata:
@@ -715,7 +867,7 @@ items:
       kubenix/project-name: kubenix
       release: weave-scope
     name: weave-scope-agent-weave-scope
-    namespace: functions
+    namespace: dev-functions
   rules:
   - apiGroups:
     - '*'
@@ -743,7 +895,7 @@ items:
       kubenix/project-name: kubenix
       release: weave-scope
     name: weave-scope-weave-scope
-    namespace: functions
+    namespace: dev-functions
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
@@ -751,7 +903,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: weave-scope-agent-weave-scope
-    namespace: functions
+    namespace: dev-functions
 - apiVersion: rbac.authorization.k8s.io/v1beta1
   kind: Role
   metadata:
@@ -762,7 +914,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
   rules:
   - apiGroups:
     - extensions
@@ -782,7 +934,7 @@ items:
       kubenix/project-name: kubenix
       release: grafana
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: Role
@@ -790,7 +942,7 @@ items:
   subjects:
   - kind: ServiceAccount
     name: grafana
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     ceph-cluster-dashboard.json: '{"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -873,7 +1025,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: ceph-cluster-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     ceph-osd-dashboard.json: '{"annotations":{"list":[{"$$hashKey":"object:4792","builtIn":1,"datasource":"--
@@ -912,7 +1064,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: ceph-osd-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     ceph-pools-dashboard.json: '{"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -946,7 +1098,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: ceph-pools-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     citadel-dashboard.json: '{"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -997,7 +1149,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: citadel-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     galley-dashboard.json: '{"__inputs":[{"description":"","label":"Prometheus","name":"DS_PROMETHEUS","pluginId":"prometheus","pluginName":"Prometheus","type":"datasource"}],"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -1073,7 +1225,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: galley-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     datasource.yaml: "apiVersion: 1\ndatasources:\n- name: prometheus-istio\n  access:\
@@ -1084,7 +1236,7 @@ items:
       grafana_datasource: '1'
       kubenix/project-name: kubenix
     name: grafana-istio-datasource
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     istio-mesh-dashboard.json: '{"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -1213,7 +1365,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: istio-mesh-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     istio-performance-dashboard.json: '{"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -1316,7 +1468,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: istio-performance-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     istio-service-dashboard.json: '{"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -1676,7 +1828,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: istio-service-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     istio-workload-dashboard.json: '{"__inputs":[{"description":"","label":"Prometheus","name":"DS_PROMETHEUS","pluginId":"prometheus","pluginName":"Prometheus","type":"datasource"}],"__requires":[{"id":"grafana","name":"Grafana","type":"grafana","version":"5.0.4"},{"id":"graph","name":"Graph","type":"panel","version":"5.0.0"},{"id":"prometheus","name":"Prometheus","type":"datasource","version":"5.0.0"},{"id":"singlestat","name":"Singlestat","type":"panel","version":"5.0.0"},{"id":"text","name":"Text","type":"panel","version":"5.0.0"}],"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -2049,7 +2201,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: istio-workload-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     mixer-dashboard.json: '{"__inputs":[{"description":"","label":"Prometheus","name":"DS_PROMETHEUS","pluginId":"prometheus","pluginName":"Prometheus","type":"datasource"}],"__requires":[{"id":"grafana","name":"Grafana","type":"grafana","version":"5.2.3"},{"id":"graph","name":"Graph","type":"panel","version":"5.0.0"},{"id":"prometheus","name":"Prometheus","type":"datasource","version":"5.0.0"},{"id":"text","name":"Text","type":"panel","version":"5.0.0"}],"annotations":{"list":[{"builtIn":1,"datasource":"--
@@ -2163,7 +2315,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: mixer-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     pilot-dashboard.json: '{"annotations":{"list":[{"builtIn":1,"datasource":"-- Grafana
@@ -2257,7 +2409,7 @@ items:
       grafana_dashboard: '1'
       kubenix/project-name: kubenix
     name: pilot-dashboard.json
-    namespace: functions
+    namespace: knative-monitoring
 - apiVersion: v1
   kind: Namespace
   metadata:
@@ -7206,24 +7358,6 @@ items:
       port: 9411
     selector:
       app: zipkin
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      addonmanager.kubernetes.io/mode: Reconcile
-      app: kibana-logging
-      kubernetes.io/cluster-service: 'true'
-      kubernetes.io/name: Kibana
-    name: kibana-logging
-    namespace: knative-monitoring
-  spec:
-    ports:
-    - port: 5601
-      protocol: TCP
-      targetPort: ui
-    selector:
-      app: kibana-logging
-    type: NodePort
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -7269,46 +7403,6 @@ items:
               memory: 1000Mi
             requests:
               memory: 256Mi
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    labels:
-      addonmanager.kubernetes.io/mode: Reconcile
-      app: kibana-logging
-      kubernetes.io/cluster-service: 'true'
-    name: kibana-logging
-    namespace: knative-monitoring
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app: kibana-logging
-    template:
-      metadata:
-        labels:
-          app: kibana-logging
-      spec:
-        containers:
-        - env:
-          - name: ELASTICSEARCH_URL
-            value: http://elasticsearch-logging:9200
-          - name: SERVER_BASEPATH
-            value: /api/v1/namespaces/knative-monitoring/services/kibana-logging/proxy
-          - name: XPACK_MONITORING_ENABLED
-            value: 'false'
-          - name: XPACK_SECURITY_ENABLED
-            value: 'false'
-          image: docker.elastic.co/kibana/kibana:5.6.4
-          name: kibana-logging
-          ports:
-          - containerPort: 5601
-            name: ui
-            protocol: TCP
-          resources:
-            limits:
-              cpu: 1000m
-            requests:
-              cpu: 100m
 - apiVersion: v1
   data:
     100.system.conf: "<system>\n  root_dir /tmp/fluentd-buffers/\n</system>"
