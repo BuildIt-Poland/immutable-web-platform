@@ -1,3 +1,6 @@
+
+Immutable platform - all as a code approach - `opa policies` (`apps` -> `kubernetes` -> `infrastructure`) .
+
 ### Purpose
 Yet another story about `kubernetes` and declarative approach to infrastructure.
 

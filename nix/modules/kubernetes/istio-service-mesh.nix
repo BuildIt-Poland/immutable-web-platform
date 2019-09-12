@@ -11,14 +11,6 @@ let
   namespace = project-config.kubernetes.namespace;
   istio-ns = namespace.istio.name;
   service-mesh-config = config.kubernetes.network-mesh;
-
-  create-istio-cr = kind: {
-    inherit kind;
-
-    group = "config.istio.io";
-    version = "v1alpha2";
-    description = "";
-  };
 in
 {
   imports = with kubenix.modules; [ 
@@ -26,6 +18,7 @@ in
     helm
     istio
     k8s-extension
+    istio-crd
   ];
 
   options.kubernetes.network-mesh = {
@@ -76,8 +69,6 @@ in
 
           ## FIXME IF OPA enabled
           mixer.policy.enabled = true;
-          # mixer.adapters.useAdapterCRDs = true;
-          mixer.adapters.opa.enabled = true;
 
           mixer.telemetry.enabled = true;
           # https://github.com/istio/istio/issues/7675#issuecomment-415447894
@@ -94,13 +85,5 @@ in
           };
         }) service-mesh-config.helm;
       };
-
-    kubernetes.customResources = [
-      (create-istio-cr "attributemanifest")
-      (create-istio-cr "kubernetes")
-      (create-istio-cr "rule")
-      (create-istio-cr "handler")
-      (create-istio-cr "instance")
-    ];
   });
 }

@@ -7,5 +7,61 @@ items:
       kubenix/project-name: kubenix
     name: policy
     namespace: default
+- apiVersion: config.istio.io/v1alpha2
+  kind: rule
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: authorization
+    namespace: istio-system
+  spec:
+    actions:
+    - handler: opa.istio-system
+      instances:
+      - authzinstance
+- apiVersion: config.istio.io/v1alpha2
+  kind: handler
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: opa
+    namespace: istio-system
+  spec:
+    compiledAdapter: opa
+    params:
+      checkMethod: data.mixerauthz.allow
+      failClose: true
+      policy:
+      - "package mixerauthz\n\ndefault allow = false\n\n# express-app.dev-functions.future-is-comming.dev.local\n\
+        \nallow {\n  input.subject.user == \"damian\"\n}\n\n# allow {\n#   input.action.namespace\
+        \ = \"istio-system\"\n# }\n\n# allow {\n#   input.action.namespace = \"knative-serving\"\
+        \n# }\n\n# allow {\n#   contains(input.action.namespace, \"function\")\n#\
+        \ }\n\nallow {\n  contains(input.path, \"/healthz\")\n  # allowed_targets\
+        \ = connectivity[istio_attrs.source_service\n  # istio_attrs.dest_service\
+        \ = allowed_targets[_]\n}\n\n# If access is from internal service\n# allow\
+        \ {\n\n# }"
+- apiVersion: config.istio.io/v1alpha2
+  kind: instance
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: authzinstance
+    namespace: istio-system
+  spec:
+    compiledTemplate: authorization
+    params:
+      action:
+        method: request.method | ""
+        namespace: destination.namespace | "default"
+        path: request.path | "/"
+        properties:
+          headers: request.headers
+          version: destination.labels["version"] | ""
+        service: destination.service.host | ""
+      subject:
+        groups: request.auth.claims["groups"] | ""
+        properties:
+          iss: request.auth.claims["iss"] | ""
+        user: request.headers["user"] | ""
 kind: List
 labels:

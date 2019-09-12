@@ -16,22 +16,54 @@ in
   imports = with kubenix.modules; [ 
     k8s
     istio
+    istio-crd
   ];
 
   options = {
-    policy = lib.mkOption {
-      default = [];
+    policy = {
+      folder = lib.mkOption {
+        default = ../../../policy/runtime;
+      };
     };
   };
 
   config = {
     kubernetes.api.namespaces."policy"= {};
 
-    # kubernetes.imports = 
-    #   builtins.map 
-    #     (x: ./opa + "/${x}") 
-    #     (builtins.attrNames 
-    #       (builtins.readDir ./opa));
+    kubernetes.imports = [
+      ./opa/istio-authorization-mapping.yaml
+    ];
+
+    kubernetes.api.handler.opa = {
+      metadata = {
+        name = "opa";
+        namespace = "istio-system";
+      };
+      spec = {
+        compiledAdapter = "opa";
+        params = {
+          policy = 
+            builtins.map 
+              builtins.readFile
+              (builtins.map 
+                (x: config.policy.folder + "/${x}") 
+                (builtins.attrNames 
+                  (builtins.readDir config.policy.folder)));
+          failClose = true;
+          checkMethod = "data.mixerauthz.allow";
+        };
+      };
+    };
+    kubernetes.api.rule.authorization = {
+      metadata = {
+        name = "authorization";
+        namespace = "istio-system";
+      };
+      spec.actions = [{
+        handler = "opa.istio-system";
+        instances = ["authzinstance"];
+      }];
+    };
   };
 }
 # opa test istio https://github.com/istio/istio/pull/2229/files
