@@ -34,10 +34,8 @@ items:
       policy:
       - "package mixerauthz\n\ndefault allow = false\n\n# express-app.dev-functions.future-is-comming.dev.local\n\
         \nallow {\n  input.subject.user == \"damian\"\n}\n\n# allow {\n#   input.action.namespace\
-        \ = \"istio-system\"\n# }\n\n# allow {\n#   input.action.namespace = \"knative-serving\"\
-        \n# }\n\n# allow {\n#   contains(input.action.namespace, \"function\")\n#\
-        \ }\n\nallow {\n  contains(input.path, \"/healthz\")\n  # allowed_targets\
-        \ = connectivity[istio_attrs.source_service\n  # istio_attrs.dest_service\
+        \ = \"istio-system\"\n# }\n\nallow {\n  contains(input.action.path, \"/healthz\"\
+        )\n  # allowed_targets = connectivity[istio_attrs.source_service\n  # istio_attrs.dest_service\
         \ = allowed_targets[_]\n}\n\n# If access is from internal service\n# allow\
         \ {\n\n# }"
 - apiVersion: config.istio.io/v1alpha2
@@ -55,7 +53,6 @@ items:
         namespace: destination.namespace | "default"
         path: request.path | "/"
         properties:
-          headers: request.headers
           version: destination.labels["version"] | ""
         service: destination.service.host | ""
       subject:

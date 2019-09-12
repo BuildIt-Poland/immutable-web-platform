@@ -166,8 +166,8 @@ in
       VirtualService.logs =
         create-virtual-service 
           "logs" 
-          "kibana-logging.${knative-monitoring-ns}.svc.cluster.local" 
-          5601;
+          "kibana.${knative-monitoring-ns}.svc.cluster.local" 
+          443;
 
       VirtualService.brigade-gateway = 
         create-virtual-service 

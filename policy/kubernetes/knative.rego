@@ -21,7 +21,7 @@ deny[msg] {
   not any_namespace
   msg := "Missing namespace, define metadata.namespace"
 }
-
+# try simplify to not input.metadata.name
 any_name {
   input.metadata.name != ""
 }

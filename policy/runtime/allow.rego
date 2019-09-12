@@ -12,16 +12,8 @@ allow {
 #   input.action.namespace = "istio-system"
 # }
 
-# allow {
-#   input.action.namespace = "knative-serving"
-# }
-
-# allow {
-#   contains(input.action.namespace, "function")
-# }
-
 allow {
-  contains(input.path, "/healthz")
+  contains(input.action.path, "/healthz")
   # allowed_targets = connectivity[istio_attrs.source_service
   # istio_attrs.dest_service = allowed_targets[_]
 }

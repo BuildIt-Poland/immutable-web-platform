@@ -47,6 +47,18 @@ rec {
     sha256 = "0i4b3yg5yjjhn34p9lxgbldcnbhr31cfgzn7m6n7nz5kdlz520bp";
   };
 
+  kibana = fetch {
+    chart = "stable/kibana";
+    version = "3.2.3";
+    sha256 = "0x3cac61zqnmbrid1m4q4l55zglw8w320dq3i7yccw92fkcdcfw8";
+  };
+
+  elastic-stack = fetch {
+    chart = "stable/elastic-stack";
+    version = "1.8.0";
+    sha256 = "0c61c5kgb367kik74jxrzk62s526fva3qwdlia95dhk3iw72fl8z";
+  };
+
   rook-ceph = fetch {
     chart = "rook-ceph";
     version = "1.0.5";
