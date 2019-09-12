@@ -10,6 +10,47 @@ items:
 - apiVersion: apps/v1beta1
   kind: Deployment
   metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 3
+    template:
+      metadata:
+        annotations:
+          checksum/config: 2e63ae7ed845491b7ba71bbc16d2c4357494cf2aa7898c93a56188b2a1de16a1
+        labels:
+          app: kibana
+          release: kibana
+      spec:
+        containers:
+        - image: docker.elastic.co/kibana/kibana:5.6.4
+          imagePullPolicy: IfNotPresent
+          name: kibana
+          ports:
+          - containerPort: 5601
+            name: kibana
+            protocol: TCP
+          resources: {}
+          volumeMounts:
+          - mountPath: /usr/share/kibana/config/kibana.yml
+            name: kibana
+            subPath: kibana.yml
+        serviceAccountName: default
+        tolerations: []
+        volumes:
+        - configMap:
+            name: kibana
+          name: kibana
+- apiVersion: apps/v1beta1
+  kind: Deployment
+  metadata:
     annotations:
       cloud.weave.works/launcher-info: "{\n  \"server-version\": \"master-4fe8efe\"\
         ,\n  \"original-request\": {\n    \"url\": \"/k8s/v1.7/scope.yaml\"\n  },\n\
@@ -251,6 +292,47 @@ items:
     namespace: knative-monitoring
 - apiVersion: v1
   data:
+    kibana.yml: 'elasticsearch.url: http://elasticsearch-logging:9200
+
+      logging.verbose: "true"
+
+      server.host: "0"
+
+      server.name: kibana
+
+      '
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+- apiVersion: v1
+  data:
+    run.sh: "@test \"Test Status\" {\n  url=\"http://kibana:443/api/status\"\n\n \
+      \ # retry for 1 minute\n  run curl -s -o /dev/null -I -w \"%{http_code}\" --retry\
+      \ 30 --retry-delay 2 $url\n\n  code=$(curl -s -o /dev/null -I -w \"%{http_code}\"\
+      \ $url)\n  body=$(curl $url)\n  if [ \"$code\" == \"503\" ]\n  then\n    skip\
+      \ \"Kibana Unavailable (503), can't get status - see pod logs: $body\"\n  fi\n\
+      \n  result=$(echo $body | jq -cr '.status.statuses[]')\n  [ \"$result\" != \"\
+      \" ]\n\n  result=$(echo $body | jq -cr '.status.statuses[] | select(.state !=\
+      \ \"green\")')\n  [ \"$result\" == \"\" ]\n}"
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana-test
+    namespace: knative-monitoring
+- apiVersion: v1
+  data:
     run.sh: "\n@test \"Testing Weave Scope UI is accessible\" {\n  curl --retry 12\
       \ --retry-delay 10 http://weave-scope-app.istio-system.svc:80\n}"
   kind: ConfigMap
@@ -311,6 +393,56 @@ items:
     volumes:
     - configMap:
         name: grafana-test
+      name: tests
+    - emptyDir: {}
+      name: tools
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      helm.sh/hook: test-success
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana-test
+    namespace: knative-monitoring
+  spec:
+    containers:
+    - command:
+      - /tools/bats/bats
+      - -t
+      - /tests/run.sh
+      image: dwdraju/alpine-curl-jq
+      name: kibana-test
+      volumeMounts:
+      - mountPath: /tests
+        name: tests
+        readOnly: true
+      - mountPath: /tools
+        name: tools
+    initContainers:
+    - command:
+      - bash
+      - -c
+      - 'set -ex
+
+        # copy bats to tools dir
+
+        cp -R /usr/local/libexec/ /tools/bats/
+
+        '
+      image: dduportal/bats:0.4.0
+      name: test-framework
+      volumeMounts:
+      - mountPath: /tools
+        name: tools
+    restartPolicy: Never
+    volumes:
+    - configMap:
+        name: kibana-test
       name: tests
     - emptyDir: {}
       name: tools
@@ -401,6 +533,26 @@ items:
       app: grafana
       release: grafana
     type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+  spec:
+    ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 5601
+    selector:
+      app: kibana
+      release: kibana
+    type: NodePort
 - apiVersion: v1
   kind: Service
   metadata:
@@ -7269,46 +7421,6 @@ items:
               memory: 1000Mi
             requests:
               memory: 256Mi
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    labels:
-      addonmanager.kubernetes.io/mode: Reconcile
-      app: kibana-logging
-      kubernetes.io/cluster-service: 'true'
-    name: kibana-logging
-    namespace: knative-monitoring
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app: kibana-logging
-    template:
-      metadata:
-        labels:
-          app: kibana-logging
-      spec:
-        containers:
-        - env:
-          - name: ELASTICSEARCH_URL
-            value: http://elasticsearch-logging:9200
-          - name: SERVER_BASEPATH
-            value: /api/v1/namespaces/knative-monitoring/services/kibana-logging/proxy
-          - name: XPACK_MONITORING_ENABLED
-            value: 'false'
-          - name: XPACK_SECURITY_ENABLED
-            value: 'false'
-          image: docker.elastic.co/kibana/kibana:5.6.4
-          name: kibana-logging
-          ports:
-          - containerPort: 5601
-            name: ui
-            protocol: TCP
-          resources:
-            limits:
-              cpu: 1000m
-            requests:
-              cpu: 100m
 - apiVersion: v1
   data:
     100.system.conf: "<system>\n  root_dir /tmp/fluentd-buffers/\n</system>"
