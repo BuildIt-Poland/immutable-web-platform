@@ -66,13 +66,15 @@ with lib;
           '';
       })
 
-      (mkIf cfg.kubernetes.validation.enable {
+      (mkIf cfg.kubernetes.tools.enable {
         packages = with pkgs; [
           conftest
           validate
           opa
         ];
+      })
 
+      (mkIf cfg.kubernetes.validation.enable {
         actions.queue = [
           { priority = cfg.actions.priority.low; 
 

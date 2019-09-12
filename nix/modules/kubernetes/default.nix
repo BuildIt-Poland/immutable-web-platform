@@ -13,4 +13,5 @@
   secrets = ./secrets.nix;
   storage = ./storage.nix;
   opa = ./opa.nix;
+  istio-crd = ./istio-crd.nix;
 }

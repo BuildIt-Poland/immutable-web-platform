@@ -30,7 +30,7 @@ in
   ];
 
   # actually it gives a chance to avoid keeping sensitive data in descriptors
-  kubernetes.patches = [
+  module.scripts = [
     apply-aws-credentials-secret
   ];
 

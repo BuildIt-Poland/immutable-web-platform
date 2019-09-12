@@ -101,13 +101,13 @@ in
     kubernetes = {
       target = inputs.kubernetes.target;
       tools.enable = inputs.kubernetes.tools;
+      validation.enable = inputs.opa.validation;
 
       namespace = {
         functions = {
           name = "${config.environment.type}-functions";
           metadata.labels = {
             "istio-injection" = "enabled";
-            # FIXME should be in opa
             "opa-istio-injection" = "enabled";
           };
         };

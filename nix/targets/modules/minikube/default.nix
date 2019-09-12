@@ -25,8 +25,6 @@ with lib;
 
       packages = with pkgs; [
         minikube
-        # FIXME remove me
-        istioctl
       ];
 
       project = rec {
