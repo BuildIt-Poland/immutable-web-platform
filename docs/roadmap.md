@@ -1,11 +1,11 @@
 ## Today
+* expose kibana - separate chart - test on eks
 * not sure why aws secret patch is shouting ...
 * https://github.com/open-policy-agent/opa-istio-plugin
 * validate before saving yaml resource - fail quickly
 * think about keeping pipeline close to project itself -> allow to inject module from function pespective
 * consider to use kubernetes patches like this https://www.diycode.cc/projects/Azure/kubernetes-policy-controller
 * spinup binary cache - after building go packages it takes time ... -> need to have hydra instance
-* expose kibana
 * add metadata.env
 * add namespace for functions
 ### in progress
