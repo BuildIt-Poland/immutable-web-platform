@@ -21,7 +21,10 @@ let
   # FIXME for hosted cluster it is not necessary
   call-function = 
     (pkgs.writeScriptBin "call-express-app-function-minikube" ''
-      ${pkgs.curl}/bin/curl '-sS' '-H' 'Host: ${fn-config.label}.${functions-ns}.${fn-config.domain}' \
+      ${pkgs.curl}/bin/curl \
+        '-sS' \
+        '-H' 'Host: ${fn-config.label}.${functions-ns}.${fn-config.domain}' \
+        '-H' 'User: ${project-config.project.author-email}' \
         http://$(${pkgs.minikube}/bin/minikube ip -p ${project-config.project.name}):31380 -v
     '');
 in
