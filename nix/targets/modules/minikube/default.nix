@@ -35,8 +35,6 @@ with lib;
       kubernetes = {
         tools.enable = true;
         resources.list."${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
-        # INFO: this is an example how to can test module locally first - eks is not enabled yet
-        resources.list."${priority.high "policy"}" = [ kubenix.modules.opa ];
       };
 
       skaffold.enable = true;
