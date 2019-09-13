@@ -21,13 +21,16 @@ in
 
   options = {
     policy = {
+      enable = lib.mkOption {
+        default = true;
+      };
       folder = lib.mkOption {
         default = ../../../policy/runtime;
       };
     };
   };
 
-  config = {
+  config = (lib.mkIf config.policy.enable {
     kubernetes.api.namespaces."policy"= {};
 
     kubernetes.imports = [
@@ -77,7 +80,7 @@ in
         instances = ["authzinstance"];
       }];
     };
-  };
+  });
 }
 # opa test istio https://github.com/istio/istio/pull/2229/files
 # https://www.youtube.com/watch?v=BeZMahXg9Tg
