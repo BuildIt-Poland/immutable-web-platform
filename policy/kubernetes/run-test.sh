@@ -1,1 +1,0 @@
-opa test policy
