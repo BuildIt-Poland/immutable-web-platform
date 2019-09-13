@@ -34,7 +34,7 @@ items:
       policy:
       - "package mixerauthz\n\nimport data.nix\n\ndefault allow = false\n\nallowed_paths\
         \ = {\"/healthz\"}\n# # express-app.dev-functions.future-is-comming.dev.local\n\
-        \nallow {\n  input.subject.user == \"caller\"\n  contains(input.action.service,\
+        \nallow {\n  input.subject.user == nix.config[\"author-email\"]\n  contains(input.action.service,\
         \ nix.ns.functions)\n}\n\nallow {\n  # allowed_paths[http_request.path]\n\
         \  allowed_paths[input.action.path]\n  # net.cidr_contains(\"CIDDR\", source_address.Address.SocketAddress.address)\n\
         }"

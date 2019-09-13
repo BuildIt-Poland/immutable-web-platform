@@ -8,7 +8,7 @@ allowed_paths = {"/healthz"}
 # # express-app.dev-functions.future-is-comming.dev.local
 
 allow {
-  input.subject.user == "caller"
+  input.subject.user == nix.config["author-email"]
   contains(input.action.service, nix.ns.functions)
 }
 
