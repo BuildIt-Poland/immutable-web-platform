@@ -2,17 +2,21 @@
 
 buildGoModule rec {
   name = "kn-${version}";
-  version = "0.2.0";
+  version = "0.master.0";
 
   src = fetchFromGitHub {
     owner = "knative";
     repo = "client";
-    rev = "v${version}";
-    sha256 = "0bixbf7xbq3n1h4vwmcxz28avnl8gh8qrjiqll2wpdgfxb0y9pzc";
+    rev = "34fcd89bcde084ecd2a1da8390f0ae097959b091";
+    sha256 = "1c6a578m2n9d2kjvj3gj886wpaksagprsvlaw5cq5fzz7fpzncp2";
   };
 
   goPackagePath = "github.com/knative/client";
-  modSha256 = "11wxyps4a2f9m4j9arcvk30vaha89qx4dzn5msbw91053hdp0hd8";
+  modSha256 = "1vxqi0ja2phwy6sci79g833lf9kd9gm1a5r6nbsdgzsncijw9c3j";
+
+  postInstall = ''
+    cp $out/bin/kn $out/bin/kubectl-kn
+  '';
 
   meta = with lib; {
     description = "Knative CLI";

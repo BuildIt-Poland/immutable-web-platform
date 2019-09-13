@@ -23,7 +23,6 @@ let
 in {
   imports = with kubenix.modules; [ 
     k8s
-    istio
   ];
 
   config = {

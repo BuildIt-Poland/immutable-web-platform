@@ -27,13 +27,17 @@ with lib;
         minikube
       ];
 
+
       project = rec {
         domain = mkForce "local";
       };
 
-      kubernetes.resources.list."${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
-      # INFO: this is an example how to can test module locally first - eks is not enabled yet
-      kubernetes.resources.list."${priority.high "policy"}" = [ kubenix.modules.opa ];
+      kubernetes = {
+        tools.enable = true;
+        resources.list."${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
+        # INFO: this is an example how to can test module locally first - eks is not enabled yet
+        resources.list."${priority.high "policy"}" = [ kubenix.modules.opa ];
+      };
 
       skaffold.enable = true;
     })

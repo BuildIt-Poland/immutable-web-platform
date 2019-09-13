@@ -6,7 +6,6 @@ items:
     labels:
       istio-injection: enabled
       kubenix/project-name: kubenix
-      opa-istio-injection: enabled
     name: dev-functions
     namespace: default
 - apiVersion: v1
