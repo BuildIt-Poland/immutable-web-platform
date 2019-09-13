@@ -20,6 +20,7 @@ in
         "${priority.low  "gitops"}"      = [ argocd ];
         "${priority.low  "ci"}"          = [ brigade ];
         "${priority.skip "secrets"}"     = [ secrets ];
+        "${priority.high "policy"}"      = [ opa ];
       } // functions;
   };
 }
