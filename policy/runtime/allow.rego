@@ -5,7 +5,12 @@ import data.nix
 default allow = false
 
 allowed_paths = {"/healthz"}
-# # express-app.dev-functions.future-is-comming.dev.local
+
+allowed_namespaces = {
+  nix.ns.istio,
+  nix.ns["knative-monitoring"],
+  nix.ns["knative-serving"]
+}
 
 allow {
   input.subject.user == nix.config["author-email"]
@@ -13,7 +18,11 @@ allow {
 }
 
 allow {
-  # allowed_paths[http_request.path]
   allowed_paths[input.action.path]
   # net.cidr_contains("CIDDR", source_address.Address.SocketAddress.address)
+}
+
+allow {
+  allowed_namespaces[input.action.namespace]
+  input.action.method == "GET"
 }

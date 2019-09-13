@@ -33,11 +33,18 @@ items:
       failClose: true
       policy:
       - "package mixerauthz\n\nimport data.nix\n\ndefault allow = false\n\nallowed_paths\
-        \ = {\"/healthz\"}\n# # express-app.dev-functions.future-is-comming.dev.local\n\
-        \nallow {\n  input.subject.user == nix.config[\"author-email\"]\n  contains(input.action.service,\
-        \ nix.ns.functions)\n}\n\nallow {\n  # allowed_paths[http_request.path]\n\
-        \  allowed_paths[input.action.path]\n  # net.cidr_contains(\"CIDDR\", source_address.Address.SocketAddress.address)\n\
-        }"
+        \ = {\"/healthz\"}\n\n# example data.nix\n# ns = {\"argo\":\"gitops\",\"brigade\"\
+        :\"ci\",\"functions\":\"dev-functions\",\"infra\":\"local-infra\",\"istio\"\
+        :\"istio-system\",\"knative-monitoring\":\"knative-monitoring\",\"knative-serving\"\
+        :\"knative-serving\",\"storage\":\"storage\",\"system\":\"system\"}\n# config\
+        \ = {\"author-email\":\"damian.baar@wipro.com\",\"domain\":\"local\",\"hash\"\
+        :\"af1801acc0f01d6e4030b23d4a9c8da0a8599be9\",\"name\":\"future-is-comming\"\
+        }\n\nallowed_namespaces = {\n  nix.ns.istio,\n  nix.ns[\"knative-monitoring\"\
+        ],\n  nix.ns[\"knative-serving\"]\n}\n\nallow {\n  input.subject.user == nix.config[\"\
+        author-email\"]\n  contains(input.action.service, nix.ns.functions)\n}\n\n\
+        allow {\n  allowed_paths[input.action.path]\n  # net.cidr_contains(\"CIDDR\"\
+        , source_address.Address.SocketAddress.address)\n}\n\nallow {\n  allowed_namespaces[input.action.namespace]\n\
+        \  input.action.method == \"GET\"\n}"
       - 'package nix
 
         ns = {"argo":"gitops","brigade":"ci","functions":"dev-functions","infra":"local-infra","istio":"istio-system","knative-monitoring":"knative-monitoring","knative-serving":"knative-serving","storage":"storage","system":"system"}
