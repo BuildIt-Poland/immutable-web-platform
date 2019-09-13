@@ -1,6 +1,7 @@
 {
   environment ? null,
   kubernetes ? null,
+  opa ? null,
   brigade ? null,
   docker ? null,
   aws ? null,
