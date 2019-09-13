@@ -8,7 +8,7 @@ buildGoModule rec {
     owner = "kubernetes-sigs";
     repo = "krew";
     rev = "v${version}";
-    sha256 = "1flfrg01g2hy5k0y3d4gfkllj28apw48l7bx4x2b9klixn29p11p";
+    sha256 = "0irnpyzyqpqlvq9b3qybsd049144h97jy6q11v6d6dll9v4zfwdl";
   };
 
   subPackages = ["cmd/krew"];

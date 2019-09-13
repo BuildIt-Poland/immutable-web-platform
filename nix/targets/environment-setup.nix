@@ -108,7 +108,7 @@ in
           name = "${config.environment.type}-functions";
           metadata.labels = {
             "istio-injection" = "enabled";
-            "opa-istio-injection" = "enabled";
+            # "opa-istio-injection" = "enabled";
           };
         };
         argo.name = "gitops";

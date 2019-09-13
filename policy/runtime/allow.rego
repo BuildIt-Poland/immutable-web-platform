@@ -1,24 +1,19 @@
 package mixerauthz
 
+import data.nix
+
 default allow = false
 
-# express-app.dev-functions.future-is-comming.dev.local
+allowed_paths = {"/healthz"}
+# # express-app.dev-functions.future-is-comming.dev.local
 
 allow {
-  input.subject.user == "damian"
+  input.subject.user == "caller"
+  contains(input.action.service, nix.ns.functions)
 }
-
-# allow {
-#   input.action.namespace = "istio-system"
-# }
 
 allow {
-  contains(input.action.path, "/healthz")
-  # allowed_targets = connectivity[istio_attrs.source_service
-  # istio_attrs.dest_service = allowed_targets[_]
+  # allowed_paths[http_request.path]
+  allowed_paths[input.action.path]
+  # net.cidr_contains("CIDDR", source_address.Address.SocketAddress.address)
 }
-
-# If access is from internal service
-# allow {
-
-# }

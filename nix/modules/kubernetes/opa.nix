@@ -43,12 +43,23 @@ in
         compiledAdapter = "opa";
         params = {
           policy = 
-            builtins.map 
+            ((builtins.map 
               builtins.readFile
-              (builtins.map 
-                (x: config.policy.folder + "/${x}") 
-                (builtins.attrNames 
-                  (builtins.readDir config.policy.folder)));
+              (builtins.filter (f: 
+                   !(lib.hasSuffix ".mock.rego" f)
+                && !(lib.hasSuffix ".test.rego" f)
+                )
+                (builtins.map 
+                  (x: config.policy.folder + "/${x}") 
+                  (builtins.attrNames 
+                    (builtins.readDir config.policy.folder)))))
+            ++ 
+            [''
+              package nix
+              ns = ${builtins.toJSON 
+                      (builtins.mapAttrs (n: v: v.name) namespace)}
+            ''
+            ]);
           failClose = true;
           checkMethod = "data.mixerauthz.allow";
         };
