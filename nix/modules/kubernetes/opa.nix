@@ -58,6 +58,8 @@ in
               package nix
               ns = ${builtins.toJSON 
                       (builtins.mapAttrs (n: v: v.name) namespace)}
+              config = ${builtins.toJSON 
+                      (lib.filterAttrs (n: v: !(lib.isFunction v)) project-config.project)}
             ''
             ]);
           failClose = true;
