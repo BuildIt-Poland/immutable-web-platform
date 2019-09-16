@@ -8,6 +8,8 @@ let
     plugins.template
     plugins.archive
     plugins.external
+    plugins.tls
+    plugins.random
   ];
 
   plugins = plugins terraform-providers; 

@@ -4,10 +4,11 @@ data "external" "nixos-build" {
 
 resource "null_resource" "bootstrap" {
   # TODO this should be configurable
-  triggers = {
-    config_changed = "${sha1(file("./nixos/configuration.nix"))}"
-    image_changed  = "${sha1(file("./nixos/ec2-nixos.nix"))}"
-  }
+  # folders_to_watch
+  # triggers = {
+  #   config_changed = "${sha1(file("./nixos/configuration.nix"))}"
+  #   image_changed  = "${sha1(file("./nixos/ec2-nixos.nix"))}"
+  # }
 
   depends_on = [
     data.external.nixos-build,

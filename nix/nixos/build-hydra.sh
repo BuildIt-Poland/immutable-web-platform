@@ -1,0 +1,1 @@
+nix-build --attr system hydra.nix

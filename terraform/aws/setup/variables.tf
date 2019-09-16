@@ -1,4 +1,6 @@
 locals {
+  azs = data.aws_availability_zones.available.names
+
   common_tags = map(
     "Owner", var.owner,
     "Project Name", var.project_name,

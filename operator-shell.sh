@@ -1,0 +1,1 @@
+nix-shell --arg kubernetes '{target=eks; clean=false; save=true; update=false; patches=false;}' --arg docker '{upload=false;}' --arg opa '{validation=false;}' --arg environment '{perspective=operator;}'
