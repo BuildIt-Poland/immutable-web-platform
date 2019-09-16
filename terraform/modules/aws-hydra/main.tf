@@ -47,10 +47,11 @@ module "aws-ec2-instance" {
   ssh_pub_key         = var.ssh_pub_key
 }
 
+# watcher
 data "archive_file" "watcher" {
   type        = "zip"
   source_dir = dirname(var.nixos_configuration)
-  output_path = "${path.module}/watcher.temp.zip"
+  output_path = "${path.module}/config.watcher.zip"
 }
 
 module "nixos-updater" {
@@ -68,6 +69,6 @@ module "nixos-updater" {
 
   nixos_configuration = var.nixos_configuration
 
-  host                = module.aws-ec2-instance.instance_ip
+  host                = module.aws-ec2-instance.instance.public_ip
   ssh_pub_key         = var.ssh_pub_key
 }

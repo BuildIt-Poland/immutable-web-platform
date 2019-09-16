@@ -1,4 +1,5 @@
 variable "ssh_pub_key" {}
+
 variable "common_tags" {
   type = "map"
 }
@@ -23,6 +24,6 @@ variable "subnet_id" {
   default = ""
 }
 
-data "aws_availability_zones" "available" {
-  state = "available"
+variable "instance_type" {
+  default = "t2.micro"
 }

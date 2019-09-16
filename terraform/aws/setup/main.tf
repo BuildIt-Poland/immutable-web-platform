@@ -62,7 +62,6 @@ module "vpc" {
   single_nat_gateway   = true
   enable_dns_hostnames = true
   enable_dns_support   = true
-  # enable_elasticloadbalancing_endpoint = true
 
   tags = local.common_tags
 
@@ -81,6 +80,7 @@ module "vpc" {
   }
 }
 
+# to refresh - terraform taint tls_private_key.hydra-token
 resource "tls_private_key" "hydra-token" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -97,8 +97,7 @@ module "hydra" {
   ssh_pub_key  = var.ssh_pub_key
 
   port = 3000
-  nixos_configuration = "${var.root_folder}/nix/nixos/hydra.nix"
-
+  nixos_configuration = local.nixos_configuration
   # TODO
   worker_ssh_key = tls_private_key.hydra-token.public_key_openssh
 }

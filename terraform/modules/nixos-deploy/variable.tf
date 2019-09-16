@@ -16,14 +16,6 @@ variable "region" {
   default = ""
 }
 
-variable "nixos_configuration" {
-  default = ""
-}
-
-variable "folder_to_watch" {
-  default = ""
-}
-
 variable "user" {
   default = "root"
 }
@@ -36,3 +28,5 @@ variable "host" {
 variable "watch" {
   default = {}
 }
+
+variable "nixos_configuration" {}
