@@ -47,6 +47,12 @@ module "aws-ec2-instance" {
   ssh_pub_key         = var.ssh_pub_key
 }
 
+data "archive_file" "watcher" {
+  type        = "zip"
+  source_dir = dirname(var.nixos_configuration)
+  output_path = "${path.module}/watcher.temp.zip"
+}
+
 module "nixos-updater" {
   source = "../nixos-deploy"
 
@@ -55,7 +61,13 @@ module "nixos-updater" {
   env          = var.env
   region       = var.region
 
+  watch = {
+    # config_changes = sha1(file(var.nixos_configuration))
+    dir_changes = data.archive_file.watcher.output_sha
+  }
+
+  nixos_configuration = var.nixos_configuration
+
   host                = module.aws-ec2-instance.instance_ip
-  nixos_configuration = "${var.root_folder}/nix/nixos/hydra.nix"
   ssh_pub_key         = var.ssh_pub_key
 }

@@ -29,8 +29,6 @@ in
       config = {
         nixpkgs.pkgs = pkgs;
         nix = {
-          # nixPath = [ "nixpkgs=${nixpkgs_path}" ];
-          # package = pkgs.nixUnstable;
           gc.automatic = true;
           autoOptimiseStore = true;
 
