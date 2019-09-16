@@ -14,3 +14,8 @@ output "hydra" {
 output "vpc" {
   value = module.vpc
 }
+
+output "hydra-worker-key" {
+  value = tls_private_key.hydra-token
+  sensitive   = true
+}

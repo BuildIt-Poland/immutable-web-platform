@@ -31,3 +31,5 @@ yarn-error.*
 temp.*
 temp/
 config.*.json
+
+*.zip
