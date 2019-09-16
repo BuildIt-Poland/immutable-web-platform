@@ -32,3 +32,7 @@ variable "host" {
   default     = ""
   description = ""
 }
+
+variable "watch" {
+  default = {}
+}

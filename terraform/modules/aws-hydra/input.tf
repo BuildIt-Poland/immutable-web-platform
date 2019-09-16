@@ -11,4 +11,4 @@ variable vpc {}
 variable ssh_pub_key {}
 variable worker_ssh_key {}
 variable port {}
-variable root_folder {}
+variable nixos_configuration {}

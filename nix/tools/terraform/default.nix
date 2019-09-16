@@ -10,6 +10,7 @@ let
     plugins.external
     plugins.tls
     plugins.random
+    plugins.archive
   ];
 
   plugins = plugins terraform-providers; 

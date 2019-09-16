@@ -97,7 +97,7 @@ module "hydra" {
   ssh_pub_key  = var.ssh_pub_key
 
   port = 3000
-  root_folder = var.root_folder
+  nixos_configuration = "${var.root_folder}/nix/nixos/hydra.nix"
 
   # TODO
   worker_ssh_key = tls_private_key.hydra-token.public_key_openssh
