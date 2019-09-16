@@ -82,7 +82,7 @@ in
       spec = {
         acme = {
           server = "https://acme-v02.api.letsencrypt.org/directory";
-          email = project-config.project.author-email;
+          email = project-config.project.authorEmail;
           privateKeySecretRef.name = "cert-prod";
           dns01.providers = [{ 
             name = "route53"; 

@@ -4,7 +4,7 @@
 let
   sops = pkgs.callPackage ./sops.nix {};
   prj = pkgs.project-config;
-  email = prj.project.author-email;
+  email = prj.project.authorEmail;
   repo-name = prj.bitbucket.k8s-resources.repository;
   version = prj.project.version;
 in

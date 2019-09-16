@@ -1,0 +1,1 @@
+https://github.com/devops-recipes/app-mono/blob/master/detect-changed-services.sh

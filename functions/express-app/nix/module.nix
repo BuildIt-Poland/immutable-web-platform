@@ -24,7 +24,7 @@ let
       ${pkgs.curl}/bin/curl \
         '-sS' \
         '-H' 'Host: ${fn-config.label}.${functions-ns}.${fn-config.domain}' \
-        '-H' 'User: ${project-config.project.author-email}' \
+        '-H' 'User: ${project-config.project.authorEmail}' \
         http://$(${pkgs.minikube}/bin/minikube ip -p ${project-config.project.name}):31380 -v
     '');
 in

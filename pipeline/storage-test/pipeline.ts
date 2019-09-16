@@ -8,12 +8,14 @@ const { NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand 
 // this.host.nodeSelector["kubernetes.io/lifecycle"] = "spot"
 
 // https://github.com/brigadecore/brigade/pull/777 - I will hide these details
+console.log(process.env)
 const createJob = (name) => {
   let t = new NixJob(name)
     .withExtraParams({
       streamLogs: true,
       privileged: true,
       annotations: {
+        "iam.amazonaws.com/allowed-roles": "[\"*future-is-comming*\"]"
         // FIXME kube2iam
         // "iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";
         // INFO as these are not running pods restic is not happy to do a backup
@@ -36,10 +38,6 @@ const createJob = (name) => {
   ])
 
   return t
-}
-
-const handleRun = async (event, project) => {
-
 }
 
 events.on("exec", async (event, project) => {
@@ -72,12 +70,4 @@ events.on("exec", async (event, project) => {
   // test.run()
   await test.run()
   await test2.run()
-})
-
-// TODO
-events.on("push", (event, project) => {
-  let test = createJob("test")
-    .withSecrets(project.secrets)
-
-  test.run()
 })

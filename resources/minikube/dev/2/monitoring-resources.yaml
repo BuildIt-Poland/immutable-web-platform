@@ -116,7 +116,7 @@ items:
           checksum/config: 00957712bb25e533b78dde0c8ac465722519bfe1b2208d49c9c19f0e8b1a1a5f
           checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
           checksum/sc-dashboard-provider-config: 263e72d9991ee094304493e8397218680ed85e034dc2ac173727b7348ce05118
-          checksum/secret: 8c2ab9bca9ac1ebc2f7b9ecc76571ef9f2cded80bb0ee972cbbb5e405dfb9b78
+          checksum/secret: 420103a04faeefa04cb2a5a0625444d230ccb4dfa662a4f4c2386b6feb83749d
         labels:
           app: grafana
           release: grafana
@@ -457,7 +457,7 @@ items:
       heritage: Tiller
       kubenix/project-name: kubenix
       release: weave-scope
-    name: weave-scope-ui-test-x6k45
+    name: weave-scope-ui-test-hv9xe
     namespace: istio-system
   spec:
     containers:
@@ -498,7 +498,7 @@ items:
       name: tools
 - apiVersion: v1
   data:
-    admin-password: cTl1cGxlWHBLd2ZNQ3VoWEt5UjVtdzN2OXV4MnV2cjBPVzJPNzRuUQ==
+    admin-password: bTdrMFcwaXNUbnZHWTh0Rjh5eE9aenhmb3cxa29wNUJuTEFuZmxRdQ==
     admin-user: YWRtaW4=
     ldap-toml: ''
   kind: Secret

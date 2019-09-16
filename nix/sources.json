@@ -22,6 +22,18 @@
         "description": "Kubernetes resource builder using nix",
         "rev": "365cae024cd7b6e8050dfc238a3da9f1a4b14964"
     },
+    "hydra": {
+        "homepage": "http://nixos.org/hydra",
+        "url": "https://github.com/NixOS/hydra/archive/242b8b7a314759ed33f69205d26a1b7c337511e0.tar.gz",
+        "owner": "NixOS",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "hydra",
+        "type": "tarball",
+        "sha256": "167ijcf9qdm10kjvqax3hcvs5mpa4mx2y2i9idwwc6xfvn8fhs84",
+        "description": "Hydra, the Nix-based continuous build system",
+        "rev": "242b8b7a314759ed33f69205d26a1b7c337511e0"
+    },
     "nixops": {
         "homepage": "https://nixos.org/nixops",
         "url": "https://github.com/nixos/nixops/archive/284924c223faa554131a8d1ace99fe6d5ccfeebb.tar.gz",

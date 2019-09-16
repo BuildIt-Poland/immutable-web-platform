@@ -38,6 +38,8 @@ let
 
     inherit sources;
     inherit inputs;
+
+    hydra_module = sources.hydra.outPath + "/hydra-module.nix";
   };
 
   nix-tests = self: super: rec {

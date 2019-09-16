@@ -8,7 +8,7 @@ test_data_nix {
 
 test_allow {
   allow with input as { 
-    "subject": { "user": nix.config["author-email"] }, 
+    "subject": { "user": nix.config["authorEmail"] }, 
     "action": { "service": "*.dev-functions"}
   }
 }

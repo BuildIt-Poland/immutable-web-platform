@@ -13,7 +13,7 @@ allowed_namespaces = {
 }
 
 allow {
-  input.subject.user == nix.config["author-email"]
+  input.subject.user == nix.config["authorEmail"]
   contains(input.action.service, nix.ns.functions)
 }
 
