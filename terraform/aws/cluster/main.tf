@@ -2,6 +2,15 @@ provider "aws" {
   region = var.region
 }
 
+data "terraform_remote_state" "setup_state" {
+  backend = "s3"
+  config = {
+    key    = "${var.project_prefix}/setup"
+    region = var.region
+    bucket = var.tf_state_bucket
+  }
+}
+
 data "terraform_remote_state" "state" {
   count   = var.bootstrap ? 0 : 1
   backend = "s3"
@@ -63,6 +72,7 @@ module "cluster" {
 
   map_users = var.map_users
   map_roles = var.map_roles
+  vpc = data.terraform_remote_state.setup_state.vpc
 }
 
 module "bastion" {
@@ -73,5 +83,5 @@ module "bastion" {
   cluster_name = var.cluster_name
   common_tags  = local.common_tags
   ssh_pub_key  = var.ssh_pub_key
-  vpc          = module.cluster.vpc
+  vpc          = data.terraform_remote_state.setup_state.vpc
 }

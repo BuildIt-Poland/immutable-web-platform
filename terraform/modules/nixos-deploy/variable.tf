@@ -1,4 +1,5 @@
 variable "ssh_pub_key" {}
+
 variable "common_tags" {
   type = "map"
 }
@@ -20,13 +21,12 @@ variable "nixos_configuration" {
 }
 
 variable "folder_to_watch" {
-  default = "./nixos"
+  default = ""
 }
 
 variable "user" {
   default = "root"
 }
-
 
 variable "host" {
   default     = ""

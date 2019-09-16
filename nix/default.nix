@@ -25,7 +25,7 @@ let
       in
       (super.integration-modules.eval {
         modules = 
-              [(./targets/perspective + "/${safe-inputs.environment.perspective}")]
+             [(./targets/perspective + "/${safe-inputs.environment.perspective}")]
           ++ safe-inputs.modules 
           ++ [./targets/environment-setup.nix];
         args = { 
@@ -38,8 +38,6 @@ let
 
     inherit sources;
     inherit inputs;
-
-    hydra_module = sources.hydra.outPath + "/hydra-module.nix";
   };
 
   nix-tests = self: super: rec {

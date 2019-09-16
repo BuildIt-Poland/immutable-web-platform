@@ -34,7 +34,7 @@ with lib;
   };
 
   config = 
-    (mkMerge [
+    mkIf cfg.kubernetes.enabled (mkMerge [
       { checks = ["Enabling kubenix modules: ${toString (builtins.attrNames config.kubernetes.resources.list)}"]; }
       ({
         binary-store-cache = builtins.filter lib.isDerivation (builtins.attrValues k8s-resources);

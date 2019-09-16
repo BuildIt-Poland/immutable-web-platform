@@ -9,6 +9,13 @@ with lib;
     bitbucket
   ];
 
-  config = mkMerge [({
-  })];
+  config = mkMerge [
+    { 
+      checks = ["Running operator perspective."]; 
+      kubernetes.enabled = false;
+      kubernetes.tools.enable = false;
+      storage.enable = false;
+      terraform.enable = false;
+    }
+  ];
 }

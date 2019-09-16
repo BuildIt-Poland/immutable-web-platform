@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config;
 
+  skip-functions = lib.filterAttrsRecursive (n: v: !(lib.isFunction v));
   # TODO get packages and traverse it's names
 in
 {
@@ -74,6 +75,15 @@ in
     default = [];
   };
 
+  options.output = mkOption {
+    default = {};
+  };
+
+  options.save-output = mkOption {
+    default = true;
+  };
+
+
   # FIXME add module to RUN TESTS agains nix
   options.test = {
     run = with types; mkOption {
@@ -138,11 +148,33 @@ in
           ${footer}
         '';
     })
+
     (mkIf config.test.enable {
       shellHook = ''
         ${pkgs.lib.log.important "Running module tests"}
         ${config.test.run}
       '';
+    })
+
+    (mkIf config.save-output {
+      packages = 
+      let
+        config-string = 
+          builtins.toJSON (skip-functions cfg.output);
+      in
+      [
+        (pkgs.writeScriptBin "save-config" ''
+          echo '${config-string}' | ${pkgs.jq}/bin/jq . > config.${cfg.environment.type}.json
+        '')
+      ];
+
+      actions.queue = [
+        { priority = cfg.actions.priority.low; 
+          action = ''
+            save-config
+          '';
+        }
+      ];
     })
   ];
 }

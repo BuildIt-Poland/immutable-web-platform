@@ -135,3 +135,9 @@ research -> https://gist.github.com/damianbaar/7194251de2b6f64af459ac861d34a323
 * spin up `brigade.js` to not using any `CI` solution - architecture should be event driven
 * spin up `k8s cluster` on `ec2` not `eks` - just to try alternative solution which has less assumptions from vendor
 * make infrastructure testable, ...[more](https://nixos.org/nixos/manual/index.html#sec-nixos-tests)
+
+#### Some whys
+* why there are 2 CI systems - hydra and `brigade`
+> I was playing only with brigade and it assumes to many custom scripts related to updating the binary store, number of plugins is growing fast and it is painful to build it every time, this is where `hydra` comes in - gives ability to create a channel which can be latter used by other person - it will save tons of build time. `hydra` also allows build `tar` which can be helpful in case of `packages` as well as be a `binary-store`. 
+> Brigade is great to response to events with CI flavour, building artifacts is okey, but in case of integration with `nix` and heavy load it is not a best fit, also brigade run within cluster, `hydra` outside.
+> Another point is related to disk usage - sometimes cache can grow so no point to keep it locally.

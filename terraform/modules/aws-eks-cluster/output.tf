@@ -2,10 +2,6 @@ output "eks" {
   value = module.eks
 }
 
-output "vpc" {
-  value = module.vpc
-}
-
 output "policy" {
   value = aws_iam_policy.worker-policy
 }
