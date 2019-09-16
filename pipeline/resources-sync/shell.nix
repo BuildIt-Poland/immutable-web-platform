@@ -33,6 +33,12 @@ mkShell {
       else null;
 
   PROJECT_NAME = project-config.project.name;
-  buildInputs = project-config.binary-store-cache;
+  buildInputs = project-config.packages ++ [
+    (pkgs.writeScriptBin "release-tools" ''
+      echo "TODO check if there was a change ..."
+      git diff
+      echo "TODO release tools"
+    '')
+  ];
   shellHook = project-config.shellHook;
 }

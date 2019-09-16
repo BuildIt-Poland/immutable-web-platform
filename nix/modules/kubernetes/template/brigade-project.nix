@@ -45,10 +45,11 @@ in
         allowSecretKeyRef = "true";
       };
       secrets = {
-        gitUser = project-config.project.author-email;
+        gitUser = project-config.project.authorEmail;
         awsRegion = aws.region;
         sopsSecrets = builtins.readFile project-config.git-secrets.location;
         cacheBucket = aws.s3-buckets.worker-cache;
+        clusterName = project-config.kubernetes.cluster.name;
         workerDockerImage = worker.path;
       };
     } overridings;

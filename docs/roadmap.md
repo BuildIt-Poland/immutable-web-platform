@@ -1,6 +1,8 @@
 ## Today
+* config generation
 * expose kibana - separate chart - test on eks
 * not sure why aws secret patch is shouting ...
+* fix apply-aws-credenitials-secret -> required by brigade 
 * https://github.com/open-policy-agent/opa-istio-plugin
 * validate before saving yaml resource - fail quickly
 * think about keeping pipeline close to project itself -> allow to inject module from function pespective

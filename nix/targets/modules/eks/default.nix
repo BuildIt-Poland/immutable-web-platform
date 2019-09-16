@@ -80,13 +80,13 @@ in
         region = config.aws.region;
         project_name = config.project.name;
         domain = (config.project.make-sub-domain "");
-        owner = config.project.author-email;
+        owner = config.project.authorEmail;
         hash = config.project.hash;
         env = config.environment.type;
         cluster_name = config.kubernetes.cluster.name;
         output_state_file = config.terraform.stateFiles;
         project_prefix = "${project_name}-${env}-${region}";
-        root_folder = toString ../..;
+        root_folder = config.project.rootFolder;
 
         backup_bucket = config.storage.backup.bucket;
         worker_bucket   = "${config.aws.s3-buckets.worker-cache}";

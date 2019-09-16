@@ -1,5 +1,5 @@
 
-Immutable platform - all as a code approach - `opa policies` (`apps` -> `kubernetes` -> `infrastructure`) .
+Immutable platform - all as a code approach - `opa policies` (`apps` -> `kubernetes` -> `infrastructure`). Pluggable architecture ...
 
 ### Purpose
 Yet another story about `kubernetes` and declarative approach to infrastructure.

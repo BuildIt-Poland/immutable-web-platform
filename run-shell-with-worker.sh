@@ -3,6 +3,7 @@ nix-shell \
   --arg kubernetes '{update=true;}' \
   --arg docker '{upload=true;}' \
   --arg tests '{enable=true;}' \
+  --arg opa '{validation=true;}' \
   --option binary-caches 's3://future-is-comming-worker-binary-store?region=eu-west-2'
 
 # nix-shell \

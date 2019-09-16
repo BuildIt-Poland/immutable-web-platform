@@ -48,9 +48,16 @@ rec {
   config = mkIf (cfg.docker.enabled) (mkMerge [
     { checks = ["Enabling docker module"]; }
     ({
+      # set flag for this
+      environment.vars = {
+        DOCKER_BUILDKIT = 0;
+      };
+
       packages = with pkgs; [
         docker
         dgoss
+        perl
+        nix-serve
       ];
     })
   ]);

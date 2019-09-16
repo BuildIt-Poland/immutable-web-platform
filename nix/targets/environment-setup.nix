@@ -33,10 +33,11 @@ in
     # FIXME based on target take from modules
     project = rec {
       name = inputs.project.name;
-      author-email = "damian.baar@wipro.com";
+      authorEmail = "damian.baar@wipro.com";
       domain = "buildit.consulting";
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
+      rootFolder = toString ../..;
       repositories = {
         k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
         code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
@@ -76,11 +77,12 @@ in
     brigade = {
       enabled = true;
       secret-key = inputs.brigade.secret;
-      projects = {
-        brigade-project = {
-          project-name = "embracing-nix-docker-k8s-helm-knative";
-          project-ref = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative"; # like repo
-          pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
+      projects = 
+      let
+        create-project = name: file: {
+          project-name = name;
+          pipeline-file = file;
+          project-ref = "digitalrigbitbucketteam/${name}"; # like repo
           clone-url = config.project.repositories.code-repository;
           ssh-key = config.bitbucket.ssh-keys.priv;
           # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
@@ -91,6 +93,15 @@ in
             };
           };
         };
+      in
+      {
+        brigade-project = create-project 
+          "embracing-nix-docker-k8s-helm-knative" 
+          ../../pipeline/resources-sync/pipeline.ts; 
+
+        brigade-exec-storage-test = create-project 
+          "exec-storage-test" 
+          ../../pipeline/storage-test/pipeline.ts; 
       };
     };
 

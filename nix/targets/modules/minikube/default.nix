@@ -35,6 +35,7 @@ with lib;
       kubernetes = {
         tools.enable = true;
         resources.list."${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
+        resources.list."${priority.high "storage"}" = [ ./storage.nix ];
       };
 
       skaffold.enable = true;
