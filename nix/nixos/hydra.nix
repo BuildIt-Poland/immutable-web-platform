@@ -38,6 +38,7 @@ in
 
         networking.firewall.allowedTCPPorts = [ 
           22
+          80
         ];
 
         # services.hydra.workers = [{ 

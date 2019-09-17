@@ -3,6 +3,10 @@ let
   project = pkgs.project-config.project;
 in {
   config = {
+    nix = {
+      trustedUsers = ["hydra" "hydra-evaluator" "hydra-queue-runner" "root"];
+    };
+
     users = {
       mutableUsers = false;
 

@@ -11,6 +11,10 @@ in
     email = project.authorEmail;
   };
 
+  networking.firewall.allowedTCPPorts = [ 
+    3000
+  ];
+
   services.nginx = {
     enable = true;
 

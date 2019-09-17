@@ -18,6 +18,13 @@ resource "aws_security_group" "hydra-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     protocol    = -1
     from_port   = 0
@@ -70,5 +77,6 @@ module "nixos-updater" {
   nixos_configuration = var.nixos_configuration
 
   host                = module.aws-ec2-instance.instance.public_ip
-  ssh_pub_key         = var.ssh_pub_key
+  ssh_pub_key         = module.aws-ec2-instance.key.key_name # var.ssh_pub_key
+  # ssh_pub_key         = var.ssh_pub_key
 }
