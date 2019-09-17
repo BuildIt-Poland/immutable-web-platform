@@ -10,8 +10,8 @@ in {
     users = {
       mutableUsers = false;
 
-      users.hydra-www.uid = config.ids.uids.hydra-www;
-      users.hydra-queue-runner.uid = config.ids.uids.hydra-queue-runner;
+      # users.hydra-www.uid = config.ids.uids.hydra-www;
+      # users.hydra-queue-runner.uid = config.ids.uids.hydra-queue-runner;
       users.hydra.uid = config.ids.uids.hydra;
       groups.hydra.gid = config.ids.gids.hydra;
 

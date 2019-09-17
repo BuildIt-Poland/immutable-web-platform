@@ -32,6 +32,7 @@ with lib;
     networking.firewall.allowedTCPPorts = [ config.services.hydra.port ];
 
     nix = {
+      useChroot = true;
       distributedBuilds = true;
       buildMachines = config.services.hydra.workers;
       extraOptions = "auto-optimise-store = true";
@@ -53,16 +54,19 @@ with lib;
     services.postgresql = {
       enable = true;
       package = pkgs.postgresql;
-      identMap = ''
-        hydra-users hydra hydra
-        hydra-users root postgres
-      '';
+      # identMap = ''
+      #   hydra-users hydra hydra
+      #   hydra-users root postgres
+      # '';
       #   hydra-users hydra-queue-runner hydra
       #   hydra-users hydra-www hydra
       #   hydra-users postgres postgres
       dataDir = "/var/db/postgresql-${config.services.postgresql.package.psqlSchema}";
     };
 
+    # DOING IMPORTANT!
+    # hydra has to have key to bitbucket
+    # chown hydra:hydra /var/lib/hydra/id_rsa
     systemd.services.hydra-manual-setup = {
       description = "Create Admin User for Hydra";
       serviceConfig.Type = "oneshot";
@@ -88,7 +92,7 @@ with lib;
           touch ~hydra/.setup-is-complete
 
           # user
-          hydra-create-user admin --full-name 'SUPER ADMIN' --email-address 'EMAIL' --password admin --role admin
+          /run/current-system/sw/bin/hydra-create-user admin --full-name 'SUPER ADMIN' --email-address 'EMAIL' --password admin --role admin
         fi
       '';
     };
