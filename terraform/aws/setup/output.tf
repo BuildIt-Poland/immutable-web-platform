@@ -8,14 +8,9 @@ output "docker_registry" {
 }
 
 output "hydra" {
-  value = module.hydra
+  value = module.hydra.instance.public_ip
 }
 
 output "vpc" {
-  value = module.vpc
-}
-
-output "hydra-worker-key" {
-  value = tls_private_key.hydra-token
-  sensitive   = true
+  value = module.vpc.vpc_arn
 }

@@ -63,6 +63,8 @@ module "vpc" {
   enable_dns_hostnames = true
   enable_dns_support   = true
 
+  # ec2_endpoint_security_group_ids = [module.hydra.sg]
+
   tags = local.common_tags
 
   vpc_tags = {
@@ -81,10 +83,10 @@ module "vpc" {
 }
 
 # to refresh - terraform taint tls_private_key.hydra-token
-resource "tls_private_key" "hydra-token" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
+# resource "tls_private_key" "hydra-token" {
+#   algorithm = "RSA"
+#   rsa_bits  = 4096
+# }
 
 module "hydra" {
   source      = "../../modules/aws-hydra"
@@ -99,5 +101,5 @@ module "hydra" {
   port = 3000
   nixos_configuration = local.nixos_configuration
   # TODO
-  worker_ssh_key = tls_private_key.hydra-token.public_key_openssh
+  # worker_ssh_key = tls_private_key.hydra-token.public_key_openssh
 }

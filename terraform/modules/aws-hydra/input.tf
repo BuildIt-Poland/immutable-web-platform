@@ -9,6 +9,8 @@ variable cluster_name {}
 
 variable vpc {}
 variable ssh_pub_key {}
-variable worker_ssh_key {}
+
+# variable worker_ssh_key {}
 variable port {}
+
 variable "nixos_configuration" {}

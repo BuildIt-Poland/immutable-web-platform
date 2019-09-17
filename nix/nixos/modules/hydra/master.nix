@@ -35,13 +35,7 @@ with lib;
       distributedBuilds = true;
       buildMachines = config.services.hydra.workers;
       extraOptions = "auto-optimise-store = true";
-      trustedUsers = ["hydra" "hydra-evaluator" "hydra-queue-runner"];
     };
-
-    users.users.hydra-www.uid = config.ids.uids.hydra-www;
-    users.users.hydra-queue-runner.uid = config.ids.uids.hydra-queue-runner;
-    users.users.hydra.uid = config.ids.uids.hydra;
-    users.groups.hydra.gid = config.ids.gids.hydra;
 
     services.hydra = {
       enable = true;
@@ -61,11 +55,11 @@ with lib;
       package = pkgs.postgresql;
       identMap = ''
         hydra-users hydra hydra
-        hydra-users hydra-queue-runner hydra
-        hydra-users hydra-www hydra
         hydra-users root postgres
-        hydra-users postgres postgres
       '';
+      #   hydra-users hydra-queue-runner hydra
+      #   hydra-users hydra-www hydra
+      #   hydra-users postgres postgres
       dataDir = "/var/db/postgresql-${config.services.postgresql.package.psqlSchema}";
     };
 
