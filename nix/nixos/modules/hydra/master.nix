@@ -86,6 +86,9 @@ with lib;
 
           # done
           touch ~hydra/.setup-is-complete
+
+          # user
+          hydra-create-user admin --full-name 'SUPER ADMIN' --email-address 'EMAIL' --password admin --role admin
         fi
       '';
     };

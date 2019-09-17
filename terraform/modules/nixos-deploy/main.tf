@@ -26,6 +26,7 @@ resource "null_resource" "bootstrap" {
     command = <<EXEC
       ${path.module}/wait-for-ssh.sh root ${var.host}
       ssh root@${var.host} "echo '${jsonencode(data.external.nixos-build.result)}' > /tmp/build-result.json"
+      scp ~/.ssh/id_rsa.pub  root@${var.host}:~/.ssh/id_rsa.pub
       ${path.module}/copy-nix.sh "${data.external.nixos-build.result["hash"]}" "${var.host}"
     EXEC
   }
