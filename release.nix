@@ -6,6 +6,6 @@ with (import <nixpkgs/pkgs/top-level/release-lib.nix> { inherit supportedSystems
 } // mapTestOn {
 
   # Fancy shortcut to generate one attribute per supported platform.
-  hello = hello_world;
+  # hello = hello_world;
 
 }
