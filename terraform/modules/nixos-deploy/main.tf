@@ -22,11 +22,12 @@ resource "null_resource" "bootstrap" {
   #   destination = "/tmp/build-result.json"
   # }
 
+  # TODO move this private key
   provisioner "local-exec" {
     command = <<EXEC
       ${path.module}/wait-for-ssh.sh root ${var.host}
       ssh root@${var.host} "echo '${jsonencode(data.external.nixos-build.result)}' > /tmp/build-result.json"
-      scp ~/.ssh/id_rsa.pub  root@${var.host}:~/.ssh/id_rsa.pub
+      scp ~/.ssh/id_rsa  root@${var.host}:~/.ssh/id_rsa
       ${path.module}/copy-nix.sh "${data.external.nixos-build.result["hash"]}" "${var.host}"
     EXEC
   }
