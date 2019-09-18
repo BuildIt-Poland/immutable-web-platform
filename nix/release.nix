@@ -8,17 +8,21 @@ let
   }; }).pkgs;
 
   tools = 
+    with pkgs.lib;
+    with builtins;
     let
       folders = 
-        (builtins.attrNames 
-          (pkgs.lib.filterAttrs (n: v: v == "directory")
-            (builtins.readDir ./tools)));
+        (attrNames 
+          (filterAttrs (n: v: v == "directory")
+            (readDir ./tools)));
     in
-      pkgs.lib.foldl 
-        (x: y: (pkgs.lib.recursiveUpdate x {"${y}" = (builtins.getAttr y pkgs);}))
+      foldl 
+        (x: y: (recursiveUpdate x {"${y}" = (getAttr y pkgs);}))
         {}
         folders;
+  
+  charts = pkgs.k8s-resources;
 in 
-  tools
+  (tools // charts)
 
   # TODO docker images
