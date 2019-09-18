@@ -9,13 +9,15 @@
   "keepnr": 1,
   "checkinterval": 300,
   "schedulingshares": 100,
-  "jobsets": [
-    "nix-docker-image-builder"
-  ],
   "inputs": {
     "src": {
       "type": "git",
       "value": "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git nix-docker-image-builder",
+      "emailresponsible": false
+    },
+    "nixpkgs": {
+      "type": "git",
+      "value": "git://github.com/NixOS/nixpkgs.git",
       "emailresponsible": false
     }
   }
