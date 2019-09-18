@@ -13,7 +13,7 @@ rec {
   brigadeterm = super.callPackage ./brigadeterm {};
 
   # K8S
-  knative = super.callPackage ./knative {};
+  kn = super.callPackage ./kn {};
   kube-prompt = super.callPackage ./kube-prompt {}; 
   hey = super.callPackage ./hey {}; 
   istioctl = super.callPackage ./istioctl {}; 
