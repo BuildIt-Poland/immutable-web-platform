@@ -34,13 +34,13 @@ let
             }; 
           }; 
         }).pkgs;
-      in {
+      in rec {
         build = (builtins.getAttr n pkgs);
         tarball = pkgs.releaseTools.binaryTarball {
           name = "${build.name}-tarball";
           src = build;
         };
-      };
+      }
     ))
   ) tools;
   
