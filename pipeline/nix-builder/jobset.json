@@ -1,6 +1,7 @@
 {
   "enabled": 1,
   "hidden": false,
+  "id": "test",
   "description": "Jobsets",
   "nixexprinput": "src",
   "nixexprpath": "nix/release.nix",
@@ -17,7 +18,7 @@
     },
     "nixpkgs": {
       "type": "nix",
-      "value": "<nixpkgs>",
+      "value": "'<nixpkgs>'",
       "emailresponsible": false
     }
   }
