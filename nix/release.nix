@@ -40,7 +40,10 @@ let
           src = build;
           doCheck = false;
           showBuildStats = false;
-          postPhases = "";
+          postPhases = ["postPhase"];
+          postPhase = ''
+            cp -R $out/tarballs $TMPDIR/inst/tarballs
+          '';
           installPhase = ''
             ${pkgs.coreutils}/bin/install --target-directory "$TMPDIR/inst/bin" -D ${v}/bin/${n}
           '';
