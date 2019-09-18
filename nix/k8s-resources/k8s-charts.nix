@@ -38,7 +38,7 @@ rec {
   docker-registry = fetch {
     chart = "stable/docker-registry";
     version = "1.8.0";
-    sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
+    sha256 = "1zz4xl2z6gllkg40rqvn1gm9aj49iz9ja9lvs8n7rlbqqkixqra9";
   };
 
   grafana = fetch {
