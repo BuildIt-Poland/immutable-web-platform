@@ -7,9 +7,9 @@
   "enableemail": false,
   "emailoverride": "",
   "keepnr": 3,
+  "checkinterval": 300,
+  "schedulingshares": 100,
   "jobsets": {
-    "checkinterval": 300,
-    "schedulingshares": 100,
     "inputs": {
       "src": {
         "type": "git",
