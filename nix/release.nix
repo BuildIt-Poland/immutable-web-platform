@@ -24,7 +24,7 @@ let
   tools-release = pkgs.lib.mapAttrs (n: v: rec {
     source = v;
 
-    tarball = pkgs.releaseTools.sourceTarball {
+    tarball = pkgs.releaseTools.binaryTarball {
       name = "${v.name}-tarball";
       src = v;
     };
