@@ -21,16 +21,8 @@ let
         {}
         folders;
 
-  tools-release = pkgs.lib.mapAttrs (n: v: rec {
-    # source = v;
-
-    tarball = pkgs.releaseTools.binaryTarball v;
-    # {
-    #   name = "${v.name}-tarball";
-    #   src = v.src;
-    # };
-
-    build =  pkgs.lib.genAttrs supportedSystems (system:
+  tools-release = pkgs.lib.mapAttrs (n: v:
+    (pkgs.lib.genAttrs supportedSystems (system:
       let
         pkgs = (import src { 
           inherit system;
@@ -42,10 +34,15 @@ let
             }; 
           }; 
         }).pkgs;
-      in
-        (builtins.getAttr n pkgs)
-    );
-  }) tools;
+      in {
+        build = (builtins.getAttr n pkgs);
+        tarball = pkgs.releaseTools.binaryTarball {
+          name = "${build.name}-tarball";
+          src = build;
+        };
+      };
+    ))
+  ) tools;
   
   charts-release = 
     pkgs.lib.filterAttrs 
