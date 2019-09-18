@@ -1,8 +1,8 @@
 {
-  "platform": {
-    "enabled": 1,
-    "hidden": false,
-    "description": "Platform channel",
+  "enabled": 1,
+  "hidden": false,
+  "description": "Platform channel",
+  "jobsets": {
     "nixexprinput": "src",
     "nixexprpath": "nix/release.nix",
     "checkinterval": 300,
