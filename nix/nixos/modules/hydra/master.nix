@@ -83,9 +83,9 @@ with lib;
       dataDir = "/var/db/postgresql-${config.services.postgresql.package.psqlSchema}";
     };
 
-    systemd.services.add-bitbucket-key = {
+    systemd.services.setup-hydra-projects = {
       enable = true;
-      description = "Add bitbucket key";
+      description = "Setup hydra projects";
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;

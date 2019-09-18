@@ -3,7 +3,7 @@
   "visible": true,
   "description": "Platform jobset",
   "nixexprinput": "src",
-  "nixexprpath": "pipeline/nix-builder/default.nix",
+  "nixexprpath": "nix/release.nix",
   "enableemail": false,
   "emailoverride": "",
   "keepnr": 1,
