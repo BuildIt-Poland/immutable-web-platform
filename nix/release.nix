@@ -39,9 +39,9 @@ let
         tarball = pkgs.releaseTools.binaryTarball {
           name = "${build.name}-tarball";
           src = build;
+          buildPhase = "";
           installPhase = ''
-            mkdir -p $out/bin
-            cp $src/bin/${n} $out/bin/${n}
+            ${pkgs.coreutils}/bin/install --target-directory "$TMPDIR/inst/bin" -D ${v}/bin/${n}
           '';
         };
       }
