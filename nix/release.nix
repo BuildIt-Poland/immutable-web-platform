@@ -22,12 +22,13 @@ let
         folders;
 
   tools-release = pkgs.lib.mapAttrs (n: v: rec {
-    source = v;
+    # source = v;
 
-    tarball = pkgs.releaseTools.binaryTarball {
-      name = "${v.name}-tarball";
-      src = v;
-    };
+    tarball = pkgs.releaseTools.binaryTarball v;
+    # {
+    #   name = "${v.name}-tarball";
+    #   src = v.src;
+    # };
 
     build =  pkgs.lib.genAttrs supportedSystems (system:
       let
@@ -42,10 +43,7 @@ let
           }; 
         }).pkgs;
       in
-        pkgs.releaseTools.nixBuild {
-          name = v.name;
-          src = tarball;
-        });
+        builtins.getAttr n pkgs;
 
   }) tools;
   
