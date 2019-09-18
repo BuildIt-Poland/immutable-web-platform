@@ -16,7 +16,7 @@
       "emailresponsible": false
     },
     "nixpkgs": {
-      "type": "string",
+      "type": "nix",
       "value": "<nixpkgs>",
       "emailresponsible": false
     }
