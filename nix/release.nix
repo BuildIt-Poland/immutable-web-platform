@@ -38,8 +38,11 @@ let
         build = (builtins.getAttr n pkgs);
         tarball = pkgs.releaseTools.binaryTarball {
           name = "${build.name}-tarball";
-          phases = [];
           src = build;
+          installPhase = ''
+            mkdir -p $out/bin
+            cp $src/bin/${n} $out/bin/${n}
+          '';
         };
       }
     ))
