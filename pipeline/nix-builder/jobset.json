@@ -3,7 +3,7 @@
   "hidden": false,
   "description": "Jobsets",
   "nixexprinput": "src",
-  "nixexprpath": "nix/release.nix",
+  "nixexprpath": "pipeline/nix-builder/default.nix",
   "enableemail": false,
   "emailoverride": "",
   "keepnr": 1,
@@ -16,8 +16,8 @@
       "emailresponsible": false
     },
     "nixpkgs": {
-      "type": "nix",
-      "value": "<nixpkgs>",
+      "type": "git",
+      "value": "git://github.com/NixOS/nixpkgs.git release-19.03",
       "emailresponsible": false
     }
   }
