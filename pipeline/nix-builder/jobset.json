@@ -12,7 +12,7 @@
   "jobsets": [
     "nix-docker-image-builder"
   ],
-  "jobsetinputs": {
+  "inputs": {
     "src": {
       "type": "git",
       "value": "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git nix-docker-image-builder",
