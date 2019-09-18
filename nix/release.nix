@@ -1,4 +1,4 @@
-{ src ? ./., ... }: 
+{ src ? ./., supportedSystems ? ["x86_64-linux"], ... }: 
 let 
   pkgs = (import src { inputs = {
     environment = {
@@ -25,19 +25,31 @@ let
     tarball = pkgs.releaseTools.sourceTarball {
       name = "${v.name}-tarball";
       src = v;
-      buildInputs = (with pkgs; [ gettext texLive texinfo ]);
     };
 
-    build = 
-      { system ? builtins.currentSystem }:
+    build =  pkgs.lib.genAttrs supportedSystems (system:
+      let
+        pkgs = (import src { 
+          inherit system;
+
+          inputs = {
+            environment = {
+              type = "dev"; 
+              perspective = "release";
+            }; 
+          }; 
+        }).pkgs;
+      in
         pkgs.releaseTools.nixBuild {
           name = v.name;
           src = tarball;
-        };
+        });
+
   }) tools;
   
   charts = pkgs.k8s-resources;
 in 
-  (tools-release // charts)
+  # (tools-release // charts)
+  tools-release
 
   # TODO docker images
