@@ -27,14 +27,8 @@ in
 
     sslCiphers = "AES256+EECDH:AES256+EDH:!aNULL";
 
-    appendHttpConfig = ''
-    '';
-
-    virtualHosts."${config.networking.hostName}" = {
-      # addSSL = true;
+    virtualHosts."${host-name}" = {
       forceSSL = true;
-      # it should be defined in project-config - it has to be aligned with external-dns
-      # useACMEHost = "acme-v02.api.letsencrypt.org";
       enableACME = true;
       locations."/" ={
         proxyPass = "http://127.0.0.1:3000";
