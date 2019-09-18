@@ -1,7 +1,6 @@
 {
   "enabled": 1,
   "hidden": false,
-  "name": "test",
   "description": "Jobsets",
   "nixexprinput": "src",
   "nixexprpath": "nix/release.nix",
