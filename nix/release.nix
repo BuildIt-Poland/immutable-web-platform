@@ -8,7 +8,7 @@ let
   }; }).pkgs;
 
   tools = 
-    lib.attrVals
+    pkgs.lib.attrVals
       (builtins.attrNames 
         (pkgs.lib.filterAttrs (n: v: v == "directory")
           (builtins.readDir ./tools)))
