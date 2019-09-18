@@ -17,7 +17,7 @@
     },
     "nixpkgs": {
       "type": "git",
-      "value": "git://github.com/NixOS/nixpkgs.git release-16.03",
+      "value": "git://github.com/NixOS/nixpkgs.git master",
       "emailresponsible": false
     }
   }
