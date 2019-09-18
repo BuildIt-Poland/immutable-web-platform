@@ -40,10 +40,8 @@ let
           src = build;
           doCheck = false;
           showBuildStats = false;
-          buildPhase = "";
-          distPhase = "";
+          postPhases = "";
           installPhase = ''
-            mkdir -p $TMPDIR/inst/bin
             ${pkgs.coreutils}/bin/install --target-directory "$TMPDIR/inst/bin" -D ${v}/bin/${n}
           '';
         };
