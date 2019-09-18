@@ -49,9 +49,11 @@ let
 
   }) tools;
   
-  charts = pkgs.k8s-resources;
+  charts-release = 
+    pkgs.lib.filterAttrs 
+      (n: v: !(pkgs.lib.isFunction v)) 
+      pkgs.k8s-resources;
 in 
-  # (tools-release // charts)
-  tools-release
+  (tools-release // charts-release)
 
   # TODO docker images
