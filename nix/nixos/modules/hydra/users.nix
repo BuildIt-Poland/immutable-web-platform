@@ -17,7 +17,7 @@ in {
 
       # FIXME
       users.root.openssh.authorizedKeys.keyFiles = [ ~/.ssh/id_rsa.pub ];
-      # extraUsers.root.openssh.authorizedKeys.keys = pkgs.lib.singleton ''
+      # extraUsers.hydra.openssh.authorizedKeys.keys = pkgs.lib.singleton ''
       #   command="nice -n20 nix-store --serve --write" ${pkgs.lib.readFile ./id_buildfarm.pub}
       # '';
     };

@@ -1,3 +1,4 @@
+# need to find a way to build amazon ami on darwin with nix
 {system ? "x86_64-linux", ...}:
 let
   pkgs = (import ../../nix { 
