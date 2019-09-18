@@ -17,7 +17,7 @@
     },
     "nixpkgs": {
       "type": "nix",
-      "value": "'<nixpkgs>'",
+      "value": "<nixpkgs>",
       "emailresponsible": false
     }
   }
