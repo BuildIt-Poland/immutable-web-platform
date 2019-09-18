@@ -57,7 +57,13 @@ let
     pkgs.lib.filterAttrs 
       (n: v: !(pkgs.lib.isFunction v)) 
       pkgs.k8s-resources;
+
+  channel = pkgs.releaseTools.channel {
+    name = "pkgs";
+    src = ../.;
+    constituents = [ ];
+  };
 in 
-  (tools-release // charts-release)
+  (tools-release // charts-release // { inherit channel; })
 
   # TODO docker images
