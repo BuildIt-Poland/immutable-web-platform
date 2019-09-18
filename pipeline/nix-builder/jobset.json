@@ -6,7 +6,7 @@
   "nixexprpath": "nix/release.nix",
   "enableemail": false,
   "emailoverride": "",
-  "keepnr": 3,
+  "keepnr": 1,
   "checkinterval": 300,
   "schedulingshares": 100,
   "inputs": {
@@ -15,6 +15,5 @@
       "value": "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git nix-docker-image-builder",
       "emailresponsible": false
     }
-  },
-  "jobsets": {}
+  }
 }
