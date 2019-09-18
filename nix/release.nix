@@ -1,4 +1,4 @@
-{ src ? ./., nixpkgs ? <nixpkgs> }: 
+{ src ? ./., ... }: 
 let 
   pkgs = import nixpkgs {}; 
   _pkgs = (import src { inputs = {
@@ -8,7 +8,7 @@ let
     };
   }; }).pkgs;
 in {
-  inherit (pkgs) hello;
+  hello = _pkgs.hello;
   brigadeterm = _pkgs.brigadeterm;
   istioctl = _pkgs.istioctl;
 }
