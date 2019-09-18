@@ -65,8 +65,6 @@ with lib;
       buildMachinesFiles = [];
       extraConfig = ''
         store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
-        binary_cache_secret_key_file = /etc/nix/${host-name}/secret
-        binary_cache_dir = /var/lib/hydra/cache
       '';
     };
 
@@ -83,9 +81,9 @@ with lib;
       dataDir = "/var/db/postgresql-${config.services.postgresql.package.psqlSchema}";
     };
 
-    systemd.services.setup-hydra-projects = {
+    systemd.services.hydra-quick-project-setup = {
       enable = true;
-      description = "Setup hydra projects";
+      description = "One time hydra project setup";
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
@@ -97,7 +95,7 @@ with lib;
       unitConfig = {
         ConditionPathExists = "/etc/nix/id_bitbucket";
       };
-      after = [ "hydra-init.service" "hydra-manual-setup.service" ];
+      after = [ "hydra-init.service" "hydra-server.service" "hydra-manual-setup.service" ];
       environment = (builtins.removeAttrs (config.systemd.services.hydra-init.environment) ["PATH"]) // {
         HYDRA_HOST = "http://localhost:${toString config.services.hydra.port}";
         HYDRA_PASSWORD = "admin";

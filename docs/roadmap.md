@@ -10,6 +10,7 @@
 * spinup binary cache - after building go packages it takes time ... -> need to have hydra instance
 * add metadata.env
 * add namespace for functions
+* istio faul-injection as mocks
 ### in progress
 * setup bastion on nixos -> restic, velero, kubectl
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
