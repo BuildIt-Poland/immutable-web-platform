@@ -80,6 +80,7 @@ in
         region = config.aws.region;
         project_name = config.project.name;
         domain = (config.project.make-sub-domain "");
+        base_domain = config.project.domain;
         owner = config.project.authorEmail;
         hash = config.project.hash;
         env = config.environment.type;

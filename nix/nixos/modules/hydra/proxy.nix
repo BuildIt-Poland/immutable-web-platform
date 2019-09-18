@@ -1,17 +1,17 @@
-{pkgs, ...}: 
+{config, pkgs, ...}: 
 let
   project = pkgs.project-config.project;
-  host-name = project.make-sub-domain "hydra";
 in 
 {
   imports = [];
 
-  security.acme.certs."${host-name}" = {
+  security.acme.certs."${config.networking.hostName}" = {
     # webroot = "/var/www/challenges";
     email = project.authorEmail;
   };
 
   networking.firewall.allowedTCPPorts = [ 
+    80
     3000
   ];
 
@@ -23,8 +23,8 @@ in
     recommendedOptimisation = true;
     recommendedTlsSettings = true;
 
-    virtualHosts."${host-name}" = {
-      forceSSL = true;
+    virtualHosts."${config.networking.hostName}" = {
+      addSSL = true;
       enableACME = true;
       locations."/" ={
         proxyPass = "http://localhost:3000";

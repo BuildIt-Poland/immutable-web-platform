@@ -100,6 +100,8 @@ module "hydra" {
 
   port = 3000
   nixos_configuration = local.nixos_configuration
+  base_domain = var.base_domain
+  domain = var.domain
   # TODO
   # worker_ssh_key = tls_private_key.hydra-token.public_key_openssh
 }

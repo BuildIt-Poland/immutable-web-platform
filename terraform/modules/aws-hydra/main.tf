@@ -18,6 +18,14 @@ resource "aws_security_group" "hydra-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # nix-serve
+  ingress {
+    protocol    = "tcp"
+    from_port   = 5000
+    to_port     = 5000
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   ingress {
     protocol    = "tcp"
     from_port   = 80
@@ -53,6 +61,27 @@ module "aws-ec2-instance" {
   subnet_id           = var.vpc.public_subnets[random_integer.subnet.result]
   ssh_pub_key         = var.ssh_pub_key
   instance_type       = "t2.large"
+}
+
+# TODO think how to make this working with external name in svc in kubernetes and external dns
+# resource "aws_route53_zone" "domain" {
+#   name = var.base_domain
+# }
+
+data "aws_route53_zone" "domain" {
+  name         = var.base_domain
+  # private_zone = true
+}
+
+resource "aws_route53_record" "hydra" {
+  zone_id = data.aws_route53_zone.domain.zone_id
+  name    = "hydra.${var.domain}"
+  type    = "A"
+  ttl     = "300"
+  records = [
+    module.aws-ec2-instance.instance.public_ip,
+    module.aws-ec2-instance.instance.private_ip
+  ]
 }
 
 # watcher
