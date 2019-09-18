@@ -43,8 +43,8 @@ let
           }; 
         }).pkgs;
       in
-        builtins.getAttr n pkgs;
-
+        (builtins.getAttr n pkgs)
+    );
   }) tools;
   
   charts-release = 
