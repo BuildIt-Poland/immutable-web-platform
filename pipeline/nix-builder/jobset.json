@@ -1,7 +1,7 @@
 {
   "enabled": 1,
   "hidden": false,
-  "description": "Platform channel",
+  "description": "Jobsets",
   "nixexprinput": "src",
   "nixexprpath": "nix/release.nix",
   "enableemail": false,
@@ -13,6 +13,11 @@
     "src": {
       "type": "git",
       "value": "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git nix-docker-image-builder",
+      "emailresponsible": false
+    },
+    "nixpkgs": {
+      "type": "git",
+      "value": "git://github.com/NixOS/nixpkgs.git release-16.03",
       "emailresponsible": false
     }
   }
