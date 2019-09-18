@@ -18,6 +18,12 @@ resource "aws_instance" "nixos_instance" {
   subnet_id              = var.subnet_id
   associate_public_ip_address = true
 
+  root_block_device {
+    delete_on_termination = true
+    volume_size = "50"
+    # kms_key_id = aws_key_pair.instance.key_name
+  }
+
   tags = merge(
     var.common_tags,
     map(

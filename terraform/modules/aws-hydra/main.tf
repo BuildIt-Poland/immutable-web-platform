@@ -52,6 +52,7 @@ module "aws-ec2-instance" {
   security_groups_ids = [aws_security_group.hydra-sg.id]
   subnet_id           = var.vpc.public_subnets[random_integer.subnet.result]
   ssh_pub_key         = var.ssh_pub_key
+  instance_type       = "t2.large"
 }
 
 # watcher
