@@ -38,6 +38,7 @@ let
         build = (builtins.getAttr n pkgs);
         tarball = pkgs.releaseTools.binaryTarball {
           name = "${build.name}-tarball";
+          phases = [];
           src = build;
         };
       }
