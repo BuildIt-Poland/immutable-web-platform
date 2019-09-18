@@ -14,20 +14,26 @@ let
 
   nixpkgs_path = pkgs.sources.nixpkgs;
   hydra_path = pkgs.sources.hydra;
+
+  project = pkgs.project-config.project;
+  host-name = project.make-sub-domain "hydra";
 in
   import "${nixpkgs_path}/nixos" {
     inherit system;
 
     configuration = {
       imports = [
-        ./ec2-nixos.nix
-        ./shell.nix
-        ./copy-source.nix
+        ./modules/ec2-nixos.nix
+        ./modules/shell.nix
+        ./modules/copy-source.nix
         ./modules/hydra/master.nix
+        ./modules/nix-serve.nix
         (import "${hydra_path}/hydra-module.nix")
       ];
 
       config = {
+        networking.hostName = host-name;
+
         nixpkgs.pkgs = pkgs;
         nix = {
           gc.automatic = true;
@@ -41,6 +47,8 @@ in
           22
           80
         ];
+
+        services.hydra.debugServer = true;
 
         # services.hydra.workers = [{ 
         #   hostName = "slave1"; 

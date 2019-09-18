@@ -1,7 +1,7 @@
 {pkgs, config, lib, ...}: 
 let
   project = pkgs.project-config.project;
-  host-name = project.make-sub-domain "hydra";
+  host-name = config.networking.hostName;
 in 
 with lib;
 {
@@ -60,7 +60,7 @@ with lib;
     services.hydra = {
       enable = true;
       useSubstitutes = true;
-      hydraURL = host-name;
+      hydraURL = config.networking.hostName;
       notificationSender = project.authorEmail;
       buildMachinesFiles = [];
       extraConfig = ''
