@@ -8,10 +8,10 @@ let
   }; }).pkgs;
 
   tools = 
-    (builtins.attrNames 
-      (lib.filterAttrs (n: v: v == "directory")
-        (builtins.readDir ./tools)));
+    lib.attrVals
+      (builtins.attrNames 
+        (lib.filterAttrs (n: v: v == "directory")
+          (builtins.readDir ./tools)))
+      pkgs;
 in 
-{
-  hello = pkgs.hello;
-} // (lib.attrVals tools pkgs);
+  tools
