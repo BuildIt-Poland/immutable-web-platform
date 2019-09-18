@@ -1,14 +1,17 @@
 { src ? ./., ... }: 
 let 
-  pkgs = import nixpkgs {}; 
-  _pkgs = (import src { inputs = {
+  pkgs = (import src { inputs = {
     environment = {
       type = "dev"; 
       perspective = "release";
     };
   }; }).pkgs;
-in {
-  hello = _pkgs.hello;
-  brigadeterm = _pkgs.brigadeterm;
-  istioctl = _pkgs.istioctl;
-}
+
+  tools = 
+    (builtins.attrNames 
+      (lib.filterAttrs (n: v: v == "directory")
+        (builtins.readDir ./tools)));
+in 
+{
+  hello = pkgs.hello;
+} // (lib.attrVals tools pkgs);

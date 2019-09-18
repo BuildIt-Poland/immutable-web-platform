@@ -20,7 +20,6 @@ rec {
 
   # docker
   dgoss = super.callPackage ./dgoss {}; 
-  kaniko-build = super.callPackage ./builder/kaniko.nix {};
 
   # backups
   velero = super.callPackage ./velero {};
@@ -36,12 +35,13 @@ rec {
   conftest = super.callPackage ./conftest {};
   opa = super.callPackage ./opa {};
   popeye = super.callPackage ./popeye {};
-  krew = super.callPackage ./kubectl-plugins/krew.nix {};
-  dig = super.callPackage ./kubectl-plugins/dig.nix {};
-  debug = super.callPackage ./kubectl-plugins/debug.nix {};
+
+  kubectl-krew = super.callPackage ./kubectl-krew {};
+  kubectl-dig = super.callPackage ./kubectl-dig {};
+  kubectl-debug = super.callPackage ./kubectl-debug {};
 
   yarn2nix = super.callPackage sources.yarn2nix {};
 
   # INFO I need to have hibernate feature for aws
   nixops = (import "${sources.nixops.outPath}/release.nix" {}).build.${super.system};
-}
+} 
