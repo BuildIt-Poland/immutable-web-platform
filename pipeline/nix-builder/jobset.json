@@ -1,0 +1,18 @@
+{
+  "enabled": 1,
+  "hidden": false,
+  "description": "Platform channel",
+  "nixexprinput": "nix",
+  "nixexprpath": "release.nix",
+  "checkinterval": 300,
+  "schedulingshares": 100,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 3,
+  "inputs": {
+    "src": {
+      "type": "git",
+      "value": "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git nix-docker-image-builder"
+    }
+  }
+}
