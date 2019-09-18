@@ -1,4 +1,15 @@
 {
+    "hydra-cli": {
+        "url": "https://github.com/nlewo/hydra-cli/archive/393f93e36acfd87f60acdfcc18e042cfe0b30042.tar.gz",
+        "owner": "nlewo",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "hydra-cli",
+        "type": "tarball",
+        "sha256": "1jdlmc45hwblcxs6hvy3gi2dr7qyzs1sg5zr26jrpxrbvqqzrdhc",
+        "description": "A client for the Hydra Nix CI",
+        "rev": "393f93e36acfd87f60acdfcc18e042cfe0b30042"
+    },
     "nixpkgs": {
         "homepage": "https://github.com/NixOS/nixpkgs",
         "url": "https://github.com/NixOS/nixpkgs-channels/archive/e19054ab3cd5b7cc9a01d0efc71c8fe310541065.tar.gz",

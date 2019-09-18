@@ -1,7 +1,7 @@
 {
-  "enabled": 1,
-  "hidden": false,
-  "description": "Jobsets",
+  "enabled": true,
+  "visible": true,
+  "description": "Platform jobset",
   "nixexprinput": "src",
   "nixexprpath": "pipeline/nix-builder/default.nix",
   "enableemail": false,

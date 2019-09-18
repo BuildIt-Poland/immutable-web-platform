@@ -31,6 +31,11 @@ with lib;
 
     networking.firewall.allowedTCPPorts = [ config.services.hydra.port ];
 
+    environment.systemPackages = [ 
+      pkgs.zsh
+      pkgs.hydra-cli
+    ];
+
     nix = {
       # nix.useSandbox
       distributedBuilds = true;
@@ -49,7 +54,7 @@ with lib;
       mode = "0400";
     };
 
-    
+    # FIXME 
     #  hydra.conf: binary_cache_dir is deprecated and ignored. use store_uri=file:// instead
     #  hydra.conf: binary_cache_secret_key_file is deprecated and ignored. use store_uri=...?secret-key= instead
     services.hydra = {
@@ -92,22 +97,34 @@ with lib;
       unitConfig = {
         ConditionPathExists = "/etc/nix/id_bitbucket";
       };
-      after = [ "hydra-init.service" ];
-      environment = builtins.removeAttrs (config.systemd.services.hydra-init.environment) ["PATH"];
-      # path = [ ];
+      after = [ "hydra-init.service" "hydra-manual-setup.service" ];
+      environment = (builtins.removeAttrs (config.systemd.services.hydra-init.environment) ["PATH"]) // {
+        HYDRA_HOST = "localhost:${toString config.services.hydra.port}";
+        HYDRA_PASSWORD = "admin";
+        HYDRA_USER = "admin";
+      };
+      path = [ pkgs.hydra-cli ];
       script = ''
-        # private bitbucket repo key
-        /run/current-system/sw/bin/mkdir -p /var/lib/hydra/.ssh/
-        /run/current-system/sw/bin/cp /etc/nix/id_bitbucket ~/.ssh/id_rsa
+        if [ ! -e ~hydra/.basic-project-setup ]; then
+          # private bitbucket repo key
+          /run/current-system/sw/bin/mkdir -p /var/lib/hydra/.ssh/
+          /run/current-system/sw/bin/cp /etc/nix/id_bitbucket ~/.ssh/id_rsa
 
-        # agent
-        eval "$(/run/current-system/sw/bin/ssh-agent -s)"
+          # agent
+          eval "$(/run/current-system/sw/bin/ssh-agent -s)"
 
-        # ssh identity
-        /run/current-system/sw/bin/ssh-add ~/.ssh/id_rsa
+          # ssh identity
+          /run/current-system/sw/bin/ssh-add ~/.ssh/id_rsa
+
+          # initial project
+          hydra-cli project-create ${project.name}
+          hydra-cli jobset-create ${project.name} binary-store /etc/source/pipeline/nix-builder/jobset.json
+
+          # done
+          touch ~hydra/.basic-project-setup
+        fi
       '';
     };
-    # sudo su hydra
 
     systemd.services.hydra-manual-setup = {
       description = "Create Admin User for Hydra";
