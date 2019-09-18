@@ -37,10 +37,13 @@ let
       in rec {
         build = (builtins.getAttr n pkgs);
         tarball = pkgs.releaseTools.binaryTarball {
-          name = "${build.name}-tarball";
           src = build;
+          doCheck = false;
+          showBuildStats = false;
           buildPhase = "";
+          distPhase = "";
           installPhase = ''
+            mkdir -p $TMPDIR/inst/bin
             ${pkgs.coreutils}/bin/install --target-directory "$TMPDIR/inst/bin" -D ${v}/bin/${n}
           '';
         };
