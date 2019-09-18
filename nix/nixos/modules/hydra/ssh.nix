@@ -11,6 +11,8 @@ in {
         { hostNames = [ "github.com" "140.82.118.4" ]; publicKey = ""; }
       ];
 
+      startAgent = true;
+
       extraConfig = ''
         StrictHostKeyChecking no
       '';

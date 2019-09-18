@@ -5,6 +5,8 @@ data "external" "nixos-build" {
 resource "null_resource" "bootstrap" {
   triggers = var.watch
 
+  # FIXME this should be configurable
+  # missing ec2 instance - less waiting calls
   depends_on = [
     data.external.nixos-build,
   ]
@@ -22,14 +24,6 @@ resource "null_resource" "bootstrap" {
   #   destination = "/tmp/build-result.json"
   # }
 
-  # TODO move this private key
-  #  ssh-add ~/.ssh/id_rsa
-
-  #  it required moving the keys to /var/lib/hydra and giving permissions to the hydra user.
-
-  # TAKE bitbucket key
-  # scp ~/.ssh/id_rsa  root@${var.host}:~/.ssh/id_rsa
-  # root@ip-10-0-5-210> chown hydra /var/lib/hydra/id_rsa 
   provisioner "local-exec" {
     command = <<EXEC
       ${path.module}/wait-for-ssh.sh root ${var.host}
