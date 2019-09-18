@@ -82,7 +82,7 @@ rec {
   cert-manager = fetch {
     chart = "cert-manager";
     version = "0.8.1";
-    sha256 = "1c7y2q2rp1b4jmmblkbgvr8p25i7jsq8dya2qjr0sg158kcji3f2";
+    sha256 = "192k0pjixrvv19qqyz8izdf4yqk4qn2q996q1b7impvnlm2wfrjq";
     repo = "https://charts.jetstack.io";
   };
 
