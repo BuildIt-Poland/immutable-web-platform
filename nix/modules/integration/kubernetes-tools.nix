@@ -43,9 +43,9 @@ with lib;
 
         kubectl
         popeye
-        debug
-        krew
-        dig
+        kubectl-debug
+        kubectl-krew
+        kubectl-dig
       ];
 
       shellHook = 
