@@ -99,7 +99,7 @@ with lib;
       };
       after = [ "hydra-init.service" "hydra-manual-setup.service" ];
       environment = (builtins.removeAttrs (config.systemd.services.hydra-init.environment) ["PATH"]) // {
-        HYDRA_HOST = "localhost:${toString config.services.hydra.port}";
+        HYDRA_HOST = "http://localhost:${toString config.services.hydra.port}";
         HYDRA_PASSWORD = "admin";
         HYDRA_USER = "admin";
       };
@@ -108,7 +108,10 @@ with lib;
         if [ ! -e ~hydra/.basic-project-setup ]; then
           # private bitbucket repo key
           /run/current-system/sw/bin/mkdir -p /var/lib/hydra/.ssh/
-          /run/current-system/sw/bin/cp /etc/nix/id_bitbucket ~/.ssh/id_rsa
+
+          if [ ! -e ~/.ssh/id_rsa ]; then
+            /run/current-system/sw/bin/cp /etc/nix/id_bitbucket ~/.ssh/id_rsa
+          fi
 
           # agent
           eval "$(/run/current-system/sw/bin/ssh-agent -s)"
