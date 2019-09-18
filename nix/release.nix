@@ -37,6 +37,7 @@ let
       in rec {
         build = (builtins.getAttr n pkgs);
         tarball = pkgs.releaseTools.binaryTarball {
+          name = "${n}-tarball";
           src = build;
           doCheck = false;
           showBuildStats = false;
