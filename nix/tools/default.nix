@@ -6,6 +6,7 @@ in
 rec {
   # Terraform
   terraform-with-plugins = super.callPackage ./terraform {};
+  hydra-cli = (super.callPackage sources.hydra-cli {}).hydra-cli;
 
   # Brigade
   brigade = super.callPackage ./brigade {};

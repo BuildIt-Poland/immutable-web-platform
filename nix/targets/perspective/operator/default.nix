@@ -12,6 +12,7 @@ with lib;
   config = mkMerge [
     { 
       checks = ["Running operator perspective."]; 
+      # FIXME align wording
       kubernetes.enabled = false;
       storage.enable = false;
       terraform.enable = true;
