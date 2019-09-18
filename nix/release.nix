@@ -10,8 +10,10 @@ let
   tools = 
     lib.attrVals
       (builtins.attrNames 
-        (lib.filterAttrs (n: v: v == "directory")
+        (pkgs.lib.filterAttrs (n: v: v == "directory")
           (builtins.readDir ./tools)))
       pkgs;
 in 
   tools
+
+  # TODO docker images
