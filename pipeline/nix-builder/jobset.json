@@ -2,14 +2,14 @@
   "enabled": 1,
   "hidden": false,
   "description": "Platform channel",
+  "nixexprinput": "src",
+  "nixexprpath": "nix/release.nix",
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 3,
   "jobsets": {
-    "nixexprinput": "src",
-    "nixexprpath": "nix/release.nix",
     "checkinterval": 300,
     "schedulingshares": 100,
-    "enableemail": false,
-    "emailoverride": "",
-    "keepnr": 3,
     "inputs": {
       "src": {
         "type": "git",
