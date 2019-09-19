@@ -33,6 +33,7 @@ in
 
       config = {
         networking.hostName = host-name;
+        time.timeZone = "UTC";
 
         nixpkgs.pkgs = pkgs;
         nix = {
