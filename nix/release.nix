@@ -74,5 +74,5 @@ in (
     tools-release 
   // charts-release 
   // { inherit channel; }
-  // docker-images
+  // { inherit docker-images; }
 )
