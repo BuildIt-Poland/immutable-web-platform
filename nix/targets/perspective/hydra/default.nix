@@ -12,7 +12,7 @@ with lib;
   config = mkMerge [
     { checks = ["Running hydra perspective."]; }
     ({
-      kubernetes.enabled = false;
+      # kubernetes.enabled = false;
       storage.enable = false;
       terraform.enable = false;
     })
