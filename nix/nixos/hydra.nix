@@ -34,10 +34,13 @@ in
       config = {
         networking.hostName = host-name;
         time.timeZone = "UTC";
-        services.localtime.enable = true;
+        # services.localtime.enable = true;
 
         nixpkgs.pkgs = pkgs;
         nix = {
+          nixPath = [ "nixpkgs=${nixpkgs_path}" ];
+
+          useSandbox = false; # relaxed
           gc.automatic = true;
           autoOptimiseStore = true;
 

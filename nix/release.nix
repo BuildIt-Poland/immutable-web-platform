@@ -1,11 +1,13 @@
-{ src ? ./., supportedSystems ? ["x86_64-linux"], ... }: 
+# inputs -> check nix/targets/defaults.nix
+{ src ? ./., supportedSystems ? ["x86_64-linux"], inputs ? {}, ... }: 
 let 
-  pkgs = (import src { inputs = {
-    environment = {
-      type = "dev"; 
-      perspective = "builder";
-    };
-  }; }).pkgs;
+  pkgs = (import src { 
+    inputs = (pkgs.lib.recursiveUpdate {
+      environment = {
+        type = "dev"; 
+        perspective = "hydra";
+      };
+    } inputs); }).pkgs;
 
   docker-images = pkgs.project-config.modules.docker;
 

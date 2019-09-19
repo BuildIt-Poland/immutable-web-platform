@@ -38,7 +38,6 @@ with lib;
     ];
 
     nix = {
-      # nix.useSandbox
       distributedBuilds = true;
       buildMachines = config.services.hydra.workers;
       extraOptions = "auto-optimise-store = true";
@@ -59,25 +58,25 @@ with lib;
     #  hydra.conf: binary_cache_dir is deprecated and ignored. use store_uri=file:// instead
     #  hydra.conf: binary_cache_secret_key_file is deprecated and ignored. use store_uri=...?secret-key= instead
     services.hydra = 
-    let
-      bucket = pkgs.project-config.aws.s3-buckets.worker-cache;
-    in
-    {
-      enable = true;
-      useSubstitutes = true;
-      hydraURL = config.networking.hostName;
-      notificationSender = project.authorEmail;
-      buildMachinesFiles = [];
-      extraConfig = ''
-        store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
-        nar_buffer_size = ${let gb = 10; in toString (gb * 1024 * 1024 * 1024)}
-        upload_logs_to_binary_cache = true
-        log_prefix = https://${bucket}.s3.amazonaws.com/
-      '';
-      # store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
-      # server_store_uri = https://cache.nixos.org?local-nar-cache=${narCache}
-      # binary_cache_public_uri = https://cache.nixos.org
-    };
+      let
+        bucket = pkgs.project-config.aws.s3-buckets.worker-cache;
+      in
+      {
+        enable = true;
+        useSubstitutes = true;
+        hydraURL = config.networking.hostName;
+        notificationSender = project.authorEmail;
+        buildMachinesFiles = [];
+        extraConfig = ''
+          store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
+          nar_buffer_size = ${let gb = 10; in toString (gb * 1024 * 1024 * 1024)}
+          upload_logs_to_binary_cache = true
+          log_prefix = https://${bucket}.s3.amazonaws.com/
+        '';
+        # store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
+        # server_store_uri = https://cache.nixos.org?local-nar-cache=${narCache}
+        # binary_cache_public_uri = https://cache.nixos.org
+      };
 
     services.postgresql = {
       enable = true;
