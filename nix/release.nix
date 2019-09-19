@@ -1,3 +1,4 @@
+# TODO make it more like this https://github.com/NixOS/patchelf/blob/master/release.nix
 # inputs -> check nix/targets/defaults.nix
 { src ? ./., supportedSystems ? ["x86_64-linux"], inputs ? {}, ... }: 
 let 
