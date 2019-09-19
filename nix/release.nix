@@ -41,10 +41,12 @@ let
           src = build;
           doCheck = false;
           showBuildStats = false;
-          postPhases = ["postPhase"];
-          postPhase = ''
-            cp -R $out/tarballs $TMPDIR/inst/tarballs
-          '';
+
+          # INFO: workaround
+          # not sure why test is failing
+          # https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/release/binary-tarball.nix#L74
+          releaseName="release-name";
+
           installPhase = ''
             ${pkgs.coreutils}/bin/install --target-directory "$TMPDIR/inst/bin" -D ${v}/bin/${n}
           '';
