@@ -54,9 +54,6 @@ with lib;
       mode = "0400";
     };
 
-    # FIXME 
-    #  hydra.conf: binary_cache_dir is deprecated and ignored. use store_uri=file:// instead
-    #  hydra.conf: binary_cache_secret_key_file is deprecated and ignored. use store_uri=...?secret-key= instead
     services.hydra = 
       let
         bucket = pkgs.project-config.aws.s3-buckets.worker-cache;
@@ -68,8 +65,9 @@ with lib;
         notificationSender = project.authorEmail;
         buildMachinesFiles = [];
         extraConfig = ''
-          store_uri = s3://future-is-comming-dev-worker-binary-store?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
+          store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
         '';
+          # store_uri = s3://future-is-comming-dev-worker-binary-store?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
           # store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
 
         # # THIS works
