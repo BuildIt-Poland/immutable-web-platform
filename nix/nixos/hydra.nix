@@ -34,6 +34,7 @@ in
       config = {
         networking.hostName = host-name;
         time.timeZone = "UTC";
+        services.localtime.enable = true;
 
         nixpkgs.pkgs = pkgs;
         nix = {
