@@ -15,7 +15,7 @@ in
 
     perspective = with types; mkOption {
       default = "root";
-      type = enum ["root" "operator" "developer" "builder"];
+      type = enum ["root" "operator" "developer" "builder" "hydra"];
     };
 
     vars = mkOption {

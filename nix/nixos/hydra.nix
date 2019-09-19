@@ -33,14 +33,14 @@ in
 
       config = {
         networking.hostName = host-name;
-        time.timeZone = "UTC";
+        # time.timeZone = "UTC";
         # services.localtime.enable = true;
 
         nixpkgs.pkgs = pkgs;
         nix = {
-          nixPath = [ "nixpkgs=${nixpkgs_path}" ];
+          # nixPath = [ "nixpkgs=${nixpkgs_path}" ];
 
-          useSandbox = false; # relaxed
+          # useSandbox = false; # relaxed
           gc.automatic = true;
           autoOptimiseStore = true;
 
@@ -53,7 +53,7 @@ in
           80
         ];
 
-        services.hydra.debugServer = true;
+        # services.hydra.debugServer = true;
 
         # services.hydra.workers = [{ 
         #   hostName = "slave1"; 

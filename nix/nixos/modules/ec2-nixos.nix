@@ -7,5 +7,9 @@
 
   config = {
     ec2.hvm = true;
+
+    environment.systemPackages = [ 
+      pkgs.awscli
+    ];
   };
 } 
