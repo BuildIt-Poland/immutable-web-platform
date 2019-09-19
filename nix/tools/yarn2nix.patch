@@ -21,7 +21,7 @@ index 1069e3d..dc4e11f 100644
 +              root = src;
 +            });
 +          }
-+          src) else src;
++          ) else src;
  
      # yarn2nix is the only package that requires the yarnNix option.
      # All the other projects can auto-generate that file.
