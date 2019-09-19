@@ -27,7 +27,8 @@ in
         ./modules/shell.nix
         ./modules/copy-source.nix
         ./modules/hydra/master.nix
-        ./modules/nix-serve.nix
+        # got s3 bucket
+        # ./modules/nix-serve.nix
         (import "${hydra_path}/hydra-module.nix")
       ];
 
