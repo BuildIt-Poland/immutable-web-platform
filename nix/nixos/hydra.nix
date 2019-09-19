@@ -41,7 +41,7 @@ in
         nix = {
           # nixPath = [ "nixpkgs=${nixpkgs_path}" ];
 
-          # useSandbox = false; # relaxed
+          useSandbox = false; # relaxed
           gc.automatic = true;
           autoOptimiseStore = true;
 
