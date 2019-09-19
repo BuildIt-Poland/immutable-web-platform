@@ -2,7 +2,7 @@
 let
   pkgs = linux-pkgs;
 
-  package = callPackage ./package.nix {};
+  package = callPackage ../package.nix {};
 
   # DOCS: to get imageDigest use `skopeo inspect docker://docker.io/brigadecore/brigade-worker`
   base-docker = pkgs.dockerTools.pullImage {
