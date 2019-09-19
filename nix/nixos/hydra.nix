@@ -39,9 +39,9 @@ in
 
         nixpkgs.pkgs = pkgs;
         nix = {
-          # nixPath = [ "nixpkgs=${nixpkgs_path}" ];
+          nixPath = [ "nixpkgs=${nixpkgs_path}" ];
 
-          useSandbox = false; # relaxed
+          useSandbox = true; # relaxed
           gc.automatic = true;
           autoOptimiseStore = true;
 
