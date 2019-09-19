@@ -19,6 +19,11 @@
       "type": "git",
       "value": "git://github.com/NixOS/nixpkgs.git release-19.03",
       "emailresponsible": false
+    },
+    "inputs": {
+      "type": "nix",
+      "value": "{}",
+      "emailresponsible": false
     }
   }
 }

@@ -34,7 +34,7 @@ with lib;
     (mkIf cfg.kubernetes.tools.enable {
       packages = with pkgs; [
         istioctl
-        knative
+        kn
 
         kube-prompt
         hey
