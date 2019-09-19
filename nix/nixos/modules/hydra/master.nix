@@ -68,7 +68,7 @@ with lib;
         notificationSender = project.authorEmail;
         buildMachinesFiles = [];
         extraConfig = ''
-          store_uri = s3://${bucket}
+          store_uri = s3://future-is-comming-dev-worker-binary-store?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
         '';
           # store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
 
