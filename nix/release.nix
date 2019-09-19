@@ -76,5 +76,8 @@ in (
   // charts-release 
   // { inherit channel; }
   # // { inherit docker-images; }
-  // { docker-images = {brigade-worker = docker-images.brigade-worker;}; }
+  // { docker-images = {
+    brigade-worker = docker-images.brigade-worker;
+    brigade-extension = docker-images.brigade-extension;
+  }; }
 )

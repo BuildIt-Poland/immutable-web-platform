@@ -4,7 +4,7 @@ let
   host-name = config.networking.hostName;
   narCache = "/var/cache/hydra/nar-cache";
   aws = pkgs.project-config.aws;
-  bucketURL = "${aws.s3-buckets.worker-cache}?region=${aws.region}";
+  store-bucket = aws.s3-buckets.worker-cache;
 in 
 with lib;
 {
@@ -64,10 +64,10 @@ with lib;
       buildMachinesFiles = [];
       # locally -> without store: store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
       extraConfig = ''
-        store_uri = s3://${bucketURL}&secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
+        store_uri = s3://${store-bucket}?region=${aws.region}&secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
         nar_buffer_size = ${let gb = 10; in toString (gb * 1024 * 1024 * 1024)}
         upload_logs_to_binary_cache = true
-        log_prefix = https://${bucket}.s3.amazonaws.com/
+        log_prefix = https://${store-bucket}.s3.amazonaws.com/
       '';
       # TODO
       # server_store_uri = https://cache.nixos.org?local-nar-cache=${narCache}
