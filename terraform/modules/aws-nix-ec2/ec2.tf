@@ -17,6 +17,7 @@ resource "aws_instance" "nixos_instance" {
   vpc_security_group_ids = var.security_groups_ids
   subnet_id              = var.subnet_id
   associate_public_ip_address = true
+  iam_instance_profile = var.iam_instance_profile
 
   root_block_device {
     delete_on_termination = true

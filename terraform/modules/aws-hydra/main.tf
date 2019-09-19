@@ -64,23 +64,19 @@ module "aws-ec2-instance" {
   env          = var.env
   region       = var.region
 
-
+  iam_instance_profile = aws_iam_instance_profile.hydra-profile.name
   security_groups_ids = [aws_security_group.hydra-sg.id]
   subnet_id           = var.vpc.public_subnets[random_integer.subnet.result]
   ssh_pub_key         = var.ssh_pub_key
   instance_type       = "t2.large"
 }
 
-# TODO think how to make this working with external name in svc in kubernetes and external dns
-# resource "aws_route53_zone" "domain" {
-#   name = var.base_domain
-# }
-
 data "aws_route53_zone" "domain" {
   name         = var.base_domain
   # private_zone = true
 }
 
+# TODO think how to make this working with external name in svc in kubernetes and external dns
 resource "aws_route53_record" "hydra" {
   zone_id = data.aws_route53_zone.domain.zone_id
   name    = "hydra.${var.domain}"

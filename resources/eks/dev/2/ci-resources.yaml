@@ -83,6 +83,74 @@ items:
   kind: Secret
   metadata:
     annotations:
+      projectName: digitalrigbitbucketteam/exec-storage-test
+    labels:
+      app: brigade
+      chart: brigade-project-1.0.0
+      component: project
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: exec-storage-test
+    name: brigade-42e7cd622269a11939ffea8fbc024eff404a8c92acc38a979a1f68
+    namespace: ci
+  stringData:
+    allowHostMounts: 'false'
+    allowPrivilegedJobs: 'true'
+    cloneURL: git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
+    defaultScript: "const { events, Job, Group } = require(\"brigadier\")\nconst {\
+      \ NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand }\
+      \ = require('brigade-extension')\n\n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts\
+      \ <project_name> --ref <branch>\n\n//#Node-Selectors:  beta.kubernetes.io/os=linux\
+      \ \n// this.host.nodeSelector[\"kubernetes.io/lifecycle\"] = \"spot\"\n\n//\
+      \ https://github.com/brigadecore/brigade/pull/777 - I will hide these details\n\
+      console.log(process.env)\nconst createJob = (name) => {\n  let t = new NixJob(name)\n\
+      \    .withExtraParams({\n      streamLogs: true,\n      privileged: true,\n\
+      \      annotations: {\n        \"iam.amazonaws.com/allowed-roles\": \"[\\\"\
+      *future-is-comming*\\\"]\"\n        // FIXME kube2iam\n        // \"iam.amazonaws.com/allowed-roles\"\
+      \ = \"[\\\"${project-config.kubernetes.cluster.name}*\\\"]\";\n        // INFO\
+      \ as these are not running pods restic is not happy to do a backup\n       \
+      \ // \"backup.velero.io/backup-volumes\": `${project.name}-${name}`\n      },\n\
+      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n\n\
+      \  t = t.withTasks([\n    `cat ${t.cache.path}/test.file`,\n    `cat ${t.cache.path}/test2.file`,\n\
+      \    `echo \"storage\" > ${t.storage.path}/test.file`,\n    `echo \"cache 1\"\
+      \ > ${t.cache.path}/test.file`,\n    `echo \"cache 2\" > ${t.cache.path}/test2.file`,\n\
+      \    // `cat ${t.storage.path}/test.file`,\n    `cd /src`,\n    `./nix/run-tests.sh`\n\
+      \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
+      }\n\nevents.on(\"exec\", async (event, project) => {\n  let test =\n    createJob(\"\
+      test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
+      \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
+      \      })\n\n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
+      \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
+      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  test2 = test2\n    .withTasks([\n\
+      \      `cat ${test2.storage.path}/test.file`,\n      // `cat ${test2.cache.path}/test.file`,\n\
+      \    ])\n  // i don't like it, not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
+      \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  // test.run()\n\
+      \  await test.run()\n  await test2.run()\n})\n"
+    genericGatewaySecret: mygenericsecret
+    initGitSubmodules: 'false'
+    kubernetes.allowSecretKeyRef: 'true'
+    kubernetes.buildStorageClass: build-storage
+    kubernetes.cacheStorageClass: cache-storage
+    repository: exec-storage-test
+    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","clusterName":"future-is-comming-dev-cluster","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
+      {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"ENC[AES256_GCM,data:txkyPuRcL3UGM6+DIciLkPbGoBY2N3GR/uVhCBcpF8V73jzd,iv:3/tYgu8EwMgJ/e8MJURDu1UL0IsCtC6tV7U6RUN2ovM=,tag:3Tcsdk6hTotIzCbn8D+njA==,type:str]\"\n\t},\n\t\"sops\":
+      {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:alias/future-is-comming-dev-buildit-consulting\",\n\t\t\t\t\"created_at\":
+      \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
+      \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
+      \"2019-08-28T14:38:33Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:BU9ybSTP8YQ6orvV5auJxeXGxQz61x00e/PEqDqr1hFlV9t85Ojl+gEpd17/PqM+fGF9uQJbWD+ZFp0irwePa76mDHtRfV5HiFUsB7zVmW5TwASsbKlRmt7GPll50s07FPhHF+wZyb/VFwZOCCEYZge9+63rjkhR3GasY2Qi16Q=,iv:GorWGFqSc/HvzmHpMvyL6lQpyJklSbqbD1bLMMjunH4=,tag:KhH25HN91nBoEZHzy3+4fw==,type:str]\",\n\t\t\"pgp\":
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-17bb46ee7df80949a732367590615b6b09874377"}'
+    sharedSecret: ''
+    vcsSidecar: brigadecore/git-sidecar:latest
+    worker.name: future-is-comming-dev-cluster
+    worker.pullPolicy: IfNotPresent
+    worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
+    worker.tag: brigade-worker-17bb46ee7df80949a732367590615b6b09874377
+    workerCommand: yarn build-start
+  type: brigade.sh/project
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    annotations:
       projectName: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
     labels:
       app: brigade
@@ -100,53 +168,39 @@ items:
     defaultScript: "const { events, Job, Group } = require(\"brigadier\")\nconst {\
       \ NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand }\
       \ = require('brigade-extension')\n\n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts\
-      \ <project_name> --ref <branch>\n\n//#Node-Selectors:  beta.kubernetes.io/os=linux\
-      \ \n// this.host.nodeSelector[\"kubernetes.io/lifecycle\"] = \"spot\"\n\n//\
-      \ https://github.com/brigadecore/brigade/pull/777 - I will hide these details\n\
-      const createJob = (name) => {\n  let t = new NixJob(name)\n    .withExtraParams({\n\
-      \      streamLogs: true,\n      privileged: true,\n      annotations: {\n  \
-      \      // FIXME kube2iam\n        // \"iam.amazonaws.com/allowed-roles\" = \"\
-      [\\\"${project-config.kubernetes.cluster.name}*\\\"]\";\n        // INFO as\
-      \ these are not running pods restic is not happy to do a backup\n        //\
-      \ \"backup.velero.io/backup-volumes\": `${project.name}-${name}`\n      },\n\
-      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n\n\
-      \  t = t.withTasks([\n    `cat ${t.cache.path}/test.file`,\n    `cat ${t.cache.path}/test2.file`,\n\
-      \    `echo \"storage\" > ${t.storage.path}/test.file`,\n    `echo \"cache 1\"\
-      \ > ${t.cache.path}/test.file`,\n    `echo \"cache 2\" > ${t.cache.path}/test2.file`,\n\
-      \    // `cat ${t.storage.path}/test.file`,\n    `cd /src`,\n    `./nix/run-tests.sh`\n\
-      \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
-      }\n\nconst handleRun = async (event, project) => {\n\n}\n\nevents.on(\"exec\"\
-      , async (event, project) => {\n  let test =\n    createJob(\"test\")\n     \
-      \ .withSecrets(project.secrets)\n      .withEnvVars({\n        BUILD_ID: event.buildID\
-      \ || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n      })\n\
-      \n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
+      \ <project_name> --ref <branch>\n\nconsole.log(process.env)\n\nconst createJob\
+      \ = (name) => {\n  let t = new NixJob(name)\n    .withExtraParams({\n      streamLogs:\
+      \ true,\n      privileged: true,\n      annotations: {\n        \"iam.amazonaws.com/allowed-roles\"\
+      : \"[\\\"*future-is-comming*\\\"]\"\n      },\n      shell: 'bash',\n      serviceAccount:\
+      \ \"brigade-worker\"\n    })\n\n  t = t.withTasks([\n    runShellCommand('release-tools'),\n\
+      \  ])\n\n  return t\n}\n\nevents.on(\"exec\", async (event, project) => {\n\
+      \  console.log('@@@', event, project)\n  let test =\n    createJob(\"test\"\
+      )\n      .withSecrets(project.secrets)\n      .withEnvVars({\n        BUILD_ID:\
+      \ event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
+      \      })\n\n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
       \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
-      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  test2 = test2\n    .withTasks([\n\
-      \      `cat ${test2.storage.path}/test.file`,\n      // `cat ${test2.cache.path}/test.file`,\n\
-      \    ])\n  // i don't like it, not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
-      \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  // test.run()\n\
-      \  await test.run()\n  await test2.run()\n})\n\n// TODO\nevents.on(\"push\"\
-      , (event, project) => {\n  let test = createJob(\"test\")\n    .withSecrets(project.secrets)\n\
-      \n  test.run()\n})\n"
+      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  await test.run()\n})\n\
+      \nevents.on(\"push\", (event, project) => {\n  let test = createJob(\"test\"\
+      )\n    .withSecrets(project.secrets)\n\n  test.run()\n})\n"
     genericGatewaySecret: mygenericsecret
     initGitSubmodules: 'false'
     kubernetes.allowSecretKeyRef: 'true'
     kubernetes.buildStorageClass: build-storage
     kubernetes.cacheStorageClass: cache-storage
     repository: embracing-nix-docker-k8s-helm-knative
-    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
+    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","clusterName":"future-is-comming-dev-cluster","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
       {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"ENC[AES256_GCM,data:txkyPuRcL3UGM6+DIciLkPbGoBY2N3GR/uVhCBcpF8V73jzd,iv:3/tYgu8EwMgJ/e8MJURDu1UL0IsCtC6tV7U6RUN2ovM=,tag:3Tcsdk6hTotIzCbn8D+njA==,type:str]\"\n\t},\n\t\"sops\":
       {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:alias/future-is-comming-dev-buildit-consulting\",\n\t\t\t\t\"created_at\":
       \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
       \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
       \"2019-08-28T14:38:33Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:BU9ybSTP8YQ6orvV5auJxeXGxQz61x00e/PEqDqr1hFlV9t85Ojl+gEpd17/PqM+fGF9uQJbWD+ZFp0irwePa76mDHtRfV5HiFUsB7zVmW5TwASsbKlRmt7GPll50s07FPhHF+wZyb/VFwZOCCEYZge9+63rjkhR3GasY2Qi16Q=,iv:GorWGFqSc/HvzmHpMvyL6lQpyJklSbqbD1bLMMjunH4=,tag:KhH25HN91nBoEZHzy3+4fw==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-c27b72f963276e82b4431d9ea037c15b7457f217"}'
+      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"006393696278.dkr.ecr.eu-west-2.amazonaws.com/future-is-comming-dev-cluster:remote-worker-17bb46ee7df80949a732367590615b6b09874377"}'
     sharedSecret: ''
     vcsSidecar: brigadecore/git-sidecar:latest
     worker.name: future-is-comming-dev-cluster
     worker.pullPolicy: IfNotPresent
     worker.registry: 006393696278.dkr.ecr.eu-west-2.amazonaws.com
-    worker.tag: brigade-worker-c27b72f963276e82b4431d9ea037c15b7457f217
+    worker.tag: brigade-worker-17bb46ee7df80949a732367590615b6b09874377
     workerCommand: yarn build-start
   type: brigade.sh/project
 - apiVersion: v1

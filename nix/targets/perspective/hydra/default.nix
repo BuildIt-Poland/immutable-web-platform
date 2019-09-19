@@ -13,6 +13,7 @@ with lib;
     { checks = ["Running hydra perspective."]; }
     ({
       # kubernetes.enabled = false;
+      # aws.enabled = true;
       storage.enable = false;
       terraform.enable = false;
     })
