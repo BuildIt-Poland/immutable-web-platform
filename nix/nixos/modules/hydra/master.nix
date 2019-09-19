@@ -3,6 +3,8 @@ let
   project = pkgs.project-config.project;
   host-name = config.networking.hostName;
   narCache = "/var/cache/hydra/nar-cache";
+  aws = pkgs.project-config.aws;
+  bucketURL = "s3://${aws.s3-buckets.worker-cache}?region=${aws.region}";
 in 
 with lib;
 {
@@ -19,7 +21,7 @@ with lib;
         hostName = "localhost";
         systems = [ "x86_64-linux" ];
         maxJobs = 6;
-        supportedFeatures = [ ];
+        supportedFeatures = ["builtin" "big-parallel" ];
       }];
     };
   };
@@ -54,19 +56,20 @@ with lib;
       mode = "0400";
     };
 
-    services.hydra = 
-      let
-        bucket = pkgs.project-config.aws.s3-buckets.worker-cache;
-      in
-      {
+    services.hydra = {
         enable = true;
         useSubstitutes = true;
         hydraURL = config.networking.hostName;
         notificationSender = project.authorEmail;
         buildMachinesFiles = [];
         extraConfig = ''
-          store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
+          store_uri = s3://${bucketURL}&secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
         '';
+          # store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
+
+
+
+        # TODO!!! add REGION
           # store_uri = s3://future-is-comming-dev-worker-binary-store?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
           # store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
 
