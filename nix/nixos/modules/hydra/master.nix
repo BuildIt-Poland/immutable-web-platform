@@ -57,34 +57,35 @@ with lib;
     };
 
     services.hydra = {
-        enable = true;
-        useSubstitutes = true;
-        hydraURL = config.networking.hostName;
-        notificationSender = project.authorEmail;
-        buildMachinesFiles = [];
-        extraConfig = ''
-          store_uri = s3://${bucketURL}&secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
-        '';
-          # store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
-
-
-
-        # TODO!!! add REGION
-          # store_uri = s3://future-is-comming-dev-worker-binary-store?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
-          # store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
-
-        # # THIS works
+      enable = true;
+      useSubstitutes = true;
+      hydraURL = config.networking.hostName;
+      notificationSender = project.authorEmail;
+      buildMachinesFiles = [];
+      # AAAAAAA does not work - not building
+      extraConfig = ''
+        store_uri = s3://${bucketURL}&secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
+      '';
         # store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
 
-        # FIXME - it has to be bucket!
-        # cannot build with such setup
+
+
+      # TODO!!! add REGION
+        # store_uri = s3://future-is-comming-dev-worker-binary-store?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
         # store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
-        # nar_buffer_size = ${let gb = 10; in toString (gb * 1024 * 1024 * 1024)}
-        # upload_logs_to_binary_cache = true
-        # log_prefix = https://${bucket}.s3.amazonaws.com/
-        # server_store_uri = https://cache.nixos.org?local-nar-cache=${narCache}
-        # binary_cache_public_uri = https://cache.nixos.org
-      };
+
+      # # THIS works
+      # store_uri = file:///var/lib/hydra/cache?secret-key=/etc/nix/${host-name}/secret
+
+      # FIXME - it has to be bucket!
+      # cannot build with such setup
+      # store_uri = s3://${bucket}?secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
+      # nar_buffer_size = ${let gb = 10; in toString (gb * 1024 * 1024 * 1024)}
+      # upload_logs_to_binary_cache = true
+      # log_prefix = https://${bucket}.s3.amazonaws.com/
+      # server_store_uri = https://cache.nixos.org?local-nar-cache=${narCache}
+      # binary_cache_public_uri = https://cache.nixos.org
+    };
 
     services.postgresql = {
       enable = true;
