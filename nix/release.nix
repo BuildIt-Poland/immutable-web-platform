@@ -74,5 +74,6 @@ in (
     tools-release 
   // charts-release 
   // { inherit channel; }
-  // { inherit docker-images; }
+  # // { inherit docker-images; }
+  // { docker-images = {brigade-worker = docker-images.brigade-worker;}; }
 )

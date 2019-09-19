@@ -1,26 +1,26 @@
 diff --git a/default.nix b/default.nix
-index 1069e3d..0a7f8cd 100644
+index 1069e3d..dc4e11f 100644
 --- a/default.nix
 +++ b/default.nix
-@@ -372,19 +372,19 @@ in rec {
- 
-         mkFilter = { dirsToInclude, filesToInclude, root }: path: type:
-           let
--            inherit (pkgs.lib) any flip elem hasSuffix hasPrefix elemAt splitString;
-+            inherit (pkgs.lib) any flip elem hasSuffix hasPrefix elemAt splitString;
- 
-             subpath = elemAt (splitString "${toString root}/" path) 1;
+@@ -378,13 +378,15 @@ in rec {
              spdir = elemAt (splitString "/" subpath) 0;
            in elem spdir dirsToInclude ||
              (type == "regular" && elem subpath filesToInclude);
 -      in builtins.filterSource
-+      in if (pkgs.lib.canCleanSource src) then (builtins.filterSource
-           (mkFilter {
-             dirsToInclude = ["bin" "lib"];
-             filesToInclude = ["package.json" "yarn.lock"];
-             root = src;
-           })
+-          (mkFilter {
+-            dirsToInclude = ["bin" "lib"];
+-            filesToInclude = ["package.json" "yarn.lock"];
+-            root = src;
+-          })
 -          src;
++      in if (pkgs.lib.canCleanSource src) then (pkgs.lib.cleanSourceWith {
++            inherit src;
++            filter = (mkFilter {
++              dirsToInclude = ["bin" "lib"];
++              filesToInclude = ["package.json" "yarn.lock"];
++              root = src;
++            });
++          }
 +          src) else src;
  
      # yarn2nix is the only package that requires the yarnNix option.
