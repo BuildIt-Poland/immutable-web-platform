@@ -1,8 +1,8 @@
 diff --git a/default.nix b/default.nix
-index 81da183..43deb87 100644
+index 1069e3d..43deb87 100644
 --- a/default.nix
 +++ b/default.nix
-@@ -366,27 +366,7 @@ in rec {
+@@ -366,25 +366,7 @@ in rec {
      });
  
    yarn2nix = mkYarnPackage {
@@ -18,15 +18,13 @@ index 81da183..43deb87 100644
 -            spdir = elemAt (splitString "/" subpath) 0;
 -          in elem spdir dirsToInclude ||
 -            (type == "regular" && elem subpath filesToInclude);
--      in if (pkgs.lib.canCleanSource src) then (pkgs.lib.cleanSourceWith {
--            inherit src;
--            filter = (mkFilter {
--              dirsToInclude = ["bin" "lib"];
--              filesToInclude = ["package.json" "yarn.lock"];
--              root = src;
--            });
--          }
--          src) else src;
+-      in builtins.filterSource
+-          (mkFilter {
+-            dirsToInclude = ["bin" "lib"];
+-            filesToInclude = ["package.json" "yarn.lock"];
+-            root = src;
+-          })
+-          src;
 +    src = ./.;
  
      # yarn2nix is the only package that requires the yarnNix option.
