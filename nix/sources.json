@@ -58,15 +58,15 @@
         "rev": "284924c223faa554131a8d1ace99fe6d5ccfeebb"
     },
     "yarn2nix": {
-        "url": "https://github.com/moretea/yarn2nix/archive/7effadded30d611a460e212cb73614506ef61c52.tar.gz",
-        "owner": "moretea",
+        "url": "https://github.com/damianbaar/yarn2nix/archive/170a0ca8338fc223ad105beb9c20bb673e710ae9.tar.gz",
+        "owner": "damianbaar",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "yarn2nix",
         "type": "tarball",
-        "sha256": "0r4ww3mjx3n7bn2v1iav33liyphyr2x005ak6644qs15bp4bn3cr",
+        "sha256": "0prx10d74xbbyx88dvsb44cscc1b06jd695406wk5vhdph9vj204",
         "description": "Generate nix expressions from a yarn.lock file",
-        "rev": "7effadded30d611a460e212cb73614506ef61c52"
+        "rev": "170a0ca8338fc223ad105beb9c20bb673e710ae9"
     },
     "niv": {
         "homepage": "https://github.com/nmattia/niv",
