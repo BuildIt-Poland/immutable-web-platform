@@ -9,7 +9,7 @@ let
       };
     } inputs); }).pkgs;
 
-  docker-images = pkgs.project-config.modules.docker;
+  docker-images = builtins.mapAttrs (_: builtins.getAttr "image") pkgs.project-config.modules.docker;
 
   tools = 
     with pkgs.lib;
