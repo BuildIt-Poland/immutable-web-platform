@@ -4,7 +4,7 @@ let
   host-name = config.networking.hostName;
   narCache = "/var/cache/hydra/nar-cache";
   aws = pkgs.project-config.aws;
-  bucketURL = "s3://${aws.s3-buckets.worker-cache}?region=${aws.region}";
+  bucketURL = "${aws.s3-buckets.worker-cache}?region=${aws.region}";
 in 
 with lib;
 {
