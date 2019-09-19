@@ -88,17 +88,6 @@ resource "aws_route53_record" "hydra" {
   ]
 }
 
-resource "aws_route53_record" "cache" {
-  zone_id = data.aws_route53_zone.domain.zone_id
-  name    = "cache.${var.domain}"
-  type    = "A"
-  ttl     = "300"
-  records = [
-    module.aws-ec2-instance.instance.public_ip,
-    module.aws-ec2-instance.instance.private_ip
-  ]
-}
-
 # watcher
 data "archive_file" "watcher" {
   type        = "zip"
@@ -122,6 +111,5 @@ module "nixos-updater" {
   nixos_configuration = var.nixos_configuration
 
   host                = module.aws-ec2-instance.instance.public_ip
-  ssh_pub_key         = module.aws-ec2-instance.key.key_name # var.ssh_pub_key
-  # ssh_pub_key         = var.ssh_pub_key
+  ssh_pub_key         = module.aws-ec2-instance.key.key_name
 }
