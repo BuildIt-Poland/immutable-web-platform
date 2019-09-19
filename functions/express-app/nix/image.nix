@@ -1,7 +1,7 @@
 { linux-pkgs, project-config, callPackage }:
 let
   pkgs = linux-pkgs;
-  express-app = callPackage ./package.nix {
+  express-app = callPackage ../package.nix {
     inherit pkgs;
    };
   fn-config = callPackage ./config.nix {};
