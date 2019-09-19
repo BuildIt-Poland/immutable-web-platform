@@ -3,9 +3,11 @@ let
   pkgs = (import src { inputs = {
     environment = {
       type = "dev"; 
-      perspective = "release";
+      perspective = "builder";
     };
   }; }).pkgs;
+
+  docker-images = pkgs.project-config.modules.docker;
 
   tools = 
     with pkgs.lib;
@@ -65,7 +67,10 @@ let
     src = ../.;
     constituents = [ ];
   };
-in 
-  (tools-release // charts-release // { inherit channel; })
 
-  # TODO docker images
+in (
+    tools-release 
+  // charts-release 
+  // { inherit channel; }
+  // docker-images
+)
