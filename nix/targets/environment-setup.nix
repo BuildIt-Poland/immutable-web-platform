@@ -25,6 +25,7 @@ in
     environment = {
       type = inputs.environment.type;
       perspective = inputs.environment.perspective;
+      preload = inputs.environment.preload;
       vars = {
         PROJECT_NAME = config.project.name;
       };

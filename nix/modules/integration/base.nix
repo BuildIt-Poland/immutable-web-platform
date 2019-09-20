@@ -18,6 +18,10 @@ in
       type = enum ["root" "operator" "developer" "builder" "hydra"];
     };
 
+    preload = mkOption {
+      default = false;
+    };
+
     vars = mkOption {
       default = {};
     };
