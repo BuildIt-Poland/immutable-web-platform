@@ -51,7 +51,10 @@ in
 
   kubernetes.imports = [
     ./pipeline/task-run.yaml
-    ./pipeline/task.yaml
+    ./pipeline/task-echo.yaml
+    ./pipeline/task-source-to-file.yaml
+    # ./pipeline/pipeline.yaml
+    ./pipeline/pipeline-resource.yaml
   ];
 
   kubernetes.api."knative-serve-service" = {

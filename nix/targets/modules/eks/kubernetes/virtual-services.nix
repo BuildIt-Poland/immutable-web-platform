@@ -160,8 +160,8 @@ in
       VirtualService.ci =
         create-virtual-service 
           "ci" 
-          "brigade-kashti.${brigade-ns}.svc.cluster.local" 
-          80;
+          "tekton-dashboard.tekton-pipelines.svc.cluster.local" 
+          9097;
 
       VirtualService.logs =
         create-virtual-service 
@@ -169,11 +169,17 @@ in
           "kibana.${knative-monitoring-ns}.svc.cluster.local" 
           443;
 
-      VirtualService.brigade-gateway = 
-        create-virtual-service 
-          "bitbucket-gateway" 
-          "extension-brigade-bitbucket-gateway.${brigade-ns}.svc.cluster.local" 
-          7748;
+      # VirtualService.ci =
+      #   create-virtual-service 
+      #     "ci" 
+      #     "brigade-kashti.${brigade-ns}.svc.cluster.local" 
+      #     80;
+
+      # VirtualService.brigade-gateway = 
+      #   create-virtual-service 
+      #     "bitbucket-gateway" 
+      #     "extension-brigade-bitbucket-gateway.${brigade-ns}.svc.cluster.local" 
+      #     7748;
     };
   };
 }

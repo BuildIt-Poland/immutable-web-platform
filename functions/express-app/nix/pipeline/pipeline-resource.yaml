@@ -1,0 +1,11 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: project-git
+spec:
+  type: git
+  params:
+    - name: revision
+      value: nix-docker-image-builder
+    - name: url
+      value: git clone https://damian_baar@bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git

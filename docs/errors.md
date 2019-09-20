@@ -18,6 +18,6 @@
 * brigade.js got stuck and getting pending status when `kubectl get pv -A`
 > minikube addons enable storage-provisioner -p $PROJECT_NAME
 
-* aws skewed response -> https://github.com/orbs-network/orbs-network-go/issues/1072
+* aws skewed response -> https://github.com/orbs-network/orbs-network-go/issues/1072 (restart docker?)
 
 * when terraform cannot delete subnets and ig - clean ELB first - don't know yet how to remove them automatically since they are requested from kubernetes context

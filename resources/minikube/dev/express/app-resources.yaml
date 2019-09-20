@@ -29,6 +29,35 @@ items:
         privateKey: sds
         serverCertificate: sds
 - apiVersion: tekton.dev/v1alpha1
+  kind: Pipeline
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: build-and-deploy-pipeline
+    namespace: default
+  spec:
+    params:
+    - default: src
+      description: The path to the build context, used by Kaniko - within the workspace
+      name: pathToContext
+    resources:
+    - name: git-source
+      type: git
+- apiVersion: tekton.dev/v1alpha1
+  kind: PipelineResource
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: project-git
+    namespace: default
+  spec:
+    params:
+    - name: revision
+      value: nix-docker-image-builder
+    - name: url
+      value: git clone https://damian_baar@bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
+    type: git
+- apiVersion: tekton.dev/v1alpha1
   kind: TaskRun
   metadata:
     labels:
@@ -53,6 +82,39 @@ items:
       - echo
       image: ubuntu
       name: echo
+- apiVersion: tekton.dev/v1alpha1
+  kind: Task
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: source-to-image
+    namespace: default
+  spec:
+    inputs:
+      params:
+      - default: .
+        description: The path to the build context, used by Kaniko - within the workspace
+        name: pathToContext
+      - default: Dockerfile
+        description: The path to the dockerfile to build (relative to the context)
+        name: pathToDockerFile
+      - description: Url of image repository
+        name: imageUrl
+      - default: latest
+        description: Tag to apply to the built image
+        name: imageTag
+      resources:
+      - name: workspace
+        type: git
+    steps:
+    - args:
+      - --dockerfile=${inputs.params.pathToDockerFile}
+      - --destination=${inputs.params.imageUrl}:${inputs.params.imageTag}
+      - --context=/workspace/git-source/${inputs.params.pathToContext}
+      command:
+      - /kaniko/executor
+      image: gcr.io/kaniko-project/executor
+      name: build-and-push
 - apiVersion: serving.knative.dev/v1alpha1
   kind: Service
   metadata:
