@@ -41,6 +41,9 @@ provide full testing ability of infrastructure as well as on application level f
 * follows and assumes https://12factor.net/
 * [conftest](https://github.com/instrumenta/conftest) & [opa](https://github.com/open-policy-agent/opa) for resource validation, access validation with [`istio`](https://github.com/open-policy-agent/opa-istio-plugin)
 
+### Build status
+* [hydra instance](https://hydra.future-is-comming.dev.buildit.consulting)
+
 ### How to start
 Start from [start guide first.](/docs/start.md)
 
