@@ -11,7 +11,7 @@
     "@types/node": "^11.9.6"
   },
   "dependencies": {
-    "@brigadecore/brigadier": "^0.4.0"
+    "@brigadecore/brigadier": "^0.8.0"
   },
   "peerDependencies": {
     "brigade-worker": "1.0.0"
