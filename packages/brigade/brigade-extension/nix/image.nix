@@ -21,7 +21,7 @@ pkgs.dockerTools.buildImage ({
 
   extraCommands = ''
     ${pkgs.yarn}/bin/yarn add \
-      file:${package}/tarballs/${package.name}.tgz
+      file:${package}/tarballs/${package.name}.tgz --offline
   '';
 
   config = {

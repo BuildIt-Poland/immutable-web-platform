@@ -1,4 +1,5 @@
 ## Today
+* consider `tekton`
 * config generation
 * expose kibana - separate chart - test on eks
 * not sure why aws secret patch is shouting ...

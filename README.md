@@ -1,8 +1,7 @@
-
-Immutable platform - all as a code approach - `opa policies` (`apps` -> `kubernetes` -> `infrastructure`). Pluggable architecture ...
+# Immutable platform - all as a code approach
 
 ### Purpose
-Yet another story about `kubernetes` and declarative approach to infrastructure.
+Yet another story about `kubernetes` and declarative approach to infrastructure, deployments, immutability and development.
 
 ... being more verbose ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
 provide full testing ability of infrastructure as well as on application level following `gitops` way realized by `brigade.js` and `argo cd`.
@@ -25,6 +24,7 @@ provide full testing ability of infrastructure as well as on application level f
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
 * building docker without daemon with `nix`
 * distributed storage with [`rook-ceph`](https://rook.io/) and `backups` with `restic` and `velero`
+* private `nix` binary store and `cache` - to speed up spawning `local` env
 
 ### ... and more
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
