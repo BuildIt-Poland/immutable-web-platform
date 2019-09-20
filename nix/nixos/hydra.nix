@@ -50,25 +50,6 @@ in
           22
           80
         ];
-
-        # services.hydra.debugServer = true;
-
-        # services.hydra.workers = [{ 
-        #   hostName = "slave1"; 
-        #   maxJobs = 1; 
-        #   speedFactor = 1; 
-        #   sshKey = "/etc/nix/id_buildfarm"; 
-        #   sshUser = "root"; 
-        #   system = "x86_64-linux"; 
-        # }]
-
-        # environment.etc = pkgs.lib.singleton {
-        #   target = "nix/id_buildfarm";
-        #   source = ./id_buildfarm;
-        #   uid = config.ids.uids.hydra;
-        #   gid = config.ids.gids.hydra;
-        #   mode = "0440";
-        # };
       };
     };
   }
