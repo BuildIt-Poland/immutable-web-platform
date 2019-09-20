@@ -34,6 +34,7 @@ in
     docker-registry
     knative-serve
     k8s-extension
+    tekton-crd
   ];
 
   module.packages = {
@@ -47,6 +48,11 @@ in
   ];
 
   docker.images.express-app.image = express-app;
+
+  kubernetes.imports = [
+    ./pipeline/task-run.yaml
+    ./pipeline/task.yaml
+  ];
 
   kubernetes.api."knative-serve-service" = {
     "${fn-config.label}" = {
