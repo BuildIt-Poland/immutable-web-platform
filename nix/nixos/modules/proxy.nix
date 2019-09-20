@@ -6,9 +6,11 @@ in
 {
   imports = [];
 
-  security.acme.certs."${config.networking.hostName}" = {
-    # webroot = "/var/www/challenges";
-    email = project.authorEmail;
+  security.acme = {
+    certs."${config.networking.hostName}" = {
+      # webroot = "/var/www/challenges";
+      email = project.authorEmail;
+    };
     production = false;
   };
 
