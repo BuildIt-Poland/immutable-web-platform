@@ -29,3 +29,7 @@ variable "instance_type" {
 }
 
 variable "iam_instance_profile" {}
+
+variable "spot_price" {
+  default = "0.1"
+}

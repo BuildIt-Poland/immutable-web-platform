@@ -1,5 +1,5 @@
 output "instance" {
-  value = aws_instance.nixos_instance
+  value = aws_spot_instance_request.nixos_instance
 }
 
 output "key" {
