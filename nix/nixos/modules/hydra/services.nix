@@ -16,6 +16,8 @@ with lib;
         RemainAfterExit = true;
         User = "hydra";
         Group = "hydra";
+        RestartSec = "1min";
+        TimeoutStartSec = "1min";
       };
       wantedBy = [ "multi-user.target" ];
       requires = [ "sshd.service" ];
@@ -54,6 +56,7 @@ with lib;
       '';
     };
 
+    # FIXME INVESTIGATION need to find a way to share this key ... or not?
     systemd.services.hydra-manual-setup = {
       description = "Create Admin User for Hydra";
       serviceConfig.Type = "oneshot";

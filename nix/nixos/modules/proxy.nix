@@ -9,6 +9,7 @@ in
   security.acme.certs."${config.networking.hostName}" = {
     # webroot = "/var/www/challenges";
     email = project.authorEmail;
+    production = false;
   };
 
   networking.firewall.allowedTCPPorts = [ 
@@ -26,18 +27,14 @@ in
     recommendedTlsSettings = true;
 
     sslCiphers = "AES256+EECDH:AES256+EDH:!aNULL";
-
+    # https://acme-staging-v02.api.letsencrypt.org/directory
     virtualHosts."${host-name}" = {
       forceSSL = true;
       enableACME = true;
+      # hydra
       locations."/" ={
         proxyPass = "http://127.0.0.1:3000";
       };
-      # locations."/store" ={
-      #   proxyPass = "http://127.0.0.1:5000";
-      # };
     };
-
-    # virtualHosts."${project.make-sub-domain "cache"}".locations."/".root = "/var/lib/hydra/cache";
   };
 }

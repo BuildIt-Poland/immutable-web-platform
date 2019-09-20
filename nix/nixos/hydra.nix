@@ -27,6 +27,7 @@ in
         ./modules/ec2-nixos.nix
         ./modules/shell.nix
         ./modules/copy-source.nix
+        ./modules/proxy.nix
         (import "${hydra_path}/hydra-module.nix")
         (if !preload then ./modules/hydra/master.nix else "")
       ]);

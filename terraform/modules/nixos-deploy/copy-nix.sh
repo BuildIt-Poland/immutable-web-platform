@@ -34,5 +34,6 @@ echo "-- end --"
 
 if [[ $should_rebot != 0 ]] ; then
   echo "-- rebooting instance --"
+  sleep 5
   ssh "${sshOpts[@]}" $target_host "reboot"
 fi

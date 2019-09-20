@@ -27,6 +27,8 @@ resource "null_resource" "bootstrap" {
   provisioner "local-exec" {
     command = <<EXEC
       ${path.module}/wait-for-ssh.sh root ${var.host}
+
+      echo " --- copying nixos instance to host ${var.host} --- "
       ssh root@${var.host} "echo '${jsonencode(data.external.nixos-build.result)}' > /tmp/build-result.json"
       ${path.module}/copy-nix.sh "${data.external.nixos-build.result["hash"]}" "${var.host}"
     EXEC
