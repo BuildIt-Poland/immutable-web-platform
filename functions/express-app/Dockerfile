@@ -1,28 +1,24 @@
-FROM lnl7/nix:2.2.2
+FROM lnl7/nix:2.2.2 as base
 
-RUN nix-env -iA jq
+ARG AWS_ACCESS_KEY_ID
+ENV AWS_ACCESS_KEY=$AWS_ACCESS_KEY_ID
+
+ARG AWS_SECRET_ACCESS_KEY
+ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
 COPY . /src
 
 WORKDIR /src/functions/express-app
 
 RUN echo "require-sigs = false" >> /etc/nix/nix.conf
-# one linux store, second one normal store
-# !!! only s3 binary cache
-RUN echo "binary-caches = http://localhost:5000 http://localhost:5001 https://cache.nixos.org/" >> /etc/nix/nix.conf
+RUN echo "binary-caches = 's3://future-is-comming-dev-worker-binary-store?region=eu-west-2' https://cache.nixos.org/" >> /etc/nix/nix.conf
 
-# RUN nix-store --repair --verify
+RUN nix build -f ./nix/development.nix \
+  package \
+  --builders 'ssh://root@hydra.future-is-comming.dev.buildit.consulting' \
+  --option binary-caches 's3://future-is-comming-dev-worker-binary-store?region=eu-west-2 https://cache.nixos.org/' \
+  -v
 
-RUN nix-build nix/development.nix -A package
-
-RUN nix path-info -r --json ./result | jq .
-
-# FROM mhart/alpine-node:12
-# COPY --from=builder /src/functions/express-app/result /app
-# RUN ls -la
-# RUN ls -la /app
-# # # Cmd = ["start-server"];
-# # # WorkingDir = "${express-app}";
-# # # ExposedPorts = {
-# # #   "${toString fn-config.port}/tcp" = {};
-# # # };
+FROM node:latest as serve
+COPY --from=base /usr/sth /src/functions/express-app/result /usr/sth/test/
+RUN ls -la /usr/sth
