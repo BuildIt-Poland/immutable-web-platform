@@ -16,7 +16,7 @@ in
 pkgs.dockerTools.buildLayeredImage ({
   name = project-config.docker.imageName fn-config.label;
 
-  fromImage = base;
+  # fromImage = base;
   maxLayers = 120;
 
   contents = [ 
