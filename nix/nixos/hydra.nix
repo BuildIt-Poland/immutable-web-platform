@@ -8,6 +8,7 @@ let
       environment = {
         type = "dev"; 
         perspective = "builder";
+        inherit preload;
       };
     };
   });
@@ -22,23 +23,16 @@ in
     inherit system;
 
     configuration = {
-      imports = [
-        ./modules/base.nix
+      imports = (builtins.filter (x: x != "") [
         ./modules/ec2-nixos.nix
         ./modules/shell.nix
         ./modules/copy-source.nix
-        (if !preload then ./modules/hydra/master.nix else "")
-        # got s3 bucket
-        # ./modules/nix-serve.nix
         (import "${hydra_path}/hydra-module.nix")
-      ];
+        (if !preload then ./modules/hydra/master.nix else "")
+      ]);
 
       config = {
-        warm-up.preload = preload;
-
         networking.hostName = host-name;
-        # time.timeZone = "UTC";
-        # services.localtime.enable = true;
 
         nixpkgs.pkgs = pkgs;
         nix = {

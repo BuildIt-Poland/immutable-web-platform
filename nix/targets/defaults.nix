@@ -3,7 +3,11 @@ with pkgs;
   input:  
     let
       result = (lib.recursiveUpdate {
-        environment = { type = "dev"; perspective = "root"; };
+        environment = { 
+          type = "dev"; 
+          perspective = "root"; 
+          preload = false;
+        };
         kubernetes = { 
           target="eks"; 
           clean = false; 

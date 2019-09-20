@@ -75,7 +75,7 @@ let
   };
 
   nixos = {
-    hydra = (import ./nixos/hydra.nix {}).system;
+    hydra = (import ./nixos/hydra.nix { preload = true; }).system;
   };
 
 in (
