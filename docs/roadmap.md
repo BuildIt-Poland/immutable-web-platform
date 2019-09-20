@@ -1,4 +1,5 @@
 ## Today
+* when deploying nixos and rebooting wait for ssh
 * consider `tekton`
 * add depends_on to bootstrap - changing instance should rerun bootstrap
 * config generation
