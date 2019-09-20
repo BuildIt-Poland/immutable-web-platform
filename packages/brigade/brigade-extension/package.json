@@ -8,11 +8,11 @@
   },
   "devDependencies": {
     "typescript": "^3.2.2",
-    "@types/node": "^11.9.6"
+    "@types/node": "^11.9.6",
+    "@brigadecore/brigade-utils": "^0.2.0",
+    "@brigadecore/brigadier": "^0.6.1"
   },
-  "dependencies": {
-    "@brigadecore/brigadier": "^0.8.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
     "brigade-worker": "1.0.0"
   }
