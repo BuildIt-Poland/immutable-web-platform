@@ -42,7 +42,14 @@ in
           gc.automatic = true;
           autoOptimiseStore = true;
 
-          binaryCaches = [ "https://cache.nixos.org" ];
+          binaryCaches = [ 
+            "https://cache.nixos.org" 
+          ];
+
+          trustedBinaryCaches = [
+            "s3://${pkgs.project-config.aws.s3-buckets.worker-cache}?region=${pkgs.project-config.aws.region}"
+          ];
+
           binaryCachePublicKeys = [];
         };
 
