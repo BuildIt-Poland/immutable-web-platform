@@ -18,7 +18,7 @@ RUN ssh root@hydra.future-is-comming.dev.buildit.consulting nix-store --version
 
 RUN nix-build ./nix/development.nix \
   -A package \
-  --builders ssh-ng://root@hydra.future-is-comming.dev.buildit.consulting \
+  --builders ssh://root@hydra.future-is-comming.dev.buildit.consulting \
   --option binary-caches 's3://future-is-comming-dev-worker-binary-store?region=eu-west-2 https://cache.nixos.org/' \
   --option trusted-public-keys 'hydra.future-is-comming.dev.buildit.consulting:Ym8un3mSkEesoPDZjm0cf8Kfn2B3a2QIesbHUw1GMvA=' \
   --max-jobs 0
