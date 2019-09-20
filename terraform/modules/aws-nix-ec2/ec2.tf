@@ -22,6 +22,7 @@ resource "aws_spot_instance_request" "nixos_instance" {
   associate_public_ip_address = true
   iam_instance_profile = var.iam_instance_profile
 
+  # instance_interruption_behaviour
   spot_price    = var.spot_price
   wait_for_fulfillment = true
   spot_type = "one-time"
