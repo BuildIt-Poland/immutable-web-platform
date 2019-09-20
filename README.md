@@ -86,6 +86,7 @@ Start from [start guide first.](/docs/start.md)
 * [Cluster monitoring](/docs/monitoring.md)
 * [Some good reads](/docs/reads.md)
 * [`nix-darwin` and `remote-builders`](/docs/linux-darwin-builds.md)
+* [`nix-channels`](/docs/nix-channel.md)
 * [Build `go` package](/docs/building-go-packages.md)
 * [What I have learnt down the road](/docs/lessons-learnt.md)
 
