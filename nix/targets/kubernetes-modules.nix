@@ -18,7 +18,9 @@ in
         "${priority.mid  "knative"}"     = [ knative ];
         "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
         "${priority.low  "gitops"}"      = [ argocd ];
-        "${priority.low  "ci"}"          = [ brigade ];
+        # WIP: dropping brigade
+        # "${priority.low  "ci"}"          = [ brigade ];
+        "${priority.low  "ci"}"          = [ tekton ];
         "${priority.skip "secrets"}"     = [ secrets ];
         "${priority.high "policy"}"      = [ opa ];
       } // functions;

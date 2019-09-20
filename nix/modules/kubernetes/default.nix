@@ -13,5 +13,7 @@
   secrets = ./secrets.nix;
   storage = ./storage.nix;
   opa = ./opa.nix;
+  tekton = ./tekton.nix;
+  tekton-crd = ./tekton-crd.nix;
   istio-crd = ./istio-crd.nix;
 }

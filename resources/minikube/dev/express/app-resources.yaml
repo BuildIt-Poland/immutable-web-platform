@@ -28,6 +28,31 @@ items:
         mode: SIMPLE
         privateKey: sds
         serverCertificate: sds
+- apiVersion: tekton.dev/v1alpha1
+  kind: TaskRun
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: echo-hello-world-task-run
+    namespace: default
+  spec:
+    taskRef:
+      name: echo-hello-world
+- apiVersion: tekton.dev/v1alpha1
+  kind: Task
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: echo-hello-world
+    namespace: default
+  spec:
+    steps:
+    - args:
+      - hello world
+      command:
+      - echo
+      image: ubuntu
+      name: echo
 - apiVersion: serving.knative.dev/v1alpha1
   kind: Service
   metadata:
