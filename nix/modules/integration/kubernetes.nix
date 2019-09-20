@@ -77,6 +77,7 @@ rec {
       functions = mkNamespaceOption "functions";
       infra = mkNamespaceOption "local-infra";
       brigade = mkNamespaceOption "brigade";
+      tekton-pipelines = mkNamespaceOption "tekton-pipelines";
       istio = mkNamespaceOption "istio-system";
       knative-monitoring = mkNamespaceOption "knative-monitoring";
       knative-serving = mkNamespaceOption "knative-serving";

@@ -28,6 +28,24 @@ rec {
     };
   };
 
+  tekton-pipelines-json = helm.yaml-to-json {
+    name = "tekton-pipelines";
+    version = "0.7.0";
+    src = pkgs.fetchurl {
+      url = https://github.com/tektoncd/pipeline/releases/download/v0.7.0/release.yaml;
+      sha256="051ahdzzaqbwxy04c6adlm29rh50pfngpd82jj1asv1py16bd19v";
+    };
+  };
+
+  tekton-dashboard-json = helm.yaml-to-json {
+    name = "tekton-dashboard";
+    version = "0.1.1";
+    src = pkgs.fetchurl {
+      url = https://github.com/tektoncd/dashboard/releases/download/v0.1.1/release.yaml;
+      sha256="1012v7p6myn9wjyynqry9rf1hx6s1xw38xp3kj6kw3gckwapj9j6";
+    };
+  };
+
   # FIXME filter out prometheus
   knative-monitoring-json = helm.yaml-to-json {
     name = "knative-monitoring";

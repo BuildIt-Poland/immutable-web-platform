@@ -4,750 +4,970 @@ items:
   kind: Namespace
   metadata:
     labels:
-      kubenix/project-name: kubenix
-    name: ci
-    namespace: default
-- apiVersion: batch/v1beta1
-  kind: CronJob
+    name: tekton-pipelines
+- apiVersion: policy/v1beta1
+  kind: PodSecurityPolicy
   metadata:
     labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-      role: vacuum
-    name: brigade-brigade-vacuum
-    namespace: ci
+    name: tekton-pipelines
   spec:
-    failedJobsHistoryLimit: 10
-    jobTemplate:
-      spec:
-        template:
-          metadata:
-            labels:
-              app.kubernetes.io/name: brigade-brigade
-              role: vacuum
-          spec:
-            containers:
-            - env:
-              - name: BRIGADE_NAMESPACE
-                valueFrom:
-                  fieldRef:
-                    fieldPath: metadata.namespace
-              - name: VACUUM_AGE
-                value: 720h
-              - name: VACUUM_MAX_BUILDS
-                value: '-1'
-              - name: VACUUM_SKIP_RUNNING_BUILDS
-                value: 'false'
-              image: brigadecore/brigade-vacuum:v1.1.0
-              imagePullPolicy: IfNotPresent
-              name: brigade-vacuum
-            restartPolicy: OnFailure
-            serviceAccountName: brigade-vacuum
-    schedule: '@hourly'
-    successfulJobsHistoryLimit: 10
+    allowPrivilegeEscalation: false
+    fsGroup:
+      ranges:
+      - max: 65535
+        min: 1
+      rule: MustRunAs
+    hostIPC: false
+    hostNetwork: false
+    hostPID: false
+    privileged: false
+    runAsUser:
+      rule: RunAsAny
+    seLinux:
+      rule: RunAsAny
+    supplementalGroups:
+      ranges:
+      - max: 65535
+        min: 1
+      rule: MustRunAs
+    volumes:
+    - emptyDir
+    - configMap
+    - secret
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: pipelineresources.tekton.dev
+  spec:
+    group: tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: PipelineResource
+      plural: pipelineresources
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: tasks.tekton.dev
+  spec:
+    group: tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: Task
+      plural: tasks
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: taskruns.tekton.dev
+  spec:
+    additionalPrinterColumns:
+    - JSONPath: .status.conditions[?(@.type=="Succeeded")].status
+      name: Succeeded
+      type: string
+    - JSONPath: .status.conditions[?(@.type=="Succeeded")].reason
+      name: Reason
+      type: string
+    - JSONPath: .status.startTime
+      name: StartTime
+      type: date
+    - JSONPath: .status.completionTime
+      name: CompletionTime
+      type: date
+    group: tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: TaskRun
+      plural: taskruns
+      shortNames:
+      - tr
+      - trs
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: tekton-pipelines-controller
+    name: tekton-pipelines-controller
+    namespace: tekton-pipelines
+  spec:
+    ports:
+    - name: metrics
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+    selector:
+      app: tekton-pipelines-controller
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: tekton-pipelines-webhook
+    name: tekton-pipelines-webhook
+    namespace: tekton-pipelines
+  spec:
+    ports:
+    - port: 443
+      targetPort: 8443
+    selector:
+      app: tekton-pipelines-webhook
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-admin: 'true'
+      rbac.authorization.k8s.io/aggregate-to-edit: 'true'
+    name: tekton-aggregate-edit
+  rules:
+  - apiGroups:
+    - tekton.dev
+    resources:
+    - tasks
+    - taskruns
+    - pipelines
+    - pipelineruns
+    - pipelineresources
+    - conditions
+    verbs:
+    - create
+    - delete
+    - deletecollection
+    - get
+    - list
+    - patch
+    - update
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+      rbac.authorization.k8s.io/aggregate-to-view: 'true'
+    name: tekton-aggregate-view
+  rules:
+  - apiGroups:
+    - tekton.dev
+    resources:
+    - tasks
+    - taskruns
+    - pipelines
+    - pipelineruns
+    - pipelineresources
+    - conditions
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    labels:
+    name: config-artifact-bucket
+    namespace: tekton-pipelines
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    labels:
+    name: config-artifact-pvc
+    namespace: tekton-pipelines
 - apiVersion: v1
   data:
-    settings.js: 'var brigadeApiURL = ''//'' + location.host; ''http://brigade-brigade-api:7745'';
+    _example: '################################
 
-      // End'
+      #                              #
+
+      #    EXAMPLE CONFIGURATION     #
+
+      #                              #
+
+      ################################
+
+
+      # This block is not actually functional configuration,
+
+      # but serves to illustrate the available configuration
+
+      # options and document them in a way that is accessible
+
+      # to users that `kubectl edit` this config map.
+
+      #
+
+      # These sample configuration options may be copied out of
+
+      # this example block and unindented to be in the data block
+
+      # to actually change the configuration.
+
+
+      # default-timeout-minutes contains the default number of
+
+      # minutes to use for TaskRun and PipelineRun, if none is specified.
+
+      default-timeout-minutes: "60"  # 60 minutes
+
+      '
   kind: ConfigMap
   metadata:
     labels:
-      chart: kashti-0.1.1
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: brigade
-    name: brigade-kashti-js
-    namespace: ci
+    name: config-defaults
+    namespace: tekton-pipelines
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+    name: tekton-pipelines-admin
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - pods
+    - pods/log
+    - namespaces
+    - secrets
+    - events
+    - serviceaccounts
+    - configmaps
+    - persistentvolumeclaims
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - apps
+    resources:
+    - deployments
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - apps
+    resources:
+    - deployments/finalizers
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - admissionregistration.k8s.io
+    resources:
+    - mutatingwebhookconfigurations
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - tekton.dev
+    resources:
+    - tasks
+    - clustertasks
+    - taskruns
+    - pipelines
+    - pipelineruns
+    - pipelineresources
+    - conditions
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - tekton.dev
+    resources:
+    - taskruns/finalizers
+    - pipelineruns/finalizers
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - tekton.dev
+    resources:
+    - tasks/status
+    - clustertasks/status
+    - taskruns/status
+    - pipelines/status
+    - pipelineruns/status
+    - pipelineresources/status
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - policy
+    resourceNames:
+    - tekton-pipelines
+    resources:
+    - podsecuritypolicies
+    verbs:
+    - use
 - apiVersion: v1
   data:
-    default.conf: "server {\n    listen       80;\n    server_name  localhost;\n\n\
-      \    # Proxy to API server\n    location /v1/ {\n        proxy_pass http://brigade-brigade-api:7745/v1/;\n\
-      \    }\n\n    location / {\n        root   /usr/share/nginx/html;\n        index\
-      \  index.html index.htm;\n        try_files $uri $uri/ /index.html;\n    }\n\
-      \    \n    error_page   500 502 503 504  /50x.html;\n    location = /50x.html\
-      \ {\n        root   /usr/share/nginx/html;\n    }\n}"
+    loglevel.controller: info
+    loglevel.webhook: info
+    zap-logger-config: "{\n  \"level\": \"info\",\n  \"development\": false,\n  \"\
+      sampling\": {\n    \"initial\": 100,\n    \"thereafter\": 100\n  },\n  \"outputPaths\"\
+      : [\"stdout\"],\n  \"errorOutputPaths\": [\"stderr\"],\n  \"encoding\": \"json\"\
+      ,\n  \"encoderConfig\": {\n    \"timeKey\": \"\",\n    \"levelKey\": \"level\"\
+      ,\n    \"nameKey\": \"logger\",\n    \"callerKey\": \"caller\",\n    \"messageKey\"\
+      : \"msg\",\n    \"stacktraceKey\": \"stacktrace\",\n    \"lineEnding\": \"\"\
+      ,\n    \"levelEncoder\": \"\",\n    \"timeEncoder\": \"\",\n    \"durationEncoder\"\
+      : \"\",\n    \"callerEncoder\": \"\"\n  }\n}\n"
   kind: ConfigMap
   metadata:
     labels:
-      chart: kashti-0.1.1
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: brigade
-    name: brigade-kashti-nginx
-    namespace: ci
+    name: config-logging
+    namespace: tekton-pipelines
 - apiVersion: v1
-  kind: Secret
-  metadata:
-    annotations:
-      projectName: digitalrigbitbucketteam/exec-storage-test
-    labels:
-      app: brigade
-      chart: brigade-project-1.0.0
-      component: project
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: exec-storage-test
-    name: brigade-42e7cd622269a11939ffea8fbc024eff404a8c92acc38a979a1f68
-    namespace: ci
-  stringData:
-    allowHostMounts: 'false'
-    allowPrivilegedJobs: 'true'
-    cloneURL: git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
-    defaultScript: "const { events, Job, Group } = require(\"brigadier\")\nconst {\
-      \ NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand }\
-      \ = require('brigade-extension')\n\n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts\
-      \ <project_name> --ref <branch>\n\n//#Node-Selectors:  beta.kubernetes.io/os=linux\
-      \ \n// this.host.nodeSelector[\"kubernetes.io/lifecycle\"] = \"spot\"\n\n//\
-      \ https://github.com/brigadecore/brigade/pull/777 - I will hide these details\n\
-      console.log(process.env)\nconst createJob = (name) => {\n  let t = new NixJob(name)\n\
-      \    .withExtraParams({\n      streamLogs: true,\n      privileged: true,\n\
-      \      annotations: {\n        \"iam.amazonaws.com/allowed-roles\": \"[\\\"\
-      *future-is-comming*\\\"]\"\n        // FIXME kube2iam\n        // \"iam.amazonaws.com/allowed-roles\"\
-      \ = \"[\\\"${project-config.kubernetes.cluster.name}*\\\"]\";\n        // INFO\
-      \ as these are not running pods restic is not happy to do a backup\n       \
-      \ // \"backup.velero.io/backup-volumes\": `${project.name}-${name}`\n      },\n\
-      \      shell: 'bash',\n      serviceAccount: \"brigade-worker\"\n    })\n\n\
-      \  t = t.withTasks([\n    `cat ${t.cache.path}/test.file`,\n    `cat ${t.cache.path}/test2.file`,\n\
-      \    `echo \"storage\" > ${t.storage.path}/test.file`,\n    `echo \"cache 1\"\
-      \ > ${t.cache.path}/test.file`,\n    `echo \"cache 2\" > ${t.cache.path}/test2.file`,\n\
-      \    // `cat ${t.storage.path}/test.file`,\n    `cd /src`,\n    `./nix/run-tests.sh`\n\
-      \    // runShellCommand('push-k8s-resources-to-repo'),\n  ])\n\n  return t\n\
-      }\n\nevents.on(\"exec\", async (event, project) => {\n  let test =\n    createJob(\"\
-      test\")\n      .withSecrets(project.secrets)\n      .withEnvVars({\n       \
-      \ BUILD_ID: event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
-      \      })\n\n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
-      \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
-      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  test2 = test2\n    .withTasks([\n\
-      \      `cat ${test2.storage.path}/test.file`,\n      // `cat ${test2.cache.path}/test.file`,\n\
-      \    ])\n  // i don't like it, not sure how to attach nodeSelector\n  // https://github.com/brigadecore/brigade/blob/master/brigade-worker/src/k8s.ts#L393\n\
-      \  // test.host.name = \"spot\"\n  // test.host.os = \"linux\"\n\n  // test.run()\n\
-      \  await test.run()\n  await test2.run()\n})\n"
-    genericGatewaySecret: mygenericsecret
-    initGitSubmodules: 'false'
-    kubernetes.allowSecretKeyRef: 'true'
-    kubernetes.buildStorageClass: build-storage
-    kubernetes.cacheStorageClass: cache-storage
-    repository: exec-storage-test
-    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","clusterName":"future-is-comming-dev-cluster","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
-      {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"ENC[AES256_GCM,data:txkyPuRcL3UGM6+DIciLkPbGoBY2N3GR/uVhCBcpF8V73jzd,iv:3/tYgu8EwMgJ/e8MJURDu1UL0IsCtC6tV7U6RUN2ovM=,tag:3Tcsdk6hTotIzCbn8D+njA==,type:str]\"\n\t},\n\t\"sops\":
-      {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:alias/future-is-comming-dev-buildit-consulting\",\n\t\t\t\t\"created_at\":
-      \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
-      \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
-      \"2019-08-28T14:38:33Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:BU9ybSTP8YQ6orvV5auJxeXGxQz61x00e/PEqDqr1hFlV9t85Ojl+gEpd17/PqM+fGF9uQJbWD+ZFp0irwePa76mDHtRfV5HiFUsB7zVmW5TwASsbKlRmt7GPll50s07FPhHF+wZyb/VFwZOCCEYZge9+63rjkhR3GasY2Qi16Q=,iv:GorWGFqSc/HvzmHpMvyL6lQpyJklSbqbD1bLMMjunH4=,tag:KhH25HN91nBoEZHzy3+4fw==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"dev.local/remote-worker:dev-build"}'
-    sharedSecret: ''
-    vcsSidecar: brigadecore/git-sidecar:latest
-    worker.name: dev.local/brigade-worker
-    worker.pullPolicy: IfNotPresent
-    worker.registry: ''
-    worker.tag: dev-build
-    workerCommand: yarn build-start
-  type: brigade.sh/project
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    annotations:
-      projectName: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
-    labels:
-      app: brigade
-      chart: brigade-project-1.0.0
-      component: project
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: embracing-nix-docker-k8s-helm-knative
-    name: brigade-94baa53dda4276e91cb84c8f38b5d98f55e623d800a055ebe8da29
-    namespace: ci
-  stringData:
-    allowHostMounts: 'false'
-    allowPrivilegedJobs: 'true'
-    cloneURL: git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
-    defaultScript: "const { events, Job, Group } = require(\"brigadier\")\nconst {\
-      \ NixJob, extractSecret, saveSecrets, buildNixExpression, runShellCommand }\
-      \ = require('brigade-extension')\n\n// TODO prepare script\n// brig run -f pipeline/infrastructure.ts\
-      \ <project_name> --ref <branch>\n\nconsole.log(process.env)\n\nconst createJob\
-      \ = (name) => {\n  let t = new NixJob(name)\n    .withExtraParams({\n      streamLogs:\
-      \ true,\n      privileged: true,\n      annotations: {\n        \"iam.amazonaws.com/allowed-roles\"\
-      : \"[\\\"*future-is-comming*\\\"]\"\n      },\n      shell: 'bash',\n      serviceAccount:\
-      \ \"brigade-worker\"\n    })\n\n  t = t.withTasks([\n    runShellCommand('release-tools'),\n\
-      \  ])\n\n  return t\n}\n\nevents.on(\"exec\", async (event, project) => {\n\
-      \  console.log('@@@', event, project)\n  let test =\n    createJob(\"test\"\
-      )\n      .withSecrets(project.secrets)\n      .withEnvVars({\n        BUILD_ID:\
-      \ event.buildID || \"missing-build-id\",\n        EVENT: JSON.stringify(event),\n\
-      \      })\n\n  let test2 =\n    createJob(\"test2\")\n      .withSecrets(project.secrets)\n\
-      \      .withEnvVars({\n        BUILD_ID: event.buildID || \"missing-build-id\"\
-      ,\n        EVENT: JSON.stringify(event),\n      })\n\n  await test.run()\n})\n\
-      \nevents.on(\"push\", (event, project) => {\n  let test = createJob(\"test\"\
-      )\n    .withSecrets(project.secrets)\n\n  test.run()\n})\n"
-    genericGatewaySecret: mygenericsecret
-    initGitSubmodules: 'false'
-    kubernetes.allowSecretKeyRef: 'true'
-    kubernetes.buildStorageClass: build-storage
-    kubernetes.cacheStorageClass: cache-storage
-    repository: embracing-nix-docker-k8s-helm-knative
-    secrets: '{"awsRegion":"eu-west-2","cacheBucket":"future-is-comming-dev-worker-binary-store","clusterName":"future-is-comming-dev-cluster","gitUser":"damian.baar@wipro.com","sopsSecrets":"{\n\t\"bitbucket\":
-      {\n\t\t\"user\": \"\",\n\t\t\"pass\": \"\",\n\t\t\"hook\": \"ENC[AES256_GCM,data:txkyPuRcL3UGM6+DIciLkPbGoBY2N3GR/uVhCBcpF8V73jzd,iv:3/tYgu8EwMgJ/e8MJURDu1UL0IsCtC6tV7U6RUN2ovM=,tag:3Tcsdk6hTotIzCbn8D+njA==,type:str]\"\n\t},\n\t\"sops\":
-      {\n\t\t\"kms\": [\n\t\t\t{\n\t\t\t\t\"arn\": \"arn:aws:kms:eu-west-2:006393696278:alias/future-is-comming-dev-buildit-consulting\",\n\t\t\t\t\"created_at\":
-      \"2019-08-26T08:38:51Z\",\n\t\t\t\t\"enc\": \"AQICAHgnX31/xU5eNw1+kwskvxH3sfc/l1RDMKVVc2CkntweZwGzOAZ42zR+/3WVhk4ktgF7AAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMmY/jeJ+IerqNRIOCAgEQgDuggPxxUjtacNwg9FhAC7pwyy3izP6tZ9osf2NkQftxumQkdtqiOLy2r5aYqs4LckIdG89lQkd33qu/RA==\",\n\t\t\t\t\"aws_profile\":
-      \"\"\n\t\t\t}\n\t\t],\n\t\t\"gcp_kms\": null,\n\t\t\"azure_kv\": null,\n\t\t\"lastmodified\":
-      \"2019-08-28T14:38:33Z\",\n\t\t\"mac\": \"ENC[AES256_GCM,data:BU9ybSTP8YQ6orvV5auJxeXGxQz61x00e/PEqDqr1hFlV9t85Ojl+gEpd17/PqM+fGF9uQJbWD+ZFp0irwePa76mDHtRfV5HiFUsB7zVmW5TwASsbKlRmt7GPll50s07FPhHF+wZyb/VFwZOCCEYZge9+63rjkhR3GasY2Qi16Q=,iv:GorWGFqSc/HvzmHpMvyL6lQpyJklSbqbD1bLMMjunH4=,tag:KhH25HN91nBoEZHzy3+4fw==,type:str]\",\n\t\t\"pgp\":
-      null,\n\t\t\"unencrypted_suffix\": \"_unencrypted\",\n\t\t\"version\": \"3.3.1\"\n\t}\n}","workerDockerImage":"dev.local/remote-worker:dev-build"}'
-    sharedSecret: ''
-    vcsSidecar: brigadecore/git-sidecar:latest
-    worker.name: dev.local/brigade-worker
-    worker.pullPolicy: IfNotPresent
-    worker.registry: ''
-    worker.tag: dev-build
-    workerCommand: yarn build-start
-  type: brigade.sh/project
-- apiVersion: v1
-  kind: Service
+  data:
+    _example: '################################
+
+      #                              #
+
+      #    EXAMPLE CONFIGURATION     #
+
+      #                              #
+
+      ################################
+
+
+      # This block is not actually functional configuration,
+
+      # but serves to illustrate the available configuration
+
+      # options and document them in a way that is accessible
+
+      # to users that `kubectl edit` this config map.
+
+      #
+
+      # These sample configuration options may be copied out of
+
+      # this example block and unindented to be in the data block
+
+      # to actually change the configuration.
+
+
+      # metrics.backend-destination field specifies the system metrics destination.
+
+      # It supports either prometheus (the default) or stackdriver.
+
+      # Note: Using Stackdriver will incur additional charges.
+
+      metrics.backend-destination: prometheus
+
+
+      # metrics.stackdriver-project-id field specifies the Stackdriver project ID.
+      This
+
+      # field is optional. When running on GCE, application default credentials will
+      be
+
+      # used and metrics will be sent to the cluster''s project if this field is
+
+      # not provided.
+
+      metrics.stackdriver-project-id: "<your stackdriver project id>"
+
+
+      # metrics.allow-stackdriver-custom-metrics indicates whether it is allowed
+
+      # to send metrics to Stackdriver using "global" resource type and custom
+
+      # metric type. Setting this flag to "true" could cause extra Stackdriver
+
+      # charge.  If metrics.backend-destination is not Stackdriver, this is
+
+      # ignored.
+
+      metrics.allow-stackdriver-custom-metrics: "false"
+
+      '
+  kind: ConfigMap
   metadata:
     labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-      role: api
-    name: brigade-brigade-api
-    namespace: ci
-  spec:
-    ports:
-    - name: brigade-api
-      port: 7745
-      protocol: TCP
-      targetPort: 7745
-    selector:
-      app.kubernetes.io/name: brigade-brigade-api
-    type: ClusterIP
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      app: kashti
-      chart: kashti-0.1.1
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: brigade
-    name: brigade-kashti
-    namespace: ci
-  spec:
-    ports:
-    - name: kashti
-      port: 80
-      protocol: TCP
-      targetPort: 80
-    selector:
-      app: kashti
-      release: brigade
-    type: ClusterIP
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      chart: brigade-bitbucket-gateway-0.13.0
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: extension
-      role: gateway
-      type: bitbucket
-    name: extension-brigade-bitbucket-gateway
-    namespace: ci
-  spec:
-    ports:
-    - name: service
-      port: 7748
-      protocol: TCP
-      targetPort: 7748
-    selector:
-      app: extension-brigade-bitbucket-gateway
-      role: gateway
-      type: bitbucket
-    type: NodePort
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-api
-    namespace: ci
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-ctrl
-    namespace: ci
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-vacuum
-    namespace: ci
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-worker
-    namespace: ci
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app: extension-brigade-bitbucket-gateway
-      chart: brigade-bitbucket-gateway-0.13.0
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: extension
-    name: extension-brigade-bitbucket-gateway
-    namespace: ci
-- apiVersion: extensions/v1beta1
+    name: config-observability
+    namespace: tekton-pipelines
+- apiVersion: apps/v1
   kind: Deployment
   metadata:
     labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade-api
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-      role: api
-    name: brigade-brigade-api
-    namespace: ci
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: tekton-pipelines
+    name: tekton-pipelines-controller
+    namespace: tekton-pipelines
   spec:
     replicas: 1
-    template:
-      metadata:
-        labels:
-          app: brigade-brigade-api
-          app.kubernetes.io/name: brigade-brigade-api
-          role: api
-      spec:
-        containers:
-        - env:
-          - name: BRIGADE_API_PORT
-            value: '7745'
-          - name: BRIGADE_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          image: brigadecore/brigade-api:v1.1.0
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 7745
-          name: brigade
-          ports:
-          - containerPort: 7745
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 7745
-        serviceAccountName: brigade-brigade-api
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade-ctrl
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-      role: controller
-    name: brigade-brigade-ctrl
-    namespace: ci
-  spec:
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          app: brigade-brigade-ctrl
-          app.kubernetes.io/name: brigade-brigade-ctrl
-          role: controller
-      spec:
-        containers:
-        - command:
-          - /usr/bin/brigade-controller
-          env:
-          - name: BRIGADE_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: BRIGADE_WORKER_IMAGE
-            value: brigadecore/brigade-worker:v1.1.0
-          - name: BRIGADE_WORKER_PULL_POLICY
-            value: IfNotPresent
-          - name: BRIGADE_WORKER_SERVICE_ACCOUNT
-            value: brigade-worker
-          image: brigadecore/brigade-controller:v1.1.0
-          imagePullPolicy: IfNotPresent
-          name: brigade
-        serviceAccountName: brigade-brigade-ctrl
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    labels:
-      app: kashti
-      chart: kashti-0.1.1
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: brigade
-    name: brigade-kashti
-    namespace: ci
-  spec:
-    replicas: 1
+    selector:
+      matchLabels:
+        app: tekton-pipelines-controller
     template:
       metadata:
         annotations:
-          checksum/config-js: 9cde6c482cde51f90bedd39f3e0ff4c2b2efb8bb4b9371d40d524d43e9177c75
-          checksum/config-nginx: bbee88e5bed89e1b1e9a49db9acae7fe7feeeb4dfe59b9690bd7e54287dcd6b9
+          cluster-autoscaler.kubernetes.io/safe-to-evict: 'false'
         labels:
-          app: kashti
-          release: brigade
+          app: tekton-pipelines-controller
+          app.kubernetes.io/component: controller
+          app.kubernetes.io/name: tekton-pipelines
       spec:
         containers:
-        - image: brigadecore/kashti:latest
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 80
-          name: kashti
-          ports:
-          - containerPort: 80
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-          resources: {}
-          volumeMounts:
-          - mountPath: /etc/nginx/conf.d
-            name: config-nginx
-          - mountPath: /usr/share/nginx/html/assets/js/settings
-            name: config-js
-        volumes:
-        - configMap:
-            name: brigade-kashti-js
-          name: config-js
-        - configMap:
-            name: brigade-kashti-nginx
-          name: config-nginx
-- apiVersion: extensions/v1beta1
-  kind: Deployment
-  metadata:
-    labels:
-      app: extension-brigade-bitbucket-gateway
-      chart: brigade-bitbucket-gateway-0.13.0
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: extension
-      role: gateway
-      type: bitbucket
-    name: extension-brigade-bitbucket-gateway
-    namespace: ci
-  spec:
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          app: extension-brigade-bitbucket-gateway
-          role: gateway
-          type: bitbucket
-      spec:
-        containers:
-        - env:
-          - name: BRIGADE_NAMESPACE
+        - args:
+          - -logtostderr
+          - -stderrthreshold
+          - INFO
+          - -kubeconfig-writer-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/kubeconfigwriter@sha256:8f8aee782bb47d7436c40e5b10a19966b21d00e1d35d2f3cd8713e206ce24841
+          - -creds-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/creds-init@sha256:beff30d239273c4986b2e8f9d26a23cc84cc4ffda074e4e83f1cc50905c2d3da
+          - -git-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init@sha256:b0e6fb4f8fdd6728c6ff5bd63be30e04f88f103b9a1e972e204125aeb6a04d33
+          - -nop-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/nop@sha256:b372d0cb991cb960854880957c93c460d35e75339016ca6472b5ea2955f08dcb
+          - -bash-noop-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/bash@sha256:d101b69175e60cf43956ba850ec62c2db8eead17d3aa9cfb40ad7f7f3f6a3f53
+          - -gsutil-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/gsutil@sha256:c404edde7ec5ccf550784f2d71ea4b184ec1378329bdad316e26bce81d5f466c
+          - -entrypoint-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/entrypoint@sha256:ac46866bd14ac38960c6aa100ee7468e707a955324ea4c88ce8d39b8cdfee11e
+          - -imagedigest-exporter-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/imagedigestexporter@sha256:04e1eda72b3db4e4b12cc4caa2c01f33384ba80702a4dd8c41a1a940e0d69296
+          - -pr-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/pullrequest-init@sha256:c7e2a8178bc3e87405303212290836de9f781409fd60cee25cac1383aaa76f1b
+          - -build-gcs-fetcher-image
+          - gcr.io/tekton-releases/github.com/tektoncd/pipeline/vendor/github.com/googlecloudplatform/cloud-builders/gcs-fetcher/cmd/gcs-fetcher@sha256:7741f416742ac14744e8c8d0c1a628ce93d801dadfdb1ff9da8a4b9df4d6573c
+          env:
+          - name: SYSTEM_NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: BRIGADE_bitbucket_GATEWAY_PORT
-            value: '7748'
-          image: lukepatrick/brigade-bitbucket-gateway:v0.13.0
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            tcpSocket:
-              port: 7748
-          name: brigade-bitbucket-gateway
-          ports:
-          - containerPort: 7748
-          readinessProbe:
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            tcpSocket:
-              port: 7748
-        serviceAccountName: extension-brigade-bitbucket-gateway
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
+          - name: CONFIG_LOGGING_NAME
+            value: config-logging
+          - name: CONFIG_OBSERVABILITY_NAME
+            value: config-observability
+          - name: METRICS_DOMAIN
+            value: tekton.dev/pipeline
+          image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/controller@sha256:ebc6f768038aa3e31f3d7acda4bc26bf1380b5f2a132f0618181cacc30e295fa
+          name: tekton-pipelines-controller
+          volumeMounts:
+          - mountPath: /etc/config-logging
+            name: config-logging
+        serviceAccountName: tekton-pipelines-controller
+        volumes:
+        - configMap:
+            name: config-logging
+          name: config-logging
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-api
-    namespace: ci
+      app.kubernetes.io/component: webhook-controller
+      app.kubernetes.io/name: tekton-pipelines
+    name: tekton-pipelines-webhook
+    namespace: tekton-pipelines
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: tekton-pipelines-webhook
+    template:
+      metadata:
+        annotations:
+          cluster-autoscaler.kubernetes.io/safe-to-evict: 'false'
+        labels:
+          app: tekton-pipelines-webhook
+          app.kubernetes.io/component: webhook-controller
+          app.kubernetes.io/name: tekton-pipelines
+      spec:
+        containers:
+        - env:
+          - name: SYSTEM_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          image: gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/webhook@sha256:7215a25a58c074bbe30a50db93e6a47d2eb5672f9af7570a4e4ab75e50329131
+          name: webhook
+          volumeMounts:
+          - mountPath: /etc/config-logging
+            name: config-logging
+        serviceAccountName: tekton-pipelines-controller
+        volumes:
+        - configMap:
+            name: config-logging
+          name: config-logging
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+    name: tekton-pipelines-controller
+    namespace: tekton-pipelines
+- apiVersion: rbac.authorization.k8s.io/v1beta1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+    name: tekton-pipelines-controller-admin
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: tekton-pipelines-admin
+  subjects:
+  - kind: ServiceAccount
+    name: tekton-pipelines-controller
+    namespace: tekton-pipelines
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: clustertasks.tekton.dev
+  spec:
+    group: tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: ClusterTask
+      plural: clustertasks
+    scope: Cluster
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: conditions.tekton.dev
+  spec:
+    group: tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: Condition
+      plural: conditions
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      knative.dev/crd-install: 'true'
+    name: images.caching.internal.knative.dev
+  spec:
+    group: caching.internal.knative.dev
+    names:
+      categories:
+      - knative-internal
+      - caching
+      kind: Image
+      plural: images
+      shortNames:
+      - img
+      singular: image
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: pipelines.tekton.dev
+  spec:
+    group: tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: Pipeline
+      plural: pipelines
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: pipelineruns.tekton.dev
+  spec:
+    additionalPrinterColumns:
+    - JSONPath: .status.conditions[?(@.type=="Succeeded")].status
+      name: Succeeded
+      type: string
+    - JSONPath: .status.conditions[?(@.type=="Succeeded")].reason
+      name: Reason
+      type: string
+    - JSONPath: .status.startTime
+      name: StartTime
+      type: date
+    - JSONPath: .status.completionTime
+      name: CompletionTime
+      type: date
+    group: tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: PipelineRun
+      plural: pipelineruns
+      shortNames:
+      - pr
+      - prs
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app: tekton-dashboard
+    name: tekton-dashboard
+    namespace: tekton-pipelines
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+    name: extensions.dashboard.tekton.dev
+  spec:
+    group: dashboard.tekton.dev
+    names:
+      categories:
+      - all
+      - tekton-pipelines
+      kind: Extension
+      plural: extensions
+    scope: Namespaced
+    subresources:
+      status: {}
+    version: v1alpha1
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+    name: tekton-dashboard-minimal
+    namespace: tekton-pipelines
   rules:
   - apiGroups:
-    - ''
+    - security.openshift.io
     resources:
-    - pods
-    - secrets
-    - pods/log
+    - securitycontextconstraints
+    verbs:
+    - use
+  - apiGroups:
+    - route.openshift.io
+    resources:
+    - routes
+    verbs:
+    - get
+    - list
+  - apiGroups:
+    - extensions
+    - apps
+    resources:
+    - ingresses
     verbs:
     - get
     - list
     - watch
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-ctrl
-    namespace: ci
-  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - serviceaccounts
+    verbs:
+    - get
+    - list
+    - update
+    - patch
   - apiGroups:
     - ''
     resources:
     - pods
+    - services
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - ''
+    resources:
+    - pods/log
+    - namespaces
+    - events
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ''
+    resources:
     - secrets
     - configmaps
     verbs:
     - get
     - list
-    - watch
     - create
     - update
-    - patch
-    - delete
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-vacuum
-    namespace: ci
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    - secrets
-    - persistentvolumeclaims
-    verbs:
-    - get
-    - list
     - watch
     - delete
   - apiGroups:
-    - ''
+    - extensions
+    - apps
     resources:
-    - pods/log
+    - deployments
     verbs:
     - get
     - list
-    - watch
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-wrk
-    namespace: ci
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    - secrets
-    - persistentvolumeclaims
-    - configmaps
-    verbs:
-    - get
-    - list
-    - watch
     - create
     - update
-    - patch
     - delete
+    - patch
+    - watch
   - apiGroups:
-    - ''
+    - tekton.dev
     resources:
-    - pods/log
+    - tasks
+    - clustertasks
+    - taskruns
+    - pipelines
+    - pipelineruns
+    - pipelineresources
     verbs:
     - get
     - list
-    - watch
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: Role
-  metadata:
-    labels:
-      app: extension-brigade-bitbucket-gateway
-      chart: brigade-bitbucket-gateway-0.13.0
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: extension
-    name: extension-brigade-bitbucket-gateway
-    namespace: ci
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - secrets
-    verbs:
-    - get
-    - list
-    - watch
     - create
     - update
-    - patch
     - delete
-  - apiGroups:
-    - ''
-    resources:
-    - pods
-    verbs:
-    - list
+    - patch
     - watch
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-api
-    namespace: ci
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: brigade-brigade-api
-  subjects:
-  - kind: ServiceAccount
-    name: brigade-brigade-api
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-ctrl
-    namespace: ci
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: brigade-brigade-ctrl
-  subjects:
-  - kind: ServiceAccount
-    name: brigade-brigade-ctrl
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-vacuum
-    namespace: ci
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: brigade-brigade-vacuum
-  subjects:
-  - kind: ServiceAccount
-    name: brigade-vacuum
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app.kubernetes.io/instance: brigade
-      app.kubernetes.io/managed-by: Tiller
-      app.kubernetes.io/name: brigade-brigade
-      helm.sh/chart: brigade-1.1.0
-      kubenix/project-name: kubenix
-    name: brigade-brigade-wrk
-    namespace: ci
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: brigade-brigade-wrk
-  subjects:
-  - kind: ServiceAccount
-    name: brigade-worker
-- apiVersion: rbac.authorization.k8s.io/v1beta1
-  kind: RoleBinding
-  metadata:
-    labels:
-      app: extension-brigade-bitbucket-gateway
-      chart: brigade-bitbucket-gateway-0.13.0
-      heritage: Tiller
-      kubenix/project-name: kubenix
-      release: extension
-    name: extension-brigade-bitbucket-gateway
-    namespace: ci
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: Role
-    name: extension-brigade-bitbucket-gateway
-  subjects:
-  - kind: ServiceAccount
-    name: extension-brigade-bitbucket-gateway
+  - apiGroups:
+    - tekton.dev
+    resources:
+    - taskruns/finalizers
+    - pipelineruns/finalizers
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - tekton.dev
+    resources:
+    - tasks/status
+    - clustertasks/status
+    - taskruns/status
+    - pipelines/status
+    - pipelineruns/status
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
+  - apiGroups:
+    - dashboard.tekton.dev
+    resources:
+    - extensions
+    verbs:
+    - get
+    - list
+    - create
+    - update
+    - delete
+    - patch
+    - watch
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
     labels:
-      kubenix/project-name: kubenix
-    name: brigade-admin-privileges
-    namespace: default
+    name: tekton-dashboard-minimal
   roleRef:
     apiGroup: rbac.authorization.k8s.io
     kind: ClusterRole
-    name: cluster-admin
+    name: tekton-dashboard-minimal
   subjects:
   - kind: ServiceAccount
-    name: brigade-worker
-    namespace: ci
+    name: tekton-dashboard
+    namespace: tekton-pipelines
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: tekton-dashboard
+    name: tekton-dashboard
+    namespace: tekton-pipelines
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: tekton-dashboard
+    template:
+      metadata:
+        labels:
+          app: tekton-dashboard
+        name: tekton-dashboard
+      spec:
+        containers:
+        - env:
+          - name: PORT
+            value: '9097'
+          - name: WEB_RESOURCES_DIR
+            value: /var/run/ko/web
+          - name: PIPELINE_RUN_SERVICE_ACCOUNT
+            value: ''
+          - name: INSTALLED_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          image: gcr.io/tekton-releases/github.com/tektoncd/dashboard/cmd/dashboard@sha256:1bae097b49afa77fcbf9415a2e3484a6636818abf04d05dc817dc2f176510827
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 9097
+          name: tekton-dashboard
+          ports:
+          - containerPort: 9097
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 9097
+        serviceAccountName: tekton-dashboard
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: tekton-dashboard
+    name: tekton-dashboard
+    namespace: tekton-pipelines
+  spec:
+    ports:
+    - name: http
+      port: 9097
+      protocol: TCP
+      targetPort: 9097
+    selector:
+      app: tekton-dashboard
+- apiVersion: tekton.dev/v1alpha1
+  kind: Task
+  metadata:
+    labels:
+    name: pipeline0-task
+    namespace: tekton-pipelines
+  spec:
+    inputs:
+      params:
+      - default: /workspace/git-source
+        description: The path to the resource files to apply
+        name: pathToResourceFiles
+      - default: .
+        description: The directory from which resources are to be applied
+        name: apply-directory
+      - default: tekton-pipelines
+        description: The namespace in which to create the resources being imported
+        name: target-namespace
+      resources:
+      - name: git-source
+        type: git
+    steps:
+    - args:
+      - apply
+      - -f
+      - ${inputs.params.pathToResourceFiles}/${inputs.params.apply-directory}
+      - -n
+      - ${inputs.params.target-namespace}
+      command:
+      - kubectl
+      image: lachlanevenson/k8s-kubectl@sha256:739109fa0236fc503d66f91063585a972727a30d750509fed5b53cf8120216e3
+      name: kubectl-apply
+- apiVersion: tekton.dev/v1alpha1
+  kind: Pipeline
+  metadata:
+    labels:
+    name: pipeline0
+    namespace: tekton-pipelines
+  spec:
+    params:
+    - default: /workspace/git-source
+      description: The path to the resource files to apply
+      name: pathToResourceFiles
+    - default: .
+      description: The directory from which resources are to be applied
+      name: apply-directory
+    - default: tekton-pipelines
+      description: The namespace in which to create the resources being imported
+      name: target-namespace
+    resources:
+    - name: git-source
+      type: git
+    tasks:
+    - name: pipeline0-task
+      params:
+      - name: pathToResourceFiles
+        value: ${params.pathToResourceFiles}
+      - name: apply-directory
+        value: ${params.apply-directory}
+      - name: target-namespace
+        value: ${params.target-namespace}
+      resources:
+        inputs:
+        - name: git-source
+          resource: git-source
+      taskRef:
+        name: pipeline0-task
 kind: List
 labels:
