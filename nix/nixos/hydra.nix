@@ -1,5 +1,5 @@
 # need to find a way to build amazon ami on darwin with nix
-{system ? "x86_64-linux", ...}:
+{system ? "x86_64-linux", preload ? false, ...}:
 let
   pkgs = (import ../../nix { 
     inherit system;
@@ -23,16 +23,19 @@ in
 
     configuration = {
       imports = [
+        ./modules/base.nix
         ./modules/ec2-nixos.nix
         ./modules/shell.nix
         ./modules/copy-source.nix
-        ./modules/hydra/master.nix
+        (if !preload then ./modules/hydra/master.nix else "")
         # got s3 bucket
         # ./modules/nix-serve.nix
         (import "${hydra_path}/hydra-module.nix")
       ];
 
       config = {
+        warm-up.preload = preload;
+
         networking.hostName = host-name;
         # time.timeZone = "UTC";
         # services.localtime.enable = true;
