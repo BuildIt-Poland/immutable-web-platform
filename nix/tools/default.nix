@@ -39,6 +39,7 @@ rec {
   kubectl-krew = super.callPackage ./kubectl-krew {};
   kubectl-dig = super.callPackage ./kubectl-dig {};
   kubectl-debug = super.callPackage ./kubectl-debug {};
+  kubectl-tkn = super.callPackage ./kubectl-tkn {};
 
   # yarn2nix = super.callPackage sources.yarn2nix {};
 
