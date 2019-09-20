@@ -1,5 +1,6 @@
 ## Today
 * consider `tekton`
+* add depends_on to bootstrap - changing instance should rerun bootstrap
 * config generation
 * expose kibana - separate chart - test on eks
 * not sure why aws secret patch is shouting ...
