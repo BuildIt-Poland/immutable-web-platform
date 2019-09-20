@@ -41,9 +41,16 @@ rec {
   kubectl-debug = super.callPackage ./kubectl-debug {};
   kubectl-tkn = super.callPackage ./kubectl-tkn {};
 
-  yarn2nix = super.callPackage ./yarn2nix {
-    inherit sources;
-  };
+  # yarn2nix = super.callPackage sources.yarn2nix {};
+  yarn2nix = super.callPackage (super.applyPatches {
+    src = super.fetchFromGitHub {
+      sha256 = sources.yarn2nix.sha256;
+      repo = sources.yarn2nix.repo;
+      owner = sources.yarn2nix.owner;
+      rev = sources.yarn2nix.rev;
+    };
+    patches = [./yarn2nix.patch];
+  }) {};
 
   # INFO I need to have hibernate feature for aws
   nixops = (import "${sources.nixops.outPath}/release.nix" {}).build.${super.system};
