@@ -74,9 +74,14 @@ let
     constituents = [ ];
   };
 
+  nixos = {
+    hydra = (import ./nixos/hydra.nix {}).system;
+  };
+
 in (
     tools-release 
   // charts-release 
   // { inherit channel; }
   // { inherit docker-images; }
+  // { inherit nixos; }
 )
