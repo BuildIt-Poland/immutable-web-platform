@@ -52,8 +52,8 @@ resource "aws_security_group" "hydra-sg" {
 }
 
 resource "random_integer" "subnet" {
-  min     = 0
-  max     = length(var.vpc.public_subnets) - 1
+  min = 0
+  max = length(var.vpc.public_subnets) - 1
 }
 
 module "aws-ec2-instance" {
@@ -65,15 +65,15 @@ module "aws-ec2-instance" {
   region       = var.region
 
   iam_instance_profile = aws_iam_instance_profile.hydra-profile.name
-  security_groups_ids = [aws_security_group.hydra-sg.id]
-  subnet_id           = var.vpc.public_subnets[random_integer.subnet.result]
-  ssh_pub_key         = var.ssh_pub_key
-  spot_price = "0.1"
-  instance_type       = "m4.xlarge"
+  security_groups_ids  = [aws_security_group.hydra-sg.id]
+  subnet_id            = var.vpc.public_subnets[random_integer.subnet.result]
+  ssh_pub_key          = var.ssh_pub_key
+  spot_price           = "0.1"
+  instance_type        = "m4.xlarge"
 }
 
 data "aws_route53_zone" "domain" {
-  name         = var.base_domain
+  name = var.base_domain
   # private_zone = true
 }
 
@@ -85,14 +85,15 @@ resource "aws_route53_record" "hydra" {
   ttl     = "300"
   records = [
     module.aws-ec2-instance.instance.public_ip,
-    module.aws-ec2-instance.instance.private_ip
+    # SUPER IMPORTANT: this is why sometimes ui hang & docker was not able to resolve buidler - not all good!
+    # module.aws-ec2-instance.instance.private_ip
   ]
 }
 
 # watcher
 data "archive_file" "watcher" {
   type        = "zip"
-  source_dir = dirname(var.nixos_configuration)
+  source_dir  = dirname(var.nixos_configuration)
   output_path = "${path.module}/config.watcher.zip"
 }
 
@@ -111,6 +112,6 @@ module "nixos-updater" {
 
   nixos_configuration = var.nixos_configuration
 
-  host                = module.aws-ec2-instance.instance.public_ip
-  ssh_pub_key         = module.aws-ec2-instance.key.key_name
+  host        = module.aws-ec2-instance.instance.public_ip
+  ssh_pub_key = module.aws-ec2-instance.key.key_name
 }
