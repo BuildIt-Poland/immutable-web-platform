@@ -14,12 +14,14 @@ in
     shell-tools
     docker
     storage
-    # ./brigade-setup.nix
-    tekton
     bitbucket
     git-secrets
     aws
     base
+
+    # FIXME make it optional
+    # ./brigade-setup.nix
+    tekton
   ];
 
   config = {
@@ -93,7 +95,6 @@ in
           };
         };
         argo.name = "gitops";
-        brigade.name = "ci";
       };
 
       cluster = {

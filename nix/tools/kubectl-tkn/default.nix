@@ -6,7 +6,7 @@ buildGoModule rec {
     owner = "tektoncd";
     repo = "cli";
     rev = "v${version}";
-    sha256 = "0ni8g9klqgzhb01nw0ip9wbrmq4b8n9si9d2qjkbxbra16jgw1wq";
+    sha256 = "1i5hlpgvg5yas09w6kqna8ldrfng0hy79h10dlvc3xrrdb85ds3q";
   };
 
   patches = [
@@ -18,13 +18,12 @@ buildGoModule rec {
   '';
 
   postInstall = ''
-    ls -la $out/bin
-    mv $out/bin/plugin $out/bin/kubectl-tkn
+    cp $out/bin/tkn $out/bin/kubectl-tkn
   '';
 
-  subPackages = ["cmd/plugin"];
+  subPackages = ["cmd/tkn"];
   goPackagePath = "github.com/tektoncd/cli";
-  modSha256 = "0dyfhn5m937gr883yj771p608kdwhcrwi6dhp39fkagxmx80kj73";
+  modSha256 = "0yhmbfp3nnk92p07g2nmw31n0ima8yh1951llrw9wgjdlnr33klp";
 
   meta = with lib; {
     description = "The Tekton Pipelines cli project provides a CLI for interacting with Tekton!";
