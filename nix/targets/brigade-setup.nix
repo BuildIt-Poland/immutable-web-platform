@@ -38,5 +38,12 @@ in
           ../../pipeline/storage-test/pipeline.ts; 
       };
     };
+
+    kubernetes = {
+      namespace = {
+        argo.name = "gitops";
+        brigade.name = "ci";
+      };
+    };
   };
 }
