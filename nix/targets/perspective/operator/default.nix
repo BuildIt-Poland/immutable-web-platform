@@ -19,7 +19,6 @@ with lib;
       packages = with pkgs; [
         nixos-generators
         kubectl-virtctl
-    pkgs.mercurial
       ];
     }
   ];

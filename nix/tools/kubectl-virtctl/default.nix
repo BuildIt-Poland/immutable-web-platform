@@ -24,7 +24,7 @@ buildGoModule rec {
   '';
 
   postInstall = ''
-    cp $out/bin/virtctl $out/bin/kubectl-virtctl
+    cp $out/bin/virtctl $out/bin/kubectl-virt
   '';
 
   subPackages = [
