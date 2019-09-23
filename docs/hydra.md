@@ -6,5 +6,5 @@ integrate with hooks from knative eventing
 
 ### Issues
 * (WIP - added script on reload - most likely postgress does not keep storage) when bootstraping with terraform there is a need to do apply 2x - not sure yet - if not, hydra will be running ok, however there won't be predefined project
-* sometimes there is a huge lag to get `hydra` ui - not sure why yet
+* sometimes there is a huge lag to get `hydra` ui - not sure why yet (solved - dns issue)
 * backup/restore postgres (not super important - `s3` cache is important)

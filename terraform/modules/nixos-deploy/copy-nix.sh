@@ -5,10 +5,6 @@ build_hash=$1
 machine_ip=$2
 user=root
 
-buildArgs=(
-  --option extra-binary-caches https://cache.nixos.org/
-)
-
 sshOpts=(
   -o "ControlMaster=auto"
   -o "ControlPersist=60"
@@ -34,6 +30,5 @@ echo "-- end --"
 
 if [[ $should_rebot != 0 ]] ; then
   echo "-- rebooting instance --"
-  sleep 5
   ssh "${sshOpts[@]}" $target_host "reboot"
 fi
