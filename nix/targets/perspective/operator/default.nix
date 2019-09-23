@@ -17,7 +17,9 @@ with lib;
       storage.enable = false;
       terraform.enable = true;
       packages = with pkgs; [
-        nix-generators
+        nixos-generators
+        kubectl-virtctl
+    pkgs.mercurial
       ];
     }
   ];

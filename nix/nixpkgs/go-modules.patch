@@ -1,0 +1,13 @@
+diff --git a/pkgs/development/go-modules/generic/default.nix b/pkgs/development/go-modules/generic/default.nix
+index 55fda78b03e..c0186900f77 100644
+--- a/pkgs/development/go-modules/generic/default.nix
++++ b/pkgs/development/go-modules/generic/default.nix
+@@ -39,7 +39,7 @@ let
+   go-modules = go.stdenv.mkDerivation (let modArgs = {
+     name = "${name}-go-modules";
+ 
+-    nativeBuildInputs = [ go git cacert ];
++    nativeBuildInputs = [ go git cacert ] ++ nativeBuildInputs;
+ 
+     inherit (args) src;
+     inherit (go) GOOS GOARCH;

@@ -44,12 +44,15 @@ let
     nix-test = super.callPackage ./testing.nix {};
   };
 
+  nixos-image = self: super: rec {
+    nixos-hydra = import ./nixos/hydra-config.nix;
+  };
+
   application = self: super: rec {
     k8s-operations = super.callPackage ./k8s-operations {};
   };
 
   overlays = [
-    (import ./overlays/overridings.nix {inherit sources;})
     (import ./overlays/modules.nix {inherit sources;})
     (import ./tools {inherit sources;})
     (import ./lib {inherit sources;})
@@ -62,4 +65,4 @@ let
     // { inherit overlays; } 
     // (if system != null then { inherit system; } else {});
 in
-  import sources.nixpkgs args
+  import ./nixpkgs { inherit sources args; }
