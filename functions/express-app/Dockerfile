@@ -42,7 +42,7 @@ RUN nix build -f ./nix/development.nix \
   --option extra-substituters ssh://hydra.future-is-comming.dev.buildit.consulting  \
   --option trusted-substituters ssh://hydra.future-is-comming.dev.buildit.consulting  \
   --option binary-caches "s3://future-is-comming-dev-worker-binary-store?region=eu-west-2 https://cache.nixos.org/" \
-  --option max-jobs 0 \
+  # --option max-jobs 0 \
   -v
 
 RUN rm -rf /root/.ssh/

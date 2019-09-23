@@ -1,6 +1,8 @@
 ## Today
+* hydra -> ssl -> ec2a - doing
+* hydra & kubevirt & nixos -> thinking
 * when deploying nixos and rebooting wait for ssh
-* consider `tekton`
+* consider `tekton` - in progress
 * build on target host - source is there -> s3 ec2 will be faster than local ec2
 * ability to filter namespace and files when applying kubernetes resources
 * add depends_on to bootstrap - changing instance should rerun bootstrap

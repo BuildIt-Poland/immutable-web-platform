@@ -9,7 +9,6 @@ in
 with lib;
 {
   imports = [ 
-    ./proxy.nix
     ./gc.nix
     ./ssh.nix
     ./services.nix
