@@ -54,4 +54,5 @@ rec {
 
   # INFO I need to have hibernate feature for aws
   nixops = (import "${sources.nixops.outPath}/release.nix" {}).build.${super.system};
+  nix-generators = import sources.nix-generators {};
 } 

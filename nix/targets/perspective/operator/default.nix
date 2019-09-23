@@ -16,6 +16,9 @@ with lib;
       kubernetes.enabled = false;
       storage.enable = false;
       terraform.enable = true;
+      packages = with pkgs; [
+        nix-generators
+      ];
     }
   ];
 }

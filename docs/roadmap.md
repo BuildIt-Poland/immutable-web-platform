@@ -1,5 +1,6 @@
 ## Today
-* hydra -> ssl -> ec2a - doing
+* SSL (nginx) -> hydra -> ssl -> ec2a - doing
+
 * hydra & kubevirt & nixos -> thinking
 * when deploying nixos and rebooting wait for ssh
 * consider `tekton` - in progress

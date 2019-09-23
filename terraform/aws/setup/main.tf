@@ -89,19 +89,20 @@ module "vpc" {
 # }
 
 module "hydra" {
-  source      = "../../modules/aws-hydra"
-  common_tags = local.common_tags
-  vpc = module.vpc
+  source       = "../../modules/aws-hydra"
+  common_tags  = local.common_tags
+  vpc          = module.vpc
   project_name = var.project_name
   env          = var.env
   region       = var.region
   cluster_name = var.cluster_name
   ssh_pub_key  = var.ssh_pub_key
 
-  port = 3000
+  port                = 3000
   nixos_configuration = local.nixos_configuration
-  base_domain = var.base_domain
-  domain = var.domain
+  base_domain         = var.base_domain
+  domain              = var.domain
+  app_name            = "hydra"
   # TODO
   # worker_ssh_key = tls_private_key.hydra-token.public_key_openssh
 }

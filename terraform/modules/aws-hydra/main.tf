@@ -80,7 +80,7 @@ data "aws_route53_zone" "domain" {
 # TODO think how to make this working with external name in svc in kubernetes and external dns
 resource "aws_route53_record" "hydra" {
   zone_id = data.aws_route53_zone.domain.zone_id
-  name    = "hydra.${var.domain}"
+  name    = "${var.app_name}.${var.domain}"
   type    = "A"
   ttl     = "300"
   records = [

@@ -16,3 +16,6 @@ variable ssh_pub_key {}
 variable port {}
 
 variable "nixos_configuration" {}
+variable "app_name" {
+  default = "hydra"
+}
