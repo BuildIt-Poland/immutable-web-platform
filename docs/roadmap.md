@@ -1,5 +1,6 @@
 ## Today
 * SSL (nginx) -> hydra -> ssl -> ec2a - doing
+* building image -> https://github.com/NixOS/nixpkgs/blob/master/nixos/maintainers/scripts/ec2/create-amis.sh
 
 * hydra & kubevirt & nixos -> thinking
 * when deploying nixos and rebooting wait for ssh
