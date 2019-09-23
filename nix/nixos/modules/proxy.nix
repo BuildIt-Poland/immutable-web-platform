@@ -7,10 +7,11 @@ in
   imports = [];
 
   security.acme = {
-    certs."${config.networking.hostName}" = {
+    certs."${host-name}" = {
       # webroot = "/var/www/challenges";
       email = project.authorEmail;
     };
+    # production = false;
     production = false;
   };
 
@@ -33,7 +34,7 @@ in
     virtualHosts."${host-name}" = {
       forceSSL = true;
       enableACME = true;
-      # hydra
+      # useACMEHost = host-name;
       locations."/" ={
         proxyPass = "http://127.0.0.1:3000";
       };
