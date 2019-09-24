@@ -14,6 +14,7 @@
   storage = ./storage.nix;
   skaffold = ./skaffold.nix;
   tekton = ./tekton.nix;
+  kubevirt = ./kubevirt.nix;
   shell-tools = ./shell-tools.nix;
   service-mesh = ./service-mesh.nix;
 }

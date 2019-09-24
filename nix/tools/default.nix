@@ -56,4 +56,5 @@ rec {
   nixops = (import "${sources.nixops.outPath}/release.nix" {}).build.${super.system};
   nixos-generators = super.callPackage sources.nixos-generators {};
   kubectl-virtctl = super.callPackage ./kubectl-virtctl {};
+  kube-psp-advisor = super.callPackage ./kube-psp-advisor {};
 } 

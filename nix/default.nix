@@ -45,6 +45,7 @@ let
   };
 
   nixos-image = self: super: rec {
+    nixos-base = import ./nixos/modules/base.nix;
     nixos-hydra = import ./nixos/hydra-config.nix;
   };
 

@@ -25,8 +25,10 @@ with lib;
 
       packages = with pkgs; [
         minikube
+        # FIXME TEMP
+        kubectl-virtctl 
+        kube-psp-advisor
       ];
-
 
       project = rec {
         domain = mkForce "local";
