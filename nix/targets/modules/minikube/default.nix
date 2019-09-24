@@ -23,10 +23,10 @@ with lib;
         imageTag = mkForce (name: "${config.docker.tag}");
       };
 
-      packages = with pkgs; [
+      packages = with pkgs; with minikube-operations; [
         minikube
-        # FIXME TEMP
-        kubectl-virtctl 
+        delete-local-cluster
+        create-local-cluster
         kube-psp-advisor
       ];
 
@@ -46,7 +46,7 @@ with lib;
     (mkIf config.kubernetes.cluster.clean {
       packages = with minikube-operations; [
         delete-local-cluster
-        create-local-cluster-if-not-exists
+        create-local-cluster
       ];
 
       actions.queue = [

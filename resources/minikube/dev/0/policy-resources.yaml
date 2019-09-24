@@ -1,72 +1,72 @@
 apiVersion: v1
 items:
-- apiVersion: v1
-  kind: Namespace
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: policy
-    namespace: default
-- apiVersion: config.istio.io/v1alpha2
-  kind: rule
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: authorization
-    namespace: istio-system
-  spec:
-    actions:
-    - handler: opa.istio-system
-      instances:
-      - authzinstance
-- apiVersion: config.istio.io/v1alpha2
-  kind: handler
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: opa
-    namespace: istio-system
-  spec:
-    compiledAdapter: opa
-    params:
-      checkMethod: data.mixerauthz.allow
-      failClose: true
-      policy:
-      - "package mixerauthz\n\nimport data.nix\n\ndefault allow = false\n\nallowed_paths\
-        \ = {\"/healthz\"}\n\nallowed_namespaces = {\n  nix.ns.istio,\n  nix.ns[\"\
-        knative-monitoring\"],\n  nix.ns[\"knative-serving\"]\n}\n\nallow {\n  input.subject.user\
-        \ == nix.config[\"authorEmail\"]\n  contains(input.action.service, nix.ns.functions)\n\
-        }\n\nallow {\n  allowed_paths[input.action.path]\n  # net.cidr_contains(\"\
-        CIDDR\", source_address.Address.SocketAddress.address)\n}\n\nallow {\n  allowed_namespaces[input.action.namespace]\n\
-        \  input.action.method == \"GET\"\n}"
-      - 'package nix
+  - apiVersion: v1
+    kind: Namespace
+    metadata:
+      labels:
+        kubenix/project-name: kubenix
+      name: policy
+      namespace: default
+  - apiVersion: config.istio.io/v1alpha2
+    kind: rule
+    metadata:
+      labels:
+        kubenix/project-name: kubenix
+      name: authorization
+      namespace: istio-system
+    spec:
+      actions:
+        - handler: opa.istio-system
+          instances:
+            - authzinstance
+  - apiVersion: config.istio.io/v1alpha2
+    kind: handler
+    metadata:
+      labels:
+        kubenix/project-name: kubenix
+      name: opa
+      namespace: istio-system
+    spec:
+      compiledAdapter: opa
+      params:
+        checkMethod: data.mixerauthz.allow
+        failClose: true
+        policy:
+          - "package mixerauthz\n\nimport data.nix\n\ndefault allow = false\n\nallowed_paths\
+            \ = {\"/healthz\"}\n\nallowed_namespaces = {\n  nix.ns.istio,\n  nix.ns[\"\
+            knative-monitoring\"],\n  nix.ns[\"knative-serving\"]\n}\n\nallow {\n  input.subject.user\
+            \ == nix.config[\"authorEmail\"]\n  contains(input.action.service, nix.ns.functions)\n\
+            }\n\nallow {\n  allowed_paths[input.action.path]\n  # net.cidr_contains(\"\
+            CIDDR\", source_address.Address.SocketAddress.address)\n}\n\nallow {\n  allowed_namespaces[input.action.namespace]\n\
+            \  input.action.method == \"GET\"\n}"
+          - 'package nix
 
-        ns = {"argo":"gitops","brigade":"brigade","functions":"dev-functions","infra":"local-infra","istio":"istio-system","knative-monitoring":"knative-monitoring","knative-serving":"knative-serving","storage":"storage","system":"system","tekton-pipelines":"tekton-pipelines"}
+            ns = {"argo":"gitops","brigade":"brigade","functions":"dev-functions","infra":"local-infra","istio":"istio-system","knative-monitoring":"knative-monitoring","knative-serving":"knative-serving","storage":"storage","system":"system","tekton-pipelines":"tekton-pipelines"}
 
-        config = {"authorEmail":"damian.baar@wipro.com","domain":"local","hash":"96ab13224c474db2e8deb5d39e20110bfe6ebbfc","name":"future-is-comming","repositories":{"code-repository":"git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git","k8s-resources":"git@bitbucket.org:damian.baar/k8s-infra-descriptors.git"},"resources":{"yaml":{"folder":"$PWD/resources"}},"rootFolder":"/Users/damianbaar/workspaces/infra/kubenix-playground","subdomains":["*"],"version":"0.0.1"}
+            config = {"authorEmail":"damian.baar@wipro.com","domain":"local","hash":"f7f7a61e52cc8b595027433aa46d39007514c5bf","name":"future-is-comming","repositories":{"code-repository":"git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git","k8s-resources":"git@bitbucket.org:damian.baar/k8s-infra-descriptors.git"},"resources":{"yaml":{"folder":"$PWD/resources"}},"rootFolder":"/Users/damianbaar/workspaces/infra/kubenix-playground","subdomains":["*"],"version":"0.0.1"}
 
-        '
-- apiVersion: config.istio.io/v1alpha2
-  kind: instance
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: authzinstance
-    namespace: istio-system
-  spec:
-    compiledTemplate: authorization
-    params:
-      action:
-        method: request.method | ""
-        namespace: destination.namespace | "default"
-        path: request.path | "/"
-        properties:
-          version: destination.labels["version"] | ""
-        service: destination.service.host | ""
-      subject:
-        groups: request.auth.claims["groups"] | ""
-        properties:
-          iss: request.auth.claims["iss"] | ""
-        user: request.headers["user"] | ""
+            '
+  - apiVersion: config.istio.io/v1alpha2
+    kind: instance
+    metadata:
+      labels:
+        kubenix/project-name: kubenix
+      name: authzinstance
+      namespace: istio-system
+    spec:
+      compiledTemplate: authorization
+      params:
+        action:
+          method: request.method | ""
+          namespace: destination.namespace | "default"
+          path: request.path | "/"
+          properties:
+            version: destination.labels["version"] | ""
+          service: destination.service.host | ""
+        subject:
+          groups: request.auth.claims["groups"] | ""
+          properties:
+            iss: request.auth.claims["iss"] | ""
+          user: request.headers["user"] | ""
 kind: List
 labels:

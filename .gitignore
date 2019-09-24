@@ -33,3 +33,4 @@ temp/
 config.*.json
 
 *.zip
+*.img

@@ -41,7 +41,7 @@ rec {
   '';
 
   # brew install docker-machine-driver-hyperkit - check if there is a nixpkgs for that
-  create-local-cluster = pkgs.writeScript "create-local-cluster" ''
+  create-local-cluster = pkgs.writeScriptBin "create-local-cluster" ''
     ${lib.log.message "Creating cluster"}
     minikube start -p ${projectName} \
       --cpus 6 \
@@ -52,9 +52,6 @@ rec {
       --insecure-registry "10.0.0.0/24" \
       --extra-config=apiserver.enable-admission-plugins="LimitRanger,NamespaceExists,NamespaceLifecycle,ResourceQuota,ServiceAccount,DefaultStorageClass,MutatingAdmissionWebhook"
   '';
-  # PodSecurityPolicy
-  # ~/.minikube/files/etc/kubernetes/addons/psp.yaml
-  # https://github.com/kubernetes/minikube/files/3065532/psp.txt = psp.yaml
 
   check-if-already-started = pkgs.writeScript "check-if-minikube-started" ''
     echo $(${pkgs.minikube}/bin/minikube status -p ${projectName} --format {{.Kubelet}} | wc -c)
@@ -65,7 +62,7 @@ rec {
     isRunning=$(${check-if-already-started})
     if [ $isRunning = "0" ]; then
       echo "Running minikube"
-      ${create-local-cluster}
+      ${create-local-cluster}/bin/create-local-cluster
     fi 
   '';
 

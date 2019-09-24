@@ -27,13 +27,13 @@ rec {
     ({
       kubernetes.imagePullPolicy = "Never";
       storage.provisioner = "k8s.io/minikube-hostpath";
-    })
 
-    (mkIf cfg.docker.upload {
       packages = with pkgs; [
         push-docker-images-to-docker-deamon
       ];
+    })
 
+    (mkIf cfg.docker.upload {
       actions.queue = [{ 
         priority = cfg.actions.priority.docker; 
         action = ''
