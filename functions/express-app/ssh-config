@@ -2,4 +2,3 @@ Host *
   Port 22
   User root
   IdentityFile /root/.ssh/id_rsa
-  # ProxyCommand ssh -i /root/.ssh/id_rsa

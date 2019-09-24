@@ -41,6 +41,7 @@ in
       # INFO as there is custom grafana helm chart - there needs to be provided some alternation to knative-monitoring
       (override k8s-resources.knative-monitoring-json (v: 
           if (v.kind == "Deployment" && v.metadata.name == "grafana") then null
+          else if (lib.hasSuffix "test" v.metadata.name) then null
           else if (v.kind == "Deployment" && v.metadata.name == "kibana-logging") then null
           else if (v.kind == "Service" && v.metadata.name == "kibana-logging") then null
           # else if (v.kind == "DaemonSet" && v.metadata.name == "fluentd-ds") then 

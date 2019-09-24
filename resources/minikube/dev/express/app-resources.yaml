@@ -29,21 +29,6 @@ items:
         privateKey: sds
         serverCertificate: sds
 - apiVersion: tekton.dev/v1alpha1
-  kind: Pipeline
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: build-and-deploy-pipeline
-    namespace: default
-  spec:
-    params:
-    - default: src
-      description: The path to the build context, used by Kaniko - within the workspace
-      name: pathToContext
-    resources:
-    - name: git-source
-      type: git
-- apiVersion: tekton.dev/v1alpha1
   kind: PipelineResource
   metadata:
     labels:
@@ -115,6 +100,9 @@ items:
       - /kaniko/executor
       image: gcr.io/kaniko-project/executor
       name: build-and-push
+    volumes:
+    - emptyDir: {}
+      name: example-volume
 - apiVersion: serving.knative.dev/v1alpha1
   kind: Service
   metadata:
