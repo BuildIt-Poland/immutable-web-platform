@@ -14,7 +14,7 @@ in
 {
   imports = (builtins.filter (x: x != "") [
     ./modules/ec2-nixos.nix
-    ./modules/shell.nix
+    ./modules/base.nix
     ./modules/copy-source.nix
     ./modules/proxy.nix
     (import "${hydra_path}/hydra-module.nix")
@@ -43,10 +43,5 @@ in
 
       binaryCachePublicKeys = [];
     };
-
-    networking.firewall.allowedTCPPorts = [ 
-      22
-      80
-    ];
   };
 }
