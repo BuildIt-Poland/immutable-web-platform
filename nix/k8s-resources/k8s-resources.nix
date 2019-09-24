@@ -10,12 +10,21 @@ rec {
     sha256 = "1mdfsgp03x1bv55zzpsqjlzvnyamgpy70z8vwy17wpa04v74l7qc";
   };
 
-  knative-serving-json = helm.yaml-to-json {
+  knative-serving-json = helm.yaml-to-json rec {
     name = "knative-serving";
     version = "0.8.1";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.8.1/serving.yaml;
+      url = "https://github.com/knative/serving/releases/download/v${version}/serving.yaml";
       sha256="1q2w8bgjy8l8g2ksi9xla7wwnja1kk1szrh8fzg8jypjkqs1lbmc";
+    };
+  };
+
+  knative-eventing-json = helm.yaml-to-json rec {
+    name = "knative-eventing";
+    version = "0.9.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/knative/eventing/releases/download/v${version}/eventing.yaml";
+      sha256="02y0hqa0wsf94has2x4ywxdjmyy3a0jg5v3rcn2c2cclmqs5psfl";
     };
   };
 
