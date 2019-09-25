@@ -25,7 +25,7 @@ let
       in
       (super.integration-modules.eval {
         modules = 
-             [(./targets/perspective + "/${safe-inputs.environment.perspective}")]
+             [(./perspective + "/${safe-inputs.environment.perspective}")]
           ++ safe-inputs.modules 
           ++ [./targets/environment-setup.nix];
         args = { 
