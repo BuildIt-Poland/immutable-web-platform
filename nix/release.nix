@@ -84,14 +84,14 @@ in (
   // { inherit channel; }
   // { inherit docker-images; }
   // { inherit nixos; }
-  // { images = {
-    hydra = (pkgs.stdenv.mkDerivation {
-      name = "hydra-iso";
-      nativeBuildInputs = [pkgs.nixos-generator];
-      phases = ["buildPhase"];
-      buildPhase = ''
-        nixos-generate -f qcow -c ${./nixos/hydra.nix}
-      '';
-    });
-  }; }
+  # // { images = {
+  #   hydra = (pkgs.stdenv.mkDerivation {
+  #     name = "hydra-iso";
+  #     nativeBuildInputs = [pkgs.nixos-generator];
+  #     phases = ["buildPhase"];
+  #     buildPhase = ''
+  #       nixos-generate -f qcow -c ${./nixos/hydra.nix}
+  #     '';
+  #   });
+  # }; }
 )
