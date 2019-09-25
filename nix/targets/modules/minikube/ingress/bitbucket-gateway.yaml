@@ -6,9 +6,9 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/upstream-vhost: bitbucket-message-dumper.default.future-is-comming.dev.local
+    nginx.ingress.kubernetes.io/upstream-vhost: bitbucket-message-dumper.dev-functions.future-is-comming.dev.local
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      more_set_headers "Host: bitbucket-message-dumper.default.future-is-comming.dev.local";
+      more_set_headers "Host: bitbucket-message-dumper.dev-functions.future-is-comming.dev.local";
 spec:
   backend:
     serviceName: default-http-backend

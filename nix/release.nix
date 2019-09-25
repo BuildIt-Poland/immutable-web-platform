@@ -29,7 +29,7 @@ let
         {}
         folders;
 
-  tools-release = pkgs.lib.mapAttrs (n: v:
+  binaries = pkgs.lib.mapAttrs (n: v:
     (pkgs.lib.genAttrs supportedSystems (system:
       let
         pkgs = (import src { 
@@ -63,7 +63,7 @@ let
     ))
   ) tools;
   
-  charts-release = 
+  charts = 
     pkgs.lib.filterAttrs 
       (n: v: !(pkgs.lib.isFunction v)) 
       pkgs.k8s-resources;
@@ -78,9 +78,10 @@ let
     hydra = (import ./nixos/hydra.nix { preload = true; }).system;
   };
 
-in (
-    tools-release 
-  // charts-release 
+# TODO temp workaround
+in pkgs.lib.filterAttrsRecursive (n: v: v != null) (
+     { inherit binaries; }
+  // { inherit charts; }
   // { inherit channel; }
   // { inherit docker-images; }
   // { inherit nixos; }
