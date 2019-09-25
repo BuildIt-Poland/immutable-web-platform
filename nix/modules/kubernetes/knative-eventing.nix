@@ -13,6 +13,14 @@ let
   functions-ns = namespace.functions;
   knative-eventing-ns = "knative-eventing";
   make-image = pkgs.callPackage ./knative-eventing/source/bitbucket/image.nix {};
+
+  override = 
+    resource: 
+    mapper: 
+      pkgs.writeText "overrided-json"
+        (builtins.toJSON 
+          (builtins.filter (v: v != null) 
+          (builtins.map mapper (builtins.fromJSON (builtins.readFile resource)))));
 in
 {
   imports = with kubenix.modules; [ 
@@ -38,6 +46,34 @@ in
         "receive_adapter";
 
     kubernetes.static = [
+      # FIXME make me easier to follow
+      (override k8s-resources.knative-eventing-bitbucket-source-json (v: 
+          if (v.kind == "StatefulSet" && v.metadata.name == "bitbucket-controller-manager") then
+            (lib.recursiveUpdate v { 
+              spec.template.spec.containers = 
+                let
+                  images = config.docker.images;
+                  controller = images.bitbucket-source-controller;
+                  receiver = images.bitbucket-receive-adapter;
+
+                  containers = v.spec.template.spec.containers;
+                  first = lib.head containers;
+                in
+                [
+                  (lib.recursiveUpdate 
+                    first
+                    { image = controller.path; 
+                      imagePullPolicy = project-config.kubernetes.imagePullPolicy;
+                      env = [
+                        ((lib.head first.env) // { value = receiver.path; })
+                      ];
+                    }
+                  )
+                ];
+            })
+          else v
+      ))
+
       k8s-resources.knative-eventing-json
     ];
   };
