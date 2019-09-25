@@ -83,7 +83,7 @@ in (
   // charts-release 
   // { inherit channel; }
   // { inherit docker-images; }
-  // { inherit nixos; }
+  # // { inherit nixos; }
   # // { images = {
   #   hydra = (pkgs.stdenv.mkDerivation {
   #     name = "hydra-iso";
