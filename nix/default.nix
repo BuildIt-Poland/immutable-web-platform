@@ -68,4 +68,13 @@ let
     // { inherit overlays; } 
     // (if system != null then { inherit system; } else {});
 in
-  import ./nixpkgs { inherit sources args pkgs; }
+  # import ./nixpkgs { inherit sources args; }
+  (pkgs.callPackage (pkgs.applyPatches {
+    src = pkgs.fetchFromGitHub {
+      sha256 = sources.nixpkgs.sha256;
+      repo = sources.nixpkgs.repo;
+      owner = sources.nixpkgs.owner;
+      rev = sources.nixpkgs.rev;
+    };
+    patches = [./nixpkgs/go-modules.patch];
+  }) args)
