@@ -79,12 +79,12 @@ let
   };
 
 # TODO temp workaround
-in pkgs.lib.filterAttrsRecursive (n: v: v != null) (
+in (n: v: v != null) (
      { inherit binaries; }
-  // { inherit charts; }
+  # // { inherit charts; }
   // { inherit channel; }
-  // { inherit docker-images; }
-  // { inherit nixos; }
+  # // { inherit docker-images; }
+  # // { inherit nixos; }
   # // { images = {
   #   hydra = (pkgs.stdenv.mkDerivation {
   #     name = "hydra-iso";
