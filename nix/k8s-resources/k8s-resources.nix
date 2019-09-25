@@ -40,6 +40,7 @@ rec {
     };
   };
 
+  # ADD ME https://github.com/knative/serving/releases/download/v0.9.0/serving-v1-crds.yaml
   knative-crd-json = helm.yaml-to-json rec {
     name = "knative-crd";
     version = "0.9.0";

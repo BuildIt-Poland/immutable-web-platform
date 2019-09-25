@@ -54,6 +54,7 @@ with lib;
       packages = with minikube-operations; [
         delete-local-cluster
         create-local-cluster
+        create-local-cluster-if-not-exists
       ];
 
       actions.queue = [
