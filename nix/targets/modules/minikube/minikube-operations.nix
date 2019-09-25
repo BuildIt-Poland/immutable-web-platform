@@ -75,14 +75,18 @@ rec {
     ${port-forward (brigade-service // brigade-ports)}
   '';
 
-  minikube-wrapper = pkgs.writeScriptBin "mk" ''
-    ${pkgs.minikube}/bin/minikube $* -p ${projectName}
-  '';
+  # FIXME override
+  # minikube-wrapper = pkgs.writeScriptBin "mk" ''
+  #   ${pkgs.minikube}/bin/minikube $* -p ${projectName}
+  # '';
 
+  # TODO use minikube tunnel
   # helpful flag ... --print-requests 
-  create-localtunnel-for-brigade = pkgs.writeScriptBin "create-localtunnel-for-brigade" ''
-    ${lib.log.message "Exposing localtunnel for brigade on port $(${brigade-ports.to})"}
-    ${localtunnel} --port $(${brigade-ports.to}) --subdomain "${projectName}"
+  # 192.168.64.81:31380
+  create-localtunnel = pkgs.writeScriptBin "create-localtunnel" ''
+    port=$1
+    ${lib.log.message "Exposing localtunnel on port $port"}
+    ${localtunnel} --port $port --subdomain "${projectName}"
   '';
 
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
@@ -100,5 +104,13 @@ rec {
     ${pkgs.docker}/bin/docker load -i $DIR/docker-image
 
     ${pkgs.nix}/bin/nix build $BUILDER yaml $HASH --out-link $DIR/k8s-resource.yaml
+  '';
+
+  # FIXME
+  quick-bootstrap = pkgs.writeScriptBin "quick-bootstrap" ''
+    apply-k8s-crd
+    apply-k8s-resources
+    source setup-env-vars
+    push-docker-images-to-docker-deamon
   '';
 }

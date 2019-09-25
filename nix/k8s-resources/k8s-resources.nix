@@ -12,10 +12,10 @@ rec {
 
   knative-serving-json = helm.yaml-to-json rec {
     name = "knative-serving";
-    version = "0.8.1";
+    version = "0.9.0";
     src = pkgs.fetchurl {
       url = "https://github.com/knative/serving/releases/download/v${version}/serving.yaml";
-      sha256="1q2w8bgjy8l8g2ksi9xla7wwnja1kk1szrh8fzg8jypjkqs1lbmc";
+      sha256="0mpca1fvh3phmym1vapn6ayf21w22srm1qrv7y9r019znmpyxzgc";
     };
   };
 
@@ -28,12 +28,12 @@ rec {
     };
   };
 
-  knative-crd-json = helm.yaml-to-json {
+  knative-crd-json = helm.yaml-to-json rec {
     name = "knative-crd";
-    version = "0.8.1";
+    version = "0.9.0";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.8.1/serving-beta-crds.yaml;
-      sha256="1q9w4j81rmpgjyi1j0jniavw10f852pnvrzwvdia6a00rn568plx";
+      url = "https://github.com/knative/serving/releases/download/v${version}/serving-v1-crds.yaml";
+      sha256="1f7pjag9zqqbaj8ycl5k4m66izzkkiw8wg9vjpfrr8fq1gjldfcb";
     };
   };
 
@@ -55,14 +55,12 @@ rec {
     };
   };
 
-  # FIXME filter out prometheus
-  knative-monitoring-json = helm.yaml-to-json {
+  knative-monitoring-json = helm.yaml-to-json rec {
     name = "knative-monitoring";
-    version = "0.8.1";
+    version = "0.9.0";
     src = pkgs.fetchurl {
-      # without prometheus
-      url = https://github.com/knative/serving/releases/download/v0.8.1/monitoring.yaml;
-      sha256="02x8hy9wrlkdnl6mz01v0dh7msmmx12zph9lpwpy7lf8fjv87435";
+      url = "https://github.com/knative/serving/releases/download/v${version}/monitoring.yaml";
+      sha256="0mllfg5a75yyiiimjnh2fcqi9krqn7y4mfq3kvry3jmiyym9ygx9";
     };
   };
 

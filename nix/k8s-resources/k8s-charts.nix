@@ -86,12 +86,19 @@ rec {
     repo = "https://charts.jetstack.io";
   };
 
+  argo = chart-from-git {
+    url = "https://github.com/argoproj/argo-helm";
+    path = "charts/argo";
+    rev = "338850f10ec63fc2add2b5dee75b922d9941d5da";
+    sha256 = "0z1byb135402j2x9swci7pcdcjpfzchc8j16dwj0zbfxmw1nbmwa";
+  };
+
   # https://github.com/argoproj/argo-helm/tree/master/charts/argo-cd
   argo-cd = chart-from-git {
     url = "https://github.com/argoproj/argo-helm";
     path = "charts/argo-cd";
-    rev = "77e638f55df69450b887087e5103bcae90db6fee";
-    sha256 = "0z1byb135402j2x9swci7pcdcjpfzchc8j16dwj0zbfxmw1nbmwi";
+    rev = "338850f10ec63fc2add2b5dee75b922d9941d5da";
+    sha256 = "1vfpjaiqm7fk6lwki974iidx21h3wc8xw2080j2klb7qllhmrjjr";
   };
 
   # BOOTSTRAP

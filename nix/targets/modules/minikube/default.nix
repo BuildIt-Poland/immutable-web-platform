@@ -25,6 +25,7 @@ with lib;
 
       packages = with pkgs; with minikube-operations; [
         minikube
+        quick-bootstrap
         delete-local-cluster
         create-local-cluster
         kube-psp-advisor
@@ -36,7 +37,7 @@ with lib;
 
       kubernetes = {
         tools.enable = true;
-        resources.list."${priority.high "istio"}" = [ kubenix.modules.istio-service-mesh ];
+        resources.list."${priority.high "istio"}" = [ ./service-mesh.nix ];
         resources.list."${priority.high "storage"}" = [ ./storage.nix ];
       };
 
@@ -78,15 +79,16 @@ with lib;
     })
 
     ({
+      # use minikube tunel
       packages = with minikube-operations;[
-        expose-brigade-gateway
-        create-localtunnel-for-brigade
+        # expose-brigade-gateway
+        create-localtunnel
       ];
 
       help = [
-        "-- Brigade integration --"
-        "To expose brigade gateway for BitBucket events, run '${minikube-operations.expose-brigade-gateway.name}'"
-        "To make gateway accessible from outside, run '${minikube-operations.create-localtunnel-for-brigade.name}'"
+        # "-- Brigade integration --"
+        # "To expose brigade gateway for BitBucket events, run '${minikube-operations.expose-brigade-gateway.name}'"
+        # "To make gateway accessible from outside, run '${minikube-operations.create-localtunnel-for-brigade.name}'"
       ];
     })
   ];

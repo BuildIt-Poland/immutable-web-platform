@@ -77,3 +77,5 @@ solution: https://letsencrypt.org/docs/staging-environment/
 
 ### Issues with DNS on mac
 * `sudo killall -HUP mDNSResponder; sleep 2;` - if host cannot be resolved 
+
+### jenkins x serverless does not work with bitbucket only classic instance
