@@ -37,6 +37,13 @@ in
       };
     };
 
+    environment = {
+      vars = {
+        # FIXME
+        KO_DOCKER_REPO = "$(get ecr-path)";
+      };
+    };
+
     docker = rec {
       upload = inputs.docker.upload;
       namespace = mkForce cluster-name;
