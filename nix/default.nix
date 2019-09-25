@@ -1,5 +1,6 @@
 { 
   sources ? import ./sources.nix,
+  pkgs ? import <nixpkgs> {},
   system ? null,
   inputs ? {}
 }:
@@ -67,4 +68,4 @@ let
     // { inherit overlays; } 
     // (if system != null then { inherit system; } else {});
 in
-  import ./nixpkgs { inherit sources args; }
+  import ./nixpkgs { inherit sources args pkgs; }
