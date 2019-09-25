@@ -49,6 +49,7 @@ with lib;
 
     (mkIf cfg.kubernetes.tools.enable {
       packages = with pkgs; [
+        argocd
         istioctl
         kn
 

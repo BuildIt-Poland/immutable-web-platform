@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitbucket-secret
+type: Opaque
+stringData:
+  consumerKey: C6VWDp9GNCVREzBvmf
+  consumerSecret: wb8gnvBs883y25YN83Ns4vnRSzPSXujP
+---
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: bitbucket-message-dumper
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            image: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper
+---
+apiVersion: sources.nachocano.org/v1alpha1
+kind: BitBucketSource
+metadata:
+  name: bitbucket-source-sample
+spec:
+  eventTypes:
+    - repo:push
+    - repo:commit_status_created
+  ownerAndRepository: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
+  consumerKey:
+    secretKeyRef:
+      name: bitbucket-secret
+      key: consumerKey
+  consumerSecret:
+    secretKeyRef:
+      name: bitbucket-secret
+      key: consumerSecret
+  sink:
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Service
+    name: bitbucket-message-dumper

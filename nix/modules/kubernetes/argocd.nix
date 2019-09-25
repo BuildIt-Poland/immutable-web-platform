@@ -23,6 +23,8 @@ in
       metadata = lib.recursiveUpdate {} namespace.argo.metadata;
     };
 
+    # kubectl patch secret argocd-secret  -p '{"data": {"admin.password": null, "admin.passwordMtime": null}}' -n gitops
+    # kubectl delete pod -n gitops argocd-server-66f67dcfbf-bsd58
     module.scripts = [
       (pkgs.writeShellScriptBin "get-argo-cd-password" ''
         ${pkgs.kubectl}/bin/kubectl -n ${argo-ns} get secret argocd-secret \
