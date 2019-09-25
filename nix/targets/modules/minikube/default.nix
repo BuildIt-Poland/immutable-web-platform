@@ -31,6 +31,12 @@ with lib;
         kube-psp-advisor
       ];
 
+      environment = {
+        vars = {
+          KO_DOCKER_REPO = "ko.local";
+        };
+      };
+
       project = rec {
         domain = mkForce "local";
       };
