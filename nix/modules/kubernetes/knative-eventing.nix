@@ -26,10 +26,16 @@ in
     #   metadata = lib.recursiveUpdate {} functions-ns.metadata;
     # };
     docker.images.bitbucket-source-controller.image = 
-      make-image ["cmd/controller"] "bitbucket-controller";
+      make-image 
+        ["cmd/controller"] 
+        "bitbucket-controller" 
+        "controller";
 
     docker.images.bitbucket-receive-adapter.image = 
-      make-image ["cmd/receive_adapter"] "bitbucket-receive-adapter";
+      make-image 
+        ["cmd/receive_adapter"] 
+        "bitbucket-receive-adapter" 
+        "receive_adapter";
 
     kubernetes.static = [
       k8s-resources.knative-eventing-json

@@ -6,11 +6,11 @@ let
     pkgs = linux-pkgs;
   };
 in
-  package-name: 
+  sub-packages: 
   image-name:
+  cmd:
     let
-      package = make-package package-name;
-      cmd = lib.last (lib.splitString "/" package);
+      package = make-package sub-packages;
     in
     pkgs.dockerTools.buildLayeredImage ({
       name = project-config.docker.imageName image-name;
