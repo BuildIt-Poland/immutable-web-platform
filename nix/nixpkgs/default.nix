@@ -1,6 +1,6 @@
 {sources, pkgs ? import <nixpkgs> {}, args ? {}}:
 with pkgs;
-  callPackage (applyPatches {
+  pkgs.callPackage (pkgs.applyPatches {
     src = fetchFromGitHub {
       sha256 = sources.nixpkgs.sha256;
       repo = sources.nixpkgs.repo;
