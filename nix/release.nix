@@ -79,10 +79,11 @@ let
   };
 
 # TODO temp workaround
-in (n: v: v != null) (
-     { inherit binaries; }
-  # // { inherit charts; }
-  // { inherit channel; }
+in (
+     {}
+    #  { inherit binaries; }
+  // { inherit charts; }
+  # // { inherit channel; }
   # // { inherit docker-images; }
   # // { inherit nixos; }
   # // { images = {
