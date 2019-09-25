@@ -52,6 +52,7 @@ with lib;
         argocd
         istioctl
         kn
+        ko
 
         kube-prompt
         hey

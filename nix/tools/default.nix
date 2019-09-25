@@ -41,6 +41,8 @@ rec {
   kubectl-debug = super.callPackage ./kubectl-debug {};
   kubectl-tkn = super.callPackage ./kubectl-tkn {};
 
+  ko = super.callPackage ./ko {};
+
   # yarn2nix = super.callPackage sources.yarn2nix {};
   yarn2nix = super.callPackage (super.applyPatches {
     src = super.fetchFromGitHub {

@@ -78,4 +78,6 @@ solution: https://letsencrypt.org/docs/staging-environment/
 ### Issues with DNS on mac
 * `sudo killall -HUP mDNSResponder; sleep 2;` - if host cannot be resolved 
 
-### jenkins x serverless does not work with bitbucket only classic instance
+> jenkins x serverless does not work with bitbucket only classic instance
+
+>  Argo does not provide event triggers for automatically kicking off your CI jobs, but we plan to do so in the near future. Until then, you can easily write a cron job that checks for new commits and kicks off the needed workflow, or use your existing Jenkins server to kick off the workflow.
