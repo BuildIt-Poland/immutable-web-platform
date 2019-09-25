@@ -28,6 +28,18 @@ rec {
     };
   };
 
+  knative-eventing-bitbucket-source-json = helm.yamls-to-json rec {
+    name = "knative-eventing";
+    version = "0.9.0";
+    yamlsPattern = "/config/*.yaml";
+    src = pkgs.fetchFromGitHub {
+      owner = "nachocano";
+      rev = "134b01b95b8ccb38e903b7ceb17d7e0e58cfd3bb";
+      repo = "bitbucket-source";
+      sha256="0d0w530am30ndd33kcw1y1wqp8pn8xhzszm0zb36rwwwmin3cybp";
+    };
+  };
+
   knative-crd-json = helm.yaml-to-json rec {
     name = "knative-crd";
     version = "0.9.0";

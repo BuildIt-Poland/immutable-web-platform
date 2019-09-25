@@ -12,6 +12,259 @@ items:
   kind: Namespace
   metadata:
     labels:
+    name: knative-sources
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+    name: bitbucket-controller-manager
+    namespace: knative-sources
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+    name: bitbucket-controller
+  rules:
+  - apiGroups:
+    - sources.nachocano.org
+    resources:
+    - bitbucketsources
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - sources.nachocano.org
+    resources:
+    - bitbucketsources/status
+    verbs:
+    - get
+    - update
+    - patch
+  - apiGroups:
+    - apps
+    resources:
+    - deployments
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - eventing.knative.dev
+    resources:
+    - channels
+    - brokers
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - serving.knative.dev
+    resources:
+    - services
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+  - apiGroups:
+    - ''
+    resources:
+    - secrets
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ''
+    resources:
+    - events
+    verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - patch
+    - delete
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+    name: bitbucket-controller-rolebinding
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: bitbucket-controller
+  subjects:
+  - kind: ServiceAccount
+    name: bitbucket-controller-manager
+    namespace: knative-sources
+- apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    labels:
+      eventing.knative.dev/source: 'true'
+    name: bitbucketsources.sources.nachocano.org
+  spec:
+    group: sources.nachocano.org
+    names:
+      categories:
+      - all
+      - knative
+      - eventing
+      - sources
+      kind: BitBucketSource
+      plural: bitbucketsources
+    scope: Namespaced
+    subresources:
+      status: {}
+    validation:
+      openAPIV3Schema:
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              consumerKey:
+                properties:
+                  secretKeyRef:
+                    type: object
+                type: object
+              consumerSecret:
+                properties:
+                  secretKeyRef:
+                    type: object
+                type: object
+              eventTypes:
+                items:
+                  enum:
+                  - repo:push
+                  - repo:fork
+                  - repo:updated
+                  - repo:commit_comment_created
+                  - repo:commit_status_created
+                  - repo:commit_status_updated
+                  - pullrequest:created
+                  - pullrequest:updated
+                  - pullrequest:approved
+                  - pullrequest:unapproved
+                  - pullrequest:fulfilled
+                  - pullrequest:rejected
+                  - pullrequest:comment_created
+                  - pullrequest:comment_updated
+                  - pullrequest:comment_deleted
+                  - issue:created
+                  - issue:updated
+                  - issue:comment_created
+                  type: string
+                minItems: 1
+                type: array
+              ownerAndRepository:
+                minLength: 1
+                type: string
+              serviceAccountName:
+                type: string
+              sink:
+                type: object
+            required:
+            - ownerAndRepository
+            - eventTypes
+            - consumerKey
+            - consumerSecret
+            type: object
+          status:
+            properties:
+              conditions:
+                items:
+                  properties:
+                    lastTransitionTime:
+                      type: string
+                    message:
+                      type: string
+                    reason:
+                      type: string
+                    severity:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - type
+                  - status
+                  type: object
+                type: array
+              sinkUri:
+                type: string
+              webhookUUIDKey:
+                type: string
+            type: object
+    version: v1alpha1
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      control-plane: bitbucket-controller-manager
+    name: bitbucket-controller
+    namespace: knative-sources
+  spec:
+    ports:
+    - port: 443
+    selector:
+      control-plane: bitbucket-controller-manager
+- apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    labels:
+      control-plane: bitbucket-controller-manager
+    name: bitbucket-controller-manager
+    namespace: knative-sources
+  spec:
+    selector:
+      matchLabels:
+        control-plane: bitbucket-controller-manager
+    serviceName: bitbucket-controller-manager
+    template:
+      metadata:
+        labels:
+          control-plane: bitbucket-controller-manager
+      spec:
+        containers:
+        - env:
+          - name: BB_RA_IMAGE
+            value: dev.local/bitbucket-receive-adapter:dev-build
+          image: dev.local/bitbucket-controller:dev-build
+          imagePullPolicy: Never
+          name: manager
+          resources:
+            limits:
+              cpu: 100m
+              memory: 30Mi
+            requests:
+              cpu: 20m
+              memory: 20Mi
+        serviceAccount: bitbucket-controller-manager
+        terminationGracePeriodSeconds: 10
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
       eventing.knative.dev/release: v0.9.0
     name: knative-eventing
 - aggregationRule:
