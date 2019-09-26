@@ -1,20 +1,20 @@
 {pkgs}:
 with pkgs;
 let
-  make-test-docker = import "${sources.nixpkgs}/nixos/lib/testing.nix" {
-    inherit pkgs;
-    system = builtins.currentSystem;
-  };
+  # make-test-docker = import "${sources.nixpkgs}/nixos/lib/testing.nix" {
+  #   inherit pkgs;
+  #   system = builtins.currentSystem;
+  # };
 
-  run-docker-test = x: 
-    let
-      val = (make-test-docker.runTests x).overrideAttrs (_: {
-        requiredSystemFeatures = ["nixos-test"];
-      });
-    in
-      val;
+  # run-docker-test = x: 
+  #   let
+  #     val = (make-test-docker.runTests x).overrideAttrs (_: {
+  #       requiredSystemFeatures = ["nixos-test"];
+  #     });
+  #   in
+  #     val;
 
-  make-test-nixos = import "${sources.nixpkgs}/nixos/tests/make-test.nix";
+  make-test-nixos = import "<nixpkgs>/nixos/tests/make-test.nix";
 
   test-scenario = {
     name = "test";
@@ -37,6 +37,7 @@ let
     };
 in 
 { 
+  test-b = pkgs.nixosTest test-scenario;
   test-a = make-test-nixos test-scenario;
-  test-b = run-docker-test (make-test-docker.makeTest test-scenario).driver;
+  # test-b = run-docker-test (make-test-docker.makeTest test-scenario).driver;
  }
