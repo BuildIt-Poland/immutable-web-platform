@@ -84,9 +84,11 @@ with lib;
       extraConfig = ''
         store_uri = s3://${store-bucket}?region=${aws.region}&secret-key=/etc/nix/${host-name}/secret&write-nar-listing=1&ls-compression=br&log-compression=br
         nar_buffer_size = ${let gb = 10; in toString (gb * 1024 * 1024 * 1024)}
-        upload_logs_to_binary_cache = true
-        log_prefix = https://${store-bucket}.s3.amazonaws.com/
       '';
+      # for prod
+      # upload_logs_to_binary_cache = true
+      # log_prefix = https://${store-bucket}.s3.amazonaws.com/
+
       # TODO
       # server_store_uri = https://cache.nixos.org?local-nar-cache=${narCache}
       # binary_cache_public_uri = https://cache.nixos.org
