@@ -1,13 +1,8 @@
 {pkgs, sources}:
 let
-  make-test-docker = import "${sources.nixpkgs}/nixos/lib/testing.nix" {
-    inherit pkgs;
-    system = builtins.currentSystem;
-  };
-
   make-test-nixos = import "${sources.nixpkgs}/nixos/tests/make-test.nix";
 
-  test-scenario = local: {
+  test-scenario = {
     name = "test";
     nodes = { 
       machine1 = { pkgs, ... }: { 
