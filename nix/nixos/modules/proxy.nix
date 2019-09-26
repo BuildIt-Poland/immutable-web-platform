@@ -12,7 +12,7 @@ in
       email = project.authorEmail;
     };
     # production = false;
-    production = false;
+    production = true;
   };
 
   networking.firewall.allowedTCPPorts = [ 

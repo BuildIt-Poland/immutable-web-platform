@@ -33,6 +33,15 @@ resource "aws_spot_instance_request" "nixos_instance" {
     # kms_key_id = aws_key_pair.instance.key_name
   }
 
+  # https://github.com/hashicorp/terraform/issues/3263
+  provisioner "local-exec" {
+    command = <<COMMAND
+      aws ec2 create-tags \
+        --resources ${aws_spot_instance_request.nixos_instance.spot_instance_id} \
+        --tags Key=Owner,Value=${var.common_tags.Owner}"
+    COMMAND
+  }
+
   tags = merge(
     var.common_tags,
     map(
