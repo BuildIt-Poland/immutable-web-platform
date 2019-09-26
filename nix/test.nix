@@ -21,6 +21,7 @@ let
     '';
     };
 
+  # TODO add senario to running any variant of shell
   basic-shell = {
     name = "test";
     nodes = { 

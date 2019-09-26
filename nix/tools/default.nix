@@ -9,7 +9,7 @@ rec {
   hydra-cli = (super.callPackage sources.hydra-cli {}).hydra-cli;
 
   # Brigade
-  brigade = super.callPackage ./brigade {};
+  brig = super.callPackage ./brig {};
   brigadeterm = super.callPackage ./brigadeterm {};
 
   # K8S
