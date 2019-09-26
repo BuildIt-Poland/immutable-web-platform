@@ -39,7 +39,7 @@ with lib;
         hostName = "localhost";
         systems = [ "x86_64-linux" ];
         maxJobs = 6;
-        supportedFeatures = ["builtin" "big-parallel" ];
+        supportedFeatures = ["builtin" "big-parallel" "kvm" "nixos-test" ]; # in case of ec2 kvm is not true
       }];
     };
   };

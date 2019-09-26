@@ -1,21 +1,6 @@
 {pkgs}:
 with pkgs;
 let
-  # make-test-docker = import "${sources.nixpkgs}/nixos/lib/testing.nix" {
-  #   inherit pkgs;
-  #   system = builtins.currentSystem;
-  # };
-
-  # run-docker-test = x: 
-  #   let
-  #     val = (make-test-docker.runTests x).overrideAttrs (_: {
-  #       requiredSystemFeatures = ["nixos-test"];
-  #     });
-  #   in
-  #     val;
-
-  make-test-nixos = import "<nixpkgs>/nixos/tests/make-test.nix";
-
   test-scenario = {
     name = "test";
     nodes = { 
@@ -35,9 +20,30 @@ let
       $machine1->succeed("kail --help");
     '';
     };
+
+  basic-shell = {
+    name = "test";
+    nodes = { 
+      machine1 = { pkgs, ... }: { 
+        imports = [
+          <nixpkgs/nixos/modules/profiles/minimal.nix>
+          <nixpkgs/nixos/modules/profiles/headless.nix>
+        ];
+
+        environment.systemPackages = [pkgs.kail]; 
+        environment.etc.source.source = /etc/source; 
+      }; 
+    };
+    testScript = ''
+      startAll
+
+      $machine1->waitForUnit("default.target");
+      $machine1->succeed("ls /etc/source");
+      $machine1->succeed("nix-shell --help");
+    '';
+    };
 in 
 { 
-  test-b = pkgs.nixosTest test-scenario;
-  # test-a = import "<nixpkgs>/nixos/tests/make-test.nix" test-scenario;
-  # test-b = run-docker-test (make-test-docker.makeTest test-scenario).driver;
+  test-scenario  = pkgs.nixosTest test-scenario;
+  basic-shell = pkgs.nixosTest basic-shell;
  }
