@@ -68,4 +68,4 @@ let
     // { inherit overlays; } 
     // (if system != null then { inherit system; } else {});
 in
-  import ./nixpkgs { inherit sources args; }
+  import ./nixpkgs { inherit sources; extraArgs = args; }
