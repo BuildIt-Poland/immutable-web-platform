@@ -16,6 +16,9 @@ buildGoPackage rec {
   goPackagePath = "github.com/brigadecore/brigade";
   modSha256 = "0a00kcyagqczw0vhl8qs2xs1y8myw080y9kjs4qrcmj6kibdy55q";
 
+  installPhase = ''
+  '';
+
   meta = with lib; {
     description = "Script simple and complex workflows using JavaScript. Chain together containers, running them in parallel or serially. Fire scripts based on times, GitHub events, Docker pushes, or any other trigger. Brigade is the tool for creating pipelines for Kubernetes.";
     homepage = https://github.com/brigadecore/brigade;
