@@ -48,7 +48,7 @@ in
   smoke = {
     calling-pkgs = pkgs.nixosTest test-scenario;
   };
-  shell = {
-    able-to-run = pkgs.nixosTest basic-shell;
-  };
+  # shell = {
+  #   able-to-run = pkgs.nixosTest basic-shell;
+  # };
  }
