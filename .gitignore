@@ -1,6 +1,7 @@
 result*
 .helm
 .go
+*/resources
 # nixops state - super crucial
 *.nixops
 *.nixops-shm
