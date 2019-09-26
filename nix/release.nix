@@ -80,9 +80,8 @@ let
 
 # TODO temp workaround
 in (
-     {}
-    { inherit binaries; }
-  # // { inherit charts; }
+     { inherit binaries; }
+  // { inherit charts; }
   // { inherit channel; }
   // { inherit docker-images; }
   // { inherit nixos; }

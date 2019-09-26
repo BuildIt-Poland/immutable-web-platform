@@ -8,7 +8,7 @@ stringData:
   consumerKey: C6VWDp9GNCVREzBvmf
   consumerSecret: wb8gnvBs883y25YN83Ns4vnRSzPSXujP
 ---
-apiVersion: serving.knative.dev/v1beta1
+apiVersion: serving.knative.dev/v1alpha1
 kind: Service
 metadata:
   name: bitbucket-message-dumper
