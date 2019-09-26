@@ -85,6 +85,7 @@ in (
   // { inherit channel; }
   // { inherit docker-images; }
   // { inherit nixos; }
+  // { tests.smoke = pkgs.callPackage ./test.nix {}; }
   # // { images = {
   #   hydra = (pkgs.stdenv.mkDerivation {
   #     name = "hydra-iso";

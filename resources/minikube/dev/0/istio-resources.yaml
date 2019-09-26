@@ -3117,10 +3117,9 @@ items:
   spec:
     backend:
       serviceName: default-http-backend
-      servicePort: 80
+      servicePort: 8080
     rules:
-    - host: '*.xip.io'
-      http:
+    - http:
         paths:
         - backend:
             serviceName: istio-ingressgateway
@@ -3144,10 +3143,9 @@ items:
   spec:
     backend:
       serviceName: default-http-backend
-      servicePort: 80
+      servicePort: 8080
     rules:
-    - host: '*.xip.io'
-      http:
+    - http:
         paths:
         - backend:
             serviceName: istio-ingressgateway
