@@ -34,12 +34,13 @@ with lib;
     #   gid = config.ids.gids.hydra;
     #   mode = "0440";
     # };
+    # https://github.com/NixOS/hydra/issues/568
     workers = mkOption {
       default = [{
         hostName = "localhost";
-        systems = [ "x86_64-linux" ];
-        maxJobs = 6;
-        supportedFeatures = ["builtin" "big-parallel" "kvm" "nixos-test" ]; # in case of ec2 kvm is not true
+        systems = [ "builtin" "x86_64-linux" ];
+        maxJobs = 4;
+        supportedFeatures = ["nixos-test" "kvm" "big-parallel" "benchmark"]; # in case of ec2 kvm is not true
       }];
     };
   };
