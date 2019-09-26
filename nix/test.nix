@@ -1,6 +1,19 @@
 {pkgs}:
 with pkgs;
 let  
+  make-test-docker = import <nixpkgs/nixos/lib/testing.nix> {
+    inherit pkgs;
+    system = builtins.currentSystem;
+  };
+
+  run-docker-test = x: 
+    let
+      val = (make-test-docker.runTests x).overrideAttrs (_: {
+        requiredSystemFeatures = [];
+      });
+    in
+      val;
+
   make-test-nixos = import <nixpkgs/nixos/tests/make-test.nix>;
 
   test-scenario = {...}: {
@@ -51,6 +64,7 @@ in
   smoke = {
     # calling-pkgs = pkgs.nixosTest test-scenario;
     calling-pkgs = (make-test-nixos (test-scenario) {}).test;
+    calling-pkgs-2 = run-docker-test (make-test-docker.makeTest (test-scenario {})).driver;
   };
   # shell = {
   #   able-to-run = pkgs.nixosTest basic-shell;
