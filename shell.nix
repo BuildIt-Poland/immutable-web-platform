@@ -5,14 +5,7 @@
   brigade ? null,
   docker ? null,
   aws ? null,
-  tests ? null
+  tests ? null,
+  ...
 }@inputs:
-let
-  pkgs = (import ./nix { inherit inputs; }).pkgs;
-in
-with pkgs;
-  mkShell ({
-    NIX_SHELL_NAME = "#core-shell#${pkgs.project-config.environment.perspective}";
-    buildInputs = project-config.packages;
-    shellHook= project-config.shellHook;
-  } // project-config.environment.vars)
+  import ./nix/make-shell.nix inputs
