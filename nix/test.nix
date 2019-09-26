@@ -62,9 +62,11 @@ let
 in 
 { 
   smoke = {
-    # calling-pkgs = pkgs.nixosTest test-scenario;
     calling-pkgs = (make-test-nixos (test-scenario) {}).test;
+    calling-pkgs-r = (make-test-nixos (test-scenario) {}).report;
+    calling-pkgs-d = (make-test-nixos (test-scenario) {}).driver;
     calling-pkgs-2 = run-docker-test (make-test-docker.makeTest (test-scenario {})).driver;
+    calling-pkgs-3 = pkgs.nixosTest test-scenario;
   };
   # shell = {
   #   able-to-run = pkgs.nixosTest basic-shell;
