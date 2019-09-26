@@ -1,6 +1,8 @@
 {pkgs}:
 with pkgs;
-let
+let  
+  make-test-nixos = import <nixpkgs/nixos/tests/make-test.nix>;
+
   test-scenario = {
     name = "test-scenario";
     nodes = { 
@@ -46,7 +48,8 @@ let
 in 
 { 
   smoke = {
-    calling-pkgs = pkgs.nixosTest test-scenario;
+    # calling-pkgs = pkgs.nixosTest test-scenario;
+    calling-pkgs = make-test-nixos test-scenario;
   };
   # shell = {
   #   able-to-run = pkgs.nixosTest basic-shell;
