@@ -6,13 +6,13 @@ let
   test-scenario = {}: {
     name = "test-scenario";
     nodes = { 
-      machine1 = { pkgs, ... }: { 
+      machine1 = { ... }: { 
         imports = [
           <nixpkgs/nixos/modules/profiles/minimal.nix>
           <nixpkgs/nixos/modules/profiles/headless.nix>
         ];
 
-        environment.systemPackages = [pkgs.kail pkgs.kubectl-debug]; 
+        environment.systemPackages = [kail kubectl-debug]; 
       }; 
     };
     testScript = ''
