@@ -2,7 +2,7 @@
 with pkgs;
 let
   test-scenario = {
-    name = "test";
+    name = "test-scenario";
     nodes = { 
       machine1 = { pkgs, ... }: { 
         imports = [
@@ -23,7 +23,7 @@ let
 
   # TODO add senario to running any variant of shell
   basic-shell = {
-    name = "test";
+    name = "basic-shell";
     nodes = { 
       machine1 = { pkgs, ... }: { 
         imports = [
