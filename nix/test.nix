@@ -38,6 +38,6 @@ let
 in 
 { 
   test-b = pkgs.nixosTest test-scenario;
-  test-a = make-test-nixos test-scenario;
+  # test-a = import "<nixpkgs>/nixos/tests/make-test.nix" test-scenario;
   # test-b = run-docker-test (make-test-docker.makeTest test-scenario).driver;
  }
