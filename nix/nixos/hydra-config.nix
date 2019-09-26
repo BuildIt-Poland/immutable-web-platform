@@ -17,6 +17,7 @@ in
     ./modules/base.nix
     ./modules/copy-source.nix
     ./modules/proxy.nix
+    ./modules/nix-serve.nix
     (import "${hydra_path}/hydra-module.nix")
     (if !preload then ./modules/hydra/master.nix else "")
   ]);
