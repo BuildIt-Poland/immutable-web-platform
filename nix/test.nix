@@ -1,4 +1,5 @@
-{pkgs, sources}:
+{pkgs}:
+with pkgs;
 let
   make-test-docker = import "${sources.nixpkgs}/nixos/lib/testing.nix" {
     inherit pkgs;
