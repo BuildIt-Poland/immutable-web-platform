@@ -50,7 +50,7 @@ in
 { 
   smoke = {
     # calling-pkgs = pkgs.nixosTest test-scenario;
-    calling-pkgs = make-test-nixos (test-scenario {});
+    calling-pkgs = make-test-nixos (test-scenario);
   };
   # shell = {
   #   able-to-run = pkgs.nixosTest basic-shell;
