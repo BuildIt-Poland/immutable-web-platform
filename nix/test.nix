@@ -3,7 +3,7 @@ with pkgs;
 let  
   make-test-nixos = import <nixpkgs/nixos/tests/make-test.nix>;
 
-  test-scenario = {}: {
+  test-scenario = {...}: {
     name = "test-scenario";
     nodes = { 
       machine1 = { ... }: { 
