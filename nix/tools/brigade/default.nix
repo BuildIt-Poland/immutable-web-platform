@@ -12,6 +12,7 @@ buildGoPackage rec {
   };
 
   goDeps = ./deps.nix;
+  doCheck = false;
   goPackagePath = "github.com/brigadecore/brigade";
   modSha256 = "0a00kcyagqczw0vhl8qs2xs1y8myw080y9kjs4qrcmj6kibdy55q";
 
