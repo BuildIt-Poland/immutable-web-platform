@@ -1,17 +1,9 @@
-{sources, pkgs ? import <nixpkgs> {}, extraArgs ? {}}:
-with pkgs;
+{sources, extraArgs ? {}}:
 let
   hostPkgs = import <nixpkgs> {};
-  # pinned = import (hostPkgs.applyPatches {
-  #   src = fetchFromGitHub {
-  #     sha256 = sources.nixpkgs.sha256;
-  #     repo = sources.nixpkgs.repo;
-  #     owner = sources.nixpkgs.owner;
-  #     rev = sources.nixpkgs.rev;
-  #   };
-  # }) ({} // extraArgs);
   patches = [./go-modules.patch];
   pinnedPkgs = sources.nixpkgs;
+  # exactly the same what applyPatches is doing but applyPatches does not work on hydra - not for nixpkgs - investigate
   patchedPkgs = hostPkgs.runCommand "nixpkgs-${pinnedPkgs.rev}"
     {
       inherit pinnedPkgs;
