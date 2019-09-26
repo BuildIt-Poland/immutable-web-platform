@@ -38,7 +38,8 @@ resource "aws_spot_instance_request" "nixos_instance" {
     command = <<COMMAND
       aws ec2 create-tags \
         --resources ${aws_spot_instance_request.nixos_instance.spot_instance_id} \
-        --tags Key=Owner,Value=${var.common_tags.Owner}"
+        --tags Key=Owner,Value=${var.common_tags.Owner} \
+               Key=Env,Value=${var.common_tags.Env}
     COMMAND
   }
 
