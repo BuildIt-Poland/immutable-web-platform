@@ -31,7 +31,7 @@ let
         ];
 
         environment.systemPackages = [pkgs.kail]; 
-        environment.etc.source.source = /etc/source; 
+        # environment.etc.source.source = /etc/source; 
       }; 
     };
     testScript = ''

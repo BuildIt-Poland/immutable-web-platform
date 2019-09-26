@@ -1,3 +1,4 @@
+# ADD bitbucket key - any scm - to be able to reproduce the builds
 resource "aws_security_group" "hydra-sg" {
   name   = "${var.cluster_name}-hydra-security-group"
   vpc_id = var.vpc.vpc_id
