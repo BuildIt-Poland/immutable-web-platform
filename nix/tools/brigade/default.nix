@@ -8,7 +8,7 @@ buildGoPackage rec {
     owner = "brigadecore";
     repo = "brigade";
     rev = "v${version}";
-    sha256 = "0jcfgg74c9jliskijamidr71ysv9cpk4yabdpcfsjq6nbrni82pr";
+    sha256 = "0208f6ylvdz2dkq1pr91k9q1zf62qg6n5dnsfhf6r5mcgjg53bya";
   };
 
   goDeps = ./deps.nix;
