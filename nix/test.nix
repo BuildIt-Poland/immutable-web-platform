@@ -45,6 +45,10 @@ let
     };
 in 
 { 
-  test-scenario  = pkgs.nixosTest test-scenario;
-  basic-shell = pkgs.nixosTest basic-shell;
+  smoke = {
+    calling-pkgs = pkgs.nixosTest test-scenario;
+  };
+  shell = {
+    able-to-run = pkgs.nixosTest basic-shell;
+  };
  }
