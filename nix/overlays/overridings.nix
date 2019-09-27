@@ -5,9 +5,10 @@ self: super: rec {
   } ''
     mkdir -p $out/bin
     makeWrapper ${super.minikube}/bin/minikube $out/bin/minikube \
-      --add-flags "-p ${super.pkgs.project-config.project.name}"
+      --add-flags "-p ${super.pkgs.project-config.kubernetes.cluster.name}"
   '');
 
+  # INFO alternative way
   # pkgs.hello.overrideAttrs (oldAttrs: {
   #   buildInputs = oldAttrs.buildInputs or [] ++ [ pkgs.makeWrapper ];
   #   postInstall = oldAttrs.postInstall or "" + ''
