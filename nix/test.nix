@@ -33,6 +33,8 @@ let
           <nixpkgs/nixos/modules/profiles/minimal.nix>
           <nixpkgs/nixos/modules/profiles/headless.nix>
         ];
+
+        environment.systemPackages = [nix]; 
       }; 
     };
     testScript = ''

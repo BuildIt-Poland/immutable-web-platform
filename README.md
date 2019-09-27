@@ -6,6 +6,10 @@ Yet another story about `kubernetes` and declarative approach to infrastructure,
 ... being more verbose ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
 provide full testing ability of infrastructure as well as on application level following `gitops` way.
 
+### It combines two perspectives
+* immutable platform
+* development platform
+
 ### Inspiration part
 * [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
