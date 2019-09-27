@@ -20,7 +20,7 @@ let
 in
 with pkgs;
   mkShell ({
-    NIX_SHELL_NAME = "#minikube#${pkgs.project-config.environment.perspective}";
-    buildInputs = project-config.packages;
+    NIX_SHELL_NAME = "#minikube#${pkgs.project-config.environment.perspective}#λ";
+    buildInputs = project-config.packages ++ [lorri];
     shellHook= project-config.shellHook;
   } // project-config.environment.vars)

@@ -32,6 +32,7 @@ provide full testing ability of infrastructure as well as on application level f
 * distributed storage with [`rook-ceph`](https://rook.io/) and `backups` with `restic` and `velero`
 * private `nix` binary store and `cache` - to speed up spawning `local` env and speed up kubernetes docker image building
 * great experience development with `lorri` and `direnv`
+* private binary channel
 
 ### Tutorials
 * [`knative`](https://github.com/meteatamel/knative-tutorial)

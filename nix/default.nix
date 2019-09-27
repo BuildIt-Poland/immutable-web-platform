@@ -40,7 +40,8 @@ let
     inherit sources;
     inherit inputs;
 
-    run-shell = super.callPackage ./run-shell.nix {};
+    runShell = super.callPackage ./run-shell.nix {};
+    lorri = super.callPackage sources.lorri {};
   };
 
   nix-tests = self: super: rec {
