@@ -3,6 +3,7 @@
 * add nix tests
 * building image -> https://github.com/NixOS/nixpkgs/blob/master/nixos/maintainers/scripts/ec2/create-amis.sh
 * argo - issues with password
+* check knative hosts on eks (modules/kubernetes/knative-serve)
 
 * hydra & kubevirt & nixos -> thinking
 * when deploying nixos and rebooting wait for ssh
