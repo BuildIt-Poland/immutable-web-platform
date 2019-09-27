@@ -8,7 +8,7 @@ let
 
   run-docker-test = x: 
     let
-      val = (make-test-docker.runTests x).overrideAttrs (_: {
+      val = (make-test-docker.runTests x.driver).overrideAttrs (_: {
         requiredSystemFeatures = [];
       });
     in
@@ -63,15 +63,9 @@ let
 in 
 { 
   smoke = {
-    # dont work
-    # calling-pkgs = (make-test-nixos (test-scenario) {}).test;
-    # calling-pkgs-3 = (pkgs.nixosTest test-scenario).test;
-
-    calling-pkgs-d = run-docker-test (make-test-nixos (test-scenario) {}).driver;
-    calling-pkgs-4 = run-docker-test (pkgs.nixosTest test-scenario).driver; # this works
-
-    # this works with test log
-    calling-pkgs-2 = run-docker-test (make-test-docker.makeTest (test-scenario {})).driver; # this works
+    calling-pkgs-d = make-test-docker.runTests (make-test-nixos (test-scenario) {});
+    calling-pkgs-4 = pkgs.nixosTest test-scenario;
+    calling-pkgs-2 = run-docker-test (make-test-docker.makeTest test-scenario); # this works
   };
   # shell = {
   #   able-to-run = pkgs.nixosTest basic-shell;
