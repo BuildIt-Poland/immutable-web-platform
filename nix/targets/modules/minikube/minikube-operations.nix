@@ -15,23 +15,8 @@ let
   brigade-ns = namespace.brigade.name;
   istio-ns = namespace.istio.name;
 
-  # TODO should be in config
-  brigade-service = {
-    service = "extension-brigade-bitbucket-gateway";
-    namespace = brigade-ns;
-  };
-
-  istio-service = {
-    service = "istio-ingressgateway";
-    namespace = istio-ns;
-  };
-
-  registry-service = {
-    service = "docker-registry";
-    namespace = local-infra-ns;
-  };
-
-  # FIXME most likely I can drop by using minikube tunnel
+  # FIXME most likely I can drop by using minikube tunnel - no, tunnel works with nip.io
+  # these tools are complementary -> first tunel next ssl exposed endpoint
   localtunnel = "${node-development-tools}/bin/lt";
 in
 rec {
@@ -66,23 +51,6 @@ rec {
     fi 
   '';
 
-  brigade-ports = {
-    from = get-port ({ type = "port"; } // brigade-service);
-    to = get-port ({ type = "nodePort"; } // brigade-service);
-  };
-
-  expose-brigade-gateway = pkgs.writeScriptBin "expose-brigade-gateway" ''
-    ${port-forward (brigade-service // brigade-ports)}
-  '';
-
-  # FIXME override
-  # minikube-wrapper = pkgs.writeScriptBin "mk" ''
-  #   ${pkgs.minikube}/bin/minikube $* -p ${projectName}
-  # '';
-
-  # TODO use minikube tunnel
-  # helpful flag ... --print-requests 
-  # creating tunel: create-localtunnel -p 80 -l bitbucket-message-dumper.dev-functions.10.111.182.189.nip.io
   create-localtunnel = pkgs.writeScriptBin "create-localtunnel" ''
     ${lib.log.message "Exposing localtunnel on port $port"}
     ${localtunnel} --subdomain="${project-config.kubernetes.cluster.name}" --print-requests --port=80 $*
