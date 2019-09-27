@@ -81,7 +81,7 @@ let
   tests = 
     pkgs.testing.make-runnable-tests 
       ({ inherit pkgs; })
-      (import ./test.nix { inherit pkgs; });
+      (import ./test.nix { inherit pkgs; inherit src; });
 
 in (
      { inherit binaries; }
