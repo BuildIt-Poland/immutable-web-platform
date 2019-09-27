@@ -29,6 +29,10 @@ in
       # TODO apply patch instead of create / delete
       # express-app.dev-functions.$domain \
       # bitbucket-message-dumper.dev-functions.$domain \
+
+      ## TODO MOVE O SECRETS!!! istio-system
+
+      ## TODO iterate all project-config.modules.kubernetes.express-app.raw.kubernetes.api.ksvc
       (pkgs.writeShellScriptBin "patch-knative-nip-domain" ''
         ${pkgs.lib.log.important "Patching knative domain"}
         ${pkgs.lib.log.info "Run 'minikube tunnel' first."}
@@ -52,7 +56,7 @@ in
 
         ${pkgs.kubectl}/bin/kubectl patch \
           cm config-domain -n knative-serving \
-          -p '{"data":{"'"$domain"'":"","nip.io":null}}'
+          -p '{"data":{"'"$domain"'":""}}'
       '')
     ];
      

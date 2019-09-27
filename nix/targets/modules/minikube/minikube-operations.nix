@@ -81,4 +81,5 @@ rec {
   # apply-secrets
   # minikube tunnel
   # patch-knative-nip-domain
+  # kubectl get routes
 }

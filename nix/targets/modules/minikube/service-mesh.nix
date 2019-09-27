@@ -10,7 +10,6 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  eks-ns = "eks";
   kn-serving = namespace.knative-serving;
   istio-ns = namespace.istio;
   functions-ns = namespace.functions;

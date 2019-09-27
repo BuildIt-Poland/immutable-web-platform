@@ -51,7 +51,7 @@ in
       };
     };
 
-    kubernetes.api.ksvc.bitbucketsource = {
+    kubernetes.api.bitbucketsource.channel-repo = {
       metadata = {
         name = "bitbucket-source-sample";
         namespace = infra-ns.name;

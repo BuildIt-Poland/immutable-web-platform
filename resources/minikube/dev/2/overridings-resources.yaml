@@ -21,8 +21,8 @@ items:
         containers:
         - image: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper
           imagePullPolicy: Never
-- apiVersion: serving.knative.dev/v1alpha1
-  kind: Service
+- apiVersion: sources.nachocano.org/v1alpha1
+  kind: BitBucketSource
   metadata:
     labels:
       kubenix/project-name: kubenix
