@@ -1,6 +1,8 @@
 {pkgs}:
 with pkgs;
 rec {
+  # FIXME I guess I should use .test
+  # like so https://github.com/NixOS/nixpkgs/blob/master/nixos/lib/testing.nix#L156
   make-test-docker = import <nixpkgs/nixos/lib/testing.nix> {
     inherit pkgs;
     system = builtins.currentSystem;

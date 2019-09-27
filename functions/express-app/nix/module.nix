@@ -57,7 +57,7 @@ in
     ./pipeline/pipeline-resource.yaml
   ];
 
-  kubernetes.api."knative-serve-service" = {
+  kubernetes.api.ksvc = {
     "${fn-config.label}" = {
       metadata = {
         name = fn-config.label;
