@@ -9,8 +9,6 @@
 }:
 with k8s-operations.helpers;
 let
-  projectName = project-config.project.name;
-
   namespace = project-config.kubernetes.namespace;
   brigade-ns = namespace.brigade.name;
   istio-ns = namespace.istio.name;
@@ -22,13 +20,13 @@ in
 rec {
   delete-local-cluster = pkgs.writeScriptBin "delete-local-cluster" ''
     ${lib.log.message "Deleting cluster"}
-    ${pkgs.minikube}/bin/minikube -p ${projectName} delete
+    ${pkgs.minikube}/bin/minikube delete
   '';
 
   # brew install docker-machine-driver-hyperkit - check if there is a nixpkgs for that
   create-local-cluster = pkgs.writeScriptBin "create-local-cluster" ''
     ${lib.log.message "Creating cluster"}
-    minikube start -p ${projectName} \
+    minikube start \
       --cpus 6 \
       --memory 16400 \
       --kubernetes-version=v1.14.2 \
@@ -39,7 +37,7 @@ rec {
   '';
 
   check-if-already-started = pkgs.writeScript "check-if-minikube-started" ''
-    echo $(${pkgs.minikube}/bin/minikube status -p ${projectName} --format {{.Kubelet}} | wc -c)
+    echo $(${pkgs.minikube}/bin/minikube status --format {{.Kubelet}} | wc -c)
   '';
 
   create-local-cluster-if-not-exists = pkgs.writeScriptBin "create-local-cluster-if-not-exists" ''
@@ -58,7 +56,7 @@ rec {
 
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
     ${lib.log.message "Exporting env vars and evaluating minikube docker-env"}
-    eval $(${pkgs.minikube}/bin/minikube docker-env -p ${projectName})
+    eval $(${pkgs.minikube}/bin/minikube docker-env)
   '';
 
   skaffold-build = pkgs.writeScriptBin "skaffold-build" ''
