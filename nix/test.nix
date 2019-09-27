@@ -1,21 +1,6 @@
 {pkgs}:
 with pkgs;
 let  
-  make-test-docker = import <nixpkgs/nixos/lib/testing.nix> {
-    inherit pkgs;
-    system = builtins.currentSystem;
-  };
-
-  run-docker-test = x: 
-    let
-      val = (make-test-docker.runTests x.driver).overrideAttrs (_: {
-        requiredSystemFeatures = [];
-      });
-    in
-      val;
-
-  make-test-nixos = import <nixpkgs/nixos/tests/make-test.nix>;
-
   test-scenario = {...}: {
     name = "test-scenario";
     nodes = { 
@@ -39,7 +24,7 @@ let
     };
 
   # TODO add senario to running any variant of shell
-  basic-shell = {
+  basic-shell = {...}:{
     name = "basic-shell";
     nodes = { 
       machine1 = { pkgs, ... }: { 
@@ -61,13 +46,7 @@ let
     '';
     };
 in 
-{ 
-  smoke = {
-    calling-pkgs-d = make-test-docker.runTests (make-test-nixos (test-scenario) {});
-    calling-pkgs-4 = pkgs.nixosTest test-scenario;
-    calling-pkgs-2 = run-docker-test (make-test-docker.makeTest test-scenario); # this works
-  };
-  # shell = {
-  #   able-to-run = pkgs.nixosTest basic-shell;
-  # };
- }
+  { 
+    smoke.calling-tools = test-scenario;
+    shell.able-to-run = basic-shell;
+  }

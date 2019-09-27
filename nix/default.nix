@@ -43,6 +43,7 @@ let
 
   nix-tests = self: super: rec {
     nix-test = super.callPackage ./testing.nix {};
+    testing = super.callPackage ./testing {};
   };
 
   nixos-image = self: super: rec {
