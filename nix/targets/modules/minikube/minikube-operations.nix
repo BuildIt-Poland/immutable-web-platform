@@ -82,11 +82,11 @@ rec {
 
   # TODO use minikube tunnel
   # helpful flag ... --print-requests 
-  # 192.168.64.81:31380
+  # 192.168.64.81:3138a
+  # creating tunel: create-localtunnel -p 80 -l bitbucket-message-dumper.dev-functions.10.111.182.189.nip.io
   create-localtunnel = pkgs.writeScriptBin "create-localtunnel" ''
-    port=$1
     ${lib.log.message "Exposing localtunnel on port $port"}
-    ${localtunnel} --port $port --subdomain "${projectName}"
+    ${localtunnel} $* --subdomain "${projectName}"
   '';
 
   setup-env-vars = pkgs.writeScriptBin "setup-env-vars" ''
