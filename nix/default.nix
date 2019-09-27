@@ -39,6 +39,8 @@ let
 
     inherit sources;
     inherit inputs;
+
+    run-shell = super.callPackage ./make-shell.nix {};
   };
 
   nix-tests = self: super: rec {
