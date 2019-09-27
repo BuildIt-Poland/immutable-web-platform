@@ -78,4 +78,7 @@ rec {
     source setup-env-vars
     push-docker-images-to-docker-deamon
   '';
+  # apply-secrets
+  # minikube tunnel
+  # patch-knative-nip-domain
 }
