@@ -27,5 +27,16 @@ items:
         mode: SIMPLE
         privateKey: /etc/istio/ingressgateway-certs/tls.key
         serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
+- apiVersion: v1
+  data:
+    tls.cert: ''
+    tls.key: ''
+  kind: Secret
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: istio-ingressgateway-certs
+    namespace: istio-system
+  type: kubernetes.io/tls
 kind: List
 labels:

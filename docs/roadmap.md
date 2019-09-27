@@ -1,6 +1,7 @@
 ## Today
 * SSL (nginx) -> hydra -> ssl -> ec2a - doing
 * add nix tests
+* minikube localhost ssl -> works (add knative routes to ssl cert)
 * building image -> https://github.com/NixOS/nixpkgs/blob/master/nixos/maintainers/scripts/ec2/create-amis.sh
 * argo - issues with password
 * check knative hosts on eks (modules/kubernetes/knative-serve)
