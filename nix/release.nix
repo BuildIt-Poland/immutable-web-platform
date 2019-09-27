@@ -78,22 +78,27 @@ let
     hydra = (import ./nixos/hydra.nix { preload = true; }).system;
   };
 
-# TODO temp workaround
+  tests = 
+    pkgs.testing.make-runnable-tests 
+      ({ inherit pkgs; })
+      (import ./test.nix { inherit pkgs; });
+
 in (
      { inherit binaries; }
   // { inherit charts; }
   // { inherit channel; }
   // { inherit docker-images; }
   // { inherit nixos; }
-  // { tests = import ./test.nix { inherit pkgs; }; }
-  # // { images = {
-  #   hydra = (pkgs.stdenv.mkDerivation {
-  #     name = "hydra-iso";
-  #     nativeBuildInputs = [pkgs.nixos-generator];
-  #     phases = ["buildPhase"];
-  #     buildPhase = ''
-  #       nixos-generate -f qcow -c ${./nixos/hydra.nix}
-  #     '';
-  #   });
-  # }; }
+  // { inherit tests; }
 )
+# FIXME
+# // { images = {
+#   hydra = (pkgs.stdenv.mkDerivation {
+#     name = "hydra-iso";
+#     nativeBuildInputs = [pkgs.nixos-generator];
+#     phases = ["buildPhase"];
+#     buildPhase = ''
+#       nixos-generate -f qcow -c ${./nixos/hydra.nix}
+#     '';
+#   });
+# }; }
