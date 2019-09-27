@@ -29,6 +29,7 @@ let
 
   integration-modules = {
     inherit eval modules;
+    lib = lib // extraLibs;
   };
 in
   integration-modules

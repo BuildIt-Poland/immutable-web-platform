@@ -75,12 +75,13 @@ rec {
     in
     {
       functions = mkNamespaceOption "functions";
-      infra = mkNamespaceOption "local-infra";
+      infra = mkNamespaceOption "infra";
       brigade = mkNamespaceOption "brigade";
       tekton-pipelines = mkNamespaceOption "tekton-pipelines";
       istio = mkNamespaceOption "istio-system";
       knative-monitoring = mkNamespaceOption "knative-monitoring";
       knative-serving = mkNamespaceOption "knative-serving";
+      knative-eventing = mkNamespaceOption "knative-eventing";
       argo = mkNamespaceOption "argocd";
       system = mkNamespaceOption "system";
       storage = mkNamespaceOption "storage";

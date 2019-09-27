@@ -8,4 +8,4 @@
   tests ? null,
   ...
 }@inputs:
-  import ./nix/make-shell.nix inputs
+  import ./nix/run-shell.nix inputs

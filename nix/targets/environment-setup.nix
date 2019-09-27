@@ -94,6 +94,12 @@ in
             "istio-injection" = "enabled";
           };
         };
+        infra = {
+          name = "${config.environment.type}-infra";
+          metadata.labels = {
+            "istio-injection" = "enabled";
+          };
+        };
         argo.name = "gitops";
       };
 

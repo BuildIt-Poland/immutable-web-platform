@@ -18,6 +18,8 @@ in
     k8s 
     istio
     k8s-extension
+    # FIXME temp place
+    bitbucket-event-handler
   ];
 
   config = {
