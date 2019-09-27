@@ -44,7 +44,8 @@ in
           spec = {
             containers = [{
               image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
-              imagePullPolicy = project-config.kubernetes.imagePullPolicy;
+              # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
+              imagePullPolicy = "IfNotExists";
             }];
           };
         };
