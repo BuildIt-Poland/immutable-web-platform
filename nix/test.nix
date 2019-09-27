@@ -34,7 +34,7 @@ let
           <nixpkgs/nixos/modules/profiles/headless.nix>
         ];
 
-        environment.systemPackages = [nix]; 
+        environment.systemPackages = [nix qt]; 
         nixpkgs.pkgs = pkgs;
         nix.nixPath = [ "nixpkgs=${pkgs.sources.nixpkgs}" ];
       }; 
