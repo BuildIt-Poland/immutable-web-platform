@@ -25,7 +25,7 @@ let
     };
 
   # TODO add senario to running any variant of shell
-  basic-shell = {pkgs, ...}:{
+  basic-shell = {...}:{
     name = "basic-shell";
     nodes = { 
       machine1 = { ... }: { 
@@ -35,13 +35,15 @@ let
         ];
 
         environment.systemPackages = [nix]; 
+        nixpkgs.pkgs = pkgs;
+        nix.nixPath = [ "nixpkgs=${pkgs.sources.nixpkgs}" ];
       }; 
     };
     testScript = ''
       startAll
 
       $machine1->waitForUnit("default.target");
-      $machine1->succeed("nix-shell --help");
+      $machine1->succeed("nix-instantiate --eval --expr '(import <nixpkgs> {}).run-shell'");
     '';
     };
 in { 
