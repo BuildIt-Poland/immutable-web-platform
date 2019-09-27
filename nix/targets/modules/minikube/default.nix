@@ -32,6 +32,15 @@ with lib;
 
       project = rec {
         domain = mkForce "nip.io";
+        make-sub-domain = mkForce
+          (name: 
+            (lib.concatStringsSep "." 
+              (builtins.filter (x: x != "") [
+                name
+                # config.project.name
+                # config.environment.type
+                config.project.domain
+              ])));
       };
 
       kubernetes = {

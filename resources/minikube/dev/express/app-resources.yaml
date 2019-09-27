@@ -12,13 +12,13 @@ items:
       istio: ingressgateway
     servers:
     - hosts:
-      - '*.dev-functions.future-is-comming.dev.nip.io'
+      - '*.nip.io'
       port:
         name: http-system
         number: 80
         protocol: HTTP
     - hosts:
-      - '*.dev-functions.future-is-comming.dev.nip.io'
+      - '*.nip.io'
       port:
         name: https-system
         number: 443
@@ -152,7 +152,7 @@ items:
     namespace: knative-serving
 - apiVersion: v1
   data:
-    future-is-comming.dev.nip.io: ''
+    nip.io: ''
   kind: ConfigMap
   metadata:
     labels:

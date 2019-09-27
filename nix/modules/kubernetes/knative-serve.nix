@@ -32,7 +32,9 @@ in
     kubernetes.api."networking.istio.io"."v1alpha3" = {
       Gateway."knative-ingress-gateway" = 
       let
-        hosts = [ (mk-domain "*.${functions-ns}") ];
+        # FIXME check me on eks
+        # hosts = [ (mk-domain "*.${functions-ns}") ];
+        hosts = [ (mk-domain "*") ];
       in
       {
         metadata = {
@@ -70,6 +72,7 @@ in
       };
     };
 
+    # FIXME this should be in eks module
     kubernetes.api.configmaps = {
       knative-domain = {
         metadata = {
