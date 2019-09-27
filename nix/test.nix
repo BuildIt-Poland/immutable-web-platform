@@ -34,6 +34,7 @@ let
       $machine1->waitForUnit("default.target");
       $machine1->succeed("kail --help");
       $machine1->succeed("kubectl-debug --help");
+      $machine1->succeed("dsaasdadsdas");
     '';
     };
 
@@ -62,11 +63,15 @@ let
 in 
 { 
   smoke = {
-    calling-pkgs = (make-test-nixos (test-scenario) {}).test;
-    calling-pkgs-d = (make-test-nixos (test-scenario) {}).driver;
+    # dont work
+    # calling-pkgs = (make-test-nixos (test-scenario) {}).test;
+    # calling-pkgs-3 = (pkgs.nixosTest test-scenario).test;
+
+    calling-pkgs-d = run-docker-test (make-test-nixos (test-scenario) {}).driver;
+    calling-pkgs-4 = run-docker-test (pkgs.nixosTest test-scenario).driver; # this works
+
+    # this works with test log
     calling-pkgs-2 = run-docker-test (make-test-docker.makeTest (test-scenario {})).driver; # this works
-    calling-pkgs-3 = (pkgs.nixosTest test-scenario).test;
-    calling-pkgs-4 = (pkgs.nixosTest test-scenario).driver;
   };
   # shell = {
   #   able-to-run = pkgs.nixosTest basic-shell;
