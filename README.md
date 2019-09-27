@@ -15,6 +15,7 @@ provide full testing ability of infrastructure as well as on application level f
 * [argo cd](https://argoproj.github.io/argo-cd/)
 * `nix` - [ecosystem](https://www.youtube.com/watch?v=YbUPdv03ciI), [features overview](https://www.youtube.com/watch?v=D5Gq2wkRXpU), [kubernetes](https://www.youtube.com/watch?v=XgZWbrBLP4I)
 * [nix - sales pitch](https://gist.github.com/joepie91/9fdaf8244b0a83afcce204e6da127c7d)
+* [docker images without docker](https://www.youtube.com/watch?v=qhykcC94ukg) - to get general idea of immutability
 
 ### What is super hot!
 * development with [`skaffold`](https://github.com/GoogleContainerTools/skaffold)
@@ -27,6 +28,10 @@ provide full testing ability of infrastructure as well as on application level f
 * distributed storage with [`rook-ceph`](https://rook.io/) and `backups` with `restic` and `velero`
 * private `nix` binary store and `cache` - to speed up spawning `local` env and speed up kubernetes docker image building
 * great experience development with `lorri` and `direnv`
+
+### Tutorials
+* [`knative`](https://github.com/meteatamel/knative-tutorial)
+* [`nix`](https://nixcloud.io/tour/?id=26)
 
 ### ... and more
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`

@@ -19,7 +19,7 @@ with lib;
       docker = rec {
         namespace = "${config.project.name}";
         registry = mkForce "";
-        imageName = mkForce (name: "${config.environment.type}.${config.project.domain}/${name}");
+        imageName = mkForce (name: "${config.environment.type}.local/${name}"); # required by knative
         imageTag = mkForce (name: "${config.docker.tag}");
       };
 

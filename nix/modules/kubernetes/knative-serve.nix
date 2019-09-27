@@ -25,7 +25,7 @@ in
         version = "v1alpha1";
         kind = "Service";
         description = "";
-        resource = "knative-serve-service";
+        resource = "ksvc";
       }
     ];
 

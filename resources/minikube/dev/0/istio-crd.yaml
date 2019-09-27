@@ -1,0 +1,350 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  data:
+    crd-10.yaml: "apiVersion: apiextensions.k8s.io/v1beta1\nkind: CustomResourceDefinition\n\
+      metadata:\n  name: virtualservices.networking.istio.io\n  labels:\n    app:\
+      \ istio-pilot\n    chart: istio\n    heritage: Tiller\n    release: istio\n\
+      \  annotations:\n    \"helm.sh/resource-policy\": keep\nspec:\n  group: networking.istio.io\n\
+      \  names:\n    kind: VirtualService\n    listKind: VirtualServiceList\n    plural:\
+      \ virtualservices\n    singular: virtualservice\n    shortNames:\n    - vs\n\
+      \    categories:\n    - istio-io\n    - networking-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha3\n  additionalPrinterColumns:\n  - JSONPath: .spec.gateways\n\
+      \    description: The names of gateways and sidecars that should apply these\
+      \ routes\n    name: Gateways\n    type: string\n  - JSONPath: .spec.hosts\n\
+      \    description: The destination hosts to which traffic is being sent\n   \
+      \ name: Hosts\n    type: string\n  - JSONPath: .metadata.creationTimestamp\n\
+      \    description: |-\n      CreationTimestamp is a timestamp representing the\
+      \ server time when this object was created. It is not guaranteed to be set in\
+      \ happens-before order across separate operations. Clients may not set this\
+      \ value. It is represented in RFC3339 form and is in UTC.\n\n      Populated\
+      \ by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata\n\
+      \    name: Age\n    type: date\n---\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      kind: CustomResourceDefinition\nmetadata:\n  name: destinationrules.networking.istio.io\n\
+      \  labels:\n    app: istio-pilot\n    chart: istio\n    heritage: Tiller\n \
+      \   release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: networking.istio.io\n  names:\n    kind: DestinationRule\n \
+      \   listKind: DestinationRuleList\n    plural: destinationrules\n    singular:\
+      \ destinationrule\n    shortNames:\n    - dr\n    categories:\n    - istio-io\n\
+      \    - networking-istio-io\n  scope: Namespaced\n  version: v1alpha3\n  additionalPrinterColumns:\n\
+      \  - JSONPath: .spec.host\n    description: The name of a service from the service\
+      \ registry\n    name: Host\n    type: string\n  - JSONPath: .metadata.creationTimestamp\n\
+      \    description: |-\n      CreationTimestamp is a timestamp representing the\
+      \ server time when this object was created. It is not guaranteed to be set in\
+      \ happens-before order across separate operations. Clients may not set this\
+      \ value. It is represented in RFC3339 form and is in UTC.\n\n      Populated\
+      \ by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata\n\
+      \    name: Age\n    type: date\n---\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      kind: CustomResourceDefinition\nmetadata:\n  name: serviceentries.networking.istio.io\n\
+      \  labels:\n    app: istio-pilot\n    chart: istio\n    heritage: Tiller\n \
+      \   release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: networking.istio.io\n  names:\n    kind: ServiceEntry\n    listKind:\
+      \ ServiceEntryList\n    plural: serviceentries\n    singular: serviceentry\n\
+      \    shortNames:\n    - se\n    categories:\n    - istio-io\n    - networking-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha3\n  additionalPrinterColumns:\n  -\
+      \ JSONPath: .spec.hosts\n    description: The hosts associated with the ServiceEntry\n\
+      \    name: Hosts\n    type: string\n  - JSONPath: .spec.location\n    description:\
+      \ Whether the service is external to the mesh or part of the mesh (MESH_EXTERNAL\
+      \ or MESH_INTERNAL)\n    name: Location\n    type: string\n  - JSONPath: .spec.resolution\n\
+      \    description: Service discovery mode for the hosts (NONE, STATIC, or DNS)\n\
+      \    name: Resolution\n    type: string\n  - JSONPath: .metadata.creationTimestamp\n\
+      \    description: |-\n      CreationTimestamp is a timestamp representing the\
+      \ server time when this object was created. It is not guaranteed to be set in\
+      \ happens-before order across separate operations. Clients may not set this\
+      \ value. It is represented in RFC3339 form and is in UTC.\n\n      Populated\
+      \ by the system. Read-only. Null for lists. More info: https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata\n\
+      \    name: Age\n    type: date\n---\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      kind: CustomResourceDefinition\nmetadata:\n  name: gateways.networking.istio.io\n\
+      \  labels:\n    app: istio-pilot\n    chart: istio\n    heritage: Tiller\n \
+      \   release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: networking.istio.io\n  names:\n    kind: Gateway\n    plural:\
+      \ gateways\n    singular: gateway\n    shortNames:\n    - gw\n    categories:\n\
+      \    - istio-io\n    - networking-istio-io\n  scope: Namespaced\n  version:\
+      \ v1alpha3\n---\napiVersion: apiextensions.k8s.io/v1beta1\nkind: CustomResourceDefinition\n\
+      metadata:\n  name: envoyfilters.networking.istio.io\n  labels:\n    app: istio-pilot\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: networking.istio.io\n\
+      \  names:\n    kind: EnvoyFilter\n    plural: envoyfilters\n    singular: envoyfilter\n\
+      \    categories:\n    - istio-io\n    - networking-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha3\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: clusterrbacconfigs.rbac.istio.io\n  labels:\n    app: istio-pilot\n\
+      \    istio: rbac\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: rbac.istio.io\n  names:\n\
+      \    kind: ClusterRbacConfig\n    plural: clusterrbacconfigs\n    singular:\
+      \ clusterrbacconfig\n    categories:\n    - istio-io\n    - rbac-istio-io\n\
+      \  scope: Cluster\n  version: v1alpha1\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: policies.authentication.istio.io\n\
+      \  labels:\n    app: istio-citadel\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: authentication.istio.io\n  names:\n    kind: Policy\n    plural:\
+      \ policies\n    singular: policy\n    categories:\n    - istio-io\n    - authentication-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha1\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: meshpolicies.authentication.istio.io\n\
+      \  labels:\n    app: istio-citadel\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: authentication.istio.io\n  names:\n    kind: MeshPolicy\n  \
+      \  listKind: MeshPolicyList\n    plural: meshpolicies\n    singular: meshpolicy\n\
+      \    categories:\n    - istio-io\n    - authentication-istio-io\n  scope: Cluster\n\
+      \  version: v1alpha1\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: httpapispecbindings.config.istio.io\n  labels:\n    app:\
+      \ istio-mixer\n    chart: istio\n    heritage: Tiller\n    release: istio\n\
+      \  annotations:\n    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n\
+      \  names:\n    kind: HTTPAPISpecBinding\n    plural: httpapispecbindings\n \
+      \   singular: httpapispecbinding\n    categories:\n    - istio-io\n    - apim-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: httpapispecs.config.istio.io\n\
+      \  labels:\n    app: istio-mixer\n    chart: istio\n    heritage: Tiller\n \
+      \   release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: config.istio.io\n  names:\n    kind: HTTPAPISpec\n    plural:\
+      \ httpapispecs\n    singular: httpapispec\n    categories:\n    - istio-io\n\
+      \    - apim-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: quotaspecbindings.config.istio.io\n\
+      \  labels:\n    app: istio-mixer\n    chart: istio\n    heritage: Tiller\n \
+      \   release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: config.istio.io\n  names:\n    kind: QuotaSpecBinding\n    plural:\
+      \ quotaspecbindings\n    singular: quotaspecbinding\n    categories:\n    -\
+      \ istio-io\n    - apim-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: quotaspecs.config.istio.io\n  labels:\n    app: istio-mixer\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: QuotaSpec\n    plural: quotaspecs\n    singular: quotaspec\n    categories:\n\
+      \    - istio-io\n    - apim-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: rules.config.istio.io\n  labels:\n    app: mixer\n    package:\
+      \ istio.io.mixer\n    istio: core\n    chart: istio\n    heritage: Tiller\n\
+      \    release: istio\n  annotations:\n    \"helm.sh/resource-policy\": keep\n\
+      spec:\n  group: config.istio.io\n  names:\n    kind: rule\n    plural: rules\n\
+      \    singular: rule\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: attributemanifests.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: istio.io.mixer\n    istio: core\n \
+      \   chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: attributemanifest\n    plural: attributemanifests\n    singular:\
+      \ attributemanifest\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: rbacconfigs.rbac.istio.io\n\
+      \  labels:\n    app: mixer\n    package: istio.io.mixer\n    istio: rbac\n \
+      \   chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: rbac.istio.io\n  names:\n\
+      \    kind: RbacConfig\n    plural: rbacconfigs\n    singular: rbacconfig\n \
+      \   categories:\n    - istio-io\n    - rbac-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha1\n---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: serviceroles.rbac.istio.io\n  labels:\n    app: mixer\n \
+      \   package: istio.io.mixer\n    istio: rbac\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: rbac.istio.io\n  names:\n    kind: ServiceRole\n   \
+      \ plural: serviceroles\n    singular: servicerole\n    categories:\n    - istio-io\n\
+      \    - rbac-istio-io\n  scope: Namespaced\n  version: v1alpha1\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: servicerolebindings.rbac.istio.io\n\
+      \  labels:\n    app: mixer\n    package: istio.io.mixer\n    istio: rbac\n \
+      \   chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: rbac.istio.io\n  names:\n\
+      \    kind: ServiceRoleBinding\n    plural: servicerolebindings\n    singular:\
+      \ servicerolebinding\n    categories:\n    - istio-io\n    - rbac-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha1\n  additionalPrinterColumns:\n  -\
+      \ JSONPath: .spec.roleRef.name\n    description: The name of the ServiceRole\
+      \ object being referenced\n    name: Reference\n    type: string\n  - JSONPath:\
+      \ .metadata.creationTimestamp\n    description: |-\n      CreationTimestamp\
+      \ is a timestamp representing the server time when this object was created.\
+      \ It is not guaranteed to be set in happens-before order across separate operations.\
+      \ Clients may not set this value. It is represented in RFC3339 form and is in\
+      \ UTC.\n\n      Populated by the system. Read-only. Null for lists. More info:\
+      \ https://git.k8s.io/community/contributors/devel/api-conventions.md#metadata\n\
+      \    name: Age\n    type: date\n---\nkind: CustomResourceDefinition\napiVersion:\
+      \ apiextensions.k8s.io/v1beta1\nmetadata:\n  name: adapters.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: adapter\n    istio: mixer-adapter\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: adapter\n    plural: adapters\n    singular: adapter\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: instances.config.istio.io\n  labels:\n    app: mixer\n  \
+      \  package: instance\n    istio: mixer-instance\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: instance\n    plural:\
+      \ instances\n    singular: instance\n    categories:\n    - istio-io\n    -\
+      \ policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n---\nkind: CustomResourceDefinition\n\
+      apiVersion: apiextensions.k8s.io/v1beta1\nmetadata:\n  name: templates.config.istio.io\n\
+      \  labels:\n    app: mixer\n    package: template\n    istio: mixer-template\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: config.istio.io\n  names:\n\
+      \    kind: template\n    plural: templates\n    singular: template\n    categories:\n\
+      \    - istio-io\n    - policy-istio-io\n  scope: Namespaced\n  version: v1alpha2\n\
+      ---\nkind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: handlers.config.istio.io\n  labels:\n    app: mixer\n   \
+      \ package: handler\n    istio: mixer-handler\n    chart: istio\n    heritage:\
+      \ Tiller\n    release: istio\n  annotations:\n    \"helm.sh/resource-policy\"\
+      : keep\nspec:\n  group: config.istio.io\n  names:\n    kind: handler\n    plural:\
+      \ handlers\n    singular: handler\n    categories:\n    - istio-io\n    - policy-istio-io\n\
+      \  scope: Namespaced\n  version: v1alpha2\n---"
+  kind: ConfigMap
+  metadata:
+    labels:
+    name: istio-crd-10
+    namespace: default
+- apiVersion: v1
+  data:
+    crd-11.yaml: "apiVersion: apiextensions.k8s.io/v1beta1\nkind: CustomResourceDefinition\n\
+      metadata:\n  name: sidecars.networking.istio.io\n  labels:\n    app: istio-pilot\n\
+      \    chart: istio\n    heritage: Tiller\n    release: istio\n  annotations:\n\
+      \    \"helm.sh/resource-policy\": keep\nspec:\n  group: networking.istio.io\n\
+      \  names:\n    kind: Sidecar\n    plural: sidecars\n    singular: sidecar\n\
+      \    categories:\n    - istio-io\n    - networking-istio-io\n  scope: Namespaced\n\
+      \  version: v1alpha3\n---"
+  kind: ConfigMap
+  metadata:
+    labels:
+    name: istio-crd-11
+    namespace: default
+- apiVersion: v1
+  data:
+    crd-12.yaml: "kind: CustomResourceDefinition\napiVersion: apiextensions.k8s.io/v1beta1\n\
+      metadata:\n  name: authorizationpolicies.rbac.istio.io\n  labels:\n    app:\
+      \ istio-pilot\n    istio: rbac\n    heritage: Tiller\n    release: istio\nspec:\n\
+      \  group: rbac.istio.io\n  names:\n    kind: AuthorizationPolicy\n    plural:\
+      \ authorizationpolicies\n    singular: authorizationpolicy\n    categories:\n\
+      \      - istio-io\n      - rbac-istio-io\n  scope: Namespaced\n  version: v1alpha1\n\
+      ---"
+  kind: ConfigMap
+  metadata:
+    labels:
+    name: istio-crd-12
+    namespace: default
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app: istio-init
+      istio: init
+    name: istio-init-service-account
+    namespace: default
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRole
+  metadata:
+    labels:
+      app: istio-init
+      istio: init
+    name: istio-init-default
+  rules:
+  - apiGroups:
+    - apiextensions.k8s.io
+    resources:
+    - customresourcedefinitions
+    verbs:
+    - create
+    - get
+    - list
+    - watch
+    - patch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      app: istio-init
+      istio: init
+    name: istio-init-admin-role-binding-default
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: istio-init-default
+  subjects:
+  - kind: ServiceAccount
+    name: istio-init-service-account
+    namespace: default
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    labels:
+    name: istio-init-crd-10
+    namespace: default
+  spec:
+    template:
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: 'false'
+      spec:
+        containers:
+        - command:
+          - kubectl
+          - apply
+          - -f
+          - /etc/istio/crd-10/crd-10.yaml
+          image: docker.io/istio/kubectl:1.2.4
+          imagePullPolicy: IfNotPresent
+          name: istio-init-crd-10
+          volumeMounts:
+          - mountPath: /etc/istio/crd-10
+            name: crd-10
+            readOnly: true
+        restartPolicy: OnFailure
+        serviceAccountName: istio-init-service-account
+        volumes:
+        - configMap:
+            name: istio-crd-10
+          name: crd-10
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    labels:
+    name: istio-init-crd-11
+    namespace: default
+  spec:
+    template:
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: 'false'
+      spec:
+        containers:
+        - command:
+          - kubectl
+          - apply
+          - -f
+          - /etc/istio/crd-11/crd-11.yaml
+          image: docker.io/istio/kubectl:1.2.4
+          imagePullPolicy: IfNotPresent
+          name: istio-init-crd-11
+          volumeMounts:
+          - mountPath: /etc/istio/crd-11
+            name: crd-11
+            readOnly: true
+        restartPolicy: OnFailure
+        serviceAccountName: istio-init-service-account
+        volumes:
+        - configMap:
+            name: istio-crd-11
+          name: crd-11
+- apiVersion: batch/v1
+  kind: Job
+  metadata:
+    labels:
+    name: istio-init-crd-12
+    namespace: default
+  spec:
+    template:
+      metadata:
+        annotations:
+          sidecar.istio.io/inject: 'false'
+      spec:
+        containers:
+        - command:
+          - kubectl
+          - apply
+          - -f
+          - /etc/istio/crd-12/crd-12.yaml
+          image: docker.io/istio/kubectl:1.2.4
+          imagePullPolicy: IfNotPresent
+          name: istio-init-crd-12
+          volumeMounts:
+          - mountPath: /etc/istio/crd-12
+            name: crd-12
+            readOnly: true
+        restartPolicy: OnFailure
+        serviceAccountName: istio-init-service-account
+        volumes:
+        - configMap:
+            name: istio-crd-12
+          name: crd-12
+kind: List
+labels:
