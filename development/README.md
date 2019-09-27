@@ -12,3 +12,6 @@
 
 ### To consider
 * merge this with nix/targets/perspectives - actually I like it here - this is a dev workspace
+
+### Running
+* for the first time `nix-shell --option extra-binary-caches 's3://future-is-comming-dev-worker-binary-store?region=eu-west-2'  --option require-sigs false`
