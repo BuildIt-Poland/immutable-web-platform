@@ -20,7 +20,7 @@ items:
       spec:
         containers:
         - image: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper
-          imagePullPolicy: Never
+          imagePullPolicy: IfNotExists
 - apiVersion: sources.nachocano.org/v1alpha1
   kind: BitBucketSource
   metadata:
