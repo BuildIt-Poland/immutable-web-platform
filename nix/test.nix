@@ -1,5 +1,5 @@
 # TODO add more tests please!!!
-{pkgs}:
+{pkgs, src}:
 with pkgs;
 let  
   test-scenario = {pkgs, ...}: {
@@ -43,8 +43,9 @@ let
       startAll
 
       $machine1->waitForUnit("default.target");
-      $machine1->succeed("nix-instantiate --eval --expr '(import <nixpkgs> {}).run-shell'");
+      $machine1->succeed("ls -la ${src}");
     '';
+    # $machine1->succeed("nix-instantiate --eval --expr '(import <nixpkgs> {}).run-shell'");
     };
 in { 
   smoke.calling-tools = test-scenario;
