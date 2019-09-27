@@ -17,9 +17,9 @@ let
       startAll
 
       $machine1->waitForUnit("default.target");
+
       $machine1->succeed("kail --help");
       $machine1->succeed("kubectl-debug --help");
-      $machine1->succeed("dsaasdadsdas");
     '';
     };
 
@@ -32,9 +32,6 @@ let
           <nixpkgs/nixos/modules/profiles/minimal.nix>
           <nixpkgs/nixos/modules/profiles/headless.nix>
         ];
-
-        environment.systemPackages = [pkgs.kail ]; 
-        # environment.etc.source.source = /etc/source; 
       }; 
     };
     testScript = ''
@@ -45,8 +42,7 @@ let
       $machine1->succeed("nix-shell --help");
     '';
     };
-in 
-  { 
-    smoke.calling-tools = test-scenario;
-    shell.able-to-run = basic-shell;
-  }
+in { 
+  smoke.calling-tools = test-scenario;
+  shell.able-to-run = basic-shell;
+}
