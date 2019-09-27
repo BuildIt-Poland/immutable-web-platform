@@ -28,17 +28,10 @@ with lib;
         quick-bootstrap
         delete-local-cluster
         create-local-cluster
-        kube-psp-advisor
       ];
 
-      environment = {
-        vars = {
-          KO_DOCKER_REPO = "ko.local";
-        };
-      };
-
       project = rec {
-        domain = mkForce "local";
+        domain = mkForce "nip.io";
       };
 
       kubernetes = {

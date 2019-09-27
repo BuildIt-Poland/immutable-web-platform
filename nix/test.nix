@@ -1,7 +1,7 @@
 {pkgs}:
 with pkgs;
 let  
-  test-scenario = {...}: {
+  test-scenario = {pkgs, ...}: {
     name = "test-scenario";
     nodes = { 
       machine1 = { ... }: { 
@@ -24,10 +24,10 @@ let
     };
 
   # TODO add senario to running any variant of shell
-  basic-shell = {...}:{
+  basic-shell = {pkgs, ...}:{
     name = "basic-shell";
     nodes = { 
-      machine1 = { pkgs, ... }: { 
+      machine1 = { ... }: { 
         imports = [
           <nixpkgs/nixos/modules/profiles/minimal.nix>
           <nixpkgs/nixos/modules/profiles/headless.nix>
@@ -38,7 +38,6 @@ let
       startAll
 
       $machine1->waitForUnit("default.target");
-      $machine1->succeed("ls /etc/source");
       $machine1->succeed("nix-shell --help");
     '';
     };

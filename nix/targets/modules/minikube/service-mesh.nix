@@ -22,6 +22,7 @@ in
     istio-service-mesh
   ];
   # kubectl expose deployment nginx-ingress-controller -n kube-system --target-port=80 --type=LoadBalancer
+  # with nip.io it should dissapear
   kubernetes.imports = [
     ./ingress/test-fn.yaml
     ./ingress/bitbucket-gateway.yaml
