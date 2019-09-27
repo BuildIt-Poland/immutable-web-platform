@@ -42,6 +42,7 @@ rec {
   kubectl-tkn = super.callPackage ./kubectl-tkn {};
 
   ko = super.callPackage ./ko {};
+  mkcert = super.callPackage ./mkcert {};
 
   # yarn2nix = super.callPackage sources.yarn2nix {};
   yarn2nix = super.callPackage (super.applyPatches {

@@ -15,7 +15,6 @@ in
 {
   imports = with kubenix.modules; [ 
     k8s 
-    istio
   ];
 
   config = {
@@ -28,80 +27,5 @@ in
         resource = "ksvc";
       }
     ];
-
-    kubernetes.api."networking.istio.io"."v1alpha3" = {
-      Gateway."knative-ingress-gateway" = 
-      let
-        # FIXME check me on eks
-        # hosts = [ (mk-domain "*.${functions-ns}") ];
-        hosts = [ (mk-domain "*") ];
-      in
-      {
-        metadata = {
-          name = "knative-ingress-gateway";
-          namespace = kn-ns;
-        };
-        spec = {
-          selector.istio = "ingressgateway";
-          servers = [
-            {
-            inherit hosts;
-
-            port = {
-              number = 80;
-              name = "http-system";
-              protocol = "HTTP";
-            };
-          } 
-          {
-            inherit hosts;
-
-            port = {
-              number = 443;
-              name = "https-system";
-              protocol = "HTTPS";
-            };
-            tls = {
-              mode = "SIMPLE";
-              privateKey = "sds";
-              serverCertificate = "sds";
-              credentialName = "ingress-cert"; # FROM EKS-module
-            };
-          }];
-        };
-      };
-    };
-
-    # FIXME this should be in eks module
-    kubernetes.api.configmaps = {
-      knative-domain = {
-        metadata = {
-          name = "config-domain";
-          namespace = "${kn-ns}";
-        };
-        data = {
-          "${project-config.project.make-sub-domain ""}" = "";
-        };
-      };
-      knative-cert = {
-        metadata = {
-          name = "config-certmanager";
-          namespace = "${kn-ns}";
-        };
-        data = {
-          secretName = "ingress-cert";
-          issuerRef = ''
-            name: cert-issuer
-            kind: ClusterIssuer
-          '';
-          autoTLS = "Enabled";
-          httpprotocol = "redirected";
-          solverconfig = ''
-            dns01:
-              provider: route53
-          '';
-        };
-      };
-    };
   };
 } 

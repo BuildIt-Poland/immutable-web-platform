@@ -40,6 +40,7 @@ in
     k8s-extension
     ./service-mesh.nix
     ./virtual-services.nix
+    ./knative-serve.nix
     ./storage.nix
   ];
 

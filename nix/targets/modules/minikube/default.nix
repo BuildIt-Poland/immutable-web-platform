@@ -26,6 +26,7 @@ with lib;
       packages = with pkgs; with minikube-operations; [
         minikube
         quick-bootstrap
+        mkcert
         delete-local-cluster
         create-local-cluster
       ];
