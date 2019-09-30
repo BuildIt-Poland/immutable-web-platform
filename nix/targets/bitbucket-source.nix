@@ -54,6 +54,34 @@ in
     #   };
     # };
 
+    # TODO system:serviceaccount:knative-sources:bitbucket-controller-manager
+    # list resource \"pipelineruns\" in API group \"tekton.dev\" in the namespace \"dev-infra\""}
+
+    ## ROLE BINDING
+    kubernetes.api.clusterrolebindings = 
+      let
+        admin = "tekton-pipeline-runner";
+      in
+      {
+        "${admin}" = {
+          metadata = {
+            name = "${admin}";
+          };
+          roleRef = {
+            apiGroup = "rbac.authorization.k8s.io";
+            kind = "ClusterRole";
+            name = "cluster-admin"; # TODO this is too much in case of privilages
+          };
+          subjects = [
+            {
+              kind = "ServiceAccount";
+              name = "bitbucket-controller-manager";
+              namespace = "knative-sources";
+            }
+          ];
+        };
+      };
+
     kubernetes.api.bitbucketsource.channel-repo = {
       metadata = {
         name = "bitbucket-source-sample";

@@ -39,5 +39,20 @@ items:
       spec:
         pipelineRef:
           name: build-and-deploy-pipeline
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: tekton-pipeline-runner
+    namespace: default
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+  - kind: ServiceAccount
+    name: bitbucket-controller-manager
+    namespace: knative-sources
 kind: List
 labels:
