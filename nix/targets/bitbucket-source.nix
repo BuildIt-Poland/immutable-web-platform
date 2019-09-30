@@ -22,23 +22,23 @@ in
   ];
 
   config = {
-    kubernetes.api.ksvc.bitbucket-message-dumper = {
-      metadata = {
-        name = "bitbucket-message-dumper";
-        namespace = infra-ns.name;
-      };
-      spec = {
-        template = {
-          spec = {
-            containers = [{
-              image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
-              # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
-              imagePullPolicy = "IfNotPresent";
-            }];
-          };
-        };
-      };
-    };
+    # kubernetes.api.ksvc.bitbucket-message-dumper = {
+    #   metadata = {
+    #     name = "bitbucket-message-dumper";
+    #     namespace = infra-ns.name;
+    #   };
+    #   spec = {
+    #     template = {
+    #       spec = {
+    #         containers = [{
+    #           image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
+    #           # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
+    #           imagePullPolicy = "IfNotPresent";
+    #         }];
+    #       };
+    #     };
+    #   };
+    # };
 
     # TODO system:serviceaccount:knative-sources:bitbucket-controller-manager
     # list resource \"pipelineruns\" in API group \"tekton.dev\" in the namespace \"dev-infra\""}
@@ -102,9 +102,24 @@ in
           #     name = "build-and-deploy-pipeline";
           #   };
           # };
-          apiVersion = "serving.knative.dev/v1alpha1";
-          kind = "Service";
-          name = "bitbucket-message-dumper";
+          apiVersion = "messaging.knative.dev/v1alpha1";
+          kind = "Channel";
+          name = "githubchannel";
+          # apiVersion = "serving.knative.dev/v1alpha1";
+          # kind = "Service";
+          # name = "bitbucket-message-dumper";
+        };
+      };
+    };
+    kubernetes.api.kchannel.channel-repo = {
+      metadata = {
+        name = "githubchannel";
+        namespace = infra-ns.name;
+      };
+      spec = {
+        channelTemplate = {
+          apiVersion = "messaging.knative.dev/v1alpha1";
+          kind = "InMemoryChannel";
         };
       };
     };

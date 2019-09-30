@@ -26,6 +26,14 @@ in
         description = "";
         resource = "ksvc";
       }
+
+      {
+        group = "messaging.knative.dev";
+        version = "v1alpha1";
+        kind = "Channel";
+        description = "";
+        resource = "kchannel";
+      }
     ];
   };
 } 
