@@ -29,10 +29,15 @@ with lib;
         mkcert
         delete-local-cluster
         create-local-cluster
+        (writeScriptBin "run-after-minikube-tunnel" ''
+          apply-tls-secrets
+          patch-knative-nip-domain
+        '')
       ];
 
       project = rec {
         domain = mkForce "nip.io";
+        # at this point we don't have ip from LB
         make-sub-domain = mkForce
           (name: 
             (lib.concatStringsSep "." 

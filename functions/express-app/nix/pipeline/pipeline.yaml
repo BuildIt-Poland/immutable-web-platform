@@ -4,9 +4,13 @@ metadata:
   name: build-and-deploy-pipeline
 spec:
   resources:
-    - name: workspace
+    - name: source
       type: git
-  params:
-    - name: pathToContext
-      description: The path to the build context, used by Kaniko - within the workspace
-      default: src
+  tasks:
+    - name: run-something
+      taskRef:
+        name: echo-hello-world
+      resources:
+        inputs:
+          - name: source
+            resource: source

@@ -87,6 +87,7 @@ in
       tools.enable = inputs.kubernetes.tools;
       validation.enable = inputs.opa.validation;
 
+      # knative-eventing-injection=enabled
       namespace = {
         functions = {
           name = "${config.environment.type}-functions";

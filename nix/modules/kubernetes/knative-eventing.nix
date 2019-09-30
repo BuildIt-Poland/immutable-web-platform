@@ -75,6 +75,7 @@ in
       ))
 
       k8s-resources.knative-eventing-json
+      k8s-resources.knative-eventing-in-memory-channel-json
     ];
   };
 }

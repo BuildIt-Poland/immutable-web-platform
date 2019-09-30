@@ -26,16 +26,21 @@ in
   ];
 
   module.scripts = [
-    (pkgs.writeShellScriptBin "get-istio-ingress-lb-port" ''
+    (pkgs.writeShellScriptBin "get-istio-ingress-lb" ''
       ${pkgs.kubectl}/bin/kubectl -n istio-system \
         get service istio-ingressgateway \
         -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+    '')
+
+    (pkgs.writeShellScriptBin "get-istio-ingress-lb-port" ''
+      ${pkgs.kubectl}/bin/kubectl -n istio-system \
+        get service istio-ingressgateway \
+        -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}'
     '')
   ];
 
   kubernetes.patches = [
   ];
-
 
   kubernetes.network-mesh = {
     enable = true;
@@ -43,8 +48,7 @@ in
     helm = {
       gateways = {
         istio-ingressgateway = {
-          # type = "LoadBalancer";
-          type = "NodePort";
+          type = "LoadBalancer";
         };
       };
 
