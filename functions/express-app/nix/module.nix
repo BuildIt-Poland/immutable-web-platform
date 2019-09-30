@@ -52,9 +52,11 @@ in
   kubernetes.imports = [
     ./pipeline/task-run.yaml
     ./pipeline/task-echo.yaml
-    ./pipeline/task-source-to-file.yaml
-    # ./pipeline/pipeline.yaml
+    # ./pipeline/task-source-to-file.yaml
+    ./pipeline/pipeline.yaml
     ./pipeline/pipeline-resource.yaml
+    ./pipeline/pipeline-run.yaml
+    ./pipeline/sa.yaml
   ];
 
   kubernetes.api.ksvc = {

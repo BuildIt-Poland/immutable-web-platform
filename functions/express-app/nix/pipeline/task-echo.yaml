@@ -3,6 +3,10 @@ kind: Task
 metadata:
   name: echo-hello-world
 spec:
+  inputs:
+    resources:
+      - name: source
+        type: git
   steps:
     - name: echo
       image: ubuntu

@@ -16,7 +16,7 @@ let
 
   # TODO get secret by name - this is not ideal - treating json as string and applying env vars
   # FIXME add optional arguments - or not? all can be from sops
-  apply-secrets = 
+  create-tls-certificates = 
     let
       # INFO reference to self - with evaluated k8s resource
       # this reference to custom-secrets is so so ...
@@ -44,7 +44,7 @@ let
     pkgs.writeScriptBin "apply-tls-secrets" ''
       ${pkgs.lib.log.important "Creating TLS istio secret"}
 
-      ip=$(minikube ip)
+      ip=$(get-istio-ingress-lb)
       domain=$ip.nip.io
 
       domains="$domain ${lib.concatStringsSep " " (builtins.map (x: "${x}.$domain") withLocalhost)}"
@@ -56,10 +56,19 @@ let
       TLS_CERT=$(cat $tmpfile/$domain+$length-key.pem | base64 | tr -d '\n') 
       TLS_KEY=$(cat $tmpfile/$domain+$length.pem | base64 | tr -d '\n') 
 
+      ${pkgs.lib.log.important "Creating OAuth secret"}
+      BB_KEY=$(${sops.extractSecret ["bitbucket" "key"] project-config.git-secrets.location} | base64)
+      BB_SECRET=$(${sops.extractSecret ["bitbucket" "secret"] project-config.git-secrets.location} | base64)
+
+      ${pkgs.lib.log.important "Creating Bitbucket secret"}
+      BB_USER=$(${sops.extractSecret ["bitbucket" "user"] project-config.git-secrets.location})
+      BB_PASS=$(${sops.extractSecret ["bitbucket" "pass"] project-config.git-secrets.location})
+
+      echo $BB_USER
+      echo $BB_PASS
+
       ${pkgs.lib.log.important "Patching ..."}
       eval "echo \"$(cat ${secret-ref.yaml.objects})\"" | ${pkgs.kubectl}/bin/kubectl apply -f -
-
-      ${pkgs.lib.log.important "Run 'mkcert -install' to enable ssl in localhost"}
     '';
 in
 {
@@ -68,10 +77,12 @@ in
     k8s-extension
   ];
 
-  kubernetes.patches = [
-    apply-secrets
+ # kubernetes.patches = [
+  module.scripts = [
+    create-tls-certificates
   ];
 
+  # TODO recreate in many namespaces?
   kubernetes.api.secrets = {
     istio-ingress = {
       metadata = {
@@ -80,8 +91,34 @@ in
       };
       type = "kubernetes.io/tls";
       data = {
-        "tls.cert" = "$TLS_CERT";
+        "tls.crt" = "$TLS_CERT";
         "tls.key" = "$TLS_KEY";
+      };
+    };
+
+    bitbucket-secret = {
+      metadata = {
+        # namespace = infra-ns;
+        # namespace = "knative-sources";
+        name = "bitbucket-secret";  
+      };
+      type = "Opaque";
+      data = {
+        consumerKey = "$BB_KEY";
+        consumerSecret = "$BB_SECRET";
+      };
+    };
+    bitbucket-basic-auth = {
+      metadata = {
+        name = "bitbucket-basic-auth";  
+        annotations = {
+          "tekton.dev/git-0" = "https://bitbucket.org";
+        };
+      };
+      type = "kubernetes.io/basic-auth";
+      stringData = {
+        password = "$BB_PASS";
+        username = "$BB_USER";
       };
     };
   };

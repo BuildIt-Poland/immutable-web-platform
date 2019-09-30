@@ -26,10 +26,6 @@ let
       AWS_KEY=$(${pkgs.awscli}/bin/aws configure get aws_access_key_id | base64)
       AWS_SECRET=$(${pkgs.awscli}/bin/aws configure get aws_secret_access_key | base64)
 
-      ${pkgs.lib.log.important "Creating OAuth secret"}
-      BB_KEY=$(${sops.extractSecret ["bitbucket" "key"] project-config.git-secrets.location} | base64)
-      BB_SECRET=$(${sops.extractSecret ["bitbucket" "secret"] project-config.git-secrets.location} | base64)
-
       ${pkgs.lib.log.important "Patching ..."}
       eval "echo \"$(cat ${secret-ref.yaml.objects})\"" | ${pkgs.kubectl}/bin/kubectl apply -f -
     '';
@@ -60,17 +56,6 @@ in
       data = {
         access_key = "$AWS_KEY";
         secret_key = "$AWS_SECRET";
-      };
-    };
-    bitbucket-secret = {
-      metadata = {
-        namespace = infra-ns;
-        name = "bitbucket-secret";  
-      };
-      type = "Opaque";
-      data = {
-        consumerKey = "$BB_KEY";
-        consumerSecret = "$BB_SECRET";
       };
     };
 

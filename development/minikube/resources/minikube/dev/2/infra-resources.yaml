@@ -14,7 +14,7 @@ items:
     labels:
       kubenix/project-name: kubenix
     name: bitbucket-source-sample
-    namespace: default
+    namespace: dev-infra
   spec:
     consumerKey:
       secretKeyRef:
@@ -31,7 +31,14 @@ items:
     sink:
       apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
-      name: build-and-deploy-pipeline-run
+      metadata:
+        labels:
+          app: health
+          component: frontend
+          tag: __TAG__
+      spec:
+        pipelineRef:
+          name: build-and-deploy-pipeline
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:

@@ -21,18 +21,17 @@ in
   ];
 
   config = {
-    # module.scripts = [
-    kubernetes.patches = [
+    # kubernetes.patches = [
+    module.scripts = [
       # TODO get all functions and create cert based on that
       # TODO apply patch instead of create / delete
 
       # with minikube tunel
-      # ip=$(get-istio-ingress-lb-port)
       # ${pkgs.lib.log.info "Run 'minikube tunnel' first."}
       (pkgs.writeShellScriptBin "patch-knative-nip-domain" ''
         ${pkgs.lib.log.important "Patching knative domain"}
 
-        ip=$(minikube ip)
+        ip=$(get-istio-ingress-lb)
         domain=$ip.nip.io
 
         ${pkgs.kubectl}/bin/kubectl patch \
@@ -44,7 +43,7 @@ in
     kubernetes.api."networking.istio.io"."v1alpha3" = {
       Gateway."knative-ingress-gateway" = 
       let
-        hosts = [ (mk-domain "*") ];
+        hosts = [ "*" ];
       in
       {
         metadata = {

@@ -12,13 +12,13 @@ items:
       istio: ingressgateway
     servers:
     - hosts:
-      - '*.nip.io'
+      - '*'
       port:
         name: http-system
         number: 80
         protocol: HTTP
     - hosts:
-      - '*.nip.io'
+      - '*'
       port:
         name: https-system
         number: 443

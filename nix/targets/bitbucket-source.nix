@@ -28,29 +28,15 @@ in
     #     namespace = infra-ns.name;
     #   };
     #   spec = {
-    #     runLatest.configuration.build = {
-    #       apiVersion = "tekton.dev/v1alpha1";
-    #       kind =  "PipelineRun";
-    #       metadata.labels = {
-    #         app =  "health";
-    #         component =  "frontend";
-    #         tag =  "__TAG__";
-    #       };
+    #     template = {
     #       spec = {
-    #         pipelineRef = {
-    #           name = "build-and-deploy-pipeline";
-    #         };
+    #         containers = [{
+    #           image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
+    #           # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
+    #           imagePullPolicy = "IfNotExists";
+    #         }];
     #       };
     #     };
-    #     # template = {
-    #     #   spec = {
-    #     #     containers = [{
-    #     #       image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
-    #     #       # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
-    #     #       imagePullPolicy = "IfNotExists";
-    #     #     }];
-    #     #   };
-    #     # };
     #   };
     # };
 
@@ -85,7 +71,7 @@ in
     kubernetes.api.bitbucketsource.channel-repo = {
       metadata = {
         name = "bitbucket-source-sample";
-        namespace = infra-ns.name;
+        # namespace = infra-ns.name;
       };
       spec = {
         eventTypes = [
@@ -105,16 +91,17 @@ in
         sink = {
           apiVersion = "tekton.dev/v1alpha1";
           kind =  "PipelineRun";
-          metadata.labels = {
-            app =  "health";
-            component =  "frontend";
-            tag =  "__TAG__";
-          };
-          spec = {
-            pipelineRef = {
-              name = "build-and-deploy-pipeline";
-            };
-          };
+          name = "build-and-deploy-pipeline-run";
+          # metadata.labels = {
+          #   app =  "health";
+          #   # component =  "frontend";
+          #   # tag =  "__TAG__";
+          # };
+          # spec = {
+          #   pipelineRef = {
+          #     name = "build-and-deploy-pipeline";
+          #   };
+          # };
           # apiVersion = "serving.knative.dev/v1alpha1";
           # kind = "Service";
           # name = "bitbucket-message-dumper";

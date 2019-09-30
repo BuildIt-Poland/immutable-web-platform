@@ -66,7 +66,7 @@ rec {
 
               mkdir -p $location
 
-              ${log.info "Saving crd for ${name}, to: $location/$file"}
+              ${log.info "Saving ${suffix} for ${name}, to: $location/$file"}
               cat ${desc.value} | ${drop-hash}  > $location/$file
             '';
 

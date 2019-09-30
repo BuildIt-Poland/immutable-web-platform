@@ -19,6 +19,15 @@ rec {
     };
   };
 
+  knative-eventing-in-memory-channel-json = helm.yaml-to-json rec {
+    name = "knative-eventing-in-memory-channel";
+    version = "0.9.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/knative/eventing/releases/download/v${version}/in-memory-channel.yaml";
+      sha256="0jz99pjfwh3mf5h2z3f44clk6icmg5sda515xirlsdmawgmplyrc";
+    };
+  };
+
   knative-eventing-json = helm.yaml-to-json rec {
     name = "knative-eventing";
     version = "0.9.0";

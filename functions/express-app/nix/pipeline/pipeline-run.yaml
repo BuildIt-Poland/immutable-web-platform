@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: build-and-deploy-pipeline-run
+  labels:
+    app: test
+spec:
+  pipelineRef:
+    name: build-and-deploy-pipeline
+  resources:
+    - name: source
+      resourceRef:
+        name: project-git
+  serviceAccount: build-bot
+  trigger:
+    type: manual

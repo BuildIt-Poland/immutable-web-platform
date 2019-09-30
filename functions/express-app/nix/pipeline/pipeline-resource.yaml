@@ -8,4 +8,11 @@ spec:
     - name: revision
       value: nix-docker-image-builder
     - name: url
-      value: git clone https://damian_baar@bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git
+      value: https://bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
+  # secrets:
+  #   - fieldName: user
+  #     secretKey: password
+  #     secretName: bitbucket-basic-auth
+  #   - fieldName: password
+  #     secretKey: username
+  #     secretName: bitbucket-basic-auth
