@@ -10,11 +10,11 @@ let
   namespace = project-config.kubernetes.namespace;
   brigade-ns = namespace.brigade.name;
   infra-ns = namespace.infra.name;
+  functions-ns = namespace.functions.name;
   integration-modules = pkgs.integration-modules;
   sops = integration-modules.lib.sops;
 
   # TODO get secret by name - this is not ideal - treating json as string and applying env vars
-
   # FIXME add optional arguments - or not? all can be from sops
   apply-secrets = 
     let
@@ -30,6 +30,7 @@ let
       BB_KEY=$(${sops.extractSecret ["bitbucket" "key"] project-config.git-secrets.location} | base64)
       BB_SECRET=$(${sops.extractSecret ["bitbucket" "secret"] project-config.git-secrets.location} | base64)
 
+      ${pkgs.lib.log.important "Patching ..."}
       eval "echo \"$(cat ${secret-ref.yaml.objects})\"" | ${pkgs.kubectl}/bin/kubectl apply -f -
     '';
 in
@@ -43,6 +44,11 @@ in
   module.scripts = [
     apply-secrets
   ];
+
+  # TODO aws is blowing out - investigate
+  # kubernetes.patches = [
+  #   apply-secrets
+  # ];
 
   kubernetes.api.secrets = {
     aws-credentials = {
@@ -67,6 +73,7 @@ in
         consumerSecret = "$BB_SECRET";
       };
     };
+
     # TODO
     # hydra-ssh-key = {
 

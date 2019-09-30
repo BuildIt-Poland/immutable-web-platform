@@ -49,6 +49,7 @@ with lib;
         resources.list."${priority.high "istio"}" = [ ./service-mesh.nix ];
         resources.list."${priority.high "storage"}" = [ ./storage.nix ];
         resources.list."${priority.low "knative-overridings"}" = [ ./knative-serve.nix ];
+        resources.list."${priority.skip "extra_secrets"}" = [ ./extra-secrets.nix ];
       };
 
       skaffold.enable = true;

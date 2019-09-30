@@ -14,7 +14,8 @@
   secrets = ./secrets.nix;
   storage = ./storage.nix;
   opa = ./opa.nix;
-  bitbucket-event-handler = ./bitbucket-event-handler.nix;
+  bitbucket-sources = ./bitbucket-sources.nix;
+  infra-namespace = ./infra-namespace.nix;
   tekton = ./tekton.nix;
   tekton-crd = ./tekton-crd.nix;
   istio-crd = ./istio-crd.nix;

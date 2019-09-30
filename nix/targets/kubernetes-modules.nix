@@ -18,6 +18,7 @@ in
         "${priority.mid  "knative"}"     = [ knative knative-eventing ];
         "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
         "${priority.low  "gitops"}"      = [ argocd ];
+        "${priority.low  "infra"}"       = [ infra-namespace ./bitbucket-source.nix ];
         # WIP: dropping brigade
         # "${priority.low  "ci"}"          = [ brigade ];
         "${priority.low  "ci"}"          = [ tekton ];

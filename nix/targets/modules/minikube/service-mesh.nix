@@ -43,7 +43,8 @@ in
     helm = {
       gateways = {
         istio-ingressgateway = {
-          type = "LoadBalancer";
+          # type = "LoadBalancer";
+          type = "NodePort";
         };
       };
 
