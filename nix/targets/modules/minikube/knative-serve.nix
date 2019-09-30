@@ -21,7 +21,8 @@ in
   ];
 
   config = {
-    module.scripts = [
+    # module.scripts = [
+    kubernetes.patches = [
       # TODO get all functions and create cert based on that
       # TODO apply patch instead of create / delete
 

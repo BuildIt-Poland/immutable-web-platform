@@ -38,7 +38,8 @@ let
             lib.flatten (builtins.attrValues knative-services);
 
       knative-services = getKnativeServices project-config.modules.kubernetes;
-      withLocalhost = knative-services ++ ["localhost"];
+      # so so
+      withLocalhost = (builtins.map (x: "${x}.${functions-ns}") knative-services) ++ ["localhost"];
     in
     pkgs.writeScriptBin "apply-tls-secrets" ''
       ${pkgs.lib.log.important "Creating TLS istio secret"}
