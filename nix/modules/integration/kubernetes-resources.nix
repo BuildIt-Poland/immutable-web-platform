@@ -143,6 +143,9 @@ with lib;
       })
 
       ({
+        # FIXME BUG this should be improved as if folder does not have priority and have - then
+        # name will be simplified
+        # WORKAROUND use lodash _
         kubernetes.resources.getByName = 
           let
             modules = cfg.kubernetes.resources.list;
