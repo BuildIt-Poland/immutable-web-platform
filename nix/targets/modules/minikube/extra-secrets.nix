@@ -98,9 +98,9 @@ in
 
     bitbucket-secret = {
       metadata = {
-        # namespace = infra-ns;
+        namespace = infra-ns;
         # namespace = "knative-sources";
-        name = "bitbucket-secret";  
+        # name = "bitbucket-secret";  
       };
       type = "Opaque";
       data = {
@@ -108,6 +108,7 @@ in
         consumerSecret = "$BB_SECRET";
       };
     };
+    # https://github.com/tektoncd/pipeline/blob/master/docs/auth.md
     bitbucket-basic-auth = {
       metadata = {
         name = "bitbucket-basic-auth";  
