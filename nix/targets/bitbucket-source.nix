@@ -22,23 +22,23 @@ in
   ];
 
   config = {
-    # kubernetes.api.ksvc.bitbucket-message-dumper = {
-    #   metadata = {
-    #     name = "bitbucket-message-dumper";
-    #     namespace = infra-ns.name;
-    #   };
-    #   spec = {
-    #     template = {
-    #       spec = {
-    #         containers = [{
-    #           image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
-    #           # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
-    #           imagePullPolicy = "IfNotExists";
-    #         }];
-    #       };
-    #     };
-    #   };
-    # };
+    kubernetes.api.ksvc.bitbucket-message-dumper = {
+      metadata = {
+        name = "bitbucket-message-dumper";
+        namespace = infra-ns.name;
+      };
+      spec = {
+        template = {
+          spec = {
+            containers = [{
+              image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
+              # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
+              imagePullPolicy = "IfNotPresent";
+            }];
+          };
+        };
+      };
+    };
 
     # TODO system:serviceaccount:knative-sources:bitbucket-controller-manager
     # list resource \"pipelineruns\" in API group \"tekton.dev\" in the namespace \"dev-infra\""}
@@ -71,7 +71,7 @@ in
     kubernetes.api.bitbucketsource.channel-repo = {
       metadata = {
         name = "bitbucket-source-sample";
-        # namespace = infra-ns.name;
+        namespace = infra-ns.name;
       };
       spec = {
         eventTypes = [
@@ -89,9 +89,9 @@ in
           secretKeyRef.key = "consumerSecret";
         };
         sink = {
-          apiVersion = "tekton.dev/v1alpha1";
-          kind =  "PipelineRun";
-          name = "build-and-deploy-pipeline-run";
+          # apiVersion = "tekton.dev/v1alpha1";
+          # kind =  "PipelineRun";
+          # name = "build-and-deploy-pipeline-run";
           # metadata.labels = {
           #   app =  "health";
           #   # component =  "frontend";
@@ -102,9 +102,9 @@ in
           #     name = "build-and-deploy-pipeline";
           #   };
           # };
-          # apiVersion = "serving.knative.dev/v1alpha1";
-          # kind = "Service";
-          # name = "bitbucket-message-dumper";
+          apiVersion = "serving.knative.dev/v1alpha1";
+          kind = "Service";
+          name = "bitbucket-message-dumper";
         };
       };
     };
