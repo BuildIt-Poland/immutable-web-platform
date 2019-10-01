@@ -1,33 +1,25 @@
 {pkgs}:
 with pkgs;
-  subPackages: (buildGoPackage rec {
+  subPackages: (buildGoModule rec {
     inherit subPackages;
 
     name = "bitbucket-source-${version}";
     version = "master";
-    rev = "134b01b95b8ccb38e903b7ceb17d7e0e58cfd3bb";
+    rev = "07ca52cf41455e0811f3f053c7577c6f5047af4b";
 
     src = fetchFromGitHub {
       inherit rev;
-      owner = "nachocano";
+      owner = "damianbaar";
       repo = "bitbucket-source";
-      sha256 = "0d0w530am30ndd33kcw1y1wqp8pn8xhzszm0zb36rwwwmin3cybp";
+      sha256 = "1gqj6al4j79kigyp17qh3dx6v6kb6wnpw1vf333jh312dh14wmh6";
     };
 
-    buildInputs = [ ];
-
-    # https://github.com/knative/eventing/issues/1543
-    patches = [
-      ./url.patch
-    ];
-
-    goDeps = ./deps.nix;
-    goPackagePath = "github.com/nachocano/bitbucket-source";
-    modSha256 = "06cxpsdbmynpprxnaq8ciplan2ha61vmlqzp5q2bmd9r0palh7p3";
+    goPackagePath = "github.com/damianbaar/bitbucket-source";
+    modSha256 = "168pydyvym66cckrxgvmgrvds1gj2df5p28mr9xygaql7gzp2cci";
 
     meta = with lib; {
       description = "This repository implements a simple Event Source to wire BitBucket events into Knative Eventing.";
-      homepage = https://github.com/nachocano/bitbucket-source;
+      homepage = https://github.com/damianbaar/bitbucket-source;
       license = licenses.asl20;
       platforms = platforms.unix;
     };

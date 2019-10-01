@@ -35,8 +35,6 @@ items:
       resourceRef:
         name: project-git
     serviceAccount: build-bot
-    trigger:
-      type: manual
 - apiVersion: tekton.dev/v1alpha1
   kind: PipelineResource
   metadata:
@@ -80,7 +78,7 @@ items:
       - echo
       image: ubuntu
       name: echo
-- apiVersion: serving.knative.dev/v1
+- apiVersion: serving.knative.dev/v1alpha1
   kind: Service
   metadata:
     labels:
