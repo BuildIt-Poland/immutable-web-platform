@@ -134,6 +134,10 @@ in
             ${log.info "Your domain is: ${config.project.domain}"}
             ${log.info "Your runtime perspective is: ${config.environment.perspective}"}
           '';
+          # TODO make configurable from module perspective
+          aliases = ''
+            alias k='kubectl'
+          '';
 
           footer = ''
             echo "Run 'get-help' to get all available commands"
@@ -150,6 +154,7 @@ in
           ${config.actions.list}
 
           ${footer}
+          source ${aliases}
         '';
     })
 
