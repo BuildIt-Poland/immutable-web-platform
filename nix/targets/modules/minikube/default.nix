@@ -5,6 +5,10 @@ let
   minikube-operations = pkgs.callPackage ./minikube-operations.nix {};
 in
 with lib;
+# https://github.com/kubernetes/kubectl/issues/501#issuecomment-406890261
+# kubectl config set clusters.<name-of-cluster>.certificate-authority-data $CADATA
+# kubectl config set-cluster future-is-comming-dev-cluster --embed-certs --certificate-authority =(cat <<'EOF'
+# kubectl config set-cluster future-is-comming-dev-cluster --insecure-skip-tls-verify=true
 {
   imports = with integration-modules.modules; [
     ./docker-image-push.nix
@@ -59,7 +63,7 @@ with lib;
       kubernetes = {
         tools.enable = true;
         resources.list."${priority.high "istio"}" = [ ./service-mesh.nix ];
-        resources.list."${priority.high "storage"}" = [ ./storage.nix ];
+        # resources.list."${priority.high "storage"}" = [ ./storage.nix ];
         resources.list."${priority.low "knative-overridings"}" = [ ./knative-serve.nix ];
         resources.list."${priority.skip "extra_secrets"}" = [ ./extra-secrets.nix ];
       };

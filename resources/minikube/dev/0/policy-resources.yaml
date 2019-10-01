@@ -44,7 +44,7 @@ items:
 
         ns = {"argo":"gitops","brigade":"brigade","functions":"dev-functions","infra":"dev-infra","istio":"istio-system","knative-eventing":"knative-eventing","knative-monitoring":"knative-monitoring","knative-serving":"knative-serving","storage":"storage","system":"system","tekton-pipelines":"tekton-pipelines"}
 
-        config = {"authorEmail":"damian.baar@wipro.com","domain":"nip.io","hash":"422c3d6d1f053ba2eac3eed4808fcac69a806cff","name":"future-is-comming","repositories":{"code-repository":"git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git","k8s-resources":"git@bitbucket.org:damian.baar/k8s-infra-descriptors.git"},"resources":{"yaml":{"folder":"$PWD/resources"}},"rootFolder":"/Users/damianbaar/workspaces/infra/kubenix-playground","subdomains":["*"],"version":"0.0.1"}
+        config = {"authorEmail":"damian.baar@wipro.com","domain":"nip.io","hash":"ea3776e013ee651772f20c3f91ace37e792e4404","name":"future-is-comming","repositories":{"code-repository":"git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git","k8s-resources":"git@bitbucket.org:damian.baar/k8s-infra-descriptors.git"},"resources":{"yaml":{"folder":"$PWD/resources"}},"rootFolder":"/Users/damianbaar/workspaces/infra/kubenix-playground","subdomains":["*"],"version":"0.0.1"}
 
         '
 - apiVersion: config.istio.io/v1alpha2
