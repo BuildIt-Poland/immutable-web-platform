@@ -8,6 +8,19 @@ items:
       kubenix/project-name: kubenix
     name: dev-infra
     namespace: default
+- apiVersion: serving.knative.dev/v1alpha1
+  kind: Service
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: bitbucket-message-dumper
+    namespace: dev-infra
+  spec:
+    template:
+      spec:
+        containers:
+        - image: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper
+          imagePullPolicy: IfNotPresent
 - apiVersion: messaging.knative.dev/v1alpha1
   kind: Channel
   metadata:
@@ -40,9 +53,9 @@ items:
     - repo:commit_status_created
     ownerAndRepository: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
     sink:
-      apiVersion: messaging.knative.dev/v1alpha1
-      kind: Channel
-      name: githubchannel
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
+      name: bitbucket-message-dumper
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:

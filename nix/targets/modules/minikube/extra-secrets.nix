@@ -41,7 +41,7 @@ let
       # so so
       withLocalhost = (builtins.map (x: "${x}.${functions-ns}") knative-services) ++ ["localhost"];
     in
-    pkgs.writeScriptBin "apply-tls-secrets" ''
+    pkgs.writeScriptBin "apply-minikube-secrets" ''
       ${pkgs.lib.log.important "Creating TLS istio secret"}
 
       ip=$(get-istio-ingress-lb)
@@ -57,15 +57,12 @@ let
       TLS_KEY=$(cat $tmpfile/$domain+$length.pem | base64 | tr -d '\n') 
 
       ${pkgs.lib.log.important "Creating OAuth secret"}
-      BB_KEY=$(${sops.extractSecret ["bitbucket" "key"] project-config.git-secrets.location} | base64)
-      BB_SECRET=$(${sops.extractSecret ["bitbucket" "secret"] project-config.git-secrets.location} | base64)
+      BB_KEY=$(${sops.extractSecret ["bitbucket" "key"] project-config.git-secrets.location})
+      BB_SECRET=$(${sops.extractSecret ["bitbucket" "secret"] project-config.git-secrets.location})
 
       ${pkgs.lib.log.important "Creating Bitbucket secret"}
       BB_USER=$(${sops.extractSecret ["bitbucket" "user"] project-config.git-secrets.location})
       BB_PASS=$(${sops.extractSecret ["bitbucket" "pass"] project-config.git-secrets.location})
-
-      echo $BB_USER
-      echo $BB_PASS
 
       ${pkgs.lib.log.important "Patching ..."}
       eval "echo \"$(cat ${secret-ref.yaml.objects})\"" | ${pkgs.kubectl}/bin/kubectl apply -f -
@@ -100,10 +97,10 @@ in
       metadata = {
         namespace = infra-ns;
         # namespace = "knative-sources";
-        # name = "bitbucket-secret";  
+        name = "bitbucket-secret";  
       };
       type = "Opaque";
-      data = {
+      stringData = {
         consumerKey = "$BB_KEY";
         consumerSecret = "$BB_SECRET";
       };

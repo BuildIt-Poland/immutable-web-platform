@@ -22,23 +22,23 @@ in
   ];
 
   config = {
-    # kubernetes.api.ksvc.bitbucket-message-dumper = {
-    #   metadata = {
-    #     name = "bitbucket-message-dumper";
-    #     namespace = infra-ns.name;
-    #   };
-    #   spec = {
-    #     template = {
-    #       spec = {
-    #         containers = [{
-    #           image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
-    #           # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
-    #           imagePullPolicy = "IfNotPresent";
-    #         }];
-    #       };
-    #     };
-    #   };
-    # };
+    kubernetes.api.ksvc.bitbucket-message-dumper = {
+      metadata = {
+        name = "bitbucket-message-dumper";
+        namespace = infra-ns.name;
+      };
+      spec = {
+        template = {
+          spec = {
+            containers = [{
+              image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
+              # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
+              imagePullPolicy = "IfNotPresent";
+            }];
+          };
+        };
+      };
+    };
 
     # TODO system:serviceaccount:knative-sources:bitbucket-controller-manager
     # list resource \"pipelineruns\" in API group \"tekton.dev\" in the namespace \"dev-infra\""}
@@ -80,6 +80,7 @@ in
         ];
         # FIXME project-config code repository
         ownerAndRepository = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
+        # ownerAndRepository = "damian_baar/k8s-infra-descriptor";
         consumerKey = {
           secretKeyRef.name = "bitbucket-secret";
           secretKeyRef.key = "consumerKey";
@@ -102,12 +103,12 @@ in
           #     name = "build-and-deploy-pipeline";
           #   };
           # };
-          apiVersion = "messaging.knative.dev/v1alpha1";
-          kind = "Channel";
-          name = "githubchannel";
-          # apiVersion = "serving.knative.dev/v1alpha1";
-          # kind = "Service";
-          # name = "bitbucket-message-dumper";
+          # apiVersion = "messaging.knative.dev/v1alpha1";
+          # kind = "Channel";
+          # name = "githubchannel";
+          apiVersion = "serving.knative.dev/v1alpha1";
+          kind = "Service";
+          name = "bitbucket-message-dumper";
         };
       };
     };
