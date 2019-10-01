@@ -24,3 +24,14 @@
 
 > issue with ssl and nix channels
 * https://github.com/NixOS/nix/issues/728
+
+> ssl from go client in k8s
+* https://blog.zedroot.org/2019/01/18/kubectl/
+```
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://192.168.0.100:8443
+    insecure-skip-tls-verify: true
+  name: minikube
+```
