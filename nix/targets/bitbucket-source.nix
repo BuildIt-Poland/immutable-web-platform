@@ -28,12 +28,10 @@ in
         namespace = infra-ns.name;
       };
       spec = {
-        # status.address.hostname = "";
         template = {
           spec = {
             containers = [{
               image = "gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper";
-              # imagePullPolicy = project-config.kubernetes.imagePullPolicy;
               imagePullPolicy = "IfNotPresent";
             }];
           };
@@ -86,6 +84,8 @@ in
 #         spec:
 #           numPartitions: 2
 #           replicationFactor: 1
+
+# ERROR "No callback uri defined for the OAuth client.
     kubernetes.api.bitbucketsource.channel-repo = {
       metadata = {
         name = "bitbucket-source-sample";
