@@ -40,6 +40,10 @@ with lib;
         '')
       ];
 
+      help = [
+        "If you are going to run minikube tunel don't forget to call patch-minikube-after-tunnel-run"
+      ];
+
       project = rec {
         domain = mkForce "nip.io";
         # at this point we don't have ip from LB
@@ -99,9 +103,7 @@ with lib;
     })
 
     ({
-      # use minikube tunel
       packages = with minikube-operations;[
-        # expose-brigade-gateway
         create-localtunnel
       ];
 

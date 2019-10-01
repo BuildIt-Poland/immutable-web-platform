@@ -21,7 +21,7 @@ in
     kubernetes.customResources = [
       {
         group = "serving.knative.dev";
-        version = "v1alpha1";
+        version = "v1";
         kind = "Service";
         description = "";
         resource = "ksvc";

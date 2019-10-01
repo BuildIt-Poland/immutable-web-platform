@@ -99,6 +99,7 @@ in
           name = "${config.environment.type}-infra";
           metadata.labels = {
             "istio-injection" = "enabled";
+            "knative-eventing-injection" = "enabled";
           };
         };
         argo.name = "gitops";
