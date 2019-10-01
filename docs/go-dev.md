@@ -1,0 +1,1 @@
+https://blog.callr.tech/migrating-from-dep-to-go-1.11-modules/

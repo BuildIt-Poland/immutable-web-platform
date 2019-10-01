@@ -12,5 +12,5 @@ spec:
       resourceRef:
         name: project-git
   serviceAccount: build-bot
-  trigger:
-    type: manual
+  # trigger:
+  #   type: manual

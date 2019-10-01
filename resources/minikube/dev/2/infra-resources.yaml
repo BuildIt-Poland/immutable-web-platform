@@ -9,7 +9,7 @@ items:
       kubenix/project-name: kubenix
     name: dev-infra
     namespace: default
-- apiVersion: serving.knative.dev/v1
+- apiVersion: serving.knative.dev/v1alpha1
   kind: Service
   metadata:
     labels:
@@ -55,36 +55,9 @@ items:
     ownerAndRepository: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
     serviceAccount: bb-source
     sink:
-      apiVersion: serving.knative.dev/v1
+      apiVersion: serving.knative.dev/v1alpha1
       kind: Service
       name: bitbucket-message-dumper
-- apiVersion: v1
-  data:
-    nip.io: ''
-  kind: ConfigMap
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: config-domain
-    namespace: dev-infra
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: ClusterRoleBinding
-  metadata:
-    labels:
-      kubenix/project-name: kubenix
-    name: bb-source
-    namespace: default
-  roleRef:
-    apiGroup: rbac.authorization.k8s.io
-    kind: ClusterRole
-    name: cluster-admin
-  subjects:
-  - kind: ServiceAccount
-    name: bitbucket-source-sample
-    namespace: dev-infra
-  - kind: ServiceAccount
-    name: bitbucket-controller-manager
-    namespace: dev-infra
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:

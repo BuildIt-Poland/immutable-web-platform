@@ -67,42 +67,7 @@ in
             }
           ];
         };
-        "bb-source" = {
-          metadata = {
-            name = "bb-source";
-          };
-          roleRef = {
-            apiGroup = "rbac.authorization.k8s.io";
-            kind = "ClusterRole";
-            name = "cluster-admin"; # TODO this is too much in case of privilages
-          };
-          subjects = [
-            {
-              kind = "ServiceAccount";
-              name = "bitbucket-source-sample";
-              namespace = infra-ns.name;
-            }
-            {
-              kind = "ServiceAccount";
-              name = "bitbucket-controller-manager";
-              namespace = infra-ns.name;
-            }
-          ];
-        };
       };
-
-    kubernetes.api.configmaps = {
-      knative-domain = {
-        metadata = {
-          name = "config-domain";
-          namespace = "${infra-ns.name}";
-        };
-        data = {
-          "${project-config.project.make-sub-domain ""}" = "";
-        };
-      };
-    };
-
 
 # apiVersion: v1
 # kind: ConfigMap
@@ -160,7 +125,7 @@ in
           # apiVersion = "messaging.knative.dev/v1alpha1";
           # kind = "Channel";
           # name = "githubchannel";
-          apiVersion = "serving.knative.dev/v1";
+          apiVersion = "serving.knative.dev/v1alpha1";
           kind = "Service";
           name = "bitbucket-message-dumper";
         };
