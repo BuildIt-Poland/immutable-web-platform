@@ -15,3 +15,6 @@
 
 ### Running
 * for the first time `nix-shell --option extra-binary-caches 's3://future-is-comming-dev-worker-binary-store?region=eu-west-2'  --option require-sigs false`
+
+### Caveats
+* https://github.com/target/lorri/issues/150

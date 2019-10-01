@@ -135,8 +135,12 @@ in
             ${log.info "Your runtime perspective is: ${config.environment.perspective}"}
           '';
           # TODO make configurable from module perspective
+          # error: /usr/bin/alias: line 4: builtin: rc: not a shell builtin
           aliases = ''
             alias k='kubectl'
+            alias kd='kubectl describe'
+            alias kg='kubectl get'
+            alias kl='kubectl logs'
           '';
 
           footer = ''
@@ -154,7 +158,7 @@ in
           ${config.actions.list}
 
           ${footer}
-          source ${aliases}
+          ${aliases}
         '';
     })
 

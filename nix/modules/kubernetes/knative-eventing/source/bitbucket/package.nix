@@ -16,6 +16,11 @@ with pkgs;
 
     buildInputs = [ ];
 
+    # https://github.com/knative/eventing/issues/1543
+    patches = [
+      ./url.patch
+    ];
+
     goDeps = ./deps.nix;
     goPackagePath = "github.com/nachocano/bitbucket-source";
     modSha256 = "06cxpsdbmynpprxnaq8ciplan2ha61vmlqzp5q2bmd9r0palh7p3";
