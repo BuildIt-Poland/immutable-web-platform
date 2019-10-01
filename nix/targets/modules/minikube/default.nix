@@ -33,6 +33,9 @@ with lib;
           apply-tls-secrets
           patch-knative-nip-domain
         '')
+        (pkgs.writeScriptBin "iam-bored" ''
+          ${pkgs.telnet}/bin/telnet towel.blinkenlights.nl
+        '')
       ];
 
       project = rec {
