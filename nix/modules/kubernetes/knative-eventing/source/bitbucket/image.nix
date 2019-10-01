@@ -18,6 +18,7 @@ in
       contents = [
         pkgs.bash
         pkgs.coreutils
+        pkgs.cacert
         package
       ];
 
