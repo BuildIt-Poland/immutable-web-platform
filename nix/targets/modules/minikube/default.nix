@@ -29,10 +29,12 @@ with lib;
         mkcert
         delete-local-cluster
         create-local-cluster
-        (writeScriptBin "run-after-minikube-tunnel" ''
-          apply-tls-secrets
+
+        (writeScriptBin "patch-minikube-after-tunnel-run" ''
+          apply-minikube-secrets
           patch-knative-nip-domain
         '')
+
         (pkgs.writeScriptBin "iam-bored" ''
           ${pkgs.telnet}/bin/telnet towel.blinkenlights.nl
         '')
@@ -46,8 +48,6 @@ with lib;
             (lib.concatStringsSep "." 
               (builtins.filter (x: x != "") [
                 name
-                # config.project.name
-                # config.environment.type
                 config.project.domain
               ])));
       };

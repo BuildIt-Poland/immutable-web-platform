@@ -53,9 +53,9 @@ items:
     - repo:commit_status_created
     ownerAndRepository: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
     sink:
-      apiVersion: serving.knative.dev/v1alpha1
-      kind: Service
-      name: bitbucket-message-dumper
+      apiVersion: messaging.knative.dev/v1alpha1
+      kind: Channel
+      name: githubchannel
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:

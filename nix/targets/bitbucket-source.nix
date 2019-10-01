@@ -103,12 +103,12 @@ in
           #     name = "build-and-deploy-pipeline";
           #   };
           # };
-          # apiVersion = "messaging.knative.dev/v1alpha1";
-          # kind = "Channel";
-          # name = "githubchannel";
-          apiVersion = "serving.knative.dev/v1alpha1";
-          kind = "Service";
-          name = "bitbucket-message-dumper";
+          apiVersion = "messaging.knative.dev/v1alpha1";
+          kind = "Channel";
+          name = "githubchannel";
+          # apiVersion = "serving.knative.dev/v1alpha1";
+          # kind = "Service";
+          # name = "bitbucket-message-dumper";
         };
       };
     };

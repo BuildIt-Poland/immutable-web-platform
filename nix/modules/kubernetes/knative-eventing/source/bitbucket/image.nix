@@ -22,5 +22,6 @@ in
       ];
 
       config.Cmd = [ "${package}/bin/${cmd}" ];
+      config.Entrypoint = [ "${package}/bin/${cmd}" ];
       config.Env = [ ];
     } // { tag = project-config.docker.imageTag image-name; })
