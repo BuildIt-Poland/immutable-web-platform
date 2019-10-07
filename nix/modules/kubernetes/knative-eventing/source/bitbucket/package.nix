@@ -1,21 +1,19 @@
 {pkgs}:
 with pkgs;
+let
+  bb = pkgs.sources.bitbucket-source;
+in
   subPackages: (buildGoModule rec {
     inherit subPackages;
 
     name = "bitbucket-source-${version}";
-    version = "master";
-    rev = "07ca52cf41455e0811f3f053c7577c6f5047af4b";
+    version = bb.rev;
+    rev = bb.rev;
 
-    src = fetchFromGitHub {
-      inherit rev;
-      owner = "damianbaar";
-      repo = "bitbucket-source";
-      sha256 = "1gqj6al4j79kigyp17qh3dx6v6kb6wnpw1vf333jh312dh14wmh6";
-    };
+    src = bb;
 
     goPackagePath = "github.com/damianbaar/bitbucket-source";
-    modSha256 = "168pydyvym66cckrxgvmgrvds1gj2df5p28mr9xygaql7gzp2cci";
+    modSha256 = "1d1qp0nyd7c5z76gbw36llhlq4fz4sp7a7wx3b8d3nwf9jlhqjgi";
 
     meta = with lib; {
       description = "This repository implements a simple Event Source to wire BitBucket events into Knative Eventing.";

@@ -92,14 +92,14 @@ in
         namespace = infra-ns.name;
       };
       spec = {
-        serviceAccount = "bb-source";
+        # serviceAccount = "bb-source";
         eventTypes = [
           "repo:push"
-          "repo:commit_status_created"
+          # "repo:commit_status_created"
         ];
         # FIXME project-config code repository
         ownerAndRepository = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative";
-        # ownerAndRepository = "damian_baar/k8s-infra-descriptor";
+        # ownerAndRepository = "damian_baar/k8s-infra-descriptors";
         consumerKey = {
           secretKeyRef.name = "bitbucket-secret";
           secretKeyRef.key = "consumerKey";
@@ -109,19 +109,6 @@ in
           secretKeyRef.key = "consumerSecret";
         };
         sink = {
-          # apiVersion = "tekton.dev/v1alpha1";
-          # kind =  "PipelineRun";
-          # name = "build-and-deploy-pipeline-run";
-          # metadata.labels = {
-          #   app =  "health";
-          #   # component =  "frontend";
-          #   # tag =  "__TAG__";
-          # };
-          # spec = {
-          #   pipelineRef = {
-          #     name = "build-and-deploy-pipeline";
-          #   };
-          # };
           # apiVersion = "messaging.knative.dev/v1alpha1";
           # kind = "Channel";
           # name = "githubchannel";

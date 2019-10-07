@@ -10,7 +10,7 @@
     configuration = {
       imports = [
         (import ./hydra-config.nix { 
-          inherit preload pkgs;
+          inherit preload pkgs system;
         })
       ];
     };

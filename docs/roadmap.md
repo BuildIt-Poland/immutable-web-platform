@@ -9,6 +9,7 @@
 * argo - issues with password
 * check knative hosts on eks (modules/kubernetes/knative-serve)
 * map virtual services from eks to nip.io
+* ability to export binary cache store key (best would be to define it upfront for everything and distribute it to the boxes - easier automation)
 
 * hydra & kubevirt & nixos -> thinking
 * when deploying nixos and rebooting wait for ssh
