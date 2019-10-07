@@ -2,6 +2,7 @@
 * better secrets handling - current way ... well
 * refactor knative module -> knative module + submodules + crd
 * move all sources too niv
+* cli to run shell with persistent config
 * SSL (nginx) -> hydra -> ssl -> ec2a - doing
 * add nix tests
 * minikube localhost ssl -> works (add knative routes to ssl cert)
