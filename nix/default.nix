@@ -26,8 +26,11 @@ let
       in
       (super.integration-modules.eval {
         modules = 
-             [(./perspective + "/${safe-inputs.environment.perspective}")]
-          ++ safe-inputs.modules 
+            (if pkgs.lib.isFunction safe-inputs.modules 
+              then (safe-inputs.modules super) 
+              else safe-inputs.modules)
+          ++ [(./perspective + "/${safe-inputs.environment.perspective}")]
+          ++ [(toString (./targets/modules + "/${safe-inputs.kubernetes.target}"))]
           ++ [./targets/environment-setup.nix];
         args = { 
           inputs = safe-inputs; 

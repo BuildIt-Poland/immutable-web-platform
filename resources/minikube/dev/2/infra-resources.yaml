@@ -51,9 +51,7 @@ items:
         name: bitbucket-secret
     eventTypes:
     - repo:push
-    - repo:commit_status_created
     ownerAndRepository: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
-    serviceAccount: bb-source
     sink:
       apiVersion: serving.knative.dev/v1alpha1
       kind: Service

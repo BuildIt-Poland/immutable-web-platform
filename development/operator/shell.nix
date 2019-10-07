@@ -1,6 +1,6 @@
 {...}:
 let
-  pkgs = (import ../../nix { inputs = {
+  inputs = {
     kubernetes = {
       target = "eks";
       clean = false;
@@ -16,11 +16,6 @@ let
     opa = {
       validation = false;
     };
-  }; }).pkgs;
+  };
 in
-with pkgs;
-  mkShell ({
-    NIX_SHELL_NAME = "#minikube#${pkgs.project-config.environment.perspective}";
-    buildInputs = project-config.packages;
-    shellHook= project-config.shellHook;
-  } // project-config.environment.vars)
+  import ../../nix/run-shell.nix inputs

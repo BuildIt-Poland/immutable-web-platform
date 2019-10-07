@@ -18,7 +18,7 @@ let
   terraform = (pkgs.terraform_0_12).withPlugins pluginList;
   # .overrideAttrs (x: { patches = [./thrift.patch]; });
 
-  vars = project-config.terraform.vars;
+  vars = lib.traceVal project-config.terraform.vars;
   backend-vars = project-config.terraform.backend-vars;
 
   generate-var-file = 

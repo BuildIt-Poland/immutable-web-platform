@@ -35,3 +35,10 @@ clusters:
     insecure-skip-tls-verify: true
   name: minikube
 ```
+
+> cannot delete tunnel
+* `route get 10.96/12 (ip from error seen after cleanup)`
+* `sudo route delete 10.96/12`
+
+> minikube "x509: certificate signed by unknown authority"
+* https://minikube.sigs.k8s.io/docs/reference/networking/proxy/
