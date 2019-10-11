@@ -1,0 +1,31 @@
+apiVersion: v1
+items:
+- apiVersion: networking.istio.io/v1alpha3
+  kind: Gateway
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: knative-ingress-gateway
+    namespace: knative-serving
+  spec:
+    selector:
+      istio: ingressgateway
+    servers:
+    - hosts:
+      - '*.nip.io'
+      port:
+        name: http-system
+        number: 80
+        protocol: HTTP
+    - hosts:
+      - '*.nip.io'
+      port:
+        name: https-system
+        number: 443
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        privateKey: /etc/istio/ingressgateway-certs/tls.key
+        serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
+kind: List
+labels:

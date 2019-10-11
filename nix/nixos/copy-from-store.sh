@@ -1,0 +1,2 @@
+# TODO require-sigs -> generate on local machine and pass to hydra instance
+nix-store -r /nix/store/jiwjknncnz4nl55pfw9304jdgdpnf9p7-docker-image-future-is-comming-dev-cluster.tar.gz --substituters 's3://future-is-comming-dev-worker-binary-store?region=eu-west-2' --option require-sigs false

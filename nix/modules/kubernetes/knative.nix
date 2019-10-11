@@ -16,7 +16,7 @@ let
   functions-ns = namespace.functions;
   knative-ns = namespace.knative-serving;
 
-  # FIXME
+  # FIXME this does not work well yet - fix override-static-yaml first
   override-namespace = 
       override-static-yaml 
         { metadata.namespace = knative-ns; };
@@ -28,15 +28,8 @@ in
   ];
 
   config = {
-    # INFO skipping custom ns as it is a bit more complicated to put knative in separate namespace
-    # kubernetes.api.namespaces."${knative-ns}"= {};
-
-    kubernetes.api.namespaces."${functions-ns}"= {
-      metadata = {
-        labels = {
-          "istio-injection" = "enabled";
-        };
-      };
+    kubernetes.api.namespaces."${functions-ns.name}"= {
+      metadata = lib.recursiveUpdate {} functions-ns.metadata;
     };
 
     kubernetes.crd = [

@@ -10,9 +10,9 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  istio-ns = namespace.istio;
-  argo-ns = namespace.argo;
-  functions-ns = namespace.functions;
+  istio-ns = namespace.istio.name;
+  argo-ns = namespace.argo.name;
+  functions-ns = namespace.functions.name;
 
   create-cr = kind: resource: {
     inherit kind resource;
@@ -82,7 +82,7 @@ in
       spec = {
         acme = {
           server = "https://acme-v02.api.letsencrypt.org/directory";
-          email = project-config.project.author-email;
+          email = project-config.project.authorEmail;
           privateKeySecretRef.name = "cert-prod";
           dns01.providers = [{ 
             name = "route53"; 

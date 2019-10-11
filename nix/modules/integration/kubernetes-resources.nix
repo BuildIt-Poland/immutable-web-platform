@@ -34,7 +34,7 @@ with lib;
   };
 
   config = 
-    (mkMerge [
+    mkIf cfg.kubernetes.enabled (mkMerge [
       { checks = ["Enabling kubenix modules: ${toString (builtins.attrNames config.kubernetes.resources.list)}"]; }
       ({
         binary-store-cache = builtins.filter lib.isDerivation (builtins.attrValues k8s-resources);
@@ -143,6 +143,9 @@ with lib;
       })
 
       ({
+        # FIXME BUG this should be improved as if folder does not have priority and have - then
+        # name will be simplified
+        # WORKAROUND use lodash _
         kubernetes.resources.getByName = 
           let
             modules = cfg.kubernetes.resources.list;

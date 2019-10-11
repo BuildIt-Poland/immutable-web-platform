@@ -18,6 +18,6 @@ let
 
   docker-image = callPackage ./image.nix {};
 in
-rec {
+{
   inherit docker-image;
 }

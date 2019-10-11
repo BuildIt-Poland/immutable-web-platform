@@ -23,13 +23,24 @@ in
   ];
 
   config = {
-    kubernetes.resources.list."${priority.high "eks"}" = [ ./kubernetes ];
+
+    kubernetes = {
+      resources.list."${priority.high "eks"}" = [ ./kubernetes ];
+
+      namespace = {
+        istio = {
+          name = "${config.environment.type}-functions";
+          metadata.annotations = {
+            "iam.amazonaws.com/allowed-roles" = "[\"${config.kubernetes.cluster.name}*\"]";
+          };
+        };
+      };
+    };
 
     environment = {
-      type = inputs.environment.type;
-      runtime = inputs.environment.runtime;
       vars = {
-        RESTIC_PASSWORD_COMMAND = "get-restic-repo-password";
+        # FIXME
+        KO_DOCKER_REPO = "$(get ecr-path)";
       };
     };
 
@@ -76,13 +87,14 @@ in
         region = config.aws.region;
         project_name = config.project.name;
         domain = (config.project.make-sub-domain "");
-        owner = config.project.author-email;
+        base_domain = config.project.domain;
+        owner = config.project.authorEmail;
         hash = config.project.hash;
         env = config.environment.type;
         cluster_name = config.kubernetes.cluster.name;
         output_state_file = config.terraform.stateFiles;
         project_prefix = "${project_name}-${env}-${region}";
-        root_folder = toString ../..;
+        root_folder = config.project.rootFolder;
 
         backup_bucket = config.storage.backup.bucket;
         worker_bucket   = "${config.aws.s3-buckets.worker-cache}";

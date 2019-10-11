@@ -38,13 +38,25 @@ rec {
   docker-registry = fetch {
     chart = "stable/docker-registry";
     version = "1.8.0";
-    sha256 = "1dh23bryfh30p1r4b6pz9qgfniyji9nsn238ab2g2l3pwcvjb1zc";
+    sha256 = "1zz4xl2z6gllkg40rqvn1gm9aj49iz9ja9lvs8n7rlbqqkixqra9";
   };
 
   grafana = fetch {
     chart = "stable/grafana";
     version = "3.8.7";
     sha256 = "0i4b3yg5yjjhn34p9lxgbldcnbhr31cfgzn7m6n7nz5kdlz520bp";
+  };
+
+  kibana = fetch {
+    chart = "stable/kibana";
+    version = "3.2.3";
+    sha256 = "0x3cac61zqnmbrid1m4q4l55zglw8w320dq3i7yccw92fkcdcfw8";
+  };
+
+  elastic-stack = fetch {
+    chart = "stable/elastic-stack";
+    version = "1.8.0";
+    sha256 = "0c61c5kgb367kik74jxrzk62s526fva3qwdlia95dhk3iw72fl8z";
   };
 
   rook-ceph = fetch {
@@ -70,7 +82,7 @@ rec {
   cert-manager = fetch {
     chart = "cert-manager";
     version = "0.8.1";
-    sha256 = "1c7y2q2rp1b4jmmblkbgvr8p25i7jsq8dya2qjr0sg158kcji3f2";
+    sha256 = "192k0pjixrvv19qqyz8izdf4yqk4qn2q996q1b7impvnlm2wfrjq";
     repo = "https://charts.jetstack.io";
   };
 
@@ -78,8 +90,8 @@ rec {
   argo-cd = chart-from-git {
     url = "https://github.com/argoproj/argo-helm";
     path = "charts/argo-cd";
-    rev = "77e638f55df69450b887087e5103bcae90db6fee";
-    sha256 = "0z1byb135402j2x9swci7pcdcjpfzchc8j16dwj0zbfxmw1nbmwi";
+    rev = "338850f10ec63fc2add2b5dee75b922d9941d5da";
+    sha256 = "1vfpjaiqm7fk6lwki974iidx21h3wc8xw2080j2klb7qllhmrjjr";
   };
 
   # BOOTSTRAP

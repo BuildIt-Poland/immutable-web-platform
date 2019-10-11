@@ -10,32 +10,79 @@ rec {
     sha256 = "1mdfsgp03x1bv55zzpsqjlzvnyamgpy70z8vwy17wpa04v74l7qc";
   };
 
-  knative-serving-json = helm.yaml-to-json {
+  knative-serving-json = helm.yaml-to-json rec {
     name = "knative-serving";
-    version = "0.8.1";
+    version = "0.9.0";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.8.1/serving.yaml;
-      sha256="1q2w8bgjy8l8g2ksi9xla7wwnja1kk1szrh8fzg8jypjkqs1lbmc";
+      url = "https://github.com/knative/serving/releases/download/v${version}/serving.yaml";
+      sha256="0mpca1fvh3phmym1vapn6ayf21w22srm1qrv7y9r019znmpyxzgc";
     };
   };
 
-  knative-crd-json = helm.yaml-to-json {
+  knative-eventing-in-memory-channel-json = helm.yaml-to-json rec {
+    name = "knative-eventing-in-memory-channel";
+    version = "0.9.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/knative/eventing/releases/download/v${version}/in-memory-channel.yaml";
+      sha256="0jz99pjfwh3mf5h2z3f44clk6icmg5sda515xirlsdmawgmplyrc";
+    };
+  };
+
+  knative-eventing-json = helm.yaml-to-json rec {
+    name = "knative-eventing";
+    version = "0.9.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/knative/eventing/releases/download/v${version}/eventing.yaml";
+      sha256="02y0hqa0wsf94has2x4ywxdjmyy3a0jg5v3rcn2c2cclmqs5psfl";
+    };
+  };
+
+  knative-eventing-bitbucket-source-json = helm.yamls-to-json rec {
+    name = "knative-eventing";
+    version = "0.9.0";
+    yamlsPattern = "/config/*.yaml";
+    src = pkgs.fetchFromGitHub {
+      owner = "nachocano";
+      rev = "134b01b95b8ccb38e903b7ceb17d7e0e58cfd3bb";
+      repo = "bitbucket-source";
+      sha256="0d0w530am30ndd33kcw1y1wqp8pn8xhzszm0zb36rwwwmin3cybp";
+    };
+  };
+
+  # ADD ME https://github.com/knative/serving/releases/download/v0.9.0/serving-v1-crds.yaml
+  knative-crd-json = helm.yaml-to-json rec {
     name = "knative-crd";
-    version = "0.8.1";
+    version = "0.9.0";
     src = pkgs.fetchurl {
-      url = https://github.com/knative/serving/releases/download/v0.8.1/serving-beta-crds.yaml;
-      sha256="1q9w4j81rmpgjyi1j0jniavw10f852pnvrzwvdia6a00rn568plx";
+      url = "https://github.com/knative/serving/releases/download/v${version}/serving-v1-crds.yaml";
+      sha256="1f7pjag9zqqbaj8ycl5k4m66izzkkiw8wg9vjpfrr8fq1gjldfcb";
     };
   };
 
-  # FIXME filter out prometheus
-  knative-monitoring-json = helm.yaml-to-json {
-    name = "knative-monitoring";
-    version = "0.8.1";
+  tekton-pipelines-json = helm.yaml-to-json {
+    name = "tekton-pipelines";
+    version = "0.7.0";
     src = pkgs.fetchurl {
-      # without prometheus
-      url = https://github.com/knative/serving/releases/download/v0.8.1/monitoring.yaml;
-      sha256="02x8hy9wrlkdnl6mz01v0dh7msmmx12zph9lpwpy7lf8fjv87435";
+      url = https://github.com/tektoncd/pipeline/releases/download/v0.7.0/release.yaml;
+      sha256="051ahdzzaqbwxy04c6adlm29rh50pfngpd82jj1asv1py16bd19v";
+    };
+  };
+
+  tekton-dashboard-json = helm.yaml-to-json {
+    name = "tekton-dashboard";
+    version = "0.1.1";
+    src = pkgs.fetchurl {
+      url = https://github.com/tektoncd/dashboard/releases/download/v0.1.1/release.yaml;
+      sha256="1012v7p6myn9wjyynqry9rf1hx6s1xw38xp3kj6kw3gckwapj9j6";
+    };
+  };
+
+  knative-monitoring-json = helm.yaml-to-json rec {
+    name = "knative-monitoring";
+    version = "0.9.0";
+    src = pkgs.fetchurl {
+      url = "https://github.com/knative/serving/releases/download/v${version}/monitoring.yaml";
+      sha256="0mllfg5a75yyiiimjnh2fcqi9krqn7y4mfq3kvry3jmiyym9ygx9";
     };
   };
 

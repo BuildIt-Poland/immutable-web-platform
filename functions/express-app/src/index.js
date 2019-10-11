@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
 
 // https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#define-a-liveness-http-request
 app.get("/healthz", (req, res) => {
-  console.log("Calling health check endpoint")
+  console.log("Calling health check endpoint!!")
   res.status(200).send("ok")
 })
 

@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config;
 
+  skip-functions = lib.filterAttrsRecursive (n: v: !(lib.isFunction v));
   # TODO get packages and traverse it's names
 in
 {
@@ -12,9 +13,13 @@ in
       type = enum ["dev" "staging" "qa" "prod"];
     };
 
-    runtime = with types; mkOption {
-      default = "local-shell";
-      type = enum ["local-shell" "ci-shell"];
+    perspective = with types; mkOption {
+      default = "root";
+      type = enum ["root" "operator" "developer" "builder" "hydra" "lorri"];
+    };
+
+    preload = mkOption {
+      default = false;
     };
 
     vars = mkOption {
@@ -74,6 +79,15 @@ in
     default = [];
   };
 
+  options.output = mkOption {
+    default = {};
+  };
+
+  options.save-output = mkOption {
+    default = true;
+  };
+
+
   # FIXME add module to RUN TESTS agains nix
   options.test = {
     run = with types; mkOption {
@@ -118,8 +132,15 @@ in
             ${log.info "Your kubernetes target is: ${config.kubernetes.target}"}
             ${log.info "Your build hash is: ${config.project.hash}"}
             ${log.info "Your domain is: ${config.project.domain}"}
-            ${log.info "Your runtime is: ${config.environment.runtime}"}
+            ${log.info "Your runtime perspective is: ${config.environment.perspective}"}
           '';
+          # TODO make configurable from module perspective or folder
+          # aliases = ''
+          #   alias k='kubectl'
+          #   alias kd='kubectl describe'
+          #   alias kg='kubectl get'
+          #   alias kl='kubectl logs'
+          # '';
 
           footer = ''
             echo "Run 'get-help' to get all available commands"
@@ -138,11 +159,33 @@ in
           ${footer}
         '';
     })
+
     (mkIf config.test.enable {
       shellHook = ''
         ${pkgs.lib.log.important "Running module tests"}
         ${config.test.run}
       '';
+    })
+
+    (mkIf config.save-output {
+      packages = 
+      let
+        config-string = 
+          builtins.toJSON (skip-functions cfg.output);
+      in
+      [
+        (pkgs.writeScriptBin "save-config" ''
+          echo '${config-string}' | ${pkgs.jq}/bin/jq . > config.${cfg.environment.type}.json
+        '')
+      ];
+
+      actions.queue = [
+        { priority = cfg.actions.priority.low; 
+          action = ''
+            save-config
+          '';
+        }
+      ];
     })
   ];
 }

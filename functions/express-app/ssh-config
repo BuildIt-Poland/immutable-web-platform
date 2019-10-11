@@ -1,0 +1,4 @@
+Host *
+  Port 22
+  User root
+  IdentityFile /root/.ssh/id_rsa

@@ -1,15 +1,38 @@
 {
+    "hydra-cli": {
+        "url": "https://github.com/nlewo/hydra-cli/archive/9ba12eb0f09db441e03e379102b6e6defa6eb265.tar.gz",
+        "owner": "nlewo",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "hydra-cli",
+        "type": "tarball",
+        "sha256": "1p3a4s8qcdmznc7ay40cx2msfa9am433abx8q0y48wqjd8ia15ns",
+        "description": "A client for the Hydra Nix CI",
+        "rev": "9ba12eb0f09db441e03e379102b6e6defa6eb265"
+    },
     "nixpkgs": {
         "homepage": "https://github.com/NixOS/nixpkgs",
-        "url": "https://github.com/NixOS/nixpkgs-channels/archive/e19054ab3cd5b7cc9a01d0efc71c8fe310541065.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs-channels/archive/2436c27541b2f52deea3a4c1691216a02152e729.tar.gz",
         "owner": "NixOS",
         "branch": "nixos-unstable",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "nixpkgs-channels",
         "type": "tarball",
-        "sha256": "0b92yhkj3pq58svyrx7jp0njhaykwr29079izqn6qs638v8zvhl2",
+        "sha256": "0p98dwy3rbvdp6np596sfqnwlra11pif3rbdh02pwdyjmdvkmbvd",
         "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
-        "rev": "e19054ab3cd5b7cc9a01d0efc71c8fe310541065"
+        "rev": "2436c27541b2f52deea3a4c1691216a02152e729"
+    },
+    "nixos-generators": {
+        "homepage": "",
+        "url": "https://github.com/nix-community/nixos-generators/archive/defb4eed143c0473c4b348cccc00b4e1fa7e1755.tar.gz",
+        "owner": "nix-community",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "nixos-generators",
+        "type": "tarball",
+        "sha256": "10xncifdfhilxclxyf72h7dcfn8yn1h34qbkvdq9l76ghv5qjniq",
+        "description": "Collection of image builders [maintainer=@Lassulus]",
+        "rev": "defb4eed143c0473c4b348cccc00b4e1fa7e1755"
     },
     "kubenix": {
         "url": "https://github.com/damianbaar/kubenix/archive/365cae024cd7b6e8050dfc238a3da9f1a4b14964.tar.gz",
@@ -22,17 +45,41 @@
         "description": "Kubernetes resource builder using nix",
         "rev": "365cae024cd7b6e8050dfc238a3da9f1a4b14964"
     },
+    "hydra": {
+        "homepage": "http://nixos.org/hydra",
+        "url": "https://github.com/NixOS/hydra/archive/037f6488f633dbf15ca2d93a0c117f6738c707fe.tar.gz",
+        "owner": "NixOS",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "hydra",
+        "type": "tarball",
+        "sha256": "0qsi6x4bbpwwdx7v6ajyvknwi2l8a1pivnbf5jj7v5bqw6gdgqdw",
+        "description": "Hydra, the Nix-based continuous build system",
+        "rev": "037f6488f633dbf15ca2d93a0c117f6738c707fe"
+    },
+    "lorri": {
+        "homepage": "",
+        "url": "https://github.com/target/lorri/archive/f6b7795294d65bebe0d42f8247cca7c4cecb2e90.tar.gz",
+        "owner": "target",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "lorri",
+        "type": "tarball",
+        "sha256": "12i0djvaxdq141zm9i1if1yzzfd1p0fs1jfbry8ay6b1k5f8kgn5",
+        "description": "Your project's nix-env",
+        "rev": "f6b7795294d65bebe0d42f8247cca7c4cecb2e90"
+    },
     "nixops": {
         "homepage": "https://nixos.org/nixops",
-        "url": "https://github.com/nixos/nixops/archive/284924c223faa554131a8d1ace99fe6d5ccfeebb.tar.gz",
+        "url": "https://github.com/nixos/nixops/archive/21dde702bc8c0d3fcd5f65e994c5d99bad39cf5d.tar.gz",
         "owner": "nixos",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "nixops",
         "type": "tarball",
-        "sha256": "13n9xbpip7m3plwlad953m5iy2nyvwhvjq5amajszhm7ssyqyk4y",
+        "sha256": "1p4rxlzbdvqrzpllcdby5999w31mm2zj17z4b3rhinbdnbzn03bf",
         "description": "NixOps, the NixOS-based cloud deployment tool",
-        "rev": "284924c223faa554131a8d1ace99fe6d5ccfeebb"
+        "rev": "21dde702bc8c0d3fcd5f65e994c5d99bad39cf5d"
     },
     "yarn2nix": {
         "url": "https://github.com/moretea/yarn2nix/archive/7effadded30d611a460e212cb73614506ef61c52.tar.gz",
@@ -47,14 +94,26 @@
     },
     "niv": {
         "homepage": "https://github.com/nmattia/niv",
-        "url": "https://github.com/nmattia/niv/archive/5e9671a9a87c240b1c6ce981d04ad23ba4291451.tar.gz",
+        "url": "https://github.com/nmattia/niv/archive/1dd094156b249586b66c16200ecfd365c7428dc0.tar.gz",
         "owner": "nmattia",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "niv",
         "type": "tarball",
-        "sha256": "08j7msxkv452pyxnh0sgn6h9930i5mk9mszba49bj5401gzmfb8a",
+        "sha256": "1b2vjnn8iac5iiqszjc2v1s1ygh0yri998c0k3s4x4kn0dsqik21",
         "description": "Easy dependency management for Nix projects",
-        "rev": "5e9671a9a87c240b1c6ce981d04ad23ba4291451"
+        "rev": "1dd094156b249586b66c16200ecfd365c7428dc0"
+    },
+    "bitbucket-source": {
+        "homepage": "",
+        "url": "https://github.com/damianbaar/bitbucket-source/archive/1726241099a6922c48a721134d2a1e01af967187.tar.gz",
+        "owner": "damianbaar",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "bitbucket-source",
+        "type": "tarball",
+        "sha256": "0xp3cfmpc49781vdidy9aj283y523aifb3a92aphgvpi0jpbfbmy",
+        "description": "Proof of concept BitBucket Event Source for Knative",
+        "rev": "1726241099a6922c48a721134d2a1e01af967187"
     }
 }

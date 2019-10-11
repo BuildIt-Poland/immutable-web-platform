@@ -1,0 +1,1 @@
+# nix copy --to 's3://future-is-comming-dev-worker-binary-store?region=eu-west-2' $(nix-store -qR --include-outputs $(nix-instantiate shell.nix --add-root ./result --indirect))

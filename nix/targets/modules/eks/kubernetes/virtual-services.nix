@@ -8,12 +8,12 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  istio-ns = namespace.istio;
-  knative-monitoring-ns = namespace.knative-monitoring;
-  argo-ns = namespace.argo;
-  brigade-ns = namespace.brigade;
-  system-ns = namespace.system;
-  storage-ns = namespace.storage;
+  istio-ns = namespace.istio.name;
+  knative-monitoring-ns = namespace.knative-monitoring.name;
+  argo-ns = namespace.argo.name;
+  brigade-ns = namespace.brigade.name;
+  system-ns = namespace.system.name;
+  storage-ns = namespace.storage.name;
 
   mk-domain = name: project-config.project.make-sub-domain "${name}.services";
 
@@ -160,20 +160,26 @@ in
       VirtualService.ci =
         create-virtual-service 
           "ci" 
-          "brigade-kashti.${brigade-ns}.svc.cluster.local" 
-          80;
+          "tekton-dashboard.tekton-pipelines.svc.cluster.local" 
+          9097;
 
       VirtualService.logs =
         create-virtual-service 
           "logs" 
-          "kibana-logging.${knative-monitoring-ns}.svc.cluster.local" 
-          5601;
+          "kibana.${knative-monitoring-ns}.svc.cluster.local" 
+          443;
 
-      VirtualService.brigade-gateway = 
-        create-virtual-service 
-          "bitbucket-gateway" 
-          "extension-brigade-bitbucket-gateway.${brigade-ns}.svc.cluster.local" 
-          7748;
+      # VirtualService.ci =
+      #   create-virtual-service 
+      #     "ci" 
+      #     "brigade-kashti.${brigade-ns}.svc.cluster.local" 
+      #     80;
+
+      # VirtualService.brigade-gateway = 
+      #   create-virtual-service 
+      #     "bitbucket-gateway" 
+      #     "extension-brigade-bitbucket-gateway.${brigade-ns}.svc.cluster.local" 
+      #     7748;
     };
   };
 }

@@ -13,13 +13,18 @@ data "aws_ami" "amazon-linux-2" {
   }
 }
 
+resource "random_integer" "subnet" {
+  min     = 0
+  max     = length(var.vpc.public_subnets) - 1
+}
+
 resource "aws_instance" "bastion" {
   ami                         = data.aws_ami.amazon-linux-2.id
   key_name                    = aws_key_pair.bastion_key.key_name
   instance_type               = "t2.micro"
   vpc_security_group_ids      = [aws_security_group.bastion-sg.id]
   associate_public_ip_address = true
-  subnet_id                   = var.vpc.public_subnets[0]
+  subnet_id                   = random_integer.subnet.result
 
   tags = merge(
     var.common_tags,
