@@ -56,11 +56,7 @@ let
       TLS_CERT=$(cat $tmpfile/$domain+$length-key.pem | base64 | tr -d '\n') 
       TLS_KEY=$(cat $tmpfile/$domain+$length.pem | base64 | tr -d '\n') 
 
-      ${pkgs.lib.log.important "Creating OAuth secret"}
-      BB_KEY=$(${sops.extractSecret ["bitbucket" "key"] project-config.git-secrets.location})
-      BB_SECRET=$(${sops.extractSecret ["bitbucket" "secret"] project-config.git-secrets.location})
-
-      ${pkgs.lib.log.important "Creating Bitbucket secret"}
+      ${pkgs.lib.log.important "Traking bitbucket user & pass from secrets"}
       BB_USER=$(${sops.extractSecret ["bitbucket" "user"] project-config.git-secrets.location})
       BB_PASS=$(${sops.extractSecret ["bitbucket" "pass"] project-config.git-secrets.location})
 
@@ -101,8 +97,8 @@ in
       };
       type = "Opaque";
       stringData = {
-        consumerKey = "$BB_KEY";
-        consumerSecret = "$BB_SECRET";
+        consumerKey = "$BB_PASS";
+        consumerSecret = "$BB_USER";
       };
     };
     # https://github.com/tektoncd/pipeline/blob/master/docs/auth.md

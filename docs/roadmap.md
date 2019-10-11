@@ -1,5 +1,6 @@
 ## Today
 * better secrets handling - current way ... well
+* getting 200 on bitbucket with tunnel (actually two tunnels ...) - bitbucket-source has to provide correct external url to bitbucket payload - most likely all works well but error is a bit missleading (atlasian 400 bad request)
 * refactor knative module -> knative module + submodules + crd
 * move all sources too niv
 * cli to run shell with persistent config
