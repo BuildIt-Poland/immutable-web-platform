@@ -5,10 +5,6 @@ build_hash=$1
 machine_ip=$2
 user=root
 
-buildArgs=(
-  --option extra-binary-caches https://cache.nixos.org/
-)
-
 sshOpts=(
   -o "ControlMaster=auto"
   -o "ControlPersist=60"

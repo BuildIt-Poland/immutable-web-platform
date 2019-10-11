@@ -1,0 +1,22 @@
+apiVersion: config.istio.io/v1alpha2
+kind: instance
+metadata:
+  name: authzinstance
+  namespace: istio-system
+spec:
+  compiledTemplate: authorization
+  # https://istio.io/docs/reference/config/policy-and-telemetry/templates/analytics/
+  params:
+    subject:
+      user: request.headers["user"] | ""
+      groups: request.auth.claims["groups"] | ""
+      properties:
+        iss: request.auth.claims["iss"] | ""
+    action:
+      namespace: destination.namespace | "default"
+      service: destination.service.host | ""
+      path: request.path | "/"
+      method: request.method | ""
+      properties:
+        # headers: request.headers
+        version: destination.labels["version"] | ""

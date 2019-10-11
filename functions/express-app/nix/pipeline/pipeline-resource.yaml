@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: project-git
+spec:
+  type: git
+  params:
+    - name: revision
+      value: nix-docker-image-builder
+    - name: url
+      value: https://bitbucket.org/digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
+  # secrets:
+  #   - fieldName: user
+  #     secretKey: password
+  #     secretName: bitbucket-basic-auth
+  #   - fieldName: password
+  #     secretKey: username
+  #     secretName: bitbucket-basic-auth

@@ -1,17 +1,25 @@
+# Immutable platform - all as a code approach
+
 ### Purpose
-Yet another story about `kubernetes` and declarative approach to infrastructure.
+Yet another story about `kubernetes` and declarative approach to infrastructure, deployments, immutability and development.
 
 ... being more verbose ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
-provide full testing ability of infrastructure as well as on application level following `gitops` way realized by `brigade.js` and `argo cd`.
+provide full testing ability of infrastructure as well as on application level following `gitops` way.
+
+### It combines two perspectives
+* immutable platform
+* development platform
 
 ### Inspiration part
 * [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
 * [knative](https://www.youtube.com/watch?v=69OfdJ5BIzs)
+* [knative comprehensive feature overview](https://www.youtube.com/watch?v=HiIJqMqFbC0)
 * [brigade & virtual-kubelet](https://cloudblogs.microsoft.com/opensource/2019/04/01/brigade-kubernetes-serverless-tutorial/)
 * [gitops](https://www.weave.works/blog/gitops-operations-by-pull-request)
 * [argo cd](https://argoproj.github.io/argo-cd/)
 * `nix` - [ecosystem](https://www.youtube.com/watch?v=YbUPdv03ciI), [features overview](https://www.youtube.com/watch?v=D5Gq2wkRXpU), [kubernetes](https://www.youtube.com/watch?v=XgZWbrBLP4I)
 * [nix - sales pitch](https://gist.github.com/joepie91/9fdaf8244b0a83afcce204e6da127c7d)
+* [docker images without docker](https://www.youtube.com/watch?v=qhykcC94ukg) - to get general idea of immutability
 
 ### What is super hot!
 * development with [`skaffold`](https://github.com/GoogleContainerTools/skaffold)
@@ -22,6 +30,13 @@ provide full testing ability of infrastructure as well as on application level f
 * fully declarative descriptor of environment to provision `local` env, `virtual machine` as well as `clouds` based on `nixpkgs`, `nixops` and `nixOS`
 * building docker without daemon with `nix`
 * distributed storage with [`rook-ceph`](https://rook.io/) and `backups` with `restic` and `velero`
+* private `nix` binary store and `cache` - to speed up spawning `local` env and speed up kubernetes docker image building
+* great experience development with `lorri` and `direnv`
+* private binary channel
+
+### Tutorials
+* [`knative`](https://github.com/meteatamel/knative-tutorial)
+* [`nix`](https://nixcloud.io/tour/?id=26)
 
 ### ... and more
 * pure `nix` solution - there is no any `yaml` file related to descriptor `docker`, `kubernetes` or `helm`
@@ -37,6 +52,9 @@ provide full testing ability of infrastructure as well as on application level f
 * terraform provisioning of infra and deployment of nixos configurations with 4 simple steps
 * follows and assumes https://12factor.net/
 * [conftest](https://github.com/instrumenta/conftest) & [opa](https://github.com/open-policy-agent/opa) for resource validation, access validation with [`istio`](https://github.com/open-policy-agent/opa-istio-plugin)
+
+### Build status
+* [hydra instance](https://hydra.future-is-comming.dev.buildit.consulting)
 
 ### How to start
 Start from [start guide first.](/docs/start.md)
@@ -80,6 +98,7 @@ Start from [start guide first.](/docs/start.md)
 * [Cluster monitoring](/docs/monitoring.md)
 * [Some good reads](/docs/reads.md)
 * [`nix-darwin` and `remote-builders`](/docs/linux-darwin-builds.md)
+* [`nix-channels`](/docs/nix-channel.md)
 * [Build `go` package](/docs/building-go-packages.md)
 * [What I have learnt down the road](/docs/lessons-learnt.md)
 

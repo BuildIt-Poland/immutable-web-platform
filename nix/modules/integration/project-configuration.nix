@@ -13,7 +13,11 @@ rec {
       default = "";
     };
 
-    author-email = mkOption {
+    authorEmail = mkOption {
+      default = "";
+    };
+
+    rootFolder = mkOption {
       default = "";
     };
 
@@ -47,9 +51,12 @@ rec {
     };
   };
 
-  config = {
-    project.hash = 
-      builtins.hashString "sha1" 
-        (builtins.toJSON cfg.kubernetes.resources.list);
-  };
+  config = mkMerge [
+    ({ project.hash = 
+        builtins.hashString "sha1" 
+          (builtins.toJSON cfg.kubernetes.resources.list);
+
+        output = {project = cfg.project;};
+    })
+  ];
 }

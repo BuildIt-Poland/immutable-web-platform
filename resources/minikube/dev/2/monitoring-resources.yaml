@@ -10,6 +10,47 @@ items:
 - apiVersion: apps/v1beta1
   kind: Deployment
   metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 3
+    template:
+      metadata:
+        annotations:
+          checksum/config: 2e63ae7ed845491b7ba71bbc16d2c4357494cf2aa7898c93a56188b2a1de16a1
+        labels:
+          app: kibana
+          release: kibana
+      spec:
+        containers:
+        - image: docker.elastic.co/kibana/kibana:5.6.16
+          imagePullPolicy: IfNotPresent
+          name: kibana
+          ports:
+          - containerPort: 5601
+            name: kibana
+            protocol: TCP
+          resources: {}
+          volumeMounts:
+          - mountPath: /usr/share/kibana/config/kibana.yml
+            name: kibana
+            subPath: kibana.yml
+        serviceAccountName: default
+        tolerations: []
+        volumes:
+        - configMap:
+            name: kibana
+          name: kibana
+- apiVersion: apps/v1beta1
+  kind: Deployment
+  metadata:
     annotations:
       cloud.weave.works/launcher-info: "{\n  \"server-version\": \"master-4fe8efe\"\
         ,\n  \"original-request\": {\n    \"url\": \"/k8s/v1.7/scope.yaml\"\n  },\n\
@@ -75,7 +116,7 @@ items:
           checksum/config: 00957712bb25e533b78dde0c8ac465722519bfe1b2208d49c9c19f0e8b1a1a5f
           checksum/dashboards-json-config: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
           checksum/sc-dashboard-provider-config: 263e72d9991ee094304493e8397218680ed85e034dc2ac173727b7348ce05118
-          checksum/secret: 2771b819e5f1b65dadbc54b071013ced262799e4d4b48a519d58989a39d436b8
+          checksum/secret: e08f6de85261288b68db531d1cf87119159a92eb69935cb5ecce7e4768848643
         labels:
           app: grafana
           release: grafana
@@ -251,6 +292,47 @@ items:
     namespace: knative-monitoring
 - apiVersion: v1
   data:
+    kibana.yml: 'elasticsearch.url: http://elasticsearch-logging:9200
+
+      logging.verbose: "true"
+
+      server.host: "0"
+
+      server.name: kibana
+
+      '
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+- apiVersion: v1
+  data:
+    run.sh: "@test \"Test Status\" {\n  url=\"http://kibana:443/api/status\"\n\n \
+      \ # retry for 1 minute\n  run curl -s -o /dev/null -I -w \"%{http_code}\" --retry\
+      \ 30 --retry-delay 2 $url\n\n  code=$(curl -s -o /dev/null -I -w \"%{http_code}\"\
+      \ $url)\n  body=$(curl $url)\n  if [ \"$code\" == \"503\" ]\n  then\n    skip\
+      \ \"Kibana Unavailable (503), can't get status - see pod logs: $body\"\n  fi\n\
+      \n  result=$(echo $body | jq -cr '.status.statuses[]')\n  [ \"$result\" != \"\
+      \" ]\n\n  result=$(echo $body | jq -cr '.status.statuses[] | select(.state !=\
+      \ \"green\")')\n  [ \"$result\" == \"\" ]\n}"
+  kind: ConfigMap
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana-test
+    namespace: knative-monitoring
+- apiVersion: v1
+  data:
     run.sh: "\n@test \"Testing Weave Scope UI is accessible\" {\n  curl --retry 12\
       \ --retry-delay 10 http://weave-scope-app.istio-system.svc:80\n}"
   kind: ConfigMap
@@ -320,12 +402,62 @@ items:
     annotations:
       helm.sh/hook: test-success
     labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana-test
+    namespace: knative-monitoring
+  spec:
+    containers:
+    - command:
+      - /tools/bats/bats
+      - -t
+      - /tests/run.sh
+      image: dwdraju/alpine-curl-jq
+      name: kibana-test
+      volumeMounts:
+      - mountPath: /tests
+        name: tests
+        readOnly: true
+      - mountPath: /tools
+        name: tools
+    initContainers:
+    - command:
+      - bash
+      - -c
+      - 'set -ex
+
+        # copy bats to tools dir
+
+        cp -R /usr/local/libexec/ /tools/bats/
+
+        '
+      image: dduportal/bats:0.4.0
+      name: test-framework
+      volumeMounts:
+      - mountPath: /tools
+        name: tools
+    restartPolicy: Never
+    volumes:
+    - configMap:
+        name: kibana-test
+      name: tests
+    - emptyDir: {}
+      name: tools
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      helm.sh/hook: test-success
+    labels:
       app: weave-scope
       chart: weave-scope-1.1.2
       heritage: Tiller
       kubenix/project-name: kubenix
       release: weave-scope
-    name: weave-scope-ui-test-dpx8r
+    name: weave-scope-ui-test-thdr1
     namespace: istio-system
   spec:
     containers:
@@ -366,7 +498,7 @@ items:
       name: tools
 - apiVersion: v1
   data:
-    admin-password: dzZqSkZhT3UxNmlGTjYzSEE3bHNkOUtUVVBkZURRNk9yT05Kd0ZjWg==
+    admin-password: eDY2ampMeFNHUnBrWm9RcDJsM2FseWtid0NiTzIzVmsxdDlsYVMwSw==
     admin-user: YWRtaW4=
     ldap-toml: ''
   kind: Secret
@@ -401,6 +533,26 @@ items:
       app: grafana
       release: grafana
     type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: kibana
+      chart: kibana-3.2.3
+      heritage: Tiller
+      kubenix/project-name: kubenix
+      release: kibana
+    name: kibana
+    namespace: knative-monitoring
+  spec:
+    ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 5601
+    selector:
+      app: kibana
+      release: kibana
+    type: NodePort
 - apiVersion: v1
   kind: Service
   metadata:
@@ -2262,13 +2414,12 @@ items:
   kind: Namespace
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: knative-monitoring
 - apiVersion: v1
   kind: Service
   metadata:
     labels:
-      addonmanager.kubernetes.io/mode: Reconcile
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
       kubernetes.io/name: Elasticsearch
@@ -2286,7 +2437,7 @@ items:
   metadata:
     labels:
       app: fluentd-ds
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: fluentd-ds
   rules:
   - apiGroups:
@@ -2303,7 +2454,7 @@ items:
   metadata:
     labels:
       app: fluentd-ds
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: fluentd-ds
   roleRef:
     apiGroup: ''
@@ -2319,7 +2470,7 @@ items:
   metadata:
     labels:
       app: fluentd-ds
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: fluentd-ds
     namespace: knative-monitoring
   spec:
@@ -2339,7 +2490,7 @@ items:
   metadata:
     labels:
       app: fluentd-ds
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
       version: v2.0.4
     name: fluentd-ds
     namespace: knative-monitoring
@@ -2354,7 +2505,7 @@ items:
           scheduler.alpha.kubernetes.io/critical-pod: ''
         labels:
           app: fluentd-ds
-          serving.knative.dev/release: v0.8.1
+          serving.knative.dev/release: v0.9.0
           version: v2.0.4
       spec:
         containers:
@@ -2620,7 +2771,6 @@ items:
   kind: ServiceAccount
   metadata:
     labels:
-      addonmanager.kubernetes.io/mode: Reconcile
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
     name: elasticsearch-logging
@@ -5109,7 +5259,6 @@ items:
   kind: ClusterRole
   metadata:
     labels:
-      addonmanager.kubernetes.io/mode: Reconcile
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
     name: elasticsearch-logging
@@ -5248,6 +5397,23 @@ items:
     selector:
       app: node-exporter
     type: ClusterIP
+- apiVersion: v1
+  data:
+    custom.ini: '# You can customize Grafana via changing context of this field.
+
+      [auth.anonymous]
+
+      # enable anonymous access
+
+      enabled = true
+
+      '
+  kind: ConfigMap
+  metadata:
+    labels:
+      serving.knative.dev/release: v0.9.0
+    name: grafana-custom-config
+    namespace: knative-monitoring
 - apiVersion: v1
   data:
     knative-control-plane-efficiency-dashboard.json: "{\n  \"__inputs\": [\n    {\n\
@@ -5429,7 +5595,7 @@ items:
   metadata:
     labels:
       grafana_dashboard: '1'
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: grafana-dashboard-definition-knative-efficiency
     namespace: knative-monitoring
 - apiVersion: v1
@@ -5438,12 +5604,12 @@ items:
       : \"\",\n      \"label\": \"prometheus\",\n      \"name\": \"prometheus\",\n\
       \      \"pluginId\": \"prometheus\",\n      \"pluginName\": \"Prometheus\",\n\
       \      \"type\": \"datasource\"\n    }\n  ],\n  \"annotations\": {\n    \"list\"\
-      : []\n  },\n  \"description\": \"Knative Serving - Reconciler\",\n  \"editable\"\
-      : false,\n  \"gnetId\": null,\n  \"graphTooltip\": 0,\n  \"id\": null,\n  \"\
-      links\": [],\n  \"panels\": [\n    {\n      \"collapsed\": false,\n      \"\
-      gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n   \
-      \     \"y\": 0\n      },\n      \"id\": 7,\n      \"panels\": [],\n      \"\
-      title\": \"Aggregate\",\n      \"type\": \"row\"\n    },\n    {\n      \"aliasColors\"\
+      : []\n  },\n  \"description\": \"Knative - Reconciler\",\n  \"editable\": false,\n\
+      \  \"gnetId\": null,\n  \"graphTooltip\": 0,\n  \"id\": null,\n  \"links\":\
+      \ [],\n  \"panels\": [\n    {\n      \"collapsed\": false,\n      \"gridPos\"\
+      : {\n        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\"\
+      : 0\n      },\n      \"id\": 7,\n      \"panels\": [],\n      \"title\": \"\
+      Aggregate\",\n      \"type\": \"row\"\n    },\n    {\n      \"aliasColors\"\
       : {},\n      \"bars\": false,\n      \"dashLength\": 10,\n      \"dashes\":\
       \ false,\n      \"datasource\": \"prometheus\",\n      \"fill\": 1,\n      \"\
       gridPos\": {\n        \"h\": 9,\n        \"w\": 12,\n        \"x\": 0,\n   \
@@ -5632,13 +5798,13 @@ items:
       ,\n      \"30m\",\n      \"1h\",\n      \"2h\",\n      \"1d\"\n    ],\n    \"\
       time_options\": [\n      \"5m\",\n      \"15m\",\n      \"1h\",\n      \"6h\"\
       ,\n      \"12h\",\n      \"24h\",\n      \"2d\",\n      \"7d\",\n      \"30d\"\
-      \n    ]\n  },\n  \"timezone\": \"\",\n  \"title\": \"Knative Serving - Reconciler\"\
+      \n    ]\n  },\n  \"timezone\": \"\",\n  \"title\": \"Knative - Reconciler\"\
       ,\n  \"uid\": \"j0oFdEYiz\",\n  \"version\": 10\n}\n"
   kind: ConfigMap
   metadata:
     labels:
       grafana_dashboard: '1'
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: grafana-dashboard-definition-knative-reconciler
     namespace: knative-monitoring
 - apiVersion: v1
@@ -5879,46 +6045,86 @@ items:
       : 1,\n            \"max\": null,\n            \"min\": null,\n            \"\
       show\": false\n         }\n         ]\n      },\n      {\n         \"aliasColors\"\
       : {},\n         \"bars\": false,\n         \"dashLength\": 10,\n         \"\
-      dashes\": false,\n         \"datasource\": \"prometheus\",\n         \"decimals\"\
-      : null,\n         \"fill\": 1,\n         \"gridPos\": {\n         \"h\": 9,\n\
-      \         \"w\": 24,\n         \"x\": 0,\n         \"y\": 22\n         },\n\
-      \         \"id\": 12,\n         \"legend\": {\n         \"avg\": false,\n  \
-      \       \"current\": false,\n         \"hideZero\": false,\n         \"max\"\
-      : false,\n         \"min\": false,\n         \"show\": false,\n         \"total\"\
-      : false,\n         \"values\": false\n         },\n         \"lines\": true,\n\
-      \         \"linewidth\": 1,\n         \"links\": [],\n         \"nullPointMode\"\
-      : \"null\",\n         \"percentage\": false,\n         \"pointradius\": 5,\n\
-      \         \"points\": false,\n         \"renderer\": \"flot\",\n         \"\
-      seriesOverrides\": [\n         {\n            \"alias\": \"Panic Mode\",\n \
-      \           \"color\": \"#e24d42\",\n            \"linewidth\": 2,\n       \
-      \     \"yaxis\": 2\n         }\n         ],\n         \"spaceLength\": 10,\n\
-      \         \"stack\": false,\n         \"steppedLine\": true,\n         \"targets\"\
-      : [\n         {\n            \"expr\": \"sum(autoscaler_panic_mode{namespace_name=\\\
-      \"$namespace\\\", configuration_name=\\\"$configuration\\\", revision_name=\\\
-      \"$revision\\\"} )\",\n            \"format\": \"time_series\",\n          \
-      \  \"intervalFactor\": 1,\n            \"legendFormat\": \"Panic Mode\",\n \
-      \           \"refId\": \"A\"\n         }\n         ],\n         \"thresholds\"\
-      : [],\n         \"timeFrom\": null,\n         \"timeShift\": null,\n       \
-      \  \"title\": \"Panic Mode\",\n         \"tooltip\": {\n         \"shared\"\
-      : true,\n         \"sort\": 0,\n         \"value_type\": \"individual\"\n  \
-      \       },\n         \"type\": \"graph\",\n         \"xaxis\": {\n         \"\
-      buckets\": null,\n         \"mode\": \"time\",\n         \"name\": null,\n \
-      \        \"show\": true,\n         \"values\": []\n         },\n         \"\
-      yaxes\": [\n         {\n            \"format\": \"short\",\n            \"label\"\
-      : null,\n            \"logBase\": 1,\n            \"max\": \"1.0\",\n      \
-      \      \"min\": \"0\",\n            \"show\": true\n         },\n         {\n\
-      \            \"format\": \"short\",\n            \"label\": null,\n        \
-      \    \"logBase\": 1,\n            \"max\": null,\n            \"min\": null,\n\
-      \            \"show\": false\n         }\n         ]\n      },\n      {\n  \
-      \       \"collapsed\": false,\n         \"gridPos\": {\n         \"h\": 1,\n\
-      \         \"w\": 24,\n         \"x\": 0,\n         \"y\": 31\n         },\n\
-      \         \"id\": 20,\n         \"panels\": [],\n         \"title\": \"Activator\
-      \ Metrics\",\n         \"type\": \"row\"\n      },\n      {\n         \"aliasColors\"\
-      : {},\n         \"bars\": false,\n         \"dashLength\": 10,\n         \"\
       dashes\": false,\n         \"datasource\": \"prometheus\",\n         \"fill\"\
-      : 1,\n         \"gridPos\": {\n         \"h\": 10,\n         \"w\": 24,\n  \
-      \       \"x\": 0,\n         \"y\": 32\n         },\n         \"id\": 24,\n \
-      \        \"legend\": {\n         \"avg\": false,\n         \"current\": false,\n\
+      : 1,\n         \"gridPos\": {\n         \"h\": 9,\n         \"w\": 24,\n   \
+      \      \"x\": 0,\n         \"y\": 13\n         },\n         \"id\": 9,\n   \
+      \      \"legend\": {\n         \"avg\": false,\n         \"current\": false,\n\
+      \         \"max\": false,\n         \"min\": false,\n         \"show\": true,\n\
+      \         \"total\": false,\n         \"values\": false\n         },\n     \
+      \    \"lines\": true,\n         \"linewidth\": 1,\n         \"links\": [],\n\
+      \         \"nullPointMode\": \"null\",\n         \"percentage\": false,\n  \
+      \       \"pointradius\": 5,\n         \"points\": false,\n         \"renderer\"\
+      : \"flot\",\n         \"seriesOverrides\": [],\n         \"spaceLength\": 10,\n\
+      \         \"stack\": false,\n         \"steppedLine\": true,\n         \"targets\"\
+      : [\n         {\n            \"expr\": \"sum(autoscaler_stable_requests_per_second{namespace_name=\\\
+      \"$namespace\\\", configuration_name=\\\"$configuration\\\", revision_name=\\\
+      \"$revision\\\"})\",\n            \"format\": \"time_series\",\n           \
+      \ \"interval\": \"1s\",\n            \"intervalFactor\": 1,\n            \"\
+      legendFormat\": \"Average RPS\",\n            \"refId\": \"A\"\n         },\n\
+      \         {\n            \"expr\": \"sum(autoscaler_panic_requests_per_second{namespace_name=\\\
+      \"$namespace\\\", configuration_name=\\\"$configuration\\\", revision_name=\\\
+      \"$revision\\\"})\",\n            \"format\": \"time_series\",\n           \
+      \ \"interval\": \"1s\",\n            \"intervalFactor\": 1,\n            \"\
+      legendFormat\": \"Average Panic RPS\",\n            \"refId\": \"B\"\n     \
+      \    },\n         {\n            \"expr\": \"sum(autoscaler_target_requests_per_second{namespace_name=\\\
+      \"$namespace\\\", configuration_name=\\\"$configuration\\\", revision_name=\\\
+      \"$revision\\\"})\",\n            \"format\": \"time_series\",\n           \
+      \ \"interval\": \"1s\",\n            \"intervalFactor\": 1,\n            \"\
+      legendFormat\": \"Target RPS\",\n            \"refId\": \"C\"\n         }\n\
+      \         ],\n         \"thresholds\": [],\n         \"timeFrom\": null,\n \
+      \        \"timeShift\": null,\n         \"title\": \"Observed RPS\",\n     \
+      \    \"tooltip\": {\n         \"shared\": true,\n         \"sort\": 0,\n   \
+      \      \"value_type\": \"individual\"\n         },\n         \"type\": \"graph\"\
+      ,\n         \"xaxis\": {\n         \"buckets\": null,\n         \"mode\": \"\
+      time\",\n         \"name\": null,\n         \"show\": true,\n         \"values\"\
+      : []\n         },\n         \"yaxes\": [\n         {\n            \"format\"\
+      : \"short\",\n            \"label\": \"\",\n            \"logBase\": 1,\n  \
+      \          \"max\": null,\n            \"min\": null,\n            \"show\"\
+      : true\n         },\n         {\n            \"format\": \"short\",\n      \
+      \      \"label\": \"\",\n            \"logBase\": 1,\n            \"max\": null,\n\
+      \            \"min\": null,\n            \"show\": false\n         }\n     \
+      \    ]\n      },\n      {\n         \"aliasColors\": {},\n         \"bars\"\
+      : false,\n         \"dashLength\": 10,\n         \"dashes\": false,\n      \
+      \   \"datasource\": \"prometheus\",\n         \"decimals\": null,\n        \
+      \ \"fill\": 1,\n         \"gridPos\": {\n         \"h\": 9,\n         \"w\"\
+      : 24,\n         \"x\": 0,\n         \"y\": 22\n         },\n         \"id\"\
+      : 12,\n         \"legend\": {\n         \"avg\": false,\n         \"current\"\
+      : false,\n         \"hideZero\": false,\n         \"max\": false,\n        \
+      \ \"min\": false,\n         \"show\": false,\n         \"total\": false,\n \
+      \        \"values\": false\n         },\n         \"lines\": true,\n       \
+      \  \"linewidth\": 1,\n         \"links\": [],\n         \"nullPointMode\": \"\
+      null\",\n         \"percentage\": false,\n         \"pointradius\": 5,\n   \
+      \      \"points\": false,\n         \"renderer\": \"flot\",\n         \"seriesOverrides\"\
+      : [\n         {\n            \"alias\": \"Panic Mode\",\n            \"color\"\
+      : \"#e24d42\",\n            \"linewidth\": 2,\n            \"yaxis\": 2\n  \
+      \       }\n         ],\n         \"spaceLength\": 10,\n         \"stack\": false,\n\
+      \         \"steppedLine\": true,\n         \"targets\": [\n         {\n    \
+      \        \"expr\": \"sum(autoscaler_panic_mode{namespace_name=\\\"$namespace\\\
+      \", configuration_name=\\\"$configuration\\\", revision_name=\\\"$revision\\\
+      \"} )\",\n            \"format\": \"time_series\",\n            \"intervalFactor\"\
+      : 1,\n            \"legendFormat\": \"Panic Mode\",\n            \"refId\":\
+      \ \"A\"\n         }\n         ],\n         \"thresholds\": [],\n         \"\
+      timeFrom\": null,\n         \"timeShift\": null,\n         \"title\": \"Panic\
+      \ Mode\",\n         \"tooltip\": {\n         \"shared\": true,\n         \"\
+      sort\": 0,\n         \"value_type\": \"individual\"\n         },\n         \"\
+      type\": \"graph\",\n         \"xaxis\": {\n         \"buckets\": null,\n   \
+      \      \"mode\": \"time\",\n         \"name\": null,\n         \"show\": true,\n\
+      \         \"values\": []\n         },\n         \"yaxes\": [\n         {\n \
+      \           \"format\": \"short\",\n            \"label\": null,\n         \
+      \   \"logBase\": 1,\n            \"max\": \"1.0\",\n            \"min\": \"\
+      0\",\n            \"show\": true\n         },\n         {\n            \"format\"\
+      : \"short\",\n            \"label\": null,\n            \"logBase\": 1,\n  \
+      \          \"max\": null,\n            \"min\": null,\n            \"show\"\
+      : false\n         }\n         ]\n      },\n      {\n         \"collapsed\":\
+      \ false,\n         \"gridPos\": {\n         \"h\": 1,\n         \"w\": 24,\n\
+      \         \"x\": 0,\n         \"y\": 31\n         },\n         \"id\": 20,\n\
+      \         \"panels\": [],\n         \"title\": \"Activator Metrics\",\n    \
+      \     \"type\": \"row\"\n      },\n      {\n         \"aliasColors\": {},\n\
+      \         \"bars\": false,\n         \"dashLength\": 10,\n         \"dashes\"\
+      : false,\n         \"datasource\": \"prometheus\",\n         \"fill\": 1,\n\
+      \         \"gridPos\": {\n         \"h\": 10,\n         \"w\": 24,\n       \
+      \  \"x\": 0,\n         \"y\": 32\n         },\n         \"id\": 24,\n      \
+      \   \"legend\": {\n         \"avg\": false,\n         \"current\": false,\n\
       \         \"max\": false,\n         \"min\": false,\n         \"show\": true,\n\
       \         \"total\": false,\n         \"values\": false\n         },\n     \
       \    \"lines\": true,\n         \"linewidth\": 1,\n         \"links\": [],\n\
@@ -6069,7 +6275,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: scaling-config
     namespace: knative-monitoring
 - apiVersion: v1
@@ -6524,26 +6730,13 @@ items:
   metadata:
     labels:
       grafana_dashboard: '1'
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: grafana-dashboard-definition-knative
-    namespace: knative-monitoring
-- apiVersion: v1
-  data:
-    prometheus.yaml: "datasources:\n - name: prometheus\n   type: prometheus\n   access:\
-      \ proxy\n   org_id: 1\n   url: http://prometheus-system-np:8080\n   version:\
-      \ 1\n   editable: false\n"
-  kind: ConfigMap
-  metadata:
-    labels:
-      grafana_datasource: '1'
-      serving.knative.dev/release: v0.8.1
-    name: grafana-datasources
     namespace: knative-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: ClusterRoleBinding
   metadata:
     labels:
-      addonmanager.kubernetes.io/mode: Reconcile
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
     name: elasticsearch-logging
@@ -6559,39 +6752,46 @@ items:
     namespace: knative-monitoring
 - apiVersion: v1
   data:
+    prometheus.yaml: "datasources:\n - name: prometheus\n   type: prometheus\n   access:\
+      \ proxy\n   org_id: 1\n   url: http://prometheus-system-np:8080\n   version:\
+      \ 1\n   editable: false\n"
+  kind: ConfigMap
+  metadata:
+    labels:
+      grafana_datasource: '1'
+      serving.knative.dev/release: v0.9.0
+    name: grafana-datasources
+    namespace: knative-monitoring
+- apiVersion: v1
+  data:
     dashboards.yaml: "- name: 'knative'\n  org_id: 1\n  folder: ''\n  type: file\n\
-      \  options:\n    folder: /grafana-dashboard-definition/knative\n- name: 'knative-efficiency'\n\
-      \  org_id: 1\n  folder: ''\n  type: file\n  options:\n    folder: /grafana-dashboard-definition/knative-efficiency\n\
+      \  options:\n    path: /grafana-dashboard-definition/knative\n- name: 'knative-efficiency'\n\
+      \  org_id: 1\n  folder: ''\n  type: file\n  options:\n    path: /grafana-dashboard-definition/knative-efficiency\n\
       - name: 'knative-reconciler'\n  org_id: 1\n  folder: ''\n  type: file\n  options:\n\
-      \    folder: /grafana-dashboard-definition/knative-reconciler\n- name: 'istio'\n\
-      \  org_id: 1\n  folder: ''\n  type: file\n  options:\n    folder: /grafana-dashboard-definition/istio\n\
-      - name: 'mixer'\n  org_id: 1\n  folder: ''\n  type: file\n  options:\n    folder:\
-      \ /grafana-dashboard-definition/mixer\n- name: 'pilot'\n  org_id: 1\n  folder:\
-      \ ''\n  type: file\n  options:\n    folder: /grafana-dashboard-definition/pilot\n\
-      - name: 'kubernetes-deployment'\n  org_id: 1\n  folder: ''\n  type: file\n \
-      \ options:\n    folder: /grafana-dashboard-definition/kubernetes-deployment\n\
+      \    path: /grafana-dashboard-definition/knative-reconciler\n- name: 'kubernetes-deployment'\n\
+      \  org_id: 1\n  folder: ''\n  type: file\n  options:\n    path: /grafana-dashboard-definition/kubernetes-deployment\n\
       - name: 'kubernetes-capacity-planning'\n  org_id: 1\n  folder: ''\n  type: file\n\
-      \  options:\n    folder: /grafana-dashboard-definition/kubernetes-capacity-planning\n\
+      \  options:\n    path: /grafana-dashboard-definition/kubernetes-capacity-planning\n\
       - name: 'kubernetes-cluster-health'\n  org_id: 1\n  folder: ''\n  type: file\n\
-      \  options:\n    folder: /grafana-dashboard-definition/kubernetes-cluster-health\n\
+      \  options:\n    path: /grafana-dashboard-definition/kubernetes-cluster-health\n\
       - name: 'kubernetes-cluster-status'\n  org_id: 1\n  folder: ''\n  type: file\n\
-      \  options:\n    folder: /grafana-dashboard-definition/kubernetes-cluster-status\n\
+      \  options:\n    path: /grafana-dashboard-definition/kubernetes-cluster-status\n\
       - name: 'kubernetes-control-plane-status'\n  org_id: 1\n  folder: ''\n  type:\
-      \ file\n  options:\n    folder: /grafana-dashboard-definition/kubernetes-control-plane-status\n\
+      \ file\n  options:\n    path: /grafana-dashboard-definition/kubernetes-control-plane-status\n\
       - name: 'kubernetes-resource-requests'\n  org_id: 1\n  folder: ''\n  type: file\n\
-      \  options:\n    folder: /grafana-dashboard-definition/kubernetes-resource-requests\n\
+      \  options:\n    path: /grafana-dashboard-definition/kubernetes-resource-requests\n\
       - name: 'kubernetes-nodes'\n  org_id: 1\n  folder: ''\n  type: file\n  options:\n\
-      \    folder: /grafana-dashboard-definition/kubernetes-nodes\n- name: 'kubernetes-pods'\n\
-      \  org_id: 1\n  folder: ''\n  type: file\n  options:\n    folder: /grafana-dashboard-definition/kubernetes-pods\n\
+      \    path: /grafana-dashboard-definition/kubernetes-nodes\n- name: 'kubernetes-pods'\n\
+      \  org_id: 1\n  folder: ''\n  type: file\n  options:\n    path: /grafana-dashboard-definition/kubernetes-pods\n\
       - name: 'kubernetes-statefulset'\n  org_id: 1\n  folder: ''\n  type: file\n\
-      \  options:\n    folder: /grafana-dashboard-definition/kubernetes-statefulset\n\
+      \  options:\n    path: /grafana-dashboard-definition/kubernetes-statefulset\n\
       - name: 'knative-serving-scaling'\n  org_id: 1\n  folder: ''\n  type: file\n\
-      \  options:\n    folder: /grafana-dashboard-definition/scaling\n"
+      \  options:\n    path: /grafana-dashboard-definition/scaling\n"
   kind: ConfigMap
   metadata:
     labels:
       grafana_dashboard: '1'
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: grafana-dashboards
     namespace: knative-monitoring
 - apiVersion: v1
@@ -6599,7 +6799,7 @@ items:
   metadata:
     labels:
       app: grafana
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: grafana
     namespace: knative-monitoring
   spec:
@@ -6633,7 +6833,7 @@ items:
       \ 3s\n  scrape_timeout: 3s\n  kubernetes_sd_configs:\n  - role: pod\n  relabel_configs:\n\
       \  # Scrape only the the targets matching the following metadata\n  - source_labels:\
       \ [__meta_kubernetes_namespace, __meta_kubernetes_pod_label_app, __meta_kubernetes_pod_container_port_name]\n\
-      \    action: keep\n    regex: knative-serving;activator;metrics-port\n  # Rename\
+      \    action: keep\n    regex: knative-serving;activator;metrics\n  # Rename\
       \ metadata labels to be reader friendly\n  - source_labels: [__meta_kubernetes_namespace]\n\
       \    target_label: namespace\n  - source_labels: [__meta_kubernetes_pod_name]\n\
       \    target_label: pod\n  - source_labels: [__meta_kubernetes_service_name]\n\
@@ -6641,8 +6841,8 @@ items:
       \ 3s\n  scrape_timeout: 3s\n  kubernetes_sd_configs:\n  - role: pod\n  relabel_configs:\n\
       \  # Scrape only the the targets matching the following metadata\n  - source_labels:\
       \ [__meta_kubernetes_namespace, __meta_kubernetes_pod_label_role, __meta_kubernetes_pod_container_port_name]\n\
-      \    action: keep\n    regex: knative-serving;webhook;metrics-port\n  # Rename\
-      \ metadata labels to be reader friendly\n  - source_labels: [__meta_kubernetes_namespace]\n\
+      \    action: keep\n    regex: knative-serving;webhook;metrics\n  # Rename metadata\
+      \ labels to be reader friendly\n  - source_labels: [__meta_kubernetes_namespace]\n\
       \    target_label: namespace\n  - source_labels: [__meta_kubernetes_pod_name]\n\
       \    target_label: pod\n  - source_labels: [__meta_kubernetes_service_name]\n\
       \    target_label: service\n# Queue proxy metrics\n- job_name: queue-proxy\n\
@@ -6801,7 +7001,7 @@ items:
   metadata:
     labels:
       name: prometheus-scrape-config
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-scrape-config
     namespace: knative-monitoring
 - apiVersion: v1
@@ -6809,7 +7009,7 @@ items:
   metadata:
     labels:
       app: kube-controller-manager
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: kube-controller-manager
     namespace: knative-monitoring
   spec:
@@ -6827,7 +7027,7 @@ items:
   metadata:
     labels:
       app: prometheus
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system-discovery
     namespace: knative-monitoring
   spec:
@@ -6845,14 +7045,14 @@ items:
   kind: ServiceAccount
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: knative-monitoring
 - apiVersion: rbac.authorization.k8s.io/v1
   kind: Role
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: default
   rules:
@@ -6877,7 +7077,7 @@ items:
   kind: Role
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: knative-monitoring
   rules:
@@ -6898,29 +7098,10 @@ items:
     - configmaps
     verbs:
     - get
-- apiVersion: rbac.authorization.k8s.io/v1
-  kind: Role
-  metadata:
-    labels:
-      serving.knative.dev/release: v0.8.1
-    name: prometheus-system
-    namespace: kube-system
-  rules:
-  - apiGroups:
-    - ''
-    resources:
-    - services
-    - endpoints
-    - pods
-    verbs:
-    - get
-    - list
-    - watch
 - apiVersion: apps/v1
   kind: StatefulSet
   metadata:
     labels:
-      addonmanager.kubernetes.io/mode: Reconcile
       app: elasticsearch-logging
       kubernetes.io/cluster-service: 'true'
       version: v5.6.4
@@ -6980,7 +7161,25 @@ items:
   kind: Role
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
+    name: prometheus-system
+    namespace: kube-system
+  rules:
+  - apiGroups:
+    - ''
+    resources:
+    - services
+    - endpoints
+    - pods
+    verbs:
+    - get
+    - list
+    - watch
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    labels:
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: istio-system
   rules:
@@ -7006,7 +7205,7 @@ items:
   kind: ClusterRole
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: knative-monitoring
   rules:
@@ -7037,7 +7236,7 @@ items:
   kind: RoleBinding
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: default
   roleRef:
@@ -7052,7 +7251,7 @@ items:
   kind: RoleBinding
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: knative-monitoring
   roleRef:
@@ -7067,7 +7266,7 @@ items:
   kind: RoleBinding
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: kube-system
   roleRef:
@@ -7082,7 +7281,7 @@ items:
   kind: RoleBinding
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: istio-system
   roleRef:
@@ -7097,7 +7296,7 @@ items:
   kind: ClusterRoleBinding
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
   roleRef:
     apiGroup: rbac.authorization.k8s.io
@@ -7111,7 +7310,7 @@ items:
   kind: Service
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system-np
     namespace: knative-monitoring
   spec:
@@ -7125,7 +7324,7 @@ items:
   kind: StatefulSet
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: prometheus-system
     namespace: knative-monitoring
   spec:
@@ -7139,7 +7338,7 @@ items:
       metadata:
         labels:
           app: prometheus
-          serving.knative.dev/release: v0.8.1
+          serving.knative.dev/release: v0.9.0
       spec:
         containers:
         - args:
@@ -7197,7 +7396,7 @@ items:
   kind: Service
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: zipkin
     namespace: istio-system
   spec:
@@ -7206,29 +7405,11 @@ items:
       port: 9411
     selector:
       app: zipkin
-- apiVersion: v1
-  kind: Service
-  metadata:
-    labels:
-      addonmanager.kubernetes.io/mode: Reconcile
-      app: kibana-logging
-      kubernetes.io/cluster-service: 'true'
-      kubernetes.io/name: Kibana
-    name: kibana-logging
-    namespace: knative-monitoring
-  spec:
-    ports:
-    - port: 5601
-      protocol: TCP
-      targetPort: ui
-    selector:
-      app: kibana-logging
-    type: NodePort
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: zipkin
     namespace: istio-system
   spec:
@@ -7242,7 +7423,7 @@ items:
           sidecar.istio.io/inject: 'false'
         labels:
           app: zipkin
-          serving.knative.dev/release: v0.8.1
+          serving.knative.dev/release: v0.9.0
       spec:
         containers:
         - env:
@@ -7269,46 +7450,6 @@ items:
               memory: 1000Mi
             requests:
               memory: 256Mi
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    labels:
-      addonmanager.kubernetes.io/mode: Reconcile
-      app: kibana-logging
-      kubernetes.io/cluster-service: 'true'
-    name: kibana-logging
-    namespace: knative-monitoring
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app: kibana-logging
-    template:
-      metadata:
-        labels:
-          app: kibana-logging
-      spec:
-        containers:
-        - env:
-          - name: ELASTICSEARCH_URL
-            value: http://elasticsearch-logging:9200
-          - name: SERVER_BASEPATH
-            value: /api/v1/namespaces/knative-monitoring/services/kibana-logging/proxy
-          - name: XPACK_MONITORING_ENABLED
-            value: 'false'
-          - name: XPACK_SECURITY_ENABLED
-            value: 'false'
-          image: docker.elastic.co/kibana/kibana:5.6.4
-          name: kibana-logging
-          ports:
-          - containerPort: 5601
-            name: ui
-            protocol: TCP
-          resources:
-            limits:
-              cpu: 1000m
-            requests:
-              cpu: 100m
 - apiVersion: v1
   data:
     100.system.conf: "<system>\n  root_dir /tmp/fluentd-buffers/\n</system>"
@@ -7353,7 +7494,7 @@ items:
   kind: ConfigMap
   metadata:
     labels:
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: fluentd-ds-config
     namespace: knative-monitoring
 - apiVersion: v1
@@ -7361,7 +7502,7 @@ items:
   metadata:
     labels:
       app: fluentd-ds
-      serving.knative.dev/release: v0.8.1
+      serving.knative.dev/release: v0.9.0
     name: fluentd-ds
     namespace: knative-monitoring
 kind: List

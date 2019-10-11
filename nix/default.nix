@@ -1,5 +1,6 @@
 { 
   sources ? import ./sources.nix,
+  pkgs ? import <nixpkgs> {},
   system ? null,
   inputs ? {}
 }:
@@ -24,7 +25,13 @@ let
         safe-inputs = make-defaults inputs; 
       in
       (super.integration-modules.eval {
-        modules = safe-inputs.modules ++ [./targets/environment-setup.nix];
+        modules = 
+            (if pkgs.lib.isFunction safe-inputs.modules 
+              then (safe-inputs.modules super) 
+              else safe-inputs.modules)
+          ++ [(./perspective + "/${safe-inputs.environment.perspective}")]
+          ++ [(toString (./targets/modules + "/${safe-inputs.kubernetes.target}"))]
+          ++ [./targets/environment-setup.nix];
         args = { 
           inputs = safe-inputs; 
           pkgs = super.pkgs;
@@ -35,10 +42,19 @@ let
 
     inherit sources;
     inherit inputs;
+
+    runShell = super.callPackage ./run-shell.nix {};
+    lorri = super.callPackage sources.lorri {};
   };
 
   nix-tests = self: super: rec {
     nix-test = super.callPackage ./testing.nix {};
+    testing = super.callPackage ./testing {};
+  };
+
+  nixos-image = self: super: rec {
+    nixos-base = import ./nixos/modules/base.nix;
+    nixos-hydra = import ./nixos/hydra-config.nix;
   };
 
   application = self: super: rec {
@@ -46,8 +62,8 @@ let
   };
 
   overlays = [
-    (import ./overlays/overridings.nix {inherit sources;})
     (import ./overlays/modules.nix {inherit sources;})
+    (import ./overlays/overridings.nix {inherit sources;})
     (import ./tools {inherit sources;})
     (import ./lib {inherit sources;})
     passthrough
@@ -59,4 +75,4 @@ let
     // { inherit overlays; } 
     // (if system != null then { inherit system; } else {});
 in
-  import sources.nixpkgs args
+  import ./nixpkgs { inherit sources; extraArgs = args; }

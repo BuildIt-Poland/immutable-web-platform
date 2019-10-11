@@ -8,18 +8,25 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  brigade-ns = namespace.brigade;
+  brigade-ns = namespace.brigade.name;
+  infra-ns = namespace.infra.name;
+  functions-ns = namespace.functions.name;
+  integration-modules = pkgs.integration-modules;
+  sops = integration-modules.lib.sops;
 
-  apply-aws-credentials-secret = 
+  # TODO get secret by name - this is not ideal - treating json as string and applying env vars
+  # FIXME add optional arguments - or not? all can be from sops
+  apply-secrets = 
     let
       # INFO reference to self - with evaluated k8s resource
       secret-ref = project-config.kubernetes.resources.getByName "secrets";
     in
-    pkgs.writeScriptBin "apply-aws-credentails-secret" ''
+    pkgs.writeScriptBin "apply-secrets" ''
       ${pkgs.lib.log.important "Creating AWS secret"}
-      AWS_KEY=$(aws configure get aws_access_key_id | base64)
-      AWS_SECRET=$(aws configure get aws_secret_access_key | base64)
+      AWS_KEY=$(${pkgs.awscli}/bin/aws configure get aws_access_key_id | base64)
+      AWS_SECRET=$(${pkgs.awscli}/bin/aws configure get aws_secret_access_key | base64)
 
+      ${pkgs.lib.log.important "Patching ..."}
       eval "echo \"$(cat ${secret-ref.yaml.objects})\"" | ${pkgs.kubectl}/bin/kubectl apply -f -
     '';
 in
@@ -30,14 +37,19 @@ in
   ];
 
   # actually it gives a chance to avoid keeping sensitive data in descriptors
-  kubernetes.patches = [
-    apply-aws-credentials-secret
+  module.scripts = [
+    apply-secrets
   ];
+
+  # TODO aws is blowing out - investigate
+  # kubernetes.patches = [
+  #   apply-secrets
+  # ];
 
   kubernetes.api.secrets = {
     aws-credentials = {
       metadata = {
-        namespace = brigade-ns;
+        namespace = infra-ns;
         name = "aws-credentials";  
       };
       type = "Opaque";
@@ -46,8 +58,10 @@ in
         secret_key = "$AWS_SECRET";
       };
     };
-  };
 
-  # TODO sharedSecret (brigadeSharedSecret) - included in secrets.json
-  # TODO git clone key - sshKey
+    # TODO
+    # hydra-ssh-key = {
+
+    # };
+  };
 }

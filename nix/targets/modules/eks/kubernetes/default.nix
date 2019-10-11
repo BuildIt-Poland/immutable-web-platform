@@ -11,9 +11,9 @@
 let
   namespace = project-config.kubernetes.namespace;
   eks-ns = "eks";
-  kn-serving = namespace.knative-serving;
-  istio-ns = namespace.istio;
-  functions-ns = namespace.functions;
+  kn-serving = namespace.knative-serving.name;
+  istio-ns = namespace.istio.name;
+  functions-ns = namespace.functions.name;
 
   # https://knative.dev/docs/serving/tag-resolution/
   # https://github.com/knative/serving/issues/4435#issuecomment-504108797 
@@ -40,6 +40,7 @@ in
     k8s-extension
     ./service-mesh.nix
     ./virtual-services.nix
+    ./knative-serve.nix
     ./storage.nix
   ];
 

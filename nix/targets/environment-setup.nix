@@ -14,17 +14,21 @@ in
     shell-tools
     docker
     storage
-    brigade
     bitbucket
     git-secrets
     aws
     base
+
+    # FIXME make it optional
+    # ./brigade-setup.nix
+    tekton
   ];
 
   config = {
     environment = {
       type = inputs.environment.type;
-      runtime = inputs.environment.runtime;
+      perspective = inputs.environment.perspective;
+      preload = inputs.environment.preload;
       vars = {
         PROJECT_NAME = config.project.name;
       };
@@ -33,10 +37,11 @@ in
     # FIXME based on target take from modules
     project = rec {
       name = inputs.project.name;
-      author-email = "damian.baar@wipro.com";
+      authorEmail = "damian.baar@wipro.com";
       domain = "buildit.consulting";
       version = "0.0.1";
       resources.yaml.folder = "$PWD/resources";
+      rootFolder = toString ../..;
       repositories = {
         k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
         code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
@@ -73,27 +78,6 @@ in
       };
     };
 
-    brigade = {
-      enabled = true;
-      secret-key = inputs.brigade.secret;
-      projects = {
-        brigade-project = {
-          project-name = "embracing-nix-docker-k8s-helm-knative";
-          project-ref = "digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative"; # like repo
-          pipeline-file = ../../pipeline/infrastructure.ts; # think about these long paths
-          clone-url = config.project.repositories.code-repository;
-          ssh-key = config.bitbucket.ssh-keys.priv;
-          # https://github.com/brigadecore/k8s-resources/blob/master/k8s-resources/brigade-project/values.yaml
-          overridings = {
-            kubernetes = {
-              cacheStorageClass = "cache-storage";
-              buildStorageClass = "build-storage";
-            };
-          };
-        };
-      };
-    };
-
     git-secrets = {
       location = ../../secrets.json;
     };
@@ -101,11 +85,24 @@ in
     kubernetes = {
       target = inputs.kubernetes.target;
       tools.enable = inputs.kubernetes.tools;
+      validation.enable = inputs.opa.validation;
 
+      # knative-eventing-injection=enabled
       namespace = {
-        functions = "functions";
-        argo = "gitops";
-        brigade = "ci";
+        functions = {
+          name = "${config.environment.type}-functions";
+          metadata.labels = {
+            "istio-injection" = "enabled";
+          };
+        };
+        infra = {
+          name = "${config.environment.type}-infra";
+          metadata.labels = {
+            "istio-injection" = "enabled";
+            "knative-eventing-injection" = "enabled";
+          };
+        };
+        argo.name = "gitops";
       };
 
       cluster = {

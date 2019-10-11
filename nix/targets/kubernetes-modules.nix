@@ -15,11 +15,15 @@ in
     kubernetes.resources.list = 
       with kubenix.modules;
       {
-        "${priority.mid  "knative"}"     = [ knative ];
+        "${priority.mid  "knative"}"     = [ knative knative-eventing ];
         "${priority.low  "monitoring"}"  = [ weavescope knative-monitoring ];
         "${priority.low  "gitops"}"      = [ argocd ];
-        "${priority.low  "ci"}"          = [ brigade ];
+        "${priority.low  "infra"}"       = [ infra-namespace ./bitbucket-source.nix ];
+        # WIP: dropping brigade
+        # "${priority.low  "ci"}"          = [ brigade ];
+        "${priority.low  "ci"}"          = [ tekton ];
         "${priority.skip "secrets"}"     = [ secrets ];
+        "${priority.high "policy"}"      = [ opa ];
       } // functions;
   };
 }

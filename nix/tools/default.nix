@@ -6,20 +6,20 @@ in
 rec {
   # Terraform
   terraform-with-plugins = super.callPackage ./terraform {};
+  hydra-cli = (super.callPackage sources.hydra-cli {}).hydra-cli;
 
   # Brigade
-  brigade = super.callPackage ./brigade {};
+  brig = super.callPackage ./brig {};
   brigadeterm = super.callPackage ./brigadeterm {};
 
   # K8S
-  knative = super.callPackage ./knative {};
+  kn = super.callPackage ./kn {};
   kube-prompt = super.callPackage ./kube-prompt {}; 
   hey = super.callPackage ./hey {}; 
   istioctl = super.callPackage ./istioctl {}; 
 
   # docker
   dgoss = super.callPackage ./dgoss {}; 
-  kaniko-build = super.callPackage ./builder/kaniko.nix {};
 
   # backups
   velero = super.callPackage ./velero {};
@@ -35,12 +35,29 @@ rec {
   conftest = super.callPackage ./conftest {};
   opa = super.callPackage ./opa {};
   popeye = super.callPackage ./popeye {};
-  krew = super.callPackage ./kubectl-plugins/krew.nix {};
-  dig = super.callPackage ./kubectl-plugins/dig.nix {};
-  debug = super.callPackage ./kubectl-plugins/debug.nix {};
 
-  yarn2nix = super.callPackage sources.yarn2nix {};
+  kubectl-krew = super.callPackage ./kubectl-krew {};
+  kubectl-dig = super.callPackage ./kubectl-dig {};
+  kubectl-debug = super.callPackage ./kubectl-debug {};
+  kubectl-tkn = super.callPackage ./kubectl-tkn {};
+
+  ko = super.callPackage ./ko {};
+  mkcert = super.callPackage ./mkcert {};
+
+  # yarn2nix = super.callPackage sources.yarn2nix {};
+  yarn2nix = super.callPackage (super.applyPatches {
+    src = super.fetchFromGitHub {
+      sha256 = sources.yarn2nix.sha256;
+      repo = sources.yarn2nix.repo;
+      owner = sources.yarn2nix.owner;
+      rev = sources.yarn2nix.rev;
+    };
+    patches = [./yarn2nix.patch];
+  }) {};
 
   # INFO I need to have hibernate feature for aws
   nixops = (import "${sources.nixops.outPath}/release.nix" {}).build.${super.system};
-}
+  nixos-generators = super.callPackage sources.nixos-generators {};
+  kubectl-virtctl = super.callPackage ./kubectl-virtctl {};
+  kube-psp-advisor = super.callPackage ./kube-psp-advisor {};
+} 

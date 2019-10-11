@@ -1,0 +1,75 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    labels:
+      istio-injection: enabled
+      knative-eventing-injection: enabled
+      kubenix/project-name: kubenix
+    name: dev-infra
+    namespace: default
+- apiVersion: serving.knative.dev/v1alpha1
+  kind: Service
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: bitbucket-message-dumper
+    namespace: dev-infra
+  spec:
+    template:
+      spec:
+        containers:
+        - image: gcr.io/knative-releases/github.com/knative/eventing-sources/cmd/message_dumper
+          imagePullPolicy: IfNotPresent
+- apiVersion: messaging.knative.dev/v1alpha1
+  kind: Channel
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: githubchannel
+    namespace: dev-infra
+  spec:
+    channelTemplate:
+      apiVersion: messaging.knative.dev/v1alpha1
+      kind: InMemoryChannel
+- apiVersion: sources.nachocano.org/v1alpha1
+  kind: BitBucketSource
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: bitbucket-source-sample
+    namespace: dev-infra
+  spec:
+    consumerKey:
+      secretKeyRef:
+        key: consumerKey
+        name: bitbucket-secret
+    consumerSecret:
+      secretKeyRef:
+        key: consumerSecret
+        name: bitbucket-secret
+    eventTypes:
+    - repo:push
+    ownerAndRepository: digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative
+    sink:
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
+      name: bitbucket-message-dumper
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    labels:
+      kubenix/project-name: kubenix
+    name: tekton-pipeline-runner
+    namespace: default
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: cluster-admin
+  subjects:
+  - kind: ServiceAccount
+    name: bitbucket-controller-manager
+    namespace: knative-sources
+kind: List
+labels:

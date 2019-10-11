@@ -1,0 +1,16 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-and-deploy-pipeline
+spec:
+  resources:
+    - name: source
+      type: git
+  tasks:
+    - name: run-something
+      taskRef:
+        name: echo-hello-world
+      resources:
+        inputs:
+          - name: source
+            resource: source

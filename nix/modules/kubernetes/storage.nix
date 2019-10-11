@@ -9,7 +9,7 @@
 }:
 let
   namespace = project-config.kubernetes.namespace;
-  storage-ns = namespace.storage;
+  storage-ns = namespace.storage.name;
 
   create-cr = kind: resource: {
     inherit kind resource;

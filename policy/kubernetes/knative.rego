@@ -1,6 +1,9 @@
 # https://www.openpolicyagent.org/docs/latest/how-do-i-write-policies/
 package main
 
+# TODO: point of contact tag
+# TODO: domain check
+
 deny[msg] {
   match
   not any_name
@@ -18,7 +21,7 @@ deny[msg] {
   not any_namespace
   msg := "Missing namespace, define metadata.namespace"
 }
-
+# try simplify to not input.metadata.name
 any_name {
   input.metadata.name != ""
 }

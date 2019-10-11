@@ -1,10 +1,36 @@
 ## Today
+* better secrets handling - current way ... well
+* getting 200 on bitbucket with tunnel (actually two tunnels ...) - bitbucket-source has to provide correct external url to bitbucket payload - most likely all works well but error is a bit missleading (atlasian 400 bad request)
+* refactor knative module -> knative module + submodules + crd
+* move all sources too niv
+* cli to run shell with persistent config
+* SSL (nginx) -> hydra -> ssl -> ec2a - doing
+* add nix tests
+* minikube localhost ssl -> works (add knative routes to ssl cert)
+* building image -> https://github.com/NixOS/nixpkgs/blob/master/nixos/maintainers/scripts/ec2/create-amis.sh
+* argo - issues with password
+* check knative hosts on eks (modules/kubernetes/knative-serve)
+* map virtual services from eks to nip.io
+* ability to export binary cache store key (best would be to define it upfront for everything and distribute it to the boxes - easier automation)
+
+* hydra & kubevirt & nixos -> thinking
+* when deploying nixos and rebooting wait for ssh
+* consider `tekton` - in progress
+* build on target host - source is there -> s3 ec2 will be faster than local ec2
+* ability to filter namespace and files when applying kubernetes resources
+* add depends_on to bootstrap - changing instance should rerun bootstrap
+* config generation
+* expose kibana - separate chart - test on eks
+* not sure why aws secret patch is shouting ...
+* fix apply-aws-credenitials-secret -> required by brigade 
 * https://github.com/open-policy-agent/opa-istio-plugin
+* validate before saving yaml resource - fail quickly
+* think about keeping pipeline close to project itself -> allow to inject module from function pespective
 * consider to use kubernetes patches like this https://www.diycode.cc/projects/Azure/kubernetes-policy-controller
 * spinup binary cache - after building go packages it takes time ... -> need to have hydra instance
-* expose kibana
 * add metadata.env
 * add namespace for functions
+* istio faul-injection as mocks
 ### in progress
 * setup bastion on nixos -> restic, velero, kubectl
 * https://github.com/kubernetes/autoscaler/issues/2246 - waiting for september
@@ -130,3 +156,9 @@ research -> https://gist.github.com/damianbaar/7194251de2b6f64af459ac861d34a323
 * spin up `brigade.js` to not using any `CI` solution - architecture should be event driven
 * spin up `k8s cluster` on `ec2` not `eks` - just to try alternative solution which has less assumptions from vendor
 * make infrastructure testable, ...[more](https://nixos.org/nixos/manual/index.html#sec-nixos-tests)
+
+#### Some whys
+* why there are 2 CI systems - hydra and `brigade`
+> I was playing only with brigade and it assumes to many custom scripts related to updating the binary store, number of plugins is growing fast and it is painful to build it every time, this is where `hydra` comes in - gives ability to create a channel which can be latter used by other person - it will save tons of build time. `hydra` also allows build `tar` which can be helpful in case of `packages` as well as be a `binary-store`. 
+> Brigade is great to response to events with CI flavour, building artifacts is okey, but in case of integration with `nix` and heavy load it is not a best fit, also brigade run within cluster, `hydra` outside.
+> Another point is related to disk usage - sometimes cache can grow so no point to keep it locally.

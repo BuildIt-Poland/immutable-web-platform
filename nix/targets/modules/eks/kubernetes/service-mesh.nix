@@ -29,12 +29,6 @@ in
       certmanager.enabled = true;
     };
 
-    namespace = {
-      metadata.annotations = {
-        "iam.amazonaws.com/allowed-roles" = "[\"${project-config.kubernetes.cluster.name}*\"]";
-      };
-    };
-
     helm = {
       gateways = {
         istio-ingressgateway = {
@@ -43,7 +37,7 @@ in
             # "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"; # FIXME does not work with external-dns
             # this should not be here - not necessary entry in route53
             # "external-dns.alpha.kubernetes.io/hostname" = "${project-config.project.make-sub-domain "*"}";
-            "service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags" = "Owner=${project-config.project.author-email}";
+            "service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags" = "Owner=${project-config.project.authorEmail}";
           };
         };
       };
@@ -72,7 +66,7 @@ in
       };
 
       certmanager.enabled = true;
-      certmanager.email = project-config.project.author-email;
+      certmanager.email = project-config.project.authorEmail;
     };
   };
 }

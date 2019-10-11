@@ -11,18 +11,10 @@ let
     docker = express-app;
   };
 
-  # TODO move call-function 
   scripts = import ./scripts { inherit pkgs; };
 
   namespaces= project-config.kubernetes.namespace;
-
-  # FIXME ingress port for isio - instead of 31380
-  # FIXME for hosted cluster it is not necessary
-  call-function = 
-    (pkgs.writeScriptBin "call-express-app-function-minikube" ''
-      ${pkgs.curl}/bin/curl '-sS' '-H' 'Host: ${fn-config.label}.${namespaces.functions}.${fn-config.domain}' \
-        http://$(${pkgs.minikube}/bin/minikube ip -p ${project-config.project.name}):31380 -v
-    '');
+  functions-ns = namespaces.functions.name;
 in
 {
   imports = with kubenix.modules; [ 
@@ -30,6 +22,7 @@ in
     docker-registry
     knative-serve
     k8s-extension
+    tekton-crd
   ];
 
   module.packages = {
@@ -39,16 +32,24 @@ in
   module.tests = tests;
 
   module.scripts = [
-    call-function
   ];
 
   docker.images.express-app.image = express-app;
 
-  kubernetes.api."knative-serve-service" = {
+  kubernetes.imports = [
+    ./pipeline/task-run.yaml
+    ./pipeline/task-echo.yaml
+    ./pipeline/pipeline.yaml
+    ./pipeline/pipeline-resource.yaml
+    ./pipeline/pipeline-run.yaml
+    ./pipeline/sa.yaml
+  ];
+
+  kubernetes.api.ksvc = {
     "${fn-config.label}" = {
       metadata = {
         name = fn-config.label;
-        namespace = namespaces.functions;
+        namespace = functions-ns;
       };
       spec = {
         template = {
