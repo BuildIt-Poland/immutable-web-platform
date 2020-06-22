@@ -1,14 +1,19 @@
 # Immutable platform - all as a code approach
 
+<!-- TODO: add asciicinema -->
+
 ### Purpose
 Yet another story about `kubernetes` and declarative approach to infrastructure, deployments, immutability and development.
 
-... being more verbose ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and 
-provide full testing ability of infrastructure as well as on application level following `gitops` way.
+... being more verbose ... fully automated `kubernetes` environment based on `FaaS` to be run on local environment, virtual machines or in cloud based leveraging `nixos` and `nixpkgs` ecosystem. This is an example architecture how things can be modeled in fully reproducible manner, be language agnostic and provide full testing ability of infrastructure as well as on application level following `gitops` way.
 
-### It combines two perspectives
-* immutable platform
-* development platform
+### Preparation
+* get [`docker`](https://www.docker.com/products/docker-desktop) for `minikube`.
+* get [`nix`](https://nixos.org/nix/download.html) - creating isolated local environment and package management
+
+### Quick start
+* if you did all steps from `preparatioin`, navigate to `development/minikube` folder ... after that `direnv` should take control and spawn `local environment` just for you
+> pro tip: in very first time it would be better if you will leave your computer for a while ... it takes time
 
 ### Inspiration part
 * [brigade js in action](https://www.youtube.com/watch?v=yhfc0FKdFc8&t=1s)
@@ -106,6 +111,7 @@ Start from [start guide first.](/docs/start.md)
 * [`grafana`](https://bitbucket.org/repo/6zKBnz9/images/1943034243-Screenshot%202019-06-19%20at%2013.45.21.png)
 * [weavescope](https://bitbucket.org/repo/6zKBnz9/images/3906895708-Screenshot%202019-06-19%20at%2013.45.55.png)
 * [zipkin](https://bitbucket.org/repo/6zKBnz9/images/573168924-Screenshot%202019-07-10%20at%2013.30.58.png)
+
 #### Gitops
 * [ifra repo](https://bitbucket.org/damian_baar/k8s-infra-descriptors/src/master/)
 * [argo-cd](https://bitbucket.org/repo/6zKBnz9/images/1558410695-Screenshot%202019-07-10%20at%2010.38.17.png)
