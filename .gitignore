@@ -2,6 +2,7 @@ result*
 .helm
 .go
 */resources
+.DS_Store
 # nixops state - super crucial
 *.nixops
 *.nixops-shm
