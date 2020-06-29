@@ -10,7 +10,7 @@ let
 in
   pkgs.mkShell rec {
     NAME = "playground";
-    nix_shell_name = "${name}#λ";
+    NIX_SHELL_NAME = "${NAME}#λ";
     MINIKUBE_CLUSTER = "${NAME}_cluster";
     HELM_HOME = (toString ./.) + "/.helm";
     ROOT_WORKSPACE = rootFolder;
@@ -26,7 +26,7 @@ in
       bazel
       buildozer
       bazel-watcher
-      helmfile
+      # helmfile
 
       bashInteractive
     ];

@@ -31,3 +31,26 @@ haskell_binary(
     srcs = [":Example.hs"],
     deps = [":base"],
 )
+
+# DOCKER & KUBERNETES
+# java_image(
+#     name = "docker",
+#     main_class = "com.ubs.wmap.eisl.data_policy.service.DataPolicyApp",
+#     runtime_deps = [
+#         ":runner",
+#     ],
+# )
+
+# kubernetes_cluster_action(
+#     "k8s_update",
+#     "deployment/data-policy-service-deployment",
+#     glob(["k8s/**/*.yaml"]),
+#     ":docker.tar",
+# )
+
+# kubernetes_cluster_action(
+#     "k8s_delete",
+#     "deployment/data-policy-service-deployment",
+#     glob(["k8s/**/*.yaml"]),
+# )
+

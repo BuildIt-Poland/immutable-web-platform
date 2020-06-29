@@ -37,10 +37,9 @@ let
     (import ./overlays/modules.nix {inherit sources;})
     (import ./overlays/overridings.nix {inherit sources;})
     (import ./tools {inherit sources;})
-    (import ./lib {inherit sources;})
+    (import ./library {inherit sources;})
     passthrough
     application
-    nix-tests
   ];
   args = 
     { } 

@@ -1,3 +1,6 @@
+`kiteloop`
+Build and deploy anything everywhere. Project scaffolding and local development playground based on `nix`, `bazel` and `kubernetes` with embeded support to `haskel`, `java`.
+
 ### Goal
 * make configuration sane, scalable and type safe
 * how `nix` can be used for `local development`
@@ -24,8 +27,6 @@
 
 ### Infra
 * `kubernetes`
-
-### Tech
 * `kafka`
 
 #### Languages
