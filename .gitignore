@@ -1,3 +1,4 @@
 /.gtm/
 result
 temp
+.bazel-cache
