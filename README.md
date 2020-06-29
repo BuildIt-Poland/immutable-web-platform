@@ -32,3 +32,5 @@
 * `java`
 * `haskell`
 
+#### IDE
+* `haskell` - `ghcide` - `nix-env -iA haskellPackages.ghcide -f '<nixpkgs>'`

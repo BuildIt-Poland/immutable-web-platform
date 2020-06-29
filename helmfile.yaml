@@ -1,0 +1,42 @@
+helmDefaults:
+  args:
+    - --history-max
+    - 5
+repositories:
+  - name: stable
+    url: https://kubernetes-charts.storage.googleapis.com
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+  - name: strimzi
+    url: https://strimzi.io/charts/
+  - name: incubator
+    url: http://storage.googleapis.com/kubernetes-charts-incubator
+  - name: fluxcd
+    url: https://charts.fluxcd.io
+environments:
+  local:
+    values:
+      - version: 0.0.1-dev
+releases:
+  - name: kafka
+    namespace: infra
+    chart: strimzi/strimzi-kafka-operator
+    version: 0.16.2
+    missingFileHandler: Warn
+    values:
+      - kubernetes/infra/base/helm/kafka.yaml
+
+  - name: topology
+    namespace: infra
+    chart: stable/weave-scope
+    version: 1.1.8
+    missingFileHandler: Warn
+    values:
+      - kubernetes/infra/base/helm/weave-scope.yaml
+
+helmfiles:
+  - path: kubernetes/infra/tier/deployment.yaml
+    selectors:
+      - tier=deployment
+
+
