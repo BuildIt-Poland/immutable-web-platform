@@ -53,3 +53,6 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 
 #### To consider
 * embeding [`localstack`](https://github.com/localstack/localstack)
+
+#### Issues
+* `nix-darwin` permissions denied - run `sudo chown -R root:1 /nix/var` per this [issue](https://github.com/LnL7/nix-darwin/issues/188)
