@@ -9,7 +9,7 @@
     flake-utils.lib.eachDefaultSystem (system:
     let pkgs = nixpkgs.legacyPackages.${system}; in {
       devShell = import ./shell.nix { inherit pkgs; };
-    })
+    });
   # {
   #   defaultPackage.x86_64-linux = {};
   #   defaultPackage.x86_64-darwin = 

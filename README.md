@@ -25,7 +25,8 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 * [`nix`](https://github.com/NixOS/nixpkgs) with [`flakes`](https://www.tweag.io/blog/2020-05-25-flakes/)
 * [`dhall`](https://github.com/dhall-lang/dhall-lang) - configuration
 * [`cachenix`](https://cachix.org/)
-* [`lorri`](https://github.com/target/lorri)
+* [`nix-darwin`](https://github.com/LnL7/nix-darwin)
+* [`lorri`](https://github.com/target/lorri) - droping in favour of `nix flakes`
 
 #### Dev tools
 * `bazel`

@@ -1,86 +1,106 @@
+-- let Prelude = https://prelude.dhall-lang.org/package.dhall
 
-let presentWorkingDirectory = env:PWD as Text
+let presentWorkingDirectory = Some env:PWD ? None Text
 let home : Optional Text = Some env:HOME ? None Text
 
-let Release : Type = {
-  , version : Text
-}
+-- let Release : Type = {
+--   , version : Text
+-- }
 
 let FilePath : Type = Text
 
-let Project : Type = {
-  , name : Text
-  , authorEmail : Text
-  , domain : Text
-  , rootFolder : FilePath
-}
+-- let Project : Type = {
+--   , name : Text
+--   , authorEmail : Text
+--   , domain : Text
+--   , rootFolder : FilePath
+-- }
 
--- repositories = {
---   k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
---   code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
--- };
-let Repositories = List Text
+-- -- repositories = {
+-- --   k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
+-- --   code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
+-- -- };
+-- let Repositories = List Text
 
-let AWS = {
-  Type: {
-    , account : Text
-    , location: {
-      , credentials: FilePath
-      , config: FilePath
-    }
-  },
-  default: {
-    location: {
-      , credentials: home + ".aws/config"
-      , config: home + ".aws/credentials"
-    }
-  }
-}
+-- let AWS = {
+--   Type: {
+--     , account : Text
+--     , location: {
+--       , credentials: Optional Text
+--       , config: Optional Text
+--     }
+--   },
+--   default: {
+--     -- location: {
+--     --   , credentials: merge { None = "", Some = \(h: Text) -> "${h}/.aws/credentials"} (home)
+--     --   , config : merge { None = "", Some = \(h: Text) -> "${h}/.aws.config"} (home)
+--     -- }
+--   }
+-- }
 
-let Kubernetes : Type = {
-  , clean : Bool
-  , update : Bool
-  , save : Bool
-  , patches : Bool
-  , tools : Bool
-  , resources : FilePath
-}
+-- let Kubernetes = {
+--   Type =
+--     { clean : Optional Bool
+--     , update : Optional Bool
+--     , save : Optional Bool
+--     , patches : Optional Bool
+--     , tools : Optional Bool
+--     , resources : Optional FilePath
+--     }
+--   , default = 
+--     { clean = None Bool
+--     , update = None Bool
+--     , save = None Bool
+--     , patches = None Bool
+--     , tools = None Bool
+--     , resources = None Text
+--     }
+-- }
 
---     docker = { upload = false; tag = "dev-build"; };
+-- let Kubernetes_Bootstrap : Kubernetes = 
+--   { clean = Some True
+--   , update = Some True
+--   , save = Some True
+--   , patches = Some True
+--   , tools = Some True
+--   , resources = merge { None = "", Some = \(pwd: Text) -> "${pwd}/resources"} (presentWorkingDirectory)
+--   }
 
-let NixModule : Type = {
-  shellHook : List Text
-}
+-- --     docker = { upload = false; tag = "dev-build"; };
 
-let Docker : Type = {
-  , upload : Bool
-  , tag: Text
-} // NixModule
+-- let NixModule : Type = {
+--   shellHook : List Text
+-- }
 
-let Environment : Type = <LOCAL | DEV | STAGING | UAT | PROD>
-let Perspective : Type = <ROOT | OPERATOR | DEVELOPER | CI>
-let Modules : Type = List NixModule
-let Packages : Type = List Text
+-- let Docker : Type = {
+--   , upload : Bool
+--   , tag: Text
+-- } -- /\ NixModule
 
-let System = {
-  Type = {
-    , environment : Environment
-    , release : Release
-    , kubernetes : Kubernetes
-    , perspective : Perspective
-    , packages : List Text
-    , modules : Modules
-  } 
-  , default = {
-    , environment : Environment.LOCAL
-    , perspective : Perspective.ROOT
-  }
-}
+-- let Environment : Type = <LOCAL | DEV | STAGING | UAT | PROD>
+-- let Perspective : Type = <ROOT | OPERATOR | DEVELOPER | CI>
+-- let Modules : Type = List NixModule
+-- let Packages : Type = List Text
 
-let test = Docker::{
-  , shellH = ["test"]
-  , dsaads = "dsadas"
-}
+-- let System = {
+--   Type = {
+--     , environment : Environment
+--     , release : Release
+--     , kubernetes : Kubernetes
+--     , perspective : Perspective
+--     , packages : List Text
+--     , modules : Modules
+--   } 
+--   -- , default = {
+--   --   , environment : Environment.LOCAL
+--   --   , perspective : Perspective.ROOT
+--   -- }
+-- }
+
+-- let test : Docker = {
+--   , tag = "test"
+--   , upload = True
+-- }
 
 -- {lib}:
 -- with lib; 
@@ -106,10 +126,10 @@ let test = Docker::{
 --     tests = {enable = false;};
 --     modules = [];
 --   }
-let Inputs : Type =
+-- let Inputs : Type =
 
-let makeEnvironment : {}
-let greeting = "Hello world"
+-- let makeEnvironment : {}
+let greeting : Text = "Hello world"
 in {
   greeting = greeting
 }

@@ -5,7 +5,8 @@ let
 
   rootFolder = toString ./.;
 
-  config = pkgs.dhallToNix (builtins.readFile ./nix/config/shell_config.dhall);
+  config = pkgs.lib.traceVal 
+    (pkgs.dhallToNix (builtins.readFile ./nix/config/shell_config.dhall));
 
   bootstrap = pkgs.writeScript "bootstrap" ''
     ${pkgs.cowsay}/bin/cowsay "Hey hey hey"
@@ -24,18 +25,22 @@ in
     buildInputs = with pkgs; [
       cowsay
       hello
-      nodejs
-      niv
+      # nodejs
+      # niv
 
       dhall
       dhall-json
       # dhall-nix
 
-      bazel
-      buildozer
-      bazel-watcher
+      # bazel
+      # buildozer
+      # bazel-watcher
       # helmfile
 
-      bashInteractive
+      # bashInteractive
     ];
+
+    shellHook = ''
+      ${bootstrap}
+    '';
 }
