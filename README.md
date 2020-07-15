@@ -1,5 +1,8 @@
 `kiteloop`
-Build and deploy anything everywhere. Project scaffolding and local development playground based on `nix`, `bazel` and `kubernetes` with embeded support to `haskel`, `java`.
+Build and deploy anything everywhere. Project scaffolding and local development playground based on `nix`, `bazel` and `kubernetes` with predefined support to `haskel`, `java` and `nodejs`. 
+
+### High level overview
+* [Diagram](https://coggle.it/diagram/Xw660iV2w184ISI9/t/immutable-polyglot-platform/8f73a2a7499f44a188cece11044544f6c4cc52a52e9ce5e837203f440507b8fd)
 
 ### Goal
 * make configuration sane, scalable and type safe
@@ -43,3 +46,9 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 * `nixpkgs` - pin `bazel` & `nix` to the same version
 * handle `lorri shell --cached`
 * vscode -> [`dhall-lsp-server`](https://github.com/dhall-lang/dhall-haskell/tree/master/dhall-lsp-server)
+
+#### More to read
+* [nix flakes](https://zimbatm.com/NixFlakes/)
+
+#### To consider
+* embeding [`localstack`](https://github.com/localstack/localstack)
