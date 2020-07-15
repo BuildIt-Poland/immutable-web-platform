@@ -13,6 +13,9 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 * `cachenix` - `nix-env -iA cachix -f https://cachix.org/api/v1/install`
 > public key: polyglot-platform.cachix.org-1:87XRS0rO9Qgk+cQDg4AGooa9VBRbb/mGvMfXwVRYh1c=
 
+### To watch
+* https://www.youtube.com/watch?v=mKXLAbrKrno
+
 ### Stack
 
 #### Ops tools
@@ -35,3 +38,8 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 
 #### IDE
 * `haskell` - `ghcide` - `nix-env -iA haskellPackages.ghcide -f '<nixpkgs>'`
+
+### TODO
+* `nixpkgs` - pin `bazel` & `nix` to the same version
+* handle `lorri shell --cached`
+* vscode -> [`dhall-lsp-server`](https://github.com/dhall-lang/dhall-haskell/tree/master/dhall-lsp-server)

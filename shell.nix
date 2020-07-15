@@ -1,11 +1,15 @@
+# TODO don't do this
 { pkgs ? import <nixpkgs> {} }:
 let
   # nixpkgs = import ./nix {};
 
   rootFolder = toString ./.;
 
+  config = pkgs.dhallToNix (builtins.readFile ./nix/config/shell_config.dhall);
+
   bootstrap = pkgs.writeScript "bootstrap" ''
     ${pkgs.cowsay}/bin/cowsay "Hey hey hey"
+    echo ${config.greeting}
   '';
 in
   pkgs.mkShell rec {
@@ -21,8 +25,12 @@ in
       cowsay
       hello
       nodejs
+      niv
+
       dhall
       dhall-json
+      # dhall-nix
+
       bazel
       buildozer
       bazel-watcher
