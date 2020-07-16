@@ -1,4 +1,4 @@
-let Prelude = https://prelude.dhall-lang.org/package.dhall
+-- let Prelude = https://prelude.dhall-lang.org/package.dhall
 
 let presentWorkingDirectory : Optional Text = Some env:PWD ? None Text
 let home : Optional Text = Some env:HOME ? None Text
@@ -131,6 +131,7 @@ let Kubernetes = {
 
 -- let makeEnvironment : {}
 let greeting : Text = "Hello world"
-in {
-  greeting = greeting
-}
+in 
+  { greeting = greeting
+  ,  AWS = AWS
+  }

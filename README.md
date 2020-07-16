@@ -15,6 +15,7 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 * `direnv`
 * `cachenix` - `nix-env -iA cachix -f https://cachix.org/api/v1/install`
 > public key: polyglot-platform.cachix.org-1:87XRS0rO9Qgk+cQDg4AGooa9VBRbb/mGvMfXwVRYh1c=
+* `nix-env -iA nixFlakes -f '<nixpkgs>'`
 
 ### To watch
 * https://www.youtube.com/watch?v=mKXLAbrKrno
@@ -56,3 +57,4 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 
 #### Issues
 * `nix-darwin` permissions denied - run `sudo chown -R root:1 /nix/var` per this [issue](https://github.com/LnL7/nix-darwin/issues/188)
+* `nix develop / shell` - does not work getting error related to `( )` - no idea, `--show-trace` shows nothing
