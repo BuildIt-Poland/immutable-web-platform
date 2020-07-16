@@ -3,6 +3,7 @@ with pkgs;
 mkShell {
   buildInputs = [
     nixpkgs-fmt
+    bashInteractive
   ];
 
   shellHook = ''
