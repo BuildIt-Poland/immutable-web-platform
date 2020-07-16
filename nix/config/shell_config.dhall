@@ -1,61 +1,62 @@
--- let Prelude = https://prelude.dhall-lang.org/package.dhall
+let Prelude = https://prelude.dhall-lang.org/package.dhall
 
-let presentWorkingDirectory = Some env:PWD ? None Text
+let presentWorkingDirectory : Optional Text = Some env:PWD ? None Text
 let home : Optional Text = Some env:HOME ? None Text
-
--- let Release : Type = {
---   , version : Text
--- }
-
 let FilePath : Type = Text
 
--- let Project : Type = {
---   , name : Text
---   , authorEmail : Text
---   , domain : Text
---   , rootFolder : FilePath
--- }
+let Release : Type = {
+  , version : Text
+}
 
+let Project : Type = {
+  , name : Text
+  , authorEmail : Text
+  , domain : Text
+  , rootFolder : FilePath
+}
+
+let Repositories : Type = Optional (List { mapKey : Text, mapValue : Text })
 -- -- repositories = {
 -- --   k8s-resources = "git@bitbucket.org:damian.baar/k8s-infra-descriptors.git";
 -- --   code-repository = "git@bitbucket.org:digitalrigbitbucketteam/embracing-nix-docker-k8s-helm-knative.git";
 -- -- };
--- let Repositories = List Text
+let Repositories = List Text
 
--- let AWS = {
---   Type: {
---     , account : Text
---     , location: {
---       , credentials: Optional Text
---       , config: Optional Text
---     }
---   },
---   default: {
---     -- location: {
---     --   , credentials: merge { None = "", Some = \(h: Text) -> "${h}/.aws/credentials"} (home)
---     --   , config : merge { None = "", Some = \(h: Text) -> "${h}/.aws.config"} (home)
---     -- }
---   }
--- }
+let AWS = 
+  { Type =
+    { account : Optional Text
+    , location: 
+      { credentials: Text
+      , config: Optional Text
+    }
+  }
+  , default =
+    { account = Some "test"
+    , location = 
+      { credentials = merge { None = "", Some = \(h: Text) -> "${h}/.aws/credentials"} (home)
+      , config = merge { None = "", Some = \(h: Text) -> "${h}/.aws.config"} (home)
+      }
+    }
+  }
 
--- let Kubernetes = {
---   Type =
---     { clean : Optional Bool
---     , update : Optional Bool
---     , save : Optional Bool
---     , patches : Optional Bool
---     , tools : Optional Bool
---     , resources : Optional FilePath
---     }
---   , default = 
---     { clean = None Bool
---     , update = None Bool
---     , save = None Bool
---     , patches = None Bool
---     , tools = None Bool
---     , resources = None Text
---     }
--- }
+let Kubernetes = {
+  Type =
+    { clean : Optional Bool
+    , update : Optional Bool
+    , save : Optional Bool
+    , patches : Optional Bool
+    , tools : Optional Bool
+    , resources : Optional FilePath
+    }
+  , default = 
+    { clean = None Bool
+    , update = None Bool
+    , save = None Bool
+    , patches = None Bool
+    , tools = None Bool
+    , resources = None Text
+    }
+}
 
 -- let Kubernetes_Bootstrap : Kubernetes = 
 --   { clean = Some True
