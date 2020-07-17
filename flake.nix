@@ -17,7 +17,7 @@
       stdenv.mkDerivation {
         name = "polyglot-platform";
         src = self;
-        devShell = (import ./shell.nix { inherit pkgs; });
+        devShell = (import ./shell.nix);
         # buildPhase = "echo 'test'";
         # installPhase = "mkdir -p $out/bin";
       };

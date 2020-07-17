@@ -37,5 +37,7 @@ in
       helmfile
 
       bashInteractive
+
+      open-policy-agent
     ];
 }

@@ -58,14 +58,16 @@ let Kubernetes = {
     }
 }
 
--- let Kubernetes_Bootstrap : Kubernetes = 
---   { clean = Some True
---   , update = Some True
---   , save = Some True
---   , patches = Some True
---   , tools = Some True
---   , resources = merge { None = "", Some = \(pwd: Text) -> "${pwd}/resources"} (presentWorkingDirectory)
---   }
+let Kubernetes = 
+  { Type = 
+  { clean = Some True
+  , update = Some True
+  , save = Some True
+  , patches = Some True
+  , tools = Some True
+  , resources = merge { None = "", Some = \(pwd: Text) -> "${pwd}/resources"} (presentWorkingDirectory)
+  }
+  }
 
 -- --     docker = { upload = false; tag = "dev-build"; };
 

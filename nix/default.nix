@@ -37,7 +37,7 @@ let
   overlays = [
     # (import ./overlays/modules.nix {inherit sources;})
     # (import ./overlays/overridings.nix {inherit sources;})
-    # (import ./tools {inherit sources;})
+    (import ./tools {inherit sources;})
     # (import ./library {inherit sources;})
     passthrough
   ];
