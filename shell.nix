@@ -11,6 +11,8 @@ let
     echo ${config.greeting}
     echo ${builtins.toJSON config.AWS}
   '';
+   
+  # TODO port nix modules
 in
   pkgs.mkShell rec {
     NAME = "playground";

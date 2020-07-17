@@ -8,7 +8,7 @@ with_or = selects.with_or
 #### CONFIG
 ############
 
-namespace = "com.ubs.wmap.eisl"
+namespace = "com."
 version = "0.0.1-SNAPSHOT"
 
 #############

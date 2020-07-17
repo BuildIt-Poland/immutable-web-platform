@@ -1,5 +1,7 @@
 `kiteloop`
-Build and deploy anything everywhere. Project scaffolding and local development playground based on `nix`, `bazel` and `kubernetes` with predefined support to `haskel`, `java` and `nodejs`. 
+----
+
+Build and deploy anything everywhere. Project scaffolding and local development playground based on `nix`, `bazel` and `kubernetes` with predefined support to `haskell`, `java` and `typescript` embraced by `docker`. 
 
 ### High level overview
 * [Diagram](https://coggle.it/diagram/Xw660iV2w184ISI9/t/immutable-polyglot-platform/8f73a2a7499f44a188cece11044544f6c4cc52a52e9ce5e837203f440507b8fd)
@@ -58,3 +60,7 @@ Build and deploy anything everywhere. Project scaffolding and local development 
 #### Issues
 * `nix-darwin` permissions denied - run `sudo chown -R root:1 /nix/var` per this [issue](https://github.com/LnL7/nix-darwin/issues/188)
 * `nix develop / shell` - does not work getting error related to `( )` - no idea, `--show-trace` shows nothing
+
+### Some decisions
+#### Bazel
+* every language will use separate `WORKSPACE` file - to lock dependencies on `specific` language, however this is not a limitation, just temporary simplification

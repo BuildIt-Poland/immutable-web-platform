@@ -1,0 +1,329 @@
+workspace(name = "java_space")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+RULES_JVM_EXTERNAL_TAG = "3.2"
+
+RULES_JVM_EXTERNAL_SHA = "82262ff4223c5fda6fb7ff8bd63db8131b51b413d26eb49e3131037e79e324af"
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "14ac30773fdb393ddec90e158c9ec7ebb3f8a4fd533ec2abbfd8789ad81a284b",
+    strip_prefix = "rules_docker-0.12.1",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.12.1/rules_docker-v0.12.1.tar.gz"],
+)
+
+# TODO take nixpkgs from nixpkgs_rule
+http_archive(
+    name = "rules_jvm_external",
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+http_archive(
+    name = "bazel_skylib",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.0.2/bazel-skylib-1.0.2.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.0.2/bazel-skylib-1.0.2.tar.gz",
+    ],
+    sha256 = "97e70364e9249702246c0e9444bccdc4b847bed1eb03c5a3ece4f83dfe6abc44",
+)
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+bazel_skylib_workspace()
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+load("@rules_jvm_external//:specs.bzl", "maven")
+
+SPRING_VERSION = "2.2.6.RELEASE"
+
+maven_install(
+    artifacts = [
+        maven.artifact(
+            group = "org.springframework.boot",
+            artifact = "spring-boot-starter-web",
+            version = SPRING_VERSION,
+            exclusions = [
+                "org.springframework.boot:spring-boot-starter-logging",
+                "org.springframework.boot:spring-boot-starter-tomcat",
+            ],
+        ),
+        maven.artifact(
+            group = "org.springframework.cloud",
+            artifact = "spring-cloud-stream",
+            packaging = "jar",
+            classifier = "test-binder",
+            version = "3.0.4.BUILD-SNAPSHOT",
+        ),
+        maven.artifact(
+            group = "io.projectreactor",
+            artifact = "reactor-test",
+            version = "3.1.6.RELEASE",
+            testonly = True,
+        ),
+        maven.artifact("org.springframework.boot", "spring-boot-starter-test", SPRING_VERSION),
+        "org.hamcrest:hamcrest-library:2.2",
+        ("org.springframework.boot:spring-boot-starter:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-validation:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-log4j2:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-test:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-actuator:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-autoconfigure:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-configuration-processor:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-test-autoconfigure:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-test:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-data-jpa:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-reactor-netty:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-webflux:%s" % SPRING_VERSION),
+        ("org.springframework.boot:spring-boot-starter-web:%s" % SPRING_VERSION),
+        ("org.springframework.data:spring-data-commons:%s" % SPRING_VERSION),
+        ("org.springframework.data:spring-data-relational:1.1.6.RELEASE"),
+        "org.reactivestreams:reactive-streams:1.0.3",
+        "org.springframework:spring-expression:5.2.5.RELEASE",
+        "org.springframework.data:spring-data-jpa:2.2.6.RELEASE",
+        "org.springframework:spring-webflux:5.2.5.RELEASE",
+        "org.hibernate.javax.persistence:hibernate-jpa-2.0-api:1.0.1.Final",
+        "org.hibernate:hibernate-core:5.4.12.Final",
+        "org.hibernate:hibernate-entitymanager:5.4.12.Final",
+        "org.springframework:spring-aspects:5.2.5.RELEASE",
+        "org.springframework:spring-beans:5.2.5.RELEASE",
+        "org.springframework:spring-context:5.2.5.RELEASE",
+        "org.springframework:spring-core:5.2.5.RELEASE",
+        "org.springframework:spring-test:5.2.5.RELEASE",
+        "org.springframework:spring-web:5.2.5.RELEASE",
+        "org.springframework:spring-orm:5.2.5.RELEASE",
+        "org.springframework:spring-tx:5.2.5.RELEASE",
+        "org.springframework:spring-messaging:5.2.5.RELEASE",
+        "org.springframework.kafka:spring-kafka:2.4.4.RELEASE",
+        "org.springframework.kafka:spring-kafka-test:2.4.4.RELEASE",
+        "org.glassfish:jakarta.el:3.0.3",
+        "com.squareup.okhttp3:mockwebserver:4.4.1",
+        "com.squareup.okhttp3:okhttp:4.4.1",
+        "org.synchronoss.cloud:nio-multipart-parser:1.1.0",
+        "io.projectreactor:reactor-core:3.3.4.RELEASE",
+        "org.apache.kafka:kafka-clients:2.4.1",
+        "org.apache.kafka:kafka-streams:2.4.1",
+        "org.projectlombok:lombok:1.18.10",
+        "com.fasterxml.jackson.core:jackson-databind:2.11.0",
+        "com.fasterxml.jackson.core:jackson-annotations:2.11.0",
+        "com.fasterxml.jackson.core:jackson-core:2.11.0",
+        "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.0",
+        "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.11.0",
+        "com.fasterxml.jackson.datatype:jackson-datatype-guava:2.11.0",
+        "junit:junit:4.13",
+        "org.jsmart:zerocode-tdd:1.3.16",
+        "org.openjdk.jmh:jmh-core:1.22",
+        "org.openjdk.jmh:jmh-generator-annprocess:1.22",
+        "javax.validation:validation-api:2.0.1.Final",
+        "javax.annotation:javax.annotation-api:1.3.2",
+        "com.google.guava:guava:28.2-jre",
+        "org.jeasy:easy-rules-core:3.4.0",
+        "org.jeasy:easy-rules-mvel:3.4.0",
+        "org.jeasy:easy-rules-support:3.4.0",
+        "org.mock-server:mockserver-netty:5.8.1",
+        "org.mock-server:mockserver-client-java:5.8.1",
+        "org.junit.jupiter:junit-jupiter-engine:5.5.2",
+        "org.mockito:mockito-core:3.2.4",
+        "org.assertj:assertj-core:3.14.0",
+        "com.h2database:h2:1.4.200",
+        "org.apache.derby:derby:10.9.1.0",
+        "org.apache.logging.log4j:log4j-core:2.13.0",
+        "org.apache.logging.log4j:log4j-slf4j-impl:2.13.0",
+        "org.springframework.data:spring-data-r2dbc:1.0.0.RELEASE",
+        "io.r2dbc:r2dbc-postgresql:0.8.2.RELEASE",
+        "io.r2dbc:r2dbc-h2:0.8.2.RELEASE",
+        "io.r2dbc:r2dbc-pool:0.8.2.RELEASE",
+        "io.r2dbc:r2dbc-spi:0.8.1.RELEASE",
+        "org.springframework.cloud:spring-cloud-stream-binder-kafka-streams:3.0.4.RELEASE",
+        "org.springframework.cloud:spring-cloud-stream-binder-kafka:3.0.4.RELEASE",
+        "org.springframework.cloud:spring-cloud-starter-stream-kafka:3.0.4.RELEASE",
+        "org.springframework.cloud:spring-cloud-stream-binder-kafka-core:3.0.4.RELEASE",
+        "org.springframework.cloud:spring-cloud-stream-binder-test:3.0.4.RELEASE",
+        "org.springframework.cloud:spring-cloud-stream:3.0.4.RELEASE",
+        "org.springframework.cloud:spring-cloud-dataflow-rest-client:2.4.2.RELEASE",
+        "org.springframework.cloud:spring-cloud-circuitbreaker-resilience4j:1.0.2.RELEASE",
+        "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:1.0.2.RELEASE",
+        "org.springframework.cloud:spring-cloud-starter-circuitbreaker-reactor-resilience4j:1.0.2.RELEASE",
+        "org.springframework.cloud:spring-cloud-commons:2.2.2.RELEASE",
+        "org.springframework.integration:spring-integration-kafka:3.2.1.RELEASE",
+        "org.springframework.integration:spring-integration-core:5.2.5.RELEASE",
+        "org.Javers:javers-spring-boot-starter-sql:5.9.0",
+        "org.javers:javers-core:5.9.0",
+        "commons-net:commons-net:3.6",
+        "org.mockftpserver:MockFtpServer:2.7.1",
+        "org.apache.logging.log4j:log4j-api:2.13.0",
+        "org.functionaljava:functionaljava:4.8.1",
+        "org.functionaljava:functionaljava-java8:4.8.1",
+        "org.functionaljava:functionaljava-java-core:4.8.1",
+        "com.lmax:disruptor:3.4.2",
+        "org.postgresql:postgresql:42.2.10",
+        "org.apache.commons:commons-lang3:3.9",
+        "commons-io:commons-io:2.6",
+        "org.awaitility:awaitility:4.0.2",
+        "io.vavr:vavr:0.10.2",
+        "io.github.resilience4j:resilience4j-all:1.4.0",
+        "io.github.resilience4j:resilience4j-retry:1.4.0",
+        "io.github.resilience4j:resilience4j-core:1.4.0",
+        "io.github.resilience4j:resilience4j-circuitbreaker:1.4.0",
+        "io.github.resilience4j:resilience4j-ratelimiter:1.4.0",
+        "io.github.resilience4j:resilience4j-bulkhead:1.4.0",
+        "io.github.resilience4j:resilience4j-timelimiter:1.4.0",
+        "io.github.resilience4j:resilience4j-annotations:1.4.0",
+        "io.github.resilience4j:resilience4j-spring-boot2:1.4.0",
+        "io.github.resilience4j:resilience4j-reactor:1.4.0",
+        "io.projectreactor.netty:reactor-netty:0.9.6.RELEASE",
+        "io.projectreactor.kafka:reactor-kafka:1.2.2.RELEASE",
+        "org.yaml:snakeyaml:1.26",
+        "io.swagger:swagger-annotations:1.6.0",
+        "org.openapi4j:openapi-schema-validator:0.7",
+        "org.mvel:mvel2:2.4.7.Final",
+        "com.jayway.jsonpath:json-path:2.4.0",
+        "net.minidev:json-smart:2.3",
+        "org.json:json:20190722",
+        "commons-jxpath:commons-jxpath:1.3",
+        "org.yaml:snakeyaml:1.25",
+    ],
+    excluded_artifacts = [
+        "org.springframework.boot:spring-boot-starter-logging",
+        "org.springframework.boot:spring-boot-starter-tomcat",
+        "org.apache.tomcat.embed:tomcat-embed-core",
+        "org.apache.tomcat.embed:tomcat-embed-el",
+        "javax.servlet:javax.servlet-api",
+    ],
+    maven_install_json = "//:maven_install.json",
+    repositories = [
+        "https://repo1.maven.org/maven2",
+        "https://jcenter.bintray.com",
+        # SNAPSHOTS
+        # "https://repo.spring.io/libs-snapshot",
+    ],
+
+    # TODO - require more work
+    # https://github.com/bazelbuild/rules_jvm_external#hiding-transitive-dependencies
+    # strict_visibility = True, # we don't want to have transitive dependencies - pom generation can be simplified by using it
+    fetch_sources = True,
+)
+
+load("@maven//:defs.bzl", "pinned_maven_install")
+
+pinned_maven_install()
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+
+container_repositories()
+
+load(
+    "@io_bazel_rules_docker//java:image.bzl",
+    _java_image_repos = "repositories",
+)
+
+_java_image_repos()
+
+git_repository(
+    name = "checkstyle_java",
+    commit = "4500f3e62cabe30080acc84d82fdae73aa18a61c",
+    remote = "https://github.com/damianbaar/checkstyle_java",
+)
+
+load("@checkstyle_java//:repo.bzl", "checkstyle_deps")
+
+checkstyle_deps()
+
+http_archive(
+    name = "rules_pkg",
+    sha256 = "752146e2813f4c135ec9f71b592bf98f96f026049e6d65248534dbeccb2448e1",
+    url = "https://github.com/bazelbuild/rules_pkg/releases/download/0.1.0/rules_pkg-0.1.0.tar.gz",
+)
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+
+rules_pkg_dependencies()
+
+http_archive(
+    name = "rules_jmh",
+    sha256 = "dbb7d7e5ec6e932eddd41b910691231ffd7b428dff1ef9a24e4a9a59c1a1762d",
+    strip_prefix = "buchgr-rules_jmh-6ccf8d7",
+    type = "zip",
+    url = "https://github.com/buchgr/rules_jmh/zipball/6ccf8d7b270083982e5c143935704b9f3f18b256",
+)
+
+load("@rules_jmh//:deps.bzl", "rules_jmh_deps")
+
+rules_jmh_deps()
+
+load("@rules_jmh//:defs.bzl", "rules_jmh_maven_deps")
+
+rules_jmh_maven_deps()
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "io_bazel_rules_k8s",
+    sha256 = "cc75cf0d86312e1327d226e980efd3599704e01099b58b3c2fc4efe5e321fcd9",
+    strip_prefix = "rules_k8s-0.3.1",
+    urls = ["https://github.com/bazelbuild/rules_k8s/releases/download/v0.3.1/rules_k8s-v0.3.1.tar.gz"],
+)
+
+load("@io_bazel_rules_k8s//k8s:k8s.bzl", "k8s_repositories")
+
+k8s_repositories()
+
+load("@io_bazel_rules_k8s//k8s:k8s_go_deps.bzl", k8s_go_deps = "deps")
+
+k8s_go_deps()
+
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "dc97fccceacd4c6be14e800b2a00693d5e8d07f69ee187babfd04a80a9f8e250",
+    strip_prefix = "rules_docker-0.14.1",
+    urls = ["https://github.com/bazelbuild/rules_docker/releases/download/v0.14.1/rules_docker-v0.14.1.tar.gz"],
+)
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+
+container_repositories()
+
+# This is NOT needed when going through the language lang_image
+# "repositories" function(s).
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
+load("@io_bazel_rules_docker//contrib:dockerfile_build.bzl", "dockerfile_image")
+
+dockerfile_image(
+    name = "nix_custom_image",
+    dockerfile = "//:Dockerfile",
+)
+
+container_pull(
+    name = "nix_image",
+    digest = "sha256:ce464ba56607781dea11bf7e1624b17391f7026d7335b84081627eb52f563c1e",
+    registry = "index.docker.io",
+    repository = "lnl7/nix",
+)
+
+container_pull(
+    name = "spring_cloud_dataflow_server",
+    digest = "sha256:10da033e71f10c11b6c2c96d190f9a1b00f299c690cef72d092767a974f8cf1c",
+    registry = "index.docker.io",
+    repository = "springcloud/spring-cloud-dataflow-server",
+)
