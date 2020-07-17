@@ -4,7 +4,7 @@ let
   rootFolder = toString ./.;
 
   config = pkgs.lib.traceVal 
-    (pkgs.dhallToNix (builtins.readFile ./nix/config/shell_config.dhall));
+    (pkgs.dhallToNix (builtins.readFile ./config/shell/default.dhall));
 
   bootstrap = pkgs.writeScript "bootstrap" ''
     ${pkgs.cowsay}/bin/cowsay "Hey hey hey"
