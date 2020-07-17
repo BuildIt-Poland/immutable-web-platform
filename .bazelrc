@@ -1,9 +1,22 @@
+# See https://docs.bazel.build/versions/master/user-manual.html#bazelrc.
+try-import .bazelrc.local
+
+--host_javabase='@local_jdk//:jdk'
+--java_toolchain='@bazel_tools//tools/jdk:toolchain_hostjdk8'
+--javabase='@local_jdk//:jdk'
+
+--verbose_failures
+
+build
+
+test --test_output=errors \
+  --action_env=VALIDATION_SERVICE_HOST
+  
 build:ci --loading_phase_threads=1
 build:ci --jobs=2
 build:ci --verbose_failures
 common:ci --color=no
 test:ci --test_output=errors
-
 
 # This project uses a GHC provisioned via nix.
 # We need to use the rules_haskell nix toolchain accordingly:
