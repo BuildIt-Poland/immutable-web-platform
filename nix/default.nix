@@ -10,7 +10,15 @@ let
     # make-defaults = super.callPackage ./targets/defaults.nix {};
     rootFolder = toString ../.;
 
-    # project-config = 
+    # TODO shoudl comes from dhall - input is already defined within shell.nix
+    project-config = {
+      terraform = {
+        vars = {
+          project_prefix = "pref_";
+        };
+        backend-vars = {};
+      };
+    };
     #   let
     #     safe-inputs = make-defaults inputs; 
     #   in

@@ -16,7 +16,7 @@ let
 
   plugins = plugins terraform-providers; 
 
-  terraform = (pkgs.terraform_0_13).withPlugins pluginList;
+  terraform = (pkgs.terraform_0_12).withPlugins pluginList;
   # .overrideAttrs (x: { patches = [./thrift.patch]; });
 
   vars = lib.traceVal project-config.terraform.vars;

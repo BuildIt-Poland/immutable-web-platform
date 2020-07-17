@@ -39,5 +39,6 @@ in
       bashInteractive
 
       open-policy-agent
+      terraform-with-plugins
     ];
 }
