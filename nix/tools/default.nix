@@ -4,9 +4,11 @@ let
   nodePackages = ../../packages;
 in
 rec {
-  # Terraform
+  # Infra
   terraform-with-plugins = super.callPackage ./terraform {};
 
-  # K8S
+  # Application
+  ## Auth
   open-policy-agent = super.callPackage ./opa {};
+  swagger-codegen = super.callPackage ./swagger-codegen {};
 } 

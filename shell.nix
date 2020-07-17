@@ -40,5 +40,6 @@ in
 
       open-policy-agent
       terraform-with-plugins
+      swagger-codegen
     ];
 }
